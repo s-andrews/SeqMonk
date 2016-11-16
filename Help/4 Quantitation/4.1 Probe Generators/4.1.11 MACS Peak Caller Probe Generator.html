@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>MACS Peak Caller Probe Generator</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>MACS Peak Caller Probe Generator</h1>
+
+<p>
+The MACS Peak Caller probe generator uses the methodology original used in
+MACS (Genome Biology 2008,9:R137) to do a statistically based peak calling
+suitable for use in ChIP-Seq samples where you have classical small focussed
+enrichment peaks. 
+</p>
+<p>
+The MACS methodology initially identifies a set of high-confidence peaks 
+which exhibit between 20-100 fold enrichment in reads and then uses these
+to model the average distance between reads on the two DNA strands.
+</p>
+<p>
+It next uses a binomial distribution to remove duplicate tags which are
+represented at statisically unlikely levels within the sample. 
+</p>
+<p>
+Next it generates a full set of candidate peaks by comparing the enrichment
+within windows to a poisson distribution modelled on the data density in
+the entire dataset.
+</p>
+<p>
+Finally, the candidate peaks are checked against custom poisson distributions
+generated from the local environment around each peak at distances of 5 and 10kb.
+These local distributions can be calculated either from the ChIP sample, or from
+a matched control sample which you can use.  For the matched control a distribution
+at 1kb is also calculated.  The most conservative answer from all of the different
+distributions tried is finally used to assess the quality of the peak.
+</p>
+
+<h2>Options</h2>
+
+<p><img src="macs_options.png" alt="MACS Generator Options"></p>
+
+<ul>
+<li>You can specify the p-value threshold used to decide if the enrichment in a peak is
+significant. This is an uncorrected p-value.</li>
+<li>You can choose the average fragment size in your library, which will determine the
+size of window which is used to identify peaks within your sample</li>
+<li>You can choose which samples will be taken for the ChIP and input samples.  Chosen
+samples will be merged together for the analysis</li>
+<li>You can choose to omit the deduplication step of the analysis.  This can be useful
+if you are seeing artefacts coming from repetitive sequences</li>
+</body>
+</html>

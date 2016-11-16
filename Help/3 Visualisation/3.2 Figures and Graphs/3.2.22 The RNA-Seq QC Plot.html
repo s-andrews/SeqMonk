@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<title>The RNA-Seq QC Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The RNA-Seq QC Plot</h1>
+
+<p>
+The RNA-Seq QC plot is intended to be an initial step in the analysis of RNA-Seq data.
+It does some simple checks on your data to determine if there are any obvious biases
+in the data, and whether any biases are consistent between your different replicates
+</p>
+<p>
+<img src="rna_seq_qc_plot.png" alt="RNA-Seq QC plot">
+</p>
+
+<p>
+The metrics which the plot calculates are:
+</p>
+<ul>
+<li>What percentage of your reads fall into genes.  A low value here would indicate
+potential DNA contamination</li>
+<li>What percentage of reads in genes fall into exons.  A low value here would indicate
+either DNA contamination, or possibly just a high proportion of unprocessed transcripts</li>
+<li>What percentage of reads fall into rRNA.  This will only account for mapped reads falling
+into annotated rRNA features, so will normally be much less than the actual amount of rRNA in
+the starting library</li>
+<li>What percentage of reads fall into the Mitochondrion</li>
+<li>What percentage of reads fall onto the sense strand - depening on the type of library
+you've made this value could be expected to be near 0%, 100% or 50%</li>
+</ul>
+
+<p>
+Although there is information to be gained directly from each of these measures, often the
+most important thing to check is that they are similar for all of your replicates, since a
+difference would indicate some kind of systematic bias.
+</p>
+
+
+<h2>Options</h2>
+<img src="rna_seq_qc_options.png" alt="RNA-Seq QC plot Options">
+<p>
+The options are simply a way to select which feature track represents the different types
+of feature used by the plot.  The program will try to determine these automatically, but you
+can change them manually if needed</p>
+
+</body>
+</html>

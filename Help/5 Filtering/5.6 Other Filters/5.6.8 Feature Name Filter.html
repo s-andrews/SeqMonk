@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<title>Feature Name Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Feature Name Filter</h1>
+<p>
+The feature name filter allows you to select a set of probes based on a 
+match between their names and the names of a set of features in an 
+annotation track.
+</p>
+<p><img src="feature_name_filter_options.png" alt="Feature Name Filter Options"></p>
+
+<p>
+This type of filter is useful where you have imported an annotation track
+containing a subset of features and you want to select the same subset in the 
+current project.  For example you might have a list of transcripts whose promoters
+are enriched in a certain histone modification, and you want to see what these
+same transcripts do in an RNA-Seq dataset.  The positions of the probes from
+the histone modification dataset will not match the transcript positions in the
+RNA-Seq dataset (one is promoters the other is transcripts), but the names will
+be the same between the two, so this filter can be used.
+</p>
+
+<h2>Options</h2>
+<ol>
+<li>You can choose the annotation track containing the set of features whose names
+you want to match.</li>
+<li>You can choose to remove additions which SeqMonk would have placed on the end
+of feature names when using them to create probes (eg _upstream, _downstream or _gene).
+</ol>
+
+</body>
+</html>

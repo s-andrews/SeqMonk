@@ -1,0 +1,38 @@
+<html>
+
+<head>
+<title>Per Probe Normalisation Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Per Probe Normalisation Quantitation</h1>
+
+<p>
+Per probe normalisation is a way of adjusting a set of quantitations
+to emphasise the differences between different data stores, whilst
+removing any overall differences in average quantitation level.
+</p>
+<p>
+The quantitation adjustment works by adjusting the medians of each probe
+to be the same across the set of stores which are being normalised.
+</p>
+
+<h2>Options</h2>
+<p>
+You can choose how this normalisation is applied.  You can either subtract
+the median value from each individual value, or you can divide by the
+median and log2 transform the result.  You should choose subtract if you
+data was already quantitated on a log scale, and divide if it wasn't.  In
+each case your probes will have a median of 0.  Alternatively you can scale
+your data so that each probe has a value between 0 and 1 where 0 is the lowest
+value for that probe across all datasets, and 1 is the highest value.
+</p>
+</body>
+</html>

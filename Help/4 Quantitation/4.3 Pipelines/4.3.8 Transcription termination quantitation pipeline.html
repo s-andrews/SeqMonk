@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title>The transcription termination quantitation pipeline</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Transcription termination quantitation pipeline</h1>
+
+<p>
+The transcription termination quantitation pipeline aims to measure the degree of
+sequence loss at a putative transcription termination point.  The pipeline creates
+a pair of probes upstream and downstream of the end of an mRNA feature and measures
+the degree of read count loss at the termination point.
+</p>
+<p>
+<!-- <img src="termination_options.png" alt="Termination Pipeline Options">  -->
+</p>
+<p>
+The pipeline generates a single probe covering the whole of the upstream/downstream
+region (centered on the termination point) and quantitates this with the percentage
+sequence count loss (100 - ((downstream / upstream) * 100)).
+</p>
+
+
+<h2>Options</h2>
+<p>The options you can set for this pipeline are:</p>
+<ol>
+<li>The feature type to use for this analysis. This will default to mRNA if an mRNA
+track exists in your genome, but can be changed to whichever transcript feature track
+is appropriate</li>
+
+<li>The type of library you are quantitating. Some RNA-Seq libraries are strand specific
+and in these cases the pipeline can ignore reads coming from the wrong strand.  You can
+also choose between strand specific libraries which produce reads on the same strand as
+the feature or the opposing strand.
+</li>
+
+<li>What the minimum count in the upstream region should be for you to want to calculate
+a percentage loss.  Features which fall below this threshold will be given a null value</li>
+
+<li>What the size of the window you're going to place upstream and downstream of the 
+termination point is going to be.</li>
+
+
+</ol>
+
+</body>
+</html>

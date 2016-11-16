@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>Binomial Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Binomial Filter</h1>
+<p>
+The binomial filter is related to the ChiSquare filter in that it doesn't use
+the current quantitation of your data, but instead is based around the 
+proportion of forward and reverse reads within your probes.  It is most commonly
+used for the analysis of bisulphite sequencing data but could be used for any type
+of data where a change in strand proportion is the major interest.
+</p>
+<p>
+The difference between this test and the chi-square test is that in the chi-square
+filter the expectation is that there is no global change between your two samples.
+The binomial filter can be used in samples where there is a global change and you 
+are interested in finding probes whose for/rev ratio changes in a way which is 
+unusual compared to what is happening globally.
+</p>
+<p>
+The test works in two stages.  You select two data stores, a from store and a to
+store.  In the first stage the filter creates a set of mean for/rev proportion values 
+where it finds the mean for/rev proportion in your 'to' store from all starting 
+proportions in your 'from' stores, so it might for example find that where you
+started with 60% forward in your from store you ended up with (on average) 80% forward
+in your 'to' store for the same probes. 
+</p>
+<p>
+In the second part of the test the filter does a second pass through your data
+testing the actual observed for/rev proportion to the expected value from the first
+part using a binomial test.  For example if you had an individual probe which had
+60% forward in your 'from' store it might have 90% forward in your 'to' store from
+200 observations, so a binomial test can be used to determine whether this is 
+significantly different to what's happening globally.
+</p>
+
+<h2>Options</h2>
+<ul>
+<li>You must choose the data stores you want to use for the test. You select
+two stores, a from store which is used to categorise your probes into starting
+bins, and a 'to' store from which the data will be used for the actual test.</li>
+<li>You can choose the significance threshold for the analysis</li>
+<li>You can choose whether to apply multiple testing correction to your raw
+p-values (you really should in nearly all cases)</li>
+<li>You can choose to test only probes which have a certain level of
+observation in each data store.  This applies to both constructing the background
+model, and performing the test.</li>
+<li>You can choose to filter the results based on the maximum percentile difference
+between the samples to ensure a certain absolute change, even if a smaller 
+difference would have been significant</li>
+</ul>
+</body>
+</html>

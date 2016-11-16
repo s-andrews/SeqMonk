@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>What is SeqMonk?</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>What is SeqMonk</h1>
+<p>
+SeqMonk is a program for visualising and analysing large set of mapped genomic regions.
+It was desgined to work with data from high throughput sequencing technologies, but will
+work just as well with any set of mapped reads.
+</p>
+<p>
+SeqMonk provides a genome browser which allows you to navigate quickly around an annotated
+genome and a data browser which puts your sequence reads in their appropriate genomic 
+context.  It also includes a set of tools to allow you to quantitate and filter your
+data so that you can find regions of interest in a systematic way.
+</p>
+
+<h2>What is SeqMonk useful for?</h2>
+<p>
+SeqMonk was designed to be as flexible as possible and should be useful in a wide variety
+of experimental designs.  Types of experiment which are known to have been successfully
+analysed with SeqMonk are:
+</p>
+<ul>
+<li>ChIP-Seq</li>
+<li>Chromosome Conformation Capture</li>
+<li>High-throughput Bisulphite Sequencing</li>
+<li>Analysis of genomic deletions/duplications</li>
+</ul>
+
+<h2>What is SeqMonk not useful for?</h2>
+<p>
+There are some types of experiment to which SeqMonk is not directly suited.  These limitations
+stem from the fact that SeqMonk deals only in genomic locations - it does not record the
+sequence underlying each mapped read.  This means it is not useful for SNP identification.
+In these types of experiments though we have pre-processed the data to segregate the WT and
+mutant sequences into separate datasets and then loaded these into SeqMonk for analysis.
+</p>
+<p>
+SeqMonk requires an annotated genome against which to work - therefore experiments involving
+the assembly of novel sequence or those using species without an assembled genome cannot
+be analysed with SeqMonk.  Although we have a wide range of genomes available in SeqMonk 
+you may find that a genome you want to use is not present.  In this case please contact
+the authors who can either add the genome to their standard list, or tell you how to
+create the necessary files on your system.
+</p>
+
+</body>
+
+</html>

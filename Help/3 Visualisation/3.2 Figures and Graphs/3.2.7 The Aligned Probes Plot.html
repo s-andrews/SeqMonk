@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>The Aligned Probes Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Aligned Probes Plot</h1>
+
+<p>
+The probe trend plot is a useful way to see if there is a universal
+trend which runs over the length of an average probe in a probe
+list.  The aligned probes plot is a quick way to see if there are
+subsets of probes within a list which display a pattern over their
+length.
+</p>
+<p><img src="aligned_probes_plot.png" alt="An Aligned Probes Plot"></p>
+
+<p>
+Each horizontal line on the plot represents one probe.
+The density of colour across each horizontal line reflects the density
+of reads across the probe.  The density on each line is normalised to
+be independent of the number of reads in that probe.
+</p>
+
+<h2>Options</h2>
+<p><img src="aligned_probes_preferences.png" alt="Aligned Probes Options"></p>
+<ol>
+<li>You can choose to filter the strand of the reads you use</li>
+<li>You can choose how to order the lines in the plot.  By default each plot is ordered
+independently with the lines going from highest to lowest total count, but if you are
+drawing several plots you can choose one of them to define the order and the others
+will keep the same ordering</li>
+<li>You can choose to count each read position only once - removing duplicated reads 
+from the plot</li>
+<li>You can choose to put the colour density on a log scale</li>
+<li>You can force a plot to be relative (uses 200 slots) rather than using bp resolution
+even if your probes are all the same length.  This may make sense if you have very
+long probes</li>
+</ol>
+
+
+</body>
+</html>

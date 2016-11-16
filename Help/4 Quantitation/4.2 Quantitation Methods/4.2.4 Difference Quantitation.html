@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>Difference Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Difference Quantitation</h1>
+
+<p>
+The difference quantitation quantitates your data based on the relative
+levels of reads on different strands.  
+</p>
+<p>
+It can be useful to use the
+strand of a read to signify some other property of your sequence (eg
+methylated / unmethylated or exact match vs SNP). This quantitation
+method then allows you to look for enrichment of this kind of information
+in a way which accounts for overall biases in the distribution of sequences.
+</p>
+<h2>Options</h2>
+<p><img src="difference_quantitationpic.png" alt="Difference Quantitation Picture"></p>
+<p>The options you have for this module are:</p>
+<ol>
+<li>The strands you want to compare (Forward / Reverse / Unknown).</li>
+<li>How you want to do the comparison (subtract, divide or log divide).  If you 
+want to get a simple corrected value you'd probably just subtract one count
+from another.  If you're looking for an enrichment then using a ratio is better.  If
+your enrichment could be either positive or negative you should take a log
+ratio so that the positive and negative scales are treated the same</li>
+</ol>
+
+<p>
+For the divide, and log divide options the quantitation will actually add 1 to
+both of the counts used to avoid getting a divide-by-zero error, so the value
+you see may be slightly off from what you expect - especially for probes with
+low absolute counts (from which you probably shouldn't be calcuating this sort
+of value anyway).
+</p>
+
+</body>
+</html>

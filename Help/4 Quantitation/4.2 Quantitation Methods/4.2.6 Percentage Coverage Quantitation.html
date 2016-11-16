@@ -1,0 +1,37 @@
+<html>
+
+<head>
+<title>Percent Coverage Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Percent Coverage Quantitation</h1>
+
+<p>
+The percent coverage quantitation tells you how much of each probe
+is covered by a read.  It doesn't matter what the coverage depth
+is over the parts which are covered just how much consensus sequence
+could be gathered.
+</p>
+<p>
+This kind of quantation might be useful for datasets with a high level
+of coverage where you are looking for regions which either couldn't
+be mapped to uniquely, or which may have been deleted and therefore
+are not represented in any data.
+</p>
+<h2>Options</h2>
+<p><img src="percent_coverage_quantitation.png" alt="Percent Coverage"></p>
+<p>The options you have for this module are:</p>
+<ol>
+<li>Which strand the reads you want to quantitate must be on</li>
+<li>The minimum read depth</li>
+</ol>
+</body>
+</html>

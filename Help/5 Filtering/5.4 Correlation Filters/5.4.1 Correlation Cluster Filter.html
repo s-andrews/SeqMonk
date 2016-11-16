@@ -1,0 +1,50 @@
+<html>
+
+<head>
+<title>Correlation Cluster Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Correlation Cluster Filter</h1>
+<p>
+The correlation cluster filter will find sets of probes which have a similar
+pattern of quantitation across a set of DataStores.  This filter lets you 
+find connected sets of probes, and will discard probes which do not form a
+cluster.
+</p>
+
+<p>The actual clustering is fairly simplistic, and is optimised for speed
+rather than completeness.  A single pass is made through the set of probes.
+Each probe is compared to the existing set of clusters.  If the correlation
+between this probe and all of the probes in an existing cluster is above the
+threshold set then the probe is added to that cluster.  If none of the clusters
+want to claim a probe then it starts a new cluster.  If two or more clusters
+want to claim a probe then it is added to the one with the highest overall
+correlation.
+</p>
+
+<h2>Options</h2>
+
+<ul>
+<li>You can choose which data stores you want to use for your correlation.  You
+must choose at least 3 stores and there is no upper limit to the number you choose.</li>
+<li>You can set a minimum size of cluster you are interested in.  You will find that
+you will normally generate a small number of clusters containing a large number of
+probes, but that you will also have a large number of clusters containing only a few
+probes.  Setting this value to a sensible number will stop you from being swamped 
+with large numbers of clusters.</li>
+<li>You can choose how correlated a set of probes need to be to form a cluster.  This
+value must be between 0 and 1.  Setting it to a low value will form very loose and
+noisy clusters with larger numbers of probes in them.  Setting it higher will form 
+tighter clusters which contain fewer probes.</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<html>
+
+<head>
+<title>Subset Normalisation Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Subset Normalisation Quantitation</h1>
+
+<p>
+The subset normalisation quantitaion can be used to normalise any quantitation
+to a specific subgroup of probes which would be expected not to change between 
+your conditions.  This could be something like a set of housekeeping genes, or 
+a set of regions which you have experimentally profiled by some other means to
+determine that they are not changing and can act as suitable controls.  The 
+combined data from all of the probes in the chosen subset will be used as the 
+basis for the correction.
+</p>
+<h2>Options</h2>
+<ol>
+<li>You can choose which value, the mean or the sum, of the probes in the subset
+is to be used as the basis for the normalisation</li>
+<li>You can choose whether the target value for the normalisation is the largest
+summed value in the set of chosen probes (so all corrections are positive), or
+you can opt to normalise to a fixed value of 1</li>
+<li>You can choose the method by which the target value is to be achieved - this
+can either by by addition or multiplication.</li>
+</ol>
+</body>
+</html>

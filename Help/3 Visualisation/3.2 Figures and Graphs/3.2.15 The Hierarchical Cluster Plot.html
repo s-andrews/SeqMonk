@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>The Hierarchical Profile Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Hierarchical Profile Plot</h1>
+
+<p>
+The hierarchical profile plot is a graphical method of clustering
+together sets of probes whose values show related changes over
+at least 3 different data stores.
+</p>
+<p>
+There are two modes in which the tool operates - you can choose to 
+do a per-probe normalisation which will use a correlation based
+clustering to find probes with similar shaped quantitation profiles, or
+you can take the current quantitation to do a euclidean clustering 
+on the basis of the smallest absolute difference between probe
+quantitation values.
+</p>
+
+
+<img src="hierarchical_clusters.png" alt="The hierarchical cluster plot">
+
+<p>
+The plot works best with small sets of probes (fewer than 5000 if you 
+want it to complete in a sensible amount of time), which you already
+know show significant changes between the conditions you are plotting.
+Taking the results of the intensity difference filter, or a plain
+difference filter woudl be a good basis for this plot.
+</p>
+
+<p>
+The plot constructs a hierarchical grouping of your probes based
+on the degree of correlation across the datastores which are
+currently visible.  The results are then plotted on a heatmap where
+the colours represent the signal level for that probe in that
+datastore.  The values for this plot are normalised across the
+set of datastores (ie the median value for each probe is subtracted
+from the actual values for that probe in each of the data stores)
+so that the values are more easily compared on the plot.
+</p>
+
+<h2>Options</h2>
+
+<p>There are no options to set when actually constructing the
+plot.  There are some display options within the plot though</p>
+
+<ul>
+<li>Using the slider on the right of the plot you can change the 
+colour scaling for the plot to emphasise the parts of the plot
+you want to see more clearly.
+</li>
+
+<li>
+Using the slider of the left you can change the R-value threshold
+used to indicate the sets of related reads (shown by black lines
+across the plot) in the plot.
+</li>
+
+<li> You can zoom into the plot by clicking and dragging in the 
+main plot window.  You can zoom out again by right clicking.</li>
+
+<li> You can save the set of currently visible clusters using
+the "Save Clusters" button at the bottom.  Only clusters which 
+are completely visible in the current view will be saved.  They
+will appear as a child of the probe list used to initially
+construct the plot.</li>
+</ul>
+
+<li> You can use the drop-down box at the top to select from a range
+of different colour gradients, and can invert any of these using
+the checkbox next to it</li>
+
+</body>
+</html>

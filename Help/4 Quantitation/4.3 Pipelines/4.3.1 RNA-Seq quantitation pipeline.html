@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<title>The RNA-Seq quantitation pipeline</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The RNA-Seq quantitation pipeline</h1>
+
+<p>
+The RNA-Seq pipeline is a specialised quantitation methods which is useful
+for the analysis of RNA-Seq expression data in genomes containing spliced 
+transcripts.
+</p>
+<p>
+<img src="rpkm_options.png" alt="RPKM Pipeline Options">
+</p>
+<p>
+The pipeline generates a set of probes covering every transcript in the genome, but
+then quantitates each of these based on the number of reads falling within the
+exons of those transcripts - ignoring any reads found in introns.  This method of
+quantitation can only be achieved using this pipeline and cannot be performed using
+the standard probe generation and quantitation tools.
+</p>
+<p>
+The counts produced are by default corrected for the total number of sequences in 
+the dataset.  Also by default they are log transformed to form an easier 
+distribution to work with.  You can optionally correct for the length of the exons
+in the transcripts to produce RPKM values.  It's worth noting that although this
+type of RPKM calculation is widely used in the analysis of RNA-Seq data it is not, on
+its own, an ideal method of quantitation and can suffer from a number of different
+biases.  You should look carefully at the distributions of values you see in your data
+(using for example the Cumulative Distribution Plot) to decide if further normalisation
+of your data using the quantitation tools would be appropriate before filtering your 
+data.
+</p>
+
+
+<h2>Options</h2>
+<p>The options you can set for this pipeline are:</p>
+<ol>
+<li>The feature type to use for this analysis. This will default to mRNA if an mRNA
+track exists in your genome, but can be changed to whichever transcript feature track
+is appropriate</li>
+
+<li>The type of library you are quantitating. Some RNA-Seq libraries are strand specific
+and in these cases the pipeline can ignore reads coming from the wrong strand.  You can
+also choose between strand specific libraries which produce reads on the same strand as
+the feature or the opposing strand.
+</li>
+
+<li>Whether your libraries are paired end.  Since the import of RNA-Seq data is per read
+then this will simply divide your read counts by 2 to produce fragment counts so you 
+don't over-estimate the significance of your results.
+</li>
+
+<li>Whether to merge the isoforms for each gene into a single measure.  Using this option
+relies on the transcripts using the standard Ensembl notation of gene-xxx (where xxx is
+a number) to denote transcripts.  The exons from all transcripts will be merged and a 
+single probe will be generated over the full extent of the gene.</li>
+
+<li>Whether to correct for DNA contamination - if you have DNA contamination in your 
+libraries it can systematically bias the counts you get, and especially affects the 
+quantitation of low-expressed genes.  Turning this option on uses the density of reads in
+intergenic regions to estimate DNA levels and then applies this as a correction to each
+transcript to try to give a more accurate overall count coming specifically from 
+transcription.</li>
+
+<li>Whether to generate raw counts.  If you are using this option to generate data to put
+forward for statistical analysis by a count based method (eg DESeq, EdgeR etc), then you 
+will need completely raw uncorrected counts.  Selecting this option disables all correction
+and normalisation and produces raw read counts.</li>
+
+<li>Whether the results should be log2 transformed.  Data analysis and visualisation of
+RNA-Seq data is often easier when performed on a log scale.  If this option is selected then
+empty transcripts will be given a count of 0.9 bases (or 0.9 reads if read length correction
+is applied).  This count is applied before read length or total read count correction is applied.</li>
+
+<li>Whether to correct for the length of each transcript.  If this option is selected then
+the quantitated values are expressed per kilobase of transcript.  This option is only useful
+if you need to compare expression levels between multiple transcripts in the same sample.  If you
+want to compare expression between different datasets then you should generally not select this
+option since it will cause the error profile for your data, which is generally correlated with
+the level of observation, to become confounded with the length of the transcript - making it
+harder to accurately identify differentially expressed transcripts.</li>
+
+</ol>
+
+</body>
+</html>

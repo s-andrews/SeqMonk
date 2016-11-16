@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>HiC Read Count Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>HiC Read Count Quantitation</h1>
+
+<p>
+The HiC Read Count quantitation is a simple way to look at the HiC
+coverage in a set of probes.  It works very much like the normal
+read count quantitation, except that it counts at the level of HiC
+read pairs.  Any HiC read pair with one end overlapping the current
+probe will be counted in the quantitation, but pairs where both ends
+fall into the same probe will only be counted once.
+</p>
+<h2>Options</h2>
+<p><img src="hic_read_count_quantitation.png" alt="HiC Read Count Quantitation Picture"></p>
+<p>The options you have for this module are:</p>
+<ol>
+<li>Whether you want to correct for the total read count.  If you are comparing
+different datasets with different total counts then this will normalise the average
+count per probe.
+<li>Whether you want to correct for the length of your probes.  If your probes are
+of different sizes you would expect to get a higher count in longer probes.  This
+correction adjusts the count to a count per kilobase of probe, so a 1kb probe would
+get raw counts and other sizes would be adjusted.  Unless your average probe length
+is much longer than your average read length this correction could introduce a bias
+into your results since the correction is just off probe length, but the counts
+include any read which overlaps your probe - even if only by a single base.
+</li>
+<li>If you want to log transform your count.  If you have a large range of values
+in your count you can calculate them on a log2 scale to make them easier to view.</li>
+<li>If you want to ignore duplicated reads.  If you select this option then every
+unique read position (start, end and strand must be the same) will only be counted
+once and duplicates will be ignored</li>
+</ol>
+<h2>Warning</h2>
+<p>
+If you choose to quantitate your data on a log scale then any probes which contain
+no reads will have their initial read count increased to 0.9 reads to avoid problems
+with infinite values when log transforming. This value is set before any subsequent
+correction for total read count or probe size.  This means that in log transformed
+data different data stores could end up with different absolute values for probes
+containing no reads.  If probe length correction is applied then probes with no
+reads will end up with a range of low values reflecting the different lengths of the
+probes. In these cases you might want to use an initial linear quantitation to allow you
+to flag and possibly filter out the regions with no reads, before later moving on to
+quantitate on a log scale.
+</p>
+</body>
+</html>

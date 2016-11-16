@@ -1,0 +1,42 @@
+<html>
+
+<head>
+<title>Probe List Correlation Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Probe List Correlation Filter</h1>
+<p>
+Where you have several datastores and a probe list which shows a concerted
+pattern of quantitation across those stores (for example a cluster group
+defined by the correlation cluster filter) you can use the probe list
+correlation filter to take the average quantitation profile from this list
+and search for other probes which have a correlated quantitation profile
+</p>
+<p>
+This filter would be useful where you initially used a stringent subset of
+genes to create initial clusters, but later wanted to expand the coverage
+to a larger set of probes.
+</p>
+
+<h2>Options</h2>
+
+<ul>
+<li>You can choose which data stores you want to use for your correlation.  You
+must choose at least 3 stores and there is no upper limit to the number you choose.</li>
+<li>You must choose the probe list you want to use as your reference for your quantitation
+profile.</li>
+<li>You can choose how correlated a probe has to be to the reference profile in order
+to be included in the filtered output.  If you specify a negative R value then the
+filter will search for correlation less than that value, so this becomes an anti-correlation filter</li>
+</ul>
+
+</body>
+</html>

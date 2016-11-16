@@ -1,0 +1,107 @@
+Installing SeqMonk
+-------------------
+SeqMonk is a java application.  In order to run it needs your system to have a suitable
+Java Runtime Environment (JRE) installed.  Before you try to run SeqMonk you should therefore
+ensure that you have a suitable JRE. Becuse of it's use of the HTSJDK library SeqMonk requires
+the use of java 8 (also cofusingly called java 1.8) or later.
+
+Free versions of java are available for a number of different platforms from www.java.com.
+When downloading DON'T just use the download link on the front page, but click on the smaller
+link to "See all java downloads", and make sure that if you are on a 64 bit system you get
+the 64 bit JVM.
+
+If you are on a Mac you will be promoted to go to the Oracle download page.  SeqMonk requires
+that the command line version of java is installed and on the latest versions of java for 
+OSX that means that you need to install the Java SE Development kit.  Installing just the 
+Java SE Runtime Environment is NOT ENOUGH.
+
+If you're not sure whether you have java installed then you can test this from a command
+prompt.  To get a command prompt try:
+
+Windows: Select Start > Run, and type 'cmd' (no quotes) in the box which appears, press OK
+
+MaxOSX: Run Applications > Utilities > Terminal
+
+Linux: You should find a program called Terminal or KTerm in your applications menu
+
+At the command prompt type 'java -version' and press enter.  You should see something like:
+
+	java version "1.8.0_60"
+	Java(TM) SE Runtime Environment (build 1.8.0_60-b27)
+	Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)
+
+If you get an error then you don't have java installed.  If the version listed on the first
+line is less than 1.8 then you won't be able to run SeqMonk without updating your JRE.
+
+Actually installing SeqMonk is as simple as unzipping the zip file it comes in into a
+suitable location.  That's it.  Once unzipped it's ready to go.
+
+
+Running SeqMonk
+----------------
+Windows: Simply double click on the seqmonk.exe file.
+
+NB for Windows 8 users: Windows 8 ships a newer version of the Microsoft .NET framework
+which seqmonk uses to launch the main java program.  If you find the program won't
+launch and you're getting errors like 
+
+'Could not load assembly System, Version=2.0.0.0'
+
+..then the fix is to go to:
+
+Control Panel > Programs and Features > Turn windows features on or off
+
+..and turn on the '.NET Framework 3.5' option.  This will install the older windows
+libraries and the launcher should work again.
+
+
+MacOSX: There is an application bundle for MacOSX which you can use to install and run
+SeqMonk.
+
+Linux:  You can use the seqmonk wrapper program to launch the program.  You will need to
+make this file executable (chmod 755 seqmonk), and then ./seqmonk will launch the program.
+If you link (don't copy) the seqmonk file into /usr/local/bin then you will be able to run
+the program from anywhere on your system.  We have also included a seqmonk.desktop file
+which you can use to register seqmonk with your desktop environment.  If you have put
+the whole SeqMonk folder into /usr/local then you can simply copy the seqmonk.desktop file
+to /usr/local/share/applications.  If you installed it elsewhere you'll need to edit the
+paths in the desktop file (it's pretty obvious what to edit), and then copy the file to
+the applications folder.
+
+
+Configuring SeqMonk
+--------------------
+Before starting out using SeqMonk you may want to review the configuration options you
+have for the program.  Information about configuration can be found in the help which 
+comes with the program under Help > Contents > Configuration.
+
+In particular you must set up a cache directory in order to allow the analysis of all
+but the smallest of datasets.  Simply create a folder somewhere on your machine you are
+able to temporarily write large amounts of data, and then use the button of the front
+screen of seqmonk to tell it where to find this folder.
+
+
+Configuring R
+-------------
+For some of the advanced statistical filters SeqMonk talks to a locally installed instance
+of R to do the statistical analysis.  Configuring R is optional, and SeqMonk will run 
+without it, but the R based filters will not be available.
+
+To configure SeqMonk and R you first need to install R on your system.  R can be downloaded
+from http://www.r-project.org/ and you should follow the instructions there to load it.
+
+If R is installed into your path, such that you can just type 'R' in a command shell and 
+see an R session started then you don't need to tell SeqMonk where it is.  If it's installed
+in a location not in the path then you need to go to Edit > Preferences > Programs in SeqMonk
+and select the R executable (either just called R, or R.exe on windows).
+
+Finally, the statistical filters in SeqMonk rely on a number of non-core packages in R.  To
+make it easy to install all of the packages you need there is an R script at the top level
+of the seqmonk installation folder which will install all of the dependencies for you.  To
+run this simply start an R session and then run:
+
+source("/path/to/seqmonk/load_required_modules.r")
+
+..where you replace /path/to/seqmonk with the actual path to the seqmonk installation
+folder.  You should repeat this with every new version of seqmonk you load in case new
+dependencies have been introduced.

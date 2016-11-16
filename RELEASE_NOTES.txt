@@ -1,0 +1,2363 @@
+RELEASE NOTES FOR SeqMonk v1.35.0
+---------------------------------
+
+We're having our windows 10 moment. We've finally got fed up of people asking
+why we're not at version 1 yet, so you'll see that the version bump is a little
+larger than normal on this release.  SeqMonk has been plenty stable for several
+years already so I guess it's justified.
+
+This release brings in some new features and some updates to existing features
+which should make it easier to work with.
+
+- Added a new setup screen the first time the program is run to try to make
+  it easier to set sensible locations for the cache and genomes folders.
+
+- Added the ability to generate PCA plots to compare data stores, and use
+  the rotations in a given PC to select sets of probes which characterise that
+  PC.
+
+- Added a probe list collation filter to make it easy to intersect large 
+  numbers of probe lists.  Renamed the old combine filter to 'logically combine'
+  
+- Improved BedGraph export so you can now output multiple files in one go and 
+  made them immediately compatible with bedGraphToBigWig so you can more easily
+  load them into UCSC browser.
+  
+- Fixed a bug in the quantitation of probes using the new multi-genome projects
+
+- Added a duplication quantitation
+
+- Cleaned up and removed a load of functions in the menus which we're pretty
+  sure no one ever used.
+
+- Fixed a bug on windows systems when the Documents folder was set to be the 
+  seqmonk genomes folder. Got to learn a lot about the madness of windows 
+  junction files.
+  
+- Allow the per-probe normalisation to use either the median or the mean
+
+- Fixed a bug when importing HiC data from BAM files and applying a MAPQ
+  filter.
+
+RELEASE NOTES FOR SeqMonk v0.34.1
+---------------------------------
+This release is a bugfix release which addresses 3 problems found in the last 
+release.
+
+1) Fixed a crash in the beanplot where the quantitated value for the first
+   probe in a set is null.
+   
+2) Fixed a problem where you couldn't select small chromosomes in the genomes
+   view.
+   
+3) Fixed a hang when trying to move to very short probe positions from a report.
+
+
+RELEASE NOTES FOR SeqMonk v0.34.0
+---------------------------------
+This release adds a couple of new features which might be useful for the analysis
+of some data types and adds some fixes and improvements.
+
+* We've added some tools to help with the analysis of transcription termination.
+  These include a termination quantitaiton which looks at the proportional loss
+  of read signal as you pass a putative termination site at the end of a transcript.
+  We also have a statistical test for this where we use a contingency test to
+  test whether the loss of read counts is significant or not.
+  
+* In the read position probe generator you can now design probes just within
+  a target region or within an existing probe list.
+  
+* We've added a new beanplot display which is much better for looking at the 
+  overall structure of multiple genomes than the boxwhisker plot we had been 
+  using up to this point.
+
+* We've changed the default options for the import of BAM files. SeqMonk will now
+  set the default MAPQ filter value to 20 rather than having it default to
+  zero.  If no read in the first 100,000 in the file has a MAPQ >=20 then the 
+  filter will be set to the maximum observed MAPQ value.  In most cases this 
+  will mean that only high quality alignments will be imported.  You should 
+  check that the value detected makes sense with the aligner you used though 
+  as some files may not produce a sensible value from the first 100k reads.  
+  If you want to keep the previous behaviour (no MAPQ filtering) you should 
+  either delete the MAPQ value, or set it to 0.
+  
+* We fixed a bug in v0.33.0 where it couldn't reimport data which came from v0.33.0
+
+* We've added a new shortcut (Control+I) to trigger an import from BAM file
+
+* We've changed the behaviour of most plots regarding how they treat the display
+  of replicate sets. For a while we've had the ability to exand replicate sets
+  in the chromosome view so you could see the individual replicates rather than
+  looking at the mean (this is configurable in the display preferences).  We've
+  now made it so that in all plots which pick up their data stores based on what's 
+  visible, and which aren't displaying variance information, we will make them 
+  show the individual stores within the replicate set if the option to expand 
+  replicate sets is turned on the display preferences.
+  
+* We fixed a bug in the calculation of the total quantitaiton value in the datastore
+  summary report.  A floating point precision problem meant that this value could
+  end up being inaccurate when large numbers of small integers were quantitated.
+  
+* We've changed the display of remote genomes in the import genomes step to show the
+  date at which the genomes were created so you can cite this if you want to know
+  exactly which version of the Ensembl annotations were used for a given genome
+  assembly.
+
+
+RELEASE NOTES FOR SeqMonk v0.33.0
+---------------------------------
+This release is a major release which introduces some significant new functionality
+to the program, much of it designed to make it easier to work with very large
+datasets, most of which are likely to be single-cell data.  Major changes in this
+release are:
+
+* The addition of a new chromosome view report which allows for the bulk export
+  of chromosome views around a set of probes to be exported.
+  
+* Improved the ability of the RNA-Seq pipeline to detect isoform to merge when
+  using non-Ensembl genome annotations.
+  
+* Improved the RNA-Seq QC report to add some new metrics, and to allow the 
+  selection and tagging of samples with poor looking QC.
+
+* Changed the data store tree to allow the samples to be re-ordered in the 
+  chromomosome view based on the tree, or to split stores into replicate sets
+  based on their clustering within the tree.
+  
+* Added a new probe list generator - the shuffled probe list generator which 
+  randomly repositions an existing set of probes.
+  
+* Added an option to the auto-split tool to let it be case insensitive
+
+* Changed the genome selector to be alphabetically ordered
+
+* Added an option to the data set editor to revert all names to the original file
+  names.
+  
+* Made the aligned probes plot support multiple probe lists and also use consistent 
+  scaling.
+
+* Made the scaling consistent between all sub-plots in a box whisker and star wars 
+  plot collection.
+  
+* Added a data export option to the box whisker plot.
+ 
+* Added probe names to the Hierarchical cluster plot.
+
+* Added a variance plot to look at variability within a replicate set
+
+* Added a variance filter to select probes based on their variability
+
+* Added an intensity difference variance filter to identify probes with unusually high
+  variability
+  
+* Fixed a problem where the chromosome view couldn't be resized if too many tracks were loaded
+
+* Made it so that a data track will have a minimum size if it has been selected from the 
+  data view
+  
+* Added an option to have add-in control genomes which can supplement any standard genome.  
+  Started by adding in a genome for ERCC spike-in controls.
+  
+* Fixed a bug where gff3 files weren't being loaded in custom genomes
+
+* Made the duplication plot work across multiple data stores at once.
+
+
+RELEASE NOTES FOR SeqMonk v0.32.1
+---------------------------------
+This release provides a fix seen on some systems where all R sessions displaying
+the R console would hang. In addition this release greatly improves the reporting
+of R crashes so that the full R log file is now automatically sent with the
+crash report and users don't have to retrieve this separately.
+
+We have also fixed a number of layout issues in the interface where on some
+systems some buttons or options might not be visible on screen without making
+dialogs or windows larger. This particularly affected projects using very long
+dataset or group names.  We know that there are more of this type of issue 
+in the program and will keep working to fix all of these, but if you do hit 
+this issue, please report which dialog you saw it in so we can make sure we 
+sort that one out.
+
+Finally, one nice new small feature.  In the line graph display you can now
+click on a line to see which probe it came from, and can double click on the
+line to go to that point in the chromosome view.
+
+
+RELEASE NOTES FOR SeqMonk v0.32.0
+---------------------------------
+This release adds some new statistical and visualisation tools as well as
+providing more general improvements in functionality.  
+
+One OS specific change in this release is that we have changed a restriction
+on OSX, where we had disabled the use of the Apple style menus on machines
+running java 7 due to a bug in older versions of java 7 on OSX.  The original
+bug now appears to be fixed so we've re-enabled apple style menus for all
+versions.  If you find that after you start a new project that the menu item
+to import data is still greyed out, then please update your version of java
+to the latest version to get the fix.
+
+Main changes are:
+
+* Added a duplication plot which provides an easier way to get as assessment
+  of the level of technical (as opposed to biological) duplication in your
+  data.  The idea for the basic structure of the plot was taken from 
+  dupRadar (http://sourceforge.net/projects/dupradar/) which is a bioconductor
+  package which allows this type of plot to be created in a more automated 
+  fashion.
+  
+* Added a binomial for/rev statistical test which is useful for comparing 
+  bisulphite datasets where there is an overall change in the level of methylation
+  between your samples, and you want to know which points change to an unusual 
+  level rather than just finding ones which change at all.
+  
+ * Changed the auto create groups/set tool to operate sequentially so a data set
+   won't be added to more than one group.
+   
+ * Fixed a bug where gff3 files in custom genomes weren't being loaded.
+ 
+ * Fixed a bug where you couldn't edit preferences if your R executable was found
+   in the path.
+   
+ * Added a data export option to the quantitation trend plot.
+ 
+ * Added a check to the windows launcher for people trying to run SeqMonk on a 
+   64 bit windows system, but using only a 32 bit version of the JRE.
+
+
+RELEASE NOTES FOR SeqMonk v0.31.1
+---------------------------------
+SeqMonk v0.31.1 is a bug fix release which addresses some issues found in
+the previous release.
+
+The major change in this release is an alteration of the way paired end
+data from SAM/BAM files are imported.  In previous versions of SeqMonk the
+importing of paired end data relied on the data provided in the TLEN field
+in the SAM/BAM file.  We have now seen a number of cases where the data 
+provided in this field is unreliable (either wrong or missing), so we have
+made the decision to recalculate the insert sizes based on the information
+provided in the alignment fields.  This fixes the corner cases where the
+TLEN information was wrong (at least all of the ones we've found).
+
+This change means that if you have an existing project where you have imported
+paired end data it would not be a good idea to compare it to more files
+imported by this (or newer) versions of SeqMonk.  Instead, we would 
+recommend re-importing your data with this version to be sure you don't see
+artifacts from the differences in the import filters.
+
+Previous analyses performed on imported paired end data are generally not 
+likely to have been adversely affected by the TLEN problems, since they only
+affected a small subset of reads for paired reads which were discordantly 
+mapped (dovetail overlaps mostly).  If you had run an analysis where the
+distribution of insert sizes was of critical importance (ATAC-seq for example)
+it might be advisable to re-import your data with this new version and confirm
+that your data looks the same way.
+
+In addition to this we have made some other fixes in this release:
+
+1) We fixed a bug in the logistic regression filter which only affected analyses
+when probes from only a single chromosome were analysed.
+
+2) We updated the MA plot to fix a crash when presented with null quantitations,
+and to add the same highlighting options which were already present in the
+scatter plot.
+
+3) We added some version checking to the R detection code so that we need to have
+a relatively recent version of R in order to pass the test, ie one which is new
+enough to be able to install the dependencies we need.
+
+
+RELEASE NOTES FOR SeqMonk v0.31.0
+---------------------------------
+This release makes some usability improvements and adds some new functionality
+
+1) Added an option to estimate and subtract DNA contamination to the RNA-Seq
+   quantitation pipeline.
+   
+2) Added an option to specify that libraries are paired end to the RNA-Seq
+   quantitation pipeline so that counts are per-fragment instead of per-read
+
+3) Added an import filter for MethylKit files
+
+4) Retired the import filters for Eland and Maq since these formats are not
+   commonly seen (you can still import these through the generic text import)
+   
+5) Added an option to save the underlying data from the RNA-Seq QC plot
+
+6) Added an option to save the underlying data from the small RNA QC plot
+
+7) Fixed a spurious warning about non-integer data in the EdgeR and DESeq filters
+
+8) Fix timing based errors when quickly switching chromosomes
+
+9) Improved the UI for removing stale temp files
+
+10) Added an option to extract the centres of reads in the visible stores parser
+
+11) Fixed some UI breakage when data stores, features or probe lists had very
+    long names
+    
+12) Added a binomial-based test for differential methylation calling.
+
+13) Fixed a bug which made the Help file dialog not open when seqmonk was
+    installed under a Windows UNC path
+
+
+
+RELEASE NOTES FOR SeqMonk v0.30.2
+---------------------------------
+This release adds a few small fixes to make the program easier to work with
+
+1) We've changed the default font in SVG files from 'sans-serif' to 'Arial'
+   to work around a bug in Adobe Illustrator which meant that it wouldn't
+   open our SVG files directly.
+   
+2) We've added a work round to an R limitation which meant that the automatic
+   installation of R dependencies didn't work for users running without
+   admin privileges who had never created a local R library.
+
+3) We added some extra checks to the DESeq and EdgeR filters so that you get
+   a friendly warning if you try to run them with normalised data, rather than
+   generating a crash report.
+
+RELEASE NOTES FOR SeqMonk v0.30.1
+---------------------------------
+This is a bugfix release which addresses an issue in the installation of R
+dependencies in the v0.30.0 release.
+
+The v0.30.0 release contained a bug in the R dependency checking and installation
+code relating to the DESeq2 statistical filter.  Whilst the filter required 
+the DESeq2 biconductor module to be installed, the checking code was only 
+checking for the DESeq (not 2) module, so even if the initial check said your
+R installation was complete, the DESeq2 filter would not run.
+
+We have fixed this bug in the new release.
+
+In addition there are two small functional additions.  In both the probe name
+filter and the feature filter there is now an option to make the matching of
+names case sensitive.
+
+RELEASE NOTES FOR SeqMonk v0.30.0
+---------------------------------
+SeqMonk v0.30.0 is a major release which adds some significant new statistical
+capabilities to the program.
+
+The major function in this release is the addition of a bridge between seqmonk
+and R which allows seqmonk filters to use R scripts to do the statistical 
+calculation, but then transparently import the results back into SeqMonk.  This
+requires a new set of preferences to locate R and to manage the dependencies
+used within the filters.
+
+Functionality added in this release is:
+
+* Added a DESeq2 based statistical filter for count based sequence data
+
+* Added an EdgeR based statistical filter for count based sequence data
+
+* Added a logistic regression filter for bisulphite sequence data with replicates
+
+* Added a gene set intensity difference filter for functional analysis
+
+* Added an import filter for Bismark coverage (.cov) files
+
+* Removed the option to import paired end data as HiC since this makes no sense
+
+* Changed the way you select data / control pairs in the relative quantitation to
+  make it clearer
+  
+* Fixed memory checking bug on systems with non EN_US language settings
+
+* Added a plot to graphically show the relationships between multiple probe lists
+
+* Make the RNA-Seq pipeline not create new probes if the probes it will make are 
+  just the same as the current set.
+  
+* Added an import filter for QuasR data
+
+* Fix loading of help files when you have non ASCII characters in your path
+
+* Make the custom genome builder understand compressed fastq and gff files
+
+* Fix a memory bug introduced in Java8 for 32 bit JVMs
+
+In addition a number of minor bugs have been fixed and some performance optimisations have
+been included.
+
+If you find any issues with this release, please report these in our bugzilla instance at
+www.babraham.ac.uk/bugzilla/ or send them to babraham.bioinformatics@babraham.ac.uk
+
+
+RELEASE NOTES FOR SeqMonk v0.29.0
+---------------------------------
+SeqMonk v0.29.0 is a major release which adds a set of new features which are
+likely to be of use in studies which contain large numbers of samples (for
+example single cell experiments) as well as other general improvements.
+
+* Added an Even Coverage probe generator to make probes with the same number
+  of reads in them over the whole genome.
+  
+* Added an exportable scale display to the data zoom control so you can add
+  this to figures easily.
+  
+* Added the ability to show variability in a number of different ways when
+  showing replicate sets in the chromosome view.
+  
+* Added the ability to split replicate sets into their component tracks in
+  the chromosome view.
+  
+* Added code to auto-detect the most likely import settings for paired end
+  and spliced BAM files and to set these as the defaults.
+  
+* Optimised the importing of spliced BAM files so they should now load 
+  significantly more quickly than before.
+  
+* Put all of the chromosome display options into a single preferences pane and
+  removed them from the toolbar, replacing them with a button to open the 
+  new pane.
+  
+* Added an active transcription quantitation pipeline which quantitates 
+  reads in introns rather than exons.
+  
+* Added an option to the data store tree to re-order the tracks in the display
+  based on their correlation.
+
+* Added options to the read position probe generator.  It can now operate within
+  just the currently visible region, and can group valid positions together in 
+  sets.
+  
+* Removed the option to have empty probes discarded during probe generation since
+  there are better ways to do this now.
+
+* Improved the display of data tracks so that we can stack more of them into a 
+  standard view.
+
+RELEASE NOTES FOR SeqMonk v0.28.0
+---------------------------------
+
+* Added more options to the Distance to Feature quantitation
+
+* Improved the efficiency with which large HiC heatmaps are drawn
+
+* Added a tabular view to show the levels of overlaps between a set
+  of probe lists
+
+* Added the Star Wars plot for plotting means and confidence intervals
+  in a manner similar to a boxplot.
+  
+* Added a genetrap quantitation pipeline
+
+* Added a proportion of library statistics filter
+
+* Added a euclidian distance mode for heirarcical clustering
+
+* Added an RNA-Seq QC plot
+
+* Added the ability to normalise in groups when doing Match Distributions
+
+* Added an option to go to a centred window of a specified size
+
+* Changed the quantitation model to allow probes in individual samples to
+  not store a value.  Applied this to Bisulphite Quantitation rather than
+  using flag values to indicate probes which didn't have enough data to 
+  calculate a value. Changed the default filtering options to be much more
+  lax.
+  
+* Added a BAM import option to choose to import only primary alignments from
+  a BAM file, and made this the default.
+  
+* Added a popup menu item to make it easy to convert probe lists into annotation
+  tracks
+  
+* Added a small RNA QC plot
+
+* Added an import option for text files which contain a position and a count
+
+* Added an option to do bulk find/replace renaming of DataSets
+
+* Added a new Percentile Feature Probe Generator which makes sets of probes
+  spaced evenly over features.
+  
+* Fixed a bug in the MACS caller when there were very low numbers of reads.
+
+* Added a display option to show data as coloured blocks rather than bars.
+
+* Added the option to reverse any selected gradient in the chromosome view.
+
+* Added an option to design running window probes only within the currently
+  visible region.
+
+RELEASE NOTES FOR SeqMonk v0.27.0
+---------------------------------
+
+SeqMonk v0.27.0 adds some new convenience features and fixes some 
+bugs found in the previous release.
+
+New features include:
+
+* Improved the RNA-Seq quantitation to not group together features
+  with the same name which don't physically overlap.
+
+* Added an option to the visible stores parser to filter reads by
+  length during import.
+  
+* Added an option to the visible stores parser to down-sample large
+  datasets.
+  
+* Added a new tool to automatically create sample groups or replicate
+  sets based on finding text patterns within the sample names.
+  
+Bugs fixed include:
+
+* GFF3 files are now added to new custom genomes by default
+
+* Improved the efficiency of removing large numbers of tracks from the view
+
+* Increased the default stack size to fix a bug in sorting very large numbers
+  of reads.
+  
+* Made efficiency improvement in the loading of HiC datasets.
+
+* Removed debugging code from the HiC heatmap view which was causing slow downs
+
+* Fixed a bug in p-value multiple testing correction in HiC heatmaps which 
+  could create negative p-values when large numbers of comparisons were made.
+
+
+RELEASE NOTES FOR SeqMonk v0.26.0
+---------------------------------
+
+SeqMonk v0.26.0 adds a critical fix for the new OSX Mavericks release
+and also adds some new functionality to make it easier to deal with 
+incomplete genome assemblies or other custom genomes.
+
+Major features are:
+
+* Fixed the launcher on OSX to adapt to changes in OSX Mavericks
+  which broke the auto configuration code.
+
+* Fixed a bug which caused the program to hang after downloading
+  a new genome in response to opening an existing seqmonk project.
+
+* Added a new graphical tool to aid in the creation of custom genomes
+  meaning that you can now create custom genomes including pseudo
+  chromosomes from either a collection of fasta files or a GTF file.
+
+
+RELEASE NOTES FOR SeqMonk v0.25.0
+---------------------------------
+
+SeqMonk v0.25.0 is a major release which introduces some significant
+new functionality into the program and enhances many of the existing
+features.
+
+New features in this release include:
+
+* Added a Chi-Square statistical filter which operates on pairs of
+  data stores rather than forward / reverse reads within a single 
+  data store.  This can be used for the analysis of allele specific 
+  expression, or other experiment types where the division of reads 
+  between separate data stores is important.
+  
+* The feature probe generator options have been re-designed to make
+  them less confusing.  We have also added an option to design probes
+  around the centre of a feature.
+  
+* The feature search now reports the number of hits in the results, and
+  allows for searches with no search term to retrieve all instances 
+  of a given feature.
+  
+* The RNA-Seq quantitation method now tries to determine if the data
+  you're quantitating was imported appropriately for this kind of 
+  quantitation and warns you if it looks wrong.
+  
+* Import settings are remembered for multiple text annotation imports
+  to save time when importing multiple files.
+  
+* Added an option to skip the deduplication step when running the MACS
+  probe generator.
+  
+* Added a Venn Diagram plot
+
+* Annotation from GFF now imports all of the expanded information rather
+  than just the feature positions.
+  
+* When re-importing data you can now filter the reads imported against
+  a set of features, to either keep or exclude those which overlap any
+  instance of that feature.
+  
+* Changed the line graph to do median based per-probe normalisation
+  rather than expanding every probes scale from 0 to 1.
+  
+* Added a data export option to all histograms.
+
+* Added a random probe generator
+
+* Added a quantitation trend plot which summarises the quantitation of 
+  the current probe set over regions around a set of features.
+  
+* The aligned probes plot can now display multiple plots in a single 
+  panel, and provides control over how the probes are ordered within 
+  the plot.
+  
+* Added a set of colour gradient options to the hierarchical cluster plot
+  so you can easily try out different colour schemes.
+  
+* Added a domainogram plot to look for concerted changes in quantitation
+  over different window sizes
+  
+* Updated the relative quantitation options so you can now use different
+  references for different samples.
+
+* Extended the aliases.txt file format so that aliases can now supply an
+  offset as well as a chromosome name.  This makes it much easier to
+  create virtual genomes from sets of contigs yet still import data 
+  mapped against the original contigs.
+  
+* Added a new search option which lets you find sets of features by 
+  supplying a list of their names.
+  
+* The probe trend plot can now plot out multiple probe lists as well as
+  multiple data stores.
+  
+* Allow negative extensions in the re-import parser so you can contract as
+  well as lengthen probes.
+  
+* Added a separate log transformation quantitation method.
+
+* Added a probe list description report which provides a nice HTML summary
+  of all of the options and data used to generate a probe list.  This is
+  an easy way to document the results of your analysis to allow others to
+  reproduce it in future.
+  
+* Added an option to add comments to any probe set or probe list so you 
+  can record the rationale for the choice of settings.  These comments 
+  also appear in the new probe list description report.
+  
+* Added a subset normalisation quantitation which does a global normalisation
+  to just a subset of your full probe set.
+  
+In addition we have fixed several minor bugs and improved a lot of the 
+documentation.
+
+If you find any problems with this release please report these in our 
+bugzilla instance at:
+
+http://www.bioinformatics.babraham.ac.uk/bugzilla/
+
+RELEASE NOTES FOR SeqMonk v0.24.1
+---------------------------------
+
+SeqMonk v0.24.1 addresses a small number of bugs which were 
+identified in the last release.  Users of v0.24.0 are advised to
+upgrade to this new version.
+
+Specifically the bugs which have been fixed are:
+
+* The quantitated values calculated by the RNA-Seq pipeline were
+  incorrect if you chose not to merge transcript isoforms when
+  performing the quantitation.  The total count correction was 
+  incorrectly being performed on the total number of bases in the 
+  data instead of the total number of reads.  This meant that the
+  values reported were much lower than they should have been.
+  However, the values would all have been lower by the same factor
+  so any differential analysis performed would still be valid.  If
+  you repeat the analysis with the fixed version you should get
+  the same result, but with absolute values which are much higher.
+
+* The visible stores parser was broken and produced an error instead
+  of re-importing data.  This is now fixed.
+  
+* The MACS probe generator was using the default values for all
+  analyses and wasn't picking up changes made by the user.  This
+  is now fixed.
+  
+* The MACS probe generator wasn't correctly resetting after a cancelled
+  run and had to be completely restarted to work again.  This is 
+  now fixed.
+  
+* The intensity difference filter would throw an error if it was run
+  with a probe list containing fewer than 100 probes.  This is now fixed,
+  and the filter will also now issue a warning if you try to use an
+  already filtered list to run it.
+  
+* An improvement has been made to the random coverage estimation 
+  for the MACS parser which takes the read lengths rather than just
+  their number into account.
+  
+* A formatting bug which affected the axes of the probe trend plot
+  has been fixed.  This caused very large decimal numbers to be 
+  shown in the y axis and often these were positioned all on top of
+  each other in the middle of the axis.  This should now be resolved.
+  
+* There was a bug which allowed no lists to be selected in the 
+  highlight sublists option of the scatterplot.  This is now fixed.  
+
+
+RELEASE NOTES FOR SeqMonk v0.24.0
+---------------------------------
+
+SeqMonk v0.24.0 fixes some issues which were present in previous
+releases but also adds some interesting new features which will
+hopefully be of use.
+
+The main new features are:
+
+* Added the ability to export all probe reports in GFF format
+
+* Added a pipeline to detect antisense transcription from 
+  directional RNA-Seq libraries.
+
+* Added a system which can provide immediate feedback to submitted
+  crash reports if they're ones we've seen before and for which 
+  we can offer useful feedback.
+  
+* Added a chi-square based contingency test filter which is useful
+  for bisulphite sequencing libraries (and possibly others too).
+  
+* Added an ID field to reports for cases where the name of a feature
+  isn't useful or unique
+  
+* Added a probe length quantitation option
+
+* Added a probe name filter which allows you to specify a large list
+  of names and selects probes which match any of them
+
+* Added an option to merge all transcripts in the RNA-Seq pipeline to
+  create a single gene level measure of transcription
+  
+* Changed the active store parser to a visible stores parse to allow
+  the easy re-import of multiple datasets in a single operation
+  
+* Added an option to generate raw counts to the RNA-Seq quantitation
+  pipeline to allow for easy interfacing with tools such as DESeq which
+  require this
+  
+* Added a smoothing subtraction quantitation method which can be used to
+  detect sudden local changes in quantitation
+  
+* Added the ability to select the order of highlighted probe lists in
+  the scatterplot
+  
+Some changes have also been made to address problems in previous versions:
+
+* We fixed a bug which would produce incorrect p-values following multiple
+  testing correction, but only affected p-values which were initially very
+  high (p>~0.3)
+  
+* We fixed an unnecessary level of multiple testing correction in the
+  intensity difference filter which meant that some candidates which could
+  have been reported were not.  Typically we see around a 10% increase in
+  the number of candidates in the new correction method over the previous 
+  version.
+  
+* We changed the behaviour of the BAM import filter for paired end data
+  which were mapped with a spliced read mapper.  We now show the second
+  read of the pair with the same direction as the first read to indicate
+  the direction of the fragment and preserve the direction in strand
+  specific libraries.
+  
+* The "load probes from file" probe generator has been removed.  It was 
+  never very well supported and its functionality is better performed by
+  importing the data into an annotation track and using the feature probe
+  generator.
+  
+* A couple of timing bugs were fixed which prevented the import of extra
+  annotation on some linux installations.
+  
+* In HiC analysis we have removed some optimisations in the testing which
+  were leading to unrealistically low p-values for some interactions.  We
+  now test against the full set of possible interactions, only making an 
+  exception to correct for only cis interactions when all trans interactions
+  have been specifically excluded.
+
+RELEASE NOTES FOR SeqMonk v0.23.1
+---------------------------------
+
+SeqMonk v0.23.1 is a bug fix release which addresses an issue 
+seen when importing some types of data which contain invalid 
+chromosome names.  Instead of reporting these as import errors and
+continuing with the import v0.23.0 sometimes reported these as
+fatal errors and stopped importing data.  This problem did not 
+affect all import methods, and did not affect data without any
+chromosome name problems.  Any data successfully imported with the
+previous version will have been imported correctly.
+
+In addition this release contains a few other minor improvements:
+
+* A new smoothing quantitation method has been added which can 
+  create rolling averages for any existing quantitation
+
+* A fix was added for some filters which caused crashes by adding
+  the same probe more than once to a probe list.
+  
+* A new option was added to the HiC heatmap to save all currently
+  valid interaction ends as a probe list
+  
+* A new option was added to the HiC cis/trans quantitation to
+  correct the values by the cis/trans ratio of the chromosome they're
+  on, to look at variation along a chromosome.
+  
+* The cis/trans scatterplot now has an option to filter the results
+  seen by chromosome.
+
+
+RELEASE NOTES FOR SeqMonk v0.23.0
+---------------------------------
+
+SeqMonk v0.23.0 is a major release which adds some significant new
+features to the program, as well as featuring a complete rewrite 
+and dramatic expansion in the tools available for HiC analysis. The
+HiC tools are now much more robust, both statistically and in terms
+of code quality than before and whilst we appreciate more feedback
+and testing it should be possible to routinely use this release for
+HiC analysis.  The HiC code should also be much more memory efficient
+than before allowing the analysis of larger datasets on modest 
+hardware.
+
+This release changes the internal format used to store HiC data in
+seqmonk project files and also adds support for saving some new
+display options, so projects created with this version are not able
+to be opened in older versions of the program.  Older projects will
+still open correctly in this version.
+
+Major changes in this release are:
+
+* Added an option to the BAM/SAM import code to filter by mapping
+  quality during import.
+
+* Renamed the RPKM pipeline to the RNA-Seq pipeline (since it
+  didn't actually do RPKM by default), and added an option to 
+  quantitate strand-specific libraries.
+  
+* Added a splicing efficiency quantitation pipeline which allows
+  you to measure the relative densities of reads in introns and
+  exons.  This pipeline relies on the naming conventions in Ensembl
+  and will only therefore work with genomes whose genes/transcripts
+  use this convention (most of our internally supported genome do).
+  
+* Added a filter to match features to probes based on their names.
+  Also allowed annotation reports to match features based on their
+  names.
+  
+* Added a peak calling probe generator which uses the MACS methodology
+  to call peaks.
+  
+* Rewrote the HiC statistics to be based on a binomial test rather than
+  the chi-square tests used before.  This idea came thanks to a 
+  a collaboration with Robert Sugar and Bori Gerle from Nicholas Luscombe's 
+  group.  The new statistical model solves some of the artefacts seen
+  in previous releases and is generally more robust and appropriate.
+
+* Added several new display options.  The quantitated data view can now
+  be viewed as bars, lines or points.  You can also change the type of
+  colour gradient used for quantitated data.  Indexed colours have also 
+  been changed to be more friendly to colour blind users by default.
+  
+* The hierarchical cluster plot now has a scale bar. The cluster display
+  now shows probe names on mouseover, and you can double click to show
+  the selected probe in the main chromosome display.
+
+* Fixed a bug which cased the program to not launch on some Windows machines
+  running a 32 bit version of java 7.
+  
+* Allow the user to make annotation tracks from a selected subset of feature
+  search results, rather than having to use the whole set.
+  
+* Changed all windowed filters to be able to use a set of features as the 
+  windows in which to group probes.
+  
+* Added an option to create a single HiC other ends dataset from a set of 
+  probe locations.
+  
+* The scatter plot view now allows you to highlight sublists of the main
+  probe list in different colours.
+  
+* HiC heatmaps can now be coloured by a range of different properties.
+
+* Added an option to create annotated interaction reports from HiC heatmaps.
+
+* Added an option to filter HiC heatmaps by probe lists.
+
+* Added an option to double click on interactions in a HiC heatmap to see
+  them in the main chrmosome view.
+
+
+
+RELEASE NOTES FOR SeqMonk v0.22.0
+---------------------------------
+
+SeqMonk v0.22.0 is a major release which contains a substantial
+overhaul of the tools available for the visualisation and analysis
+of HiC data.  The release contains a large number of new tools, 
+views and options pertaining to HiC data but you should be warned
+that many of these tools are still under active development, and
+as such there are very likely still problems with some of the 
+implementations, and the speed of these tools may be somewhat slower
+than we may be able to achieve in future releases.
+
+Alongside the HiC changes there are also numerous fixes and
+improvements to existing functionality, so this update is recommended
+for all users of SeqMonk.
+
+Major changes in this release include:
+
+* The deduplication filter now allows you to select the criteria used
+  to decide which of a set of duplicate probes to keep.
+  
+* The HiC distance plot can now be constructed from the reads
+  underlying the active probe list, rather than having to use the 
+  entire dataset.
+
+* We have added a feature name filter which selects probes based on a 
+  match between their name and the name of features in an annotation
+  track
+  
+* The statistical model for HiC data has been completely rewritten and is
+  now based on an obs/exp calculation taking into account a number of 
+  different experimental biases seen in HiC experiments, including an
+  optional correction for physical linkage, which wasn't previously 
+  available.
+
+* The re-import data parse now has an additional option for HiC data which
+  allows you to exclude all trans read pairs from the reimported data.
+  
+* The option to plot out a heatmap for multiple HiC datasets has been removed.
+  This never worked very well and won't be replaced until we have something
+  which gives a more realistic and useful view of the differences between
+  HiC datasets.
+  
+* A new quantitation method allows the calculation of eigenvector values for
+  the principal component in HiC datasets to aid in the detection of chromatin
+  domains.
+  
+* A new probe generator was added which creates probes by flexibly merging 
+  consecutive probes in an existing probe set.
+  
+* All windowed filters now allow you to set your window size as a number of 
+  consecutive probes, rather than an actual physical distance.
+  
+* We've added the ability to construct multiple toolbars and flexibly add and
+  remove these.  The only new toolbar in this release is a HiC toolbar, but 
+  others may be added in the future.
+  
+* A new quantitation method has been added for 4C datasets constructed from 
+  HiC datasets.  It quantitates with the enrichment value taken fom the HiC
+  data model.
+  
+* A HiC cis:trans scatterplot view has been added.
+
+* The HiC heatmap now has an option to filter interactions based on the maximum
+  distance of the interaction to allow you to focus on short range interactions.
+  
+* The hierarchical cluster plot now has the option for whether to apply per-probe
+  normalisation when drawing the plot (this was mandatory before).
+  
+Since many of the HiC tools are new and haven't received large scale testing with
+real world data we'd appreciate feedback (positive or negative) or bug reports
+to help us to improve things for future releases.  You can send this to 
+simon.andrews@babraham.ac.uk, or put it into our bugzilla system at:
+
+http://www.bioinformatics.babraham.ac.uk/bugzilla/
+
+
+RELEASE NOTES FOR SeqMonk v0.21.0
+---------------------------------
+
+SeqMonk v0.21.0 adds some significant new features to many areas of
+the program, and fixes a number of bugs.  Part of this release is a
+change to the seqmonk file format to make it more compact for large
+datasets.  This change means that files generated with this version
+will not be able to be read with older versions of the program,
+however all older seqmonk files will still be read by v0.21.0.
+
+Another major change in this version is that the projects URL has
+changed.  The old BBSRC address will still work, but the official
+project URL is now:
+
+http://www.bioinformatics.babraham.ac.uk/projects/seqmonk/
+
+Because the URL is tied to the code in a number of places this change
+also means that we have had to change the launchers for SeqMonk.  If
+you made up your own custom launcher you will find that this no longer
+works and you should use one of the launchers now supplied with the
+program.
+
+Major features in this release include:
+
+1) All filters now have a complete record of the options used to run
+them - this now includes (where appropriate) the quantitation options
+used, so you can have a complete record of the way you generated a 
+list of regions of interest.
+
+2) A new Monte-Carlo statistical filter has been added. This filter
+allows you to test the significance of a subset of probes from a 
+larger group in a completely distribution independent manner.
+
+3) A new quantitation pipeline has been introduced for the quantitation
+of methylation over larger areas.  This pipeline makes the quantitative
+analysis of bisulphite methlyation data much quicker and easier.
+
+4) A new hierarchical clustering view has been added to allow you to
+rigorously define groups of probes from looking at their patterns of
+change over multiple conditions.
+
+5) A new HiC quantitation method allows you to quantitate probes by
+their cis/trans ratio.
+
+6) Many improvements and optimisations have been made to the HiC heatmap
+views, including the ability to cluster probes based on their heatmap
+profiles.
+
+7) A new option has been added to create HiC other end datasets from 
+all probes in a probe list in a single operation.
+
+8) Scatterplots and MA plots are now interactive in that you can mouse
+over any single point and see the name of the probe underlying that
+point (or double click to see it in the chromosome view).
+
+Some features have also received bug fixes or improvements:
+
+1) The intensity difference filter has had it's statistical model 
+improved so the calculation is now much quicker than before.  It has
+also moved from using a Bonferoni to a Benjamini and Hochberg correction
+so you should see more hits from a search.
+
+2) A bug was fixed in the HiC import code which affected datasets
+where once read from a pair failed to import (and therefore triggered a
+warning).  After this point the reads could become mis-paired leading
+to incorrect representation of the data.  This bug has now been fixed, but
+anyone using data from older versions which generated warnings when 
+imported should re-import their data using this version.
+
+3) A bug was fixed in the BoxWhisker plot which affected the automatic
+scaling of the plots.  In some cases inappropriate scales would be used
+and plots could partially fall off screen.  The plots should always now
+be scaled appropriately.
+
+4) The SVG generator code has been made more efficient and now writes
+directly to your SVG file rather than building the SVG file in memory.
+We also fixed a bug when some text strings were causing invalid SVG
+files to be created.
+
+If you find any problems with this new release then please report them
+in our bugzilla - which has also changed address (though the old address
+will still work for a while).  The new address to use is:
+
+http://www.bioinformatics.babraham.ac.uk/bugzilla/
+
+
+RELEASE NOTES FOR SeqMonk v0.20.0
+---------------------------------
+
+SeqMonk v0.20.0 fixes a data corruption bug in probe lists containing
+multiple probes at the same location, an overzealous Intensity 
+Difference filter, and a display bug when working with 
+deduplicated HiC data.  It also introduces some new functionality.  
+
+All users of older versions are strongly advised to upgrade to this 
+release.
+
+The changes made in v0.19.0 to speed up the handling of large numbers
+of probes and reads introduced a bug in the saving and reloading
+of probe lists.  In some cases you may have generated multiple probes
+over the same genomic position (for example making mRNA probes over
+transcripts whose position varies internally, but whose start and
+end is the same).  Due to a problem in sorting these probes it is 
+possible that some gene lists will have omitted some probes from the
+saved project file which should have been there.  This bug would not
+have generated an error message - the only symptom would have been 
+the re-loaded lists being incomplete.  It's safest to assume that
+any filtered gene lists constructed from feature based probes in
+v0.19.0 are suspect, and recalculate these.  Projects saved in older
+versions of the program are unaffected, and raw data from v0.19.0 
+will be OK too.  It's only the probe lists which might not be right.
+
+You may have been affected by this bug if:
+
+1) You made multiple probes over the same genomic location. From 
+the automated generators the only one which can do this is the 
+feature generator.  If you used anything else you're OK.  If you
+selected the option to 'Remove exact duplicates' in the feature
+generator you're also OK.
+
+and
+
+2) You ran a filter which caused the order of the probes to change.
+In practice this means any of the statistical fitlers, or the random
+filter. Values filters, position filters or feature filters shouldn't
+have triggered the bug.
+
+If in doubt it's probaby safest to redo your filtering.  Your full
+probe list won't be affected, only the filtered lists.
+
+We have also fixed a problem with the Intensity Difference filter 
+where it was adding the same probe to the filtered set of hits 
+multiple times.  This bug was therefore pretty much guaranteed to
+trigger the gene list corruption bug discussed above, so any gene
+lists made with the Intensity Difference Filter should be considered
+suspect.  Any hits you had found would be OK (but would have been
+reported multiple times).  You just need to rerun the filter with
+the new version of the program.
+
+In v0.19.0 (but not in v0.18.0) the conventional view of HiC data 
+incorrectly showed data deduplicated at the individual read level,
+not the HiC read pair level.  This would affect the view of the data 
+in the chromosome view and also any quantitations made. HiC views of 
+the data would not have been affected.  The problem only affected 
+newly imported data. Saving and reopening the project would cause 
+the correct data to be shown.
+
+We have added a new quantitation method which is similar to the 
+read count quantitation but operates on HiC read pairs. It will
+count hits where either end of a pair sits within a probe, but 
+will not count pairs where both ends fall into the same probe
+twice.
+
+We have added a new quantitation pipeline for producing 'wiggle'
+plots of the type commonly seen in web based genome browsers.  This
+type of plot is a quick way to have an initial quantitative look
+at your raw data, but is less useful as the basis for a subsequent
+analysis.  The quantitation pipeline is present solely as a 
+convenience - you can do exactly the same quantitation using the
+running window probe generator and the base pair quantitaiton
+method, but having this in a pipeline should make it quicker and
+easier to use.
+
+RELEASE NOTES FOR SeqMonk v0.19.0
+---------------------------------
+
+This release makes some internal changes in the way that reads and
+probe lists are stored to greatly improve memory usage and load
+speeds for projects.  These changes shouldn't affect the rest of the
+program, but any change to the core data model runs the risk of 
+introducing bugs, so we're very keen to hear of any problems people
+encounter.  The upside of these changes is that projects should now
+load in about half the time they used to, and memory usage should also
+be greatly reduced whilst running the program.  It should also be
+possible to create many more probes than before without exhausting
+the available memory.
+
+There was also a problem when saving and reloading probe sets that
+more information was stored than necessary. This has been fixed in this
+release.
+
+Other changes in this release are:
+
+1) Many of the plotting options which used to be accessed under the
+View menu have now been moved to a new Plots menu since we were 
+getting to the stage where the View menu would have been taller than
+some peoples screens!
+
+2) The read density options have been changed such that the low density
+plot now has the density previously provided by the medium setting.
+Medium produces what high used to produce, and high density is now an
+even higher setting where each read takes up only 1px of screen height
+(ie as dense as it can be).
+
+3) We have added an option which allows you to rename the features from
+an imported annotation set. Previously you could change the name of the
+set itself, but not the features it contained.
+
+4) We have added an option to colour quantitated probes by datatset
+rather than having each probe coloured by the magnitude of the value
+associated with it. This makes for cleaner displays when you have
+many tracks of data visible together.  The colour schemes used here
+have also been made consistent across several of the other displays
+and plots within the program.
+
+5) The probe generator options panel now defaults to not filtering
+out probes containing no data.  The option is still present, but not
+selected by default.
+
+6) The aligned probes plot has been improved to allow any number of
+probes to be analysed (it used to be restricted to 1000 probes).  The
+colouring of the probes has also been improved and a contrast control
+has been added.
+
+7) The relative probe trend plot has been changed to prevent getting
+'smiling' plots where you have partially overlapping reads in many
+of your probes.
+
+
+RELEASE NOTES FOR SeqMonk v0.18.0
+---------------------------------
+
+SeqMonk v0.18.0 adds some useful new features and makes some changes
+to make the program easier to work with.
+
+The major new additions are:
+
+1)  The introduction of analysis pipelines as simple ways to run 
+    probe generation, quantitation and filtering in a single step.
+
+2)  An RNA-Seq pipeline which can perform RPKM calculations on all
+    transcripts in a genome.
+
+3)  Data caching when loading datasets is now parallelised which 
+    improves loading times on machines with more than one CPU core
+   
+4)  The HiC heatmap can now be viewed as a matrix of probes rather
+    than by genomic position.
+   
+5)  The HiC heatmap plots now have much clearer interactive controls
+    for the filters they can apply.
+
+6)  A new historgram plot to view the distribution of inter-end HiC
+    distances was added.
+   
+7)  The GoTo dialog now remembers the last 10 positions you selected
+    in the genome so you can easily move back to them.
+   
+8)  A SeqMonk reimport parser was added which allows you to extract
+    data sets from one SeqMonk file and import them into another one
+    (as long as they're based on the same genome assembly)
+   
+9)  A deduplication filter allows you to remove redundancy in a probe
+    list based on either probe names or positional overlaps.
+   
+10) We added a new 'scale' option to the per-probe normalisation which
+    linearly scales all values between 0 (lowest) and 1 (highest) 
+ 
+We also fixed a few bugs found in recently introduced features:
+
+-  The MA plot is now oriented so that the sample labels match the
+   data (they were the wrong way round before)
+   
+-  The distance filtering in the HiC heatmap is now fixed. Before it
+   was calculating distances and filtering even when probes were on
+   different chromosomes.
+   
+-  When importing annotation we were creating a blank annotation set
+   named after the import file and putting the real features in a set
+   with [1] at the end.  This was an error in the code used to split
+   up really big annotation sets which had now been fixed.
+   
+-  The windows launcher has been updated to fix a bug calculating 
+   memory settings when using a computer using a non EN locale.
+   
+-  Fixed a bug which prevented the preview window from working when
+   using the Generic Text import option on gzipped text files.
+
+
+RELEASE NOTES FOR SeqMonk v0.17.1
+---------------------------------
+
+SeqMonk v0.17.1 is a minor bugfix release which fixes a couple of
+problems which ocurred in the last release:
+
+1) OSX users with more than 10000MB of RAM will now have their
+   memory settings configured correctly, and not have the wrapper
+   script die.
+   
+2) HiC plots can now successfully be constructed when using probe
+   sets with more than 45,000 probes.
+   
+3) HiC plot calculation will now produce a sensible error message
+   and show the plot to the stage it got to if more than 2^31
+   interactions are found.
+   
+4) The labels for the MA plot are now positioned in a more relevant
+   place.
+   
+In addition to these some new positional controls have been added 
+to the HiC plot to make it easier to move from the HiC plot back
+to the main genome view.
+
+A new quantitation method has been added which simply assigns a
+fixed value to every probe in every data store.  This can be
+useful when you want to see where your probes are without going
+through a full quantitation run.
+
+As a final bonus to Linux users the .desktop file has been altered
+so that the SVG logo file is used in preference to a low-res PNG.
+
+
+RELEASE NOTES FOR SeqMonk v0.17.0
+---------------------------------
+
+SeqMonk v0.17.0 adds some major new functionality and should make the
+initial setup and configuration of the program easier.  The major
+changes are:
+
+1) Support for HiC data.  All data import filters now add an option
+   to specify that this is HiC data.  HiC data expects that all reads
+   are presented as consecutive pairs in the input data.  This read
+   pairing is then retained in the data model.  HiC pairs can be on
+   different chromosomes and have no limit on how far away they can
+   be on the same chromosome.  The pairs are not joined graphically
+   in the chromsome view, but the HiC other end information is displayed
+   when mousing over a HiC read.  HiC data can be convted into 4C
+   datasets for any arbitary region by using the new File > Import Data
+   > HiC other ends import option.  HiC datasets can also be visualisaed
+   and analysed using the new HiC heatmap plot.  Because the amount
+   of information required to specify a HiC pair is approx 3X the size
+   of normal data the memory requirements for HiC data also increases
+   by ~3X, so a 64-bit machine with 6+GB RAM is recommended for this
+   type of data.
+   
+2) New launch scripts with automatic memory configuration.  The launch
+   scripts for all platforms have been improved such that they now
+   automatically tailor the memory assignment based on the capabilities
+   of the machine on which they are running.  The need to manually set
+   up memory usage limits should now be removed.  For windows users the
+   old bat file launch scripts have been replaced with a native windows
+   exe file which can configure memory usage and launch seqmonk.
+   
+3) All data import filters now support reading from files which have
+   been gzip compressed, even if this is not performed natively by the
+   mapping program used.
+   
+4) A new MA plot view provides an easy way to see the relationship between
+   average quantitation and difference between two data stores.
+  
+5) A new Z-score quantitation method allows you to transform any existing
+   set of quantitaiton values into Z-scores to allow for better 
+   normalisation of data with differing levels of variability.
+   
+6) A new Match Distributions quantitaiton method allows you to transform
+   any set of quantitations such that they will all have exactly matched
+   distributions to allow for optimal comparisons.
+   
+7) A new differences statistics filter provides a simple yet effective way
+   to look for differences between two or more data sets which do not 
+   need to have replicates, and which may show intensity dependent levels
+   of variability.
+   
+8) The program now supports (although doesn't recommend!) the import of
+   very large annotation sets containing in excess of 1 million features.
+   The support means that these now won't suck the life out of your
+   machine, but they're still not going to be quick.
+   
+9) Multiple annotation sets can now be imported in a single operation.
+
+10) All data import operations are now cancellable.
+
+11) When browsing for a project to open you now have a preview window
+    which will extract genome and sample names from the files you select.
+    
+12) Finally, we have made (another) change to the way that empty probes are
+    handled during quantitation when the quantitated values are log 
+    transformed.  In the last few releases any empty probe was initially 
+    assigned a value of 0.01 before any additional normalisation was applied.
+    This allowed the data to be log transformed, but meant that empty values
+    were set far away from the rest of the data.  This large difference 
+    had some unwanted side effects, where empty probes would dominate any
+    lists of the largest changes in probes, and odd groupings of probes would
+    emerge when replicate sets were quantitated, making further analysis
+    difficult.  In this release the value assigned to empty probes has been
+    changed to 0.9. This is a far more conservative threshold to use, but 
+    should de-emphasise what are poorly measured probes and should remove
+    the biases seen from the more extreme value previously employed.
+    
+Because of the introduction of changes to the SeqMonk project file format, files
+created with v0.17.0 cannot be opened in older versions of the program. Projects
+created in older versions can be opened with this version.
+
+
+RELEASE NOTES FOR SeqMonk v0.16.0
+---------------------------------
+
+SeqMonk v16.0 adds some new functionality and fixes some bugs. Linux
+users should note that there is now a bundled launcher for the program
+on linux and this should be used in preference to any launch scripts
+which you may have developed internally.
+
+The main changes in this release are:
+
+1) A wrapper script for linux (called simply 'seqmonk') which can be
+   used to start the program and set the memory usage.  Windows users
+   should continue to use the bundled bat files to start the program
+   and mac users should use the Mac application bundle (although the
+   linux launch wrapper will also work on a Mac).  Any custom launch
+   scripts people had been using on Linux should be replaced with the
+   new wrapper script.
+
+2) We have provided a work round for the long-standing problem of not
+   being able to import paired end data coming from tophat. The work
+   round should enable the import of paired end data from all versions
+   of tophat, even those which did not correctly fill out the insert
+   size field in their BAM/SAM files.
+   
+3) Feature search results can now be converted into annotation tracks.
+
+4) The manual cluster correlation filter now allows you to correlate
+   against up to 12 different profiles simultaneously and will place
+   probes in the highest correlating cluster if they could theoretically
+   have been added to multiple clusters.
+   
+5) The existing probe list generator now keeps the probe names from the
+   original probe set when creating the new one.
+
+6) The percentile normalisation quantitation can now optionally use just
+   the probes in a probe list as the basis for the normalisation parameter
+   calculation (although the correction factor is applied to all probes)
+   
+7) The probe trend plot can now calculate a plot over the currently visible
+   region in the chromosome view rather than having to use a probe list.
+
+
+RELEASE NOTES FOR SeqMonk v0.15.0
+---------------------------------
+
+SeqMonk v0.15.0 adds some new tools which will be of use for the
+analysis of differential splicing and possibly other types of data.
+It also makes some improvements to the way in which some of the 
+existing tools work.  This version also makes some changes to the
+way that empty probes are handled during quantitation, so you should
+read the detailed notes below to see how this might impact you.
+
+The major changes are:
+
+1) An additional option in the SAM/BAM import tool to allow you
+   to import introns instead of exons if splitting spliced reads.
+   
+2) A new probe generator which puts a probe over every different
+   read position in the selected data sets.
+   
+3) A new quantitation method which counts the number of exact
+   overlaps between reads and probes.
+   
+4) A new probe generator which can deduplicate sets of probes to
+   remove redundant probes and merge together overlapping ones.
+
+5) A new option to import annotation from GFFv3 or GTF files. 
+   Features imported from these files can be prefixed to allow
+   the separation of features of the same type from different
+   sources.
+
+6) A new option in the Probe Trend Plot which provides a way to
+   weight each probe equally in the final plot. The original 
+   method is still available and weights based on total numbers of
+   reads.  The new method is less susceptible to artefacts coming
+   from a small number of probes containing a large number of reads.
+
+7) Histogram plots now allow zooming on the x-axis using the same
+   click and drag method as the chromosome view.
+
+One other change which is implemented in this release is the way that
+empty values are treated in log transformed quantitations. In previous
+releases the raw probe/base counts were increased by 1 before log 
+transforming to avoid infinite values when log transforming.  This mostly
+worked OK when global corrections were always performed to the largest
+dataset (since a count of 1 would always equate to 1 real read or less).
+
+With the introduction of the option to normalise per million reads this
+method of transformation could produce the peverse situation where an
+empty probe in one dataset could have a quantitated value much higher 
+than a probe in another dataset which contained several reads.
+
+SeqMonk v0.15.0 therefore changes how empty probes are treated to hopefully
+produce a situation which although not ideal, should at least produce sensible
+results in all cases.
+
+The simple change which was made is that if a quantitation is to be log
+transformed then empty probes are given a quantitated value of 0.1 before any
+subsequent corrections for total read count or probe length are applied. This
+means that within any dataset empty probes will always be 10-fold lower in
+value than the lowest probe which contained some real data.  However this 
+way of handling the data can have some slightly odd effects:
+
+1) Empty probes will not have the same value in different data stores which 
+   contain different numbers of reads and have been corrected for total read
+   count.  This is in contrast to previous versions where empty probes would
+   always have had a log transformed value of zero (even where zero was a 
+   relatively high value).
+   
+2) If correcting for probe length then not all empty probes will have the 
+   same quantitated value within a data set. This behaviour was also in the
+   previous version. Since there's no way to set a sensible default length 
+   for an empty probe there really isn't a better way to handle this.
+ 
+3) Because log transformed empty probes will now often generate negative
+   values you may well see that the quantitative chromosome tracks switch
+   to a positive and negative scale, even though only empty probes receive
+   negative values.  It's worth remembering that you can force the scale to
+   show only positive values using the second icon from the left on the 
+   toolbar, and this will then hide the empty probes with negative values.
+
+
+
+RELEASE NOTES FOR SeqMonk v0.14.1
+---------------------------------
+
+SeqMonk v0.14.1 fixes a couple of important bugs in data import and
+adds some new minor features.
+
+The major change in this release is a fix for two bugs which affect
+the import of paired end data in either SAM/BAM or bowtie format.
+
+The bug fixed is more serious in SAM/BAM import and appears to have
+existed since the switch to using the picard libraries in v0.13.0. It
+affects only paired end data where the first read of the pair was 
+mapped to the reverse strand of the genome.  In these cases the position
+of the read was incorrectly anchored to the start of the read instead
+of the end.  In effect this moves the position of the mapped read 
+along the genome by the length of the read, so a pair of reads from
+a 50bp paired end sequencing experiment which should have mapped from 
+1000-2000bp will appear at 950-1950.  Reads on the forward strand will 
+appear in the correct position, and reads imported as single end (even 
+if they come from a paired end mapping) will be positioned correctly.
+
+The bowtie import bug is more minor, but again affects paired end reads
+where the first read is on the reverse strand.  In these cases both the
+start and end positions will be one base lower than they should have
+been, so a read which should have mapped from 1000-2000bp will map 
+at 999-1999.
+
+We would urge anyone affected by these bugs to reimport their data and
+to check that the results of their analysis are not materially affected
+by the mispositioning of these reads.
+
+Other changes in this release include:
+
+- Running SeqMonk without a cache directory now classes as an error on
+  the initial status screen, since we have now had a few bug reports from
+  people not enabling the cache folder.
+
+- Paried end reads from SAM/BAM files which do not have a reported insert
+  size are not imported and a warning will be generated for them. This
+  will prevent people from trying to import tophat data as paired end where
+  the tophat files do not supply this field in the BAM file and the results
+  of such an import are currently nonsensical.
+  
+- When reimporting an existing dataset we have added the option to reverse
+  the strand of all of the mapped positions so you can create a reversed
+  copy of a dataset easily.
+
+- Improved the smoothing in the probe trend plot
+
+- Added an option in the Running Window Probe Generator to just make probes
+  inside an existing probe set, so you could generate 100bp probes over
+  promoters in the genome for example.
+
+
+RELEASE NOTES FOR SeqMonk v0.14.0
+---------------------------------
+
+SeqMonk v0.14.0 adds a few new features and fixes a load of bugs. The
+new features include:
+
+- A new cumulative distribution plot which allows you to compare the
+  whole distribution of quantitated values for several data stores 
+  or probe lists.
+
+- A new secondary quantitation method - the percentile normalisation
+  quantitation allows you to take an existing set of quantitated
+  values and normalise them to a particular point in their distribution.
+  This would be useful in cases where the existing option to normalise
+  to total read count does not produce an acceptable match between the
+  distributions across your data stores.
+  
+- The annotation readers now allow the import of multiple files in the
+  same operation.  Newly imported annotation tracks are now displayed
+  immediately by default
+  
+- When using the generic text import for annotation data you can now
+  manually specify a feature type rather than having to have this in
+  the file, or simply using the file name.
+
+- A scale bar has been added to the genome view
+
+- The trend plot now uses a normal progress display and can be cancelled
+
+Bugs which have been fixed include:
+
+- Exported SVG files now correctly quote any text they contain so that
+  special characters in figures can't corrupt the XML.
+
+- Negative numbers in filters can now be entered directly without having
+  to do the number first then go back to add the minus.
+  
+- Folders in the genome folder which don't contain any assemblies are
+  not shown in the genome selector.
+  
+- When using the probe list probe set generator the description from the
+  original probe set is now kept and appended so you can still see the
+  options you used to create the new set.
+  
+- Fixed a hang in the line graph display when normalising values which 
+  were the same in all conditions.
+  
+
+RELEASE NOTES FOR SeqMonk v0.13.1
+---------------------------------
+
+SeqMonk v0.13.1 fixes a load of bugs, makes some usability improvements
+and adds one new feature to the program:
+
+The new feature is a correlation matrix which quickly produces a table
+showing the pairwise correlations of all currently visible data stores.
+
+To improve the usability of the program all figures and graphs now have
+proper axis scale labels on them, in addition to whatever interactive
+labels may have appeared previously.  This should make the figures easier
+to interpret when exported from SeqMonk.
+
+Notable bugs which were fixed include:
+
+- DataSets and DataGroups are now deleted correctly even if they were
+  present in a Replicate Set.
+  
+- The windowed differences filter no longer crashes when the data store
+  groups you select aren't the same size
+  
+- The relative quantitation method can now use a Replicate Set as a
+  reference
+  
+- The default settings for the distribution position filter now work
+  without having to be changed
+  
+- Fixed a crash when reloading projects containing a probe list with a
+  blank description.  Projects which used to crash should now open
+  correctly with this version.
+  
+- Fixed a bug in the Probe Trend Plot which caused the graphs to suddenly
+  (and incorrectly) jump
+
+
+
+RELEASE NOTES FOR SeqMonk v0.13.0
+---------------------------------
+
+SeqMonk v0.13.0 introduces a new new features into the program which
+will hopefully be useful to many people:
+
+1) You can now import data in BAM format, and the SAM import should be
+   significantly faster than before.  This is due to the use of the 
+   picard BAM/SAM reader in the SeqMonk import filter.
+   
+2) There is now a line graph display option which allows you to easily
+   track the quantitation of a set of probes over a number of different
+   data stores.
+
+3) We have added a correlation cluster filter which will find groups of
+   probes with the same pattern of quantitation over a number of different
+   conditions, and a pair of correlation filters which allow you to find
+   probes with similar quantitation profiles to a reference over a series
+   of data stores.
+   
+4) You can now export any quantitated track in bedGraph format to load
+   into other genome browsers.
+   
+5) There is a new quantitation method which performs per-probe normalisation
+   on an existing set of quantitated values.
+   
+Since SeqMonk now needs to use the external picard libraries for SAM/BAM
+import you may need to change any custom launchers you have written for
+the program.  This won't be an issue if you use the .bat launcher or the
+Mac application bundle since these have already been updated to include the
+reference to the picard libraries.
+
+
+RELEASE NOTES FOR SeqMonk v0.12.0
+---------------------------------
+
+SeqMonk v0.12.0 adds one major new feature and fixes a couple of bugs.
+
+The new feature is that the genome view can now show your quantitated
+data over the whole genome.  To see this you need to have quantitated 
+your data, and then simply select a data store from the data panel.
+
+In addition you can now drag a region within the data view to select
+what you want to see in the chromosome view.  You can also export 
+either the chromosome view or the data view by selecting the appropriate
+option under File > Export current view.
+
+Bugs which were fixed include:
+
+* The replicate set editor now lets you remove data stores from an
+  existing set without crashing
+  
+* The genome view now updates correctly when only one track is shown
+  in the chromosome view
+
+* Fixed the optimisation of quantitated data drawing to work properly
+  with negative values
+
+
+RELEASE NOTES FOR SeqMonk v0.11.0
+---------------------------------
+
+SeqMonk v0.11.0 fixes a few bugs and adds in some significant new features.
+
+Importantly, the SeqMonk file format has been updated in this release, so
+files created with v0.11.0 cannot be opened using older versions of the
+program.  Files created with older SeqMonk versions will still be read
+correctly by this version.
+
+Important bugs which were fixed include:
+
+* A fix in the SAM file parser which failed to read in SAM files containing
+  unmapped reads.
+
+* A fix which prevents the core annotation sets being re-cached each time
+  they are read.
+  
+* Extending reads read though the GFF parser now works correctly
+
+New functionality in this release includes:
+
+* Biological replicates can now be combined in a replicate set.  This is in
+  addition to the ability to combine DataSets into a DataGroup.  Replicate
+  sets are not themselves quantitated, but show the mean quantitation of the
+  DataStores they contain.
+ 
+* A new statistical filter, the Replicate Set Stats filter, makes use of the
+  replicate set information to allow a statistical comparison of groups via
+  t-test or Anova to identify significantly changing probes.
+  
+* BoxWhikser plots can now show plots representing multiple probe lists from
+  the same DataStore.
+  
+* The bismark import filter now supports splitting Non-CpG methylation into
+  CHH and CHG context (a feature added in bismark 0.2.0).
+  
+* A new plot, the aligned probes plot allows to view a summary of the read
+  distribution over up to 1000 probes, and is a complement to the existing
+  probe trend plot.
+
+* A new launcher 'run_seqmonk_64bit.bat' has been added to the installation
+  and can be used by people using a 64 bit version of java and who have
+  at least 6GB of RAM.  If this doesn't on your system you can still use the
+  original run_seqmonk.bat on any windows system.
+
+
+RELEASE NOTES FOR SeqMonk v0.10.2
+---------------------------------
+
+SeqMonk v0.10.2 is a bugfix release which fixes a number of minor
+issues in the program.
+
+- Spliced reads can now be imported without splitting and will span
+  the proposed splice junction
+  
+- You can now extend reads and remove duplicates when using the
+  generic text import
+  
+- Saving a project can now be cancelled safely
+
+- The main menu is now reset correctly when a second project is opened
+
+- The feature filter should now be much quicker when dealing with
+  large numbers of probes or features
+  
+- Fixed caching problems for the update checker
+
+- Don't allow empty probe sets to be generated
+
+- Reports can now be cancelled and restarted correctly
+
+- The cache indicator now shows when the cache is actually being used
+
+- The probe group report annotation should now be much quicker
+
+- The remote genome selector is now split by letter to cope better with
+  the large number of available genomes
+
+- The crash reporter can now provide some more useful messages, and can
+  store your email to save having to type it in each time
+
+RELEASE NOTES FOR SeqMonk v0.10.1
+---------------------------------
+
+SeqMonk v0.10.1 is a bugfix release which fixes two bugs which were
+identified.  It also adds a few new layout options for the raw read
+display in the chromosome view.
+
+The bugs fixed were:
+
+1) For densely packed chromsome views no optimisation was being
+applied to the drawing of reads.  This meant that thousands of
+objects were being drawn which couldn't be seen on screen, leading
+to the display taking much longer than necessary to update.  The
+optimisation is now fixed and the displays should be much quicker
+than they were before.
+
+2) If you continued to zoom out when the whole of a chromosome
+was already visible you would eventually hit a bug where the 
+genome position would turn into a negative value and the genome
+view would show a selected region which went beyond the end of
+the chromosome.  This has now been fixed so that the genome
+display always reflects the current chromosome view.
+
+The new layout options can either be found under:
+
+View > Data Track Display
+
+..or as new buttons on the main toolbar.  The new options are:
+
+1) You can now select the density with which reads are packed into
+the display.  There are three settings, high, medium or low
+density for you to choose from. Increasing the density will
+make each read smaller and therefore let you see more of your
+data in the same area.
+
+2) When packing your reads for the chromosome data display you
+can opt to separate the forward and reverse reads and pack them
+into separate parts of the display.  In this mode reads of unknown
+strand will appear in the middle of the display, forward reads
+will appear at the top, and reverse reads will appear at the 
+bottom.
+
+
+RELEASE NOTES FOR SeqMonk v0.10.0
+---------------------------------
+
+SeqMonk v0.10.0 is major release which introduces a host of new
+features as well as improvements to existing functionality.
+
+One of the changes in this version is an improvement to the file
+format used by SeqMonk.  This means that files created with v0.10.0
+cannot be opened in older versions of the program (older files will
+still work fine with v0.10.0).
+
+The major new features in this version are:
+
+1) Probes can now have a direction associated with them.  This is
+mostly used by the Feature Probe Generator.  It allows for quantations
+such as "Reads on the same strand as the probe" or "Reads on the
+opposite strand to the probe".  It also means that the probe trend
+plot can now reverse trends for reverse probes, meaning you can plot
+a complete trend for a directional probeset in one go (eg trend over
+all promoters).
+
+2) When importing data you can now choose to remove duplicate reads
+so they never show up in the program.  If you choose to keep these then
+all quanitation methods now support ignoring duplicate reads during
+the quantitation step.
+
+3) There is now a generic text import feature for new annotation sets
+which provides much more flexibility for brining in external annotation.
+
+4) You will now be notified if any of the genomes you have installed is
+updated on the SeqMonk genome server.  This will allow you to stay up to
+date with any improvements to the annotation for an assembly.
+
+5) SeqMonk now support reading and writing gzip compressed seqmonk files.
+Write compression is disabled by default due to the time overhead when
+saving, but you can turn this on at any point (or just compress the file
+with gzip) to reduce file sizes by a factor of about 3.  This can be really
+useful when sending files to other people.  Loading compressed files does
+not need to be enabled and works transparently.
+
+6) A new quantitation method has been added.  The enrichment quantiation
+is a very simple method (no options at all) which shows the enrichment of
+each region compared to a completely even distribution of the same amount
+of data over the whole genome.
+
+7) We have added an import filter for bisulphite converted data measured
+using the bismark mapping program.  This imports each methylation call
+as a separate read using the strand information to indicate methylated and
+unmethylated data.
+
+8) A new manual correction quantitation method has been added to allow the
+manual adjustment of quantiation values across a whole data store using
+a user-supplied correction factor.  This would allow you to use an external
+experimental result to correct your SeqMonk data.
+
+9) You can now supply a file to add chromosome name aliases to an imported
+genome.  This allows the importing of data where the real chromosome name
+can't be inferred from the data (eg moving from accession numbers to
+chromosome names or switching between roman and greek numbers).
+
+More minor incremental improvements are:
+
+1) SAM file import is now much quicker for large datasets.
+
+2) SeqMonk loading times should now be much quicker.  Since this is tied
+to the new seqmonk file format you may not see the full benefit of these
+improvements until you have saved your data with the new version of the
+program.
+
+3) The probe group reports now show both a mean and a standard deviation
+for quantitated data.
+
+4) The initial status panel is now able to spot more problems with your
+SeqMonk installation and makes it easy to fix them without going into
+the preferences.
+
+5) The difference filter now allows you to select two groups of DataStores
+and you can calculate a directional difference (eg 2-fold up in A,B vs C,D)
+
+6) The scatterplot has improved depth colouring and now let you select on
+the basis of difference.  It also calculates an R value for each plot.
+
+7) When quantitating you can choose to only quantitate the currently visible
+datastores.  This replaces the old option of only quantiating groups.
+
+8) Creating an annotation set from a probe list now gives you an opportunity
+to set the type of the features created, rather than just giving them the
+same name as the probeset.
+
+9) The probe trend plot now allows you to variably smooth your trends to more
+clearly see what's going on.
+
+If you have any problems with this release please report them in our bug
+tracking tool at:
+
+www.bioinformatics.bbsrc.ac.uk/bugzilla/
+
+..or directly to simon.andrews@bbsrc.ac.uk
+
+RELEASE NOTES FOR SeqMonk v0.9.1
+--------------------------------
+
+SeqMonk v0.9.1 is a minor bugfix release which fixes some issues
+people were seeing in v0.9.  The main bugs which have been fixed
+are:
+
+1) The help documentation failed to display if SeqMonk was installed
+in a directory whose name contained a space.
+
+2) Various SeqMonk displays generated an error if they were selected
+before the data had been quantitated.  These now display a sensible
+error message rather than triggering a crash report.
+
+3) Load probes from file wasn't properly validating the positions of
+user supplied probes causing errors during quantiation.
+
+4) Switching between probe lists was slower than it should have been.
+
+5) For genomes with lots of feature tracks the initial display was
+too cluttered.  The default view now only shows gene, mRNA and CDS if
+these are present.
+
+6) The probe list probe generator generated an error every time it was
+run.
+
+All of these problems should be fixed in v0.9.1.  Thanks to those people
+who reported problems.  Anyone finding problems in this version can report
+them either using the built in crash reporter, or via our bug reporting
+tool at:
+
+www.bioinformatics.bbsrc.ac.uk/bugzilla/
+
+..or directly to simon.andrews@bbsrc.ac.uk
+
+
+RELEASE NOTES FOR SeqMonk v0.9
+------------------------------
+
+SeqMonk v0.9 introduces two major changes and some minor 
+additions.
+
+The major changes are:
+
+1) Probe lists are now heirarchical.  Instead of just having
+a flat list of all of the probe lists you have generated your
+lists will now form a tree structure, with new lists branching
+off from the parent list from which they were created.
+
+2) We now have official support for importing additional annotation
+information into a project.  You can load in new sets of annotation
+information and have them displayed alongside the annotation
+from the core SeqMonk genomes.  Since this feature has been added
+we have removed the old (an unofficial) method of dropping GFF files
+into the Genomes folder.  If you want to see this extra annotation you
+will need to reimport it into your projects as it won't be loaded
+by default.
+
+Both of these changes mean that we have had to make a change to the
+SeqMonk file format.  This means that project created in SeqMonk v0.9
+cannot be opened in older versions of the program.  Projects created
+in older SeqMonk releases can still be opened in v0.9.
+
+Other changes in this release are listed below:
+
+* The option to load only partial information for core genome features
+has been removed.  Instead genome information will now be cached if you
+choose to enable disk caching.  This means that full genome annotation
+is always available.
+
+* A bug was fixed where the feature probe generator was not removing
+duplicate probes when this had been requested.
+
+* A new probe generator, the Interstital Probe Generator was added.  This
+allows you to make probes in between the probes in an existing set.
+
+* A new Probe Length Histogram display was added.
+
+
+RELEASE NOTES FOR SeqMonk v0.8
+------------------------------
+
+SeqMonk v0.8 introduces one major new feature, disk caching, and
+several smaller features which should make life easier when 
+analysing data.
+
+This version also fixes a data import bug in previous versions
+when using the SAM file format.  All previous versions incorrectly
+interpreted the strand flag in SAM files, such that all forward
+reads would appear as reverse and vice versa.  This bug has now
+been fixed but if you care about the strand of reads in older
+SAM files you should re-import this data so that strands are
+reported correctly.
+
+New features in this release are:
+
+1) Disk Based Caching: To maximise the speed of analysis SeqMonk
+holds all data in memory.  Whilst this is quick it means that
+there is a limit to how much data can be analysed in a single
+project and meant that a normal desktop machine might only be able to
+open 3 large datasets at once.  SeqMonk v0.8 introduces a new option
+to write out data which isn't currently being used to disk to
+allow the analysis of much larger datasets (at least 10X as much
+data), at the expense of a slight delay when new data needs to
+be loaded back into memory (normally seen when switching between
+different chromosomes).
+
+To enable disk caching you need to first specify a directory
+where SeqMonk can save temporary files.  This should be a local
+directory (not on a network drive).  You can tell SeqMonk which
+directory to use under Edit > Preferences > Memory > Cache data
+to disk.  To activate this facility you can either tick the
+box next to the Cache folder option, or double click the cache
+icon at the bottom right of the main SeqMonk screen.  Changing
+the cache options will only apply to newly loaded data so you
+may need to restart SeqMonk to see any benefit.
+
+For smaller projects you will find that turning of caching will
+make SeqMonk quicker to use for many tasks.
+
+2) Welcome Panel: When SeqMonk first starts you should now see
+a new welcome panel which provides an easy way to check on the
+state of your SeqMonk installation and should point out any
+problems.
+
+3) Base Pair Quantitation: We have introduced a new quantitaiton
+method, the Base Pair Quantitation.  Where the read count
+quantitation simply counts the number of read which overalap 
+each probe, the base pair quantitation counts the number of bases
+from each read which overlap each probe.  This method is more
+accurate where you have a large number of shorter probes and
+is particularly suited to mRNA-Seq analysis.
+
+4) Rank Quantitation: Rank quantitation is a new quantitation method
+which relies on the presence of an existing quantitation.  It
+converts the existing quantitation values to their ranked equivalents
+thereby taking the scale out of any differences between quantitated
+values.  This can be useful when comparing different distributions
+of values.
+
+5) Improved Contig Probe Generator: The contig probe generator has
+been improved to allow you to set a threshold of enrichment which is
+required to start/end a prospective peak.  In this way you can now
+use this method to analyse even very dense datasets and still get
+an accurate assessment of the position of peaks.
+
+
+RELEASE NOTES FOR SeqMonk v0.7
+------------------------------
+
+SeqMonk v0.7 fixes a potential data corruption bug and introduces a
+couple of new features.
+
+The data corruption bug occurs in previous versions of the program
+where two or more DataSets had exactly the same name and then were
+included in a DataGroup.  In these cases it was possible that the
+group was reconstructed incorrectly and even that the same DataSet
+was included in the group more than once.
+
+This new release will check all opened projects and will produce a
+warning if they might have been affected by this bug.  Any affected
+DataGroups will not be reconstructed and will need to be recreated.
+
+To fix this problem it was necessary to change the file format of
+seqmonk project files.  You will therefore find that projects created
+in v0.7 cannot be opened in older versions of the program.  Older
+project files can still be opened in v0.7, but the file format will
+be converted when the project is next saved.
+
+There are a couple of major features added in this release:
+
+1) The Feature Report
+
+The Feature report is a new report type which allows you to group
+together sets of probes based on overlaps with a class of features.
+Each line of the report represents one feature and a probe can be
+assigned to multiple features.  You can choose to group together any
+probes which ovelap the feature, or only those which overlap exactly
+with the whole feature, or any of its sublocations.  This report can
+be used to get whole transcript quantitation for mRNA seq applications
+and may be useful in other circumstances.
+
+2) The ScatterPlot
+
+A scatterpot has been added which allows you to compare the quantitation
+of two DataStores on a 2D plot.  We therefore have a full range of
+plots for comparing distributions - the probe value histogram for one
+DataStore, the ScatterPlot for two DataStores and the BoxWhisker plot
+for multiple DataStores.
+
+In addition to these major features there have been minor improvements
+to a number of other componenets:
+
+* The Eland parser has been fixed to correctly parse single end read files
+and to cope with genomes using contigs
+
+* The read count quantitation now allows you to do a total read count
+correction which is the total count only within the currently defined
+probset rather than across the entire genome.
+
+* You can now watch the progress of reports being generated rather than
+waiting with no information on screen
+
+* You can now cancel a running filter if you don't want to wait for it
+to complete.
+
+
+
+RELEASE NOTES FOR SeqMonk v0.6.1
+--------------------------------
+
+This release fixes a couple of bugs in the generic data import tool.
+This now correctly imports data with delimiters other than tab. It
+also correctly interprets chromosome names ending in .txt or .fa.
+
+
+RELEASE NOTES FOR SeqMonk v0.6
+------------------------------
+
+The major improvements to SeqMonk v0.6 are in the speed of data processing.
+You should notice a significant speed increase over previous versions
+especially in data quantitation.  Memory usage has also been improved
+somewhat.
+
+Other notable changes in this release are:
+
+* Support for more file formats.  SeqMonk can now import from Maq and SAM
+  format files - including support for spliced alignments in SAM format,
+  such as those produced by TopHat
+
+* Expanded feature probe generator.  You can now design probes around exons
+  within features and limit probes to a single strand.
+
+* Made some long running tasks cancellable (such as probe generation and
+  quantitation)
+
+* Added a probe trend display to look at spatial trends over an 'averaged'
+  probe.  Allows the production of metagene displays and similar plots.
+  
+* Added a probe length filter
+
+* Made the SeqMonk help searchable from within the program.
+
+
+RELEASE NOTES FOR SeqMonk v0.5.2
+--------------------------------
+
+Release 0.5.2 makes a couple of changes to the previous v0.5.x releases
+
+1) There is a fix for a data import bug which prevented GFF files from
+being loaded and in some cases would misplace reads imported by other
+methods (the read would be mispositioned by the length of the read)
+
+2) In order to accommodate the new human GRCh37 genome assembly and all
+future assemblies a few fixes have been implemented in the EMBL file
+parser.  This means that in order to use the new human assembly and 
+all future assemblies you will need to use v0.5.2 or later as these will
+throw errors in older versions of the program.
+
+3) A new probe generator has been added which lets you use an existing
+probe list as a new probe set.
+
+4) A new Probe filter has been added which lets you filter probes based
+on their relative position within the distribution of values for a given
+data store.
+
+
+RELEASE NOTES FOR SeqMonk v0.5
+------------------------------
+
+SeqMonk v0.5 has focused on making the use of the program more intuitive
+and user friendly.  Most of the changes are relatively minor but are
+intended to make the program run more smoothly under most circumstances.
+
+There are some changes in this release of which you should be aware:
+
+1) SeqMonk now saves more information in each .smk file.  Specifically
+it now saves all of your display preferences so when you reload the
+file you will see exactly what you saved.  For each probe list it saves
+a longer description of exactly what parameters were used to create the
+list so you can keep better track of what you did.  For DataSets it now
+saves the original file name from which the data came (this is separate
+from the DataSet name, which starts out being the data file name, but you
+can change this).  All of these changes mean that files created with
+SeqMonk v0.5 cannot be opened with older versions of the program.  SeqMonk
+v0.5 will read all files created with older versions though, so you should
+upgrade all of your machines to v0.5
+
+2) By default SeqMonk now only loads minimal information about each feature
+in your genome (just a name and a description).  This saves quite a bit of
+memory, but means that you won't be able to see as much information when you
+double click on a feature and that text searches will only search the name
+and description for each feature.  If you would like to revert to the old
+behaviour of loading all annotation then there is an option to change this
+under Edit > Preferences > Memory
+
+3) A change has been made in the way SeqMonk decides which feature types to
+load.  In previous versions of the program a whitelist was used so that you
+specified which features you wanted to see.  In v0.5 this has been changed to
+a blacklist, such that you now specify the features you DO NOT want to load.
+If you don't specify any features in this list then all features will be loaded.
+The preferences you previously set up for this option will be reset when you
+first start v0.5.  To change these preferences go to Edit > Preferences > Memory.
+
+4) Each time SeqMonk starts it will now check to see if a newer version of
+the program is available.  This should hopefully make it easier to stay up to
+date with future versions when they become available.  If you do not want SeqMonk
+to perform this check you can turn this feature off under Edit > Preferences > Updates.
+
+5) The status bar now includes a memory monitor in the bottom right hand corner.
+This will show you how much of your available memory you are using when the program
+is running and will warn you when you come close to running out of memory.  If you get
+this warning then you should look into the Configuration section of the help documentation
+to see how you can either increase the amount of available memory, or turn off options
+to decrease the amount of memory SeqMonk requires.
+
+As always, if you find any problems with SeqMonk then please report these back to
+the developers, either by using our public bug reporting tool at:
+www.bioinformatics.bbsrc.ac.uk/bugzilla/ or by mail to simon.andrews@bbsrc.ac.uk.
+
+RELEASE NOTES FOR SeqMonk v0.4
+------------------------------
+
+SeqMonk v0.4 does not include any major functionality over v0.3.  Most of
+the work in this release has gone into optimising the code such that the
+program runs more quickly and with a smaller memory profile.  You should be
+able to notice a speedup in the operation of the interface.
+
+One major new feature, which you should hopefully never see, is the addition
+of an error reporting tool.  If the program encounters an unexpected condition
+it should now bring up a dialog which allows you to submit an error report
+directly to the developers.  This should help us identify where people are
+breaking the program in ways we hadn't thought to try!  We still welcome bug
+reports or feature requests to www.bioinformatics.bbsrc.ac.uk/bugzilla/ or 
+by mail to simon.andrews@bbsrc.ac.uk.
+
+In this release support has been added for the default output format of Bowtie
+since this is now our alignment tool of choice.  If you would like to see support
+for other formats please let us know.
+
+
+RELEASE NOTES FOR SeqMonk v0.3
+------------------------------
+
+SeqMonk v0.3 is an alpha release and as such is still a work in progress.
+However a lot of the changes in this release are aimed at making it more
+useful for real world work, and we are now regularly using the program
+for the analysis of real data, so it's close to being a beta release.
+
+The list of major changes in this release is:
+
+- The data track can now be changed to allow the display of negative probe
+values.  These can be generated by the differences quantitation.
+
+- A new quantitaiton method, the coverage depth quantitation has been added.
+This allows you to quantitate your probes based on the number of overlapping
+reads within them.
+
+- You can now load probe positions from a file to give you complete control
+over where you want them to be positioned.
+
+- The Simple Subtraction quantitation has been renamed to the Differences
+quantitation
+
+- All of the different read count quantitations have been merged into a
+single quantitation.
+
+- All histogram views have been improved to be clearer and more flexible
+
+- A new BoxWhisker plot view has been added, along with an outlier filter
+which allows to to filter based on a BoxWhiker plot.
+
+- A toolbar has been added to allow you to more easily access the most
+commonly used features.
+
+- All figures can now be exported either as PNG files or in the editable
+SVG format.
+
+- The help has been completely rewritten, and a better help viewer is
+now available.
+
+- An Eland import filter has been added to allow direct import of export or
+sorted files from Eland.  This supports both single end or paired end reads
+
+If you find any bugs or have any suggestions please don't keep them to
+yourself.  You can report bugs back to us either by entering them directly
+into our bug tracking system at:
+
+http://www.bioinformatics.bbsrc.ac.uk/bugzilla/
+
+or if you like you can email them directly to me at:
+
+simon.andrews@bbsrc.ac.uk
+
+
+RELEASE NOTES FOR SeqMonk v0.2
+-------------------------------
+
+SeqMonk v0.2 is an alpha release and as such is still a work in progress.
+
+This release changes the file format of the .smk file.  You can still open
+smk files from v0.1 with v0.2, but v0.2 files will not open with v0.1.
+
+This release adds import support for BED and GFF format files.  These could
+be imported using the generic text import before, but the new filters make
+things quicker and easier.  Please note that we have already seen examples
+of BED files where the columns are in the wrong order and are therefore not
+recognised by SeqMonk - this isn't our fault and it's not a bug!  If you
+have a BED file which isn't recognised correctly you can still use the
+text import option to assign the columns correctly.
+
+We have also changed all of the import filters to allow the importing of
+multiple files in a single run.  For text files the program assumes that
+the formatting is the same in all files in a batch.  If this isn't the case
+you'll have to import them separately.
+
+There has been a change to the way SeqMonk deals with data groups.
+Previously these were virtual entities in which quantitiated data from
+individual data sets was averaged to get the value for the group.  Having
+thought about this we've decided to handle things differently.  Data groups
+now merge together the sequences from the individual data sets.  They
+are also quantitated separately so you see a more relevant value for the
+quantitation.  This means that if you change the composition of a group or
+add a new group you will need to rerun the quantitation before you see 
+quantitated data for it. In your normal workflow you should therefore 
+define groups before you define your probes or do any quantitation.
+
+Because of the way groups now work we have removed some of the statistical
+analysis options as we no longer feel they are appropriate for this kind of
+data.  New statistical options will appear in future versions.
+
+If you find any bugs or have any suggestions please don't keep them to
+yourself.  You can report bugs back to us either by entering them directly
+into our bug tracking system at:
+
+http://www.bioinformatics.bbsrc.ac.uk/bugzilla/
+
+or if you like you can email them directly to me at:
+
+simon.andrews@bbsrc.ac.uk
+
+
+RELEASE NOTES FOR SeqMonk v0.1
+-------------------------------
+
+SeqMonk v0.1 is an alpha release and as such is still a work in progress.
+
+Although the core functionality of the program should all now be present
+it is very much still a work in progress.  You should bear this in mind
+when using the software.  Things may (and probably will) break and there
+are certainly many bugs which will need to be worked out.  Having said
+that we are using the software for real work so hopefully it is useful in
+its current state.
+
+The functionality of SeqMonk is not yet complete.  As such we are keen to
+hear from other groups if they have ideas for useful functions which could
+be added.  These could be additions to the probe or quantitation options,
+different QC displays or new filters.  We have initially developed the
+functions to support the types of analysis we require, but there are
+probably loads of other applications which could be supported by the core
+SeqMonk framework.
+

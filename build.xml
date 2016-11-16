@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="SeqMonk">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.5"/>
+    <property name="source" value="1.5"/>
+    <path id="SeqMonk.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="sam-1.32.jar"/>
+        <pathelement location="Jama-1.0.2.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir=".">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="."/>
+            <classpath refid="SeqMonk.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="ChiSquareDistribution">
+        <java classname="uk.ac.babraham.SeqMonk.Analysis.Statistics.ChiSquareDistribution" failonerror="true" fork="yes">
+            <classpath refid="SeqMonk.classpath"/>
+        </java>
+    </target>
+    <target name="DownloadableGenomeSet">
+        <java classname="uk.ac.babraham.SeqMonk.Network.DownloadableGenomes.DownloadableGenomeSet" failonerror="true" fork="yes">
+            <classpath refid="SeqMonk.classpath"/>
+        </java>
+    </target>
+    <target name="GradientScaleBar">
+        <java classname="uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar" failonerror="true" fork="yes">
+            <classpath refid="SeqMonk.classpath"/>
+        </java>
+    </target>
+    <target name="PicardCigarBug">
+        <java classname="PicardCigarBug" failonerror="true" fork="yes">
+            <classpath refid="SeqMonk.classpath"/>
+        </java>
+    </target>
+    <target name="RVersionTest">
+        <java classname="uk.ac.babraham.SeqMonk.R.RVersionTest" failonerror="true" fork="yes">
+            <classpath refid="SeqMonk.classpath"/>
+        </java>
+    </target>
+    <target name="SeqMonkApplication">
+        <java classname="uk.ac.babraham.SeqMonk.SeqMonkApplication" failonerror="true" fork="yes">
+            <jvmarg line="-Xmx12519m"/>
+            <classpath refid="SeqMonk.classpath"/>
+        </java>
+    </target>
+    <target name="VennDiagramPanel">
+        <java classname="uk.ac.babraham.SeqMonk.Displays.VennDiagram.VennDiagramPanel" failonerror="true" fork="yes">
+            <classpath refid="SeqMonk.classpath"/>
+        </java>
+    </target>
+</project>

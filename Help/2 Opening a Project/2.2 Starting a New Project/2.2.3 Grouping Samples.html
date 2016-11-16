@@ -1,0 +1,89 @@
+<head>
+<title>Grouping Samples</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Grouping Samples</h1>
+<p>
+In many experiment designs it makes sense to group together a set of
+samples so they are treated as a single data store.  There are two
+ways to group samples in SeqMonk and they serve different purposes.
+</p>
+
+<ol>
+<li>DataGroups: A data group is a way to merge together data from multiple
+data sets, where the data should be considered as a single biological sample.
+You would use this if, for example, you did several sequencing runs on the
+same library and wanted to be able to look at the results all together.
+DataGroups can be quantitated but they can't be used to assess the reproducibility
+of the values in the datasets from which they are built.
+</li>
+<li>Replicate Sets: A replicate set is a way to group together DataSets and
+DataGroups which represent biological replicates of related samples.  They don't
+store any data and they aren't quantitated - their quantiation merely shows the
+mean of the quantitated values for their component DataStores.  Replicate Sets
+are used to provide sample grouping for statistical filters which compare two
+groups of samples.
+</li>
+
+
+
+<p> Because quantitation in SeqMonk must be performed on both DataSets and 
+DataGroups it is important that you create your groups as early as possible.
+</p>
+<p>
+You can create data groups by selecting Data &gt; Edit Groups. You can make
+as many groups as you like and assign as many samples as you like to each
+group.  If it makes sense you can assign the same sample to more than one
+group - for example in the screenshot below the Male WT sample could be
+part of the male and WT groups.
+</p>
+<p>
+<img src="data_groups.png" alt="Data Group Editor">
+</p>
+<p>
+The data group editor allows you to:
+</p>
+<ul>
+<li>Create New groups</li>
+<li>Add or remove samples from existing groups</li>
+<li>Rename groups</li>
+<li>Delete Groups (note that this will NOT delete the samples in the group)</li>
+</ul>
+<p>
+If you need to create groups in your experiment then it's a good idea to 
+put all samples into groups (even if the group only contains one DataSet).  This
+is beacuse when you come to doing quantitation this will act by default on
+just the DataGroups if you have any defined (although you can change this if
+you need to).
+</p>
+
+<p>
+You create replicate sets in much the same way as data groups.  First select 
+Data &gt; Edit Replicate Sets and then from the dialog which opens you can
+create or delete replicate sets and add or remove DataStores from sets which
+already exist. You can put a data store into more than one replicate set if
+this makes sense for your data.
+</p>
+
+<h2>Autosplitting</h2>
+<p>
+If you have files which have a systematic naming scheme then you can use this to 
+divide them into data groups or replicate sets.  If you select Data &gt; Auto
+Create Groups/Sets then you can supply a list of text strings which will be matched
+against your data set names and any datasets containing each pattern will be added
+to a data group or replicate set with the same name.  If you want to have multiple
+text strings matched then you can use a pipe charachter to separate them.
+</p>
+<p>
+<img src="auto_split_options.png" alt="Auto Split Options">
+</p>
+</body>
+</html>

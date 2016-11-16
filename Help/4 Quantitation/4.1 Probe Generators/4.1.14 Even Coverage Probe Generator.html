@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<title>The Even Coverage Probe Generator</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Even Coverage Probe Generator</h1>
+
+<p>
+The even coverage probe generator can be used to make tiled probes of varying sizes
+such that the number of reads falling into each probe is the same.
+</p>
+<h2>Options</h2>
+<p><img src="even_coverage_probe_generator.png" alt="Even Coverage Probe Generator Options"></p>
+<p>The options you can set for this generator are:</p>
+<ol>
+<li>Which data stores to use.  The reads from all selected stores will be merged
+together and the combined count will be used to decide where to place the probe
+boundaries.</li>
+
+<li>Which strand of reads to use</li>
+
+<li>Whether to ignore duplicated reads when performing the count</li>
+
+<li>The target read count per probe.  The actual counts per window won't necessarily
+be exactly this value due to boundary effects, but they should be fairly close</li>
+
+<li>The maximum probe size - you can limit the maximum size of a probe to stop the 
+creation of super long probes over (for example) centromeres etc.  If you set this 
+value to 0 then no limit will be imposed</li>
+
+</ol>
+
+</body>
+</html>

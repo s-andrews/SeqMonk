@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>Saving Quantitation Annotation Tracks</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Saving Quantitation Annotation Tracks</h1>
+<p>
+Having created a set of quantiations in SeqMonk you can choose to export these
+in a format which would allow them to be imported into other genome browsers
+(UCSC etc) or systems (IGV etc).
+</p>
+<p>
+The data is exported in bedGraph format which can easily be converted to bigWig
+format if you prefer using the free tools availble from UCSC.
+</p>
+<p>
+To export your data select File &gt; Export Current View &gt; BEDGraph. The 
+tool will ask you for a file name.  What you specify is a base name onto which 
+the names of each of the currently visible data stores will be appended.  Separate
+files will be made for each of the currently visible data stores and a file of
+chromosome sizes will also be saved so that the files can immediately be put though
+the UCSC bedGraphToBigWig program to convert them into bigWig format.
+</p>
+
+<p>
+To try to maximise compatibility between different genome browsers, when you save 
+a bedGraph file from seqmonk the chromosome names will all have &quot;chr&quot; 
+prepended to them and the ordering of chromosomes will be made to be completely 
+alphabetical so the files don't need to be re-sorted before indexing.
+<p>
+
+</body>
+</html>

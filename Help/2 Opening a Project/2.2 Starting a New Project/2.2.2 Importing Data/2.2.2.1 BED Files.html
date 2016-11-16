@@ -1,0 +1,33 @@
+<html>
+
+<head>
+<title>Importing BED Files</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Importing BED Files</h1>
+<p>
+The BED file format is a standard format which was originally designed for listing
+annotation features, but which has also been widely used for large sets of mapped
+data.
+</p>
+<p>
+Since the fields in a BED file are defined you will only see the common options
+when importing.  The format doesn't support paired end reads so only single end
+options will be presented.  You simply need to select the files you wish to import.
+</p>
+<p>
+All BED files must define a chromosome, start and end position and these are all
+required by SeqMonk.  There are many optional fields which can be included but the
+only one of these which will be used by SeqMonk is the strand field.  All other
+fields will be ignored.
+</p>
+</body>
+</html>

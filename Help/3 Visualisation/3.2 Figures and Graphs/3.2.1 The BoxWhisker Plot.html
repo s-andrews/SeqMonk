@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>The BoxWhisker Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The BoxWhisker Plot</h1>
+
+<p>
+The BoxWhisker Plot is a view designed to let you compare the
+distribution of probe values across several data stores, or
+several probe lists across a single data store.
+</p>
+
+<p><img src="boxwhisker_plot.png" alt="The BoxWhisker Plot"></p>
+
+<p>
+To create a BoxWhisker plot select Plots &gt; Box Whisker Plot
+from the main menu.  You can then choose whether you want the plot
+to show all visible data stores for the currently active probe list
+or whether you want to select a set of probe lists to plot for the
+currently active data store. The plot window will appear immediately and
+the individual plots will appear as they are calculated.  This 
+may take a few seconds for larger data sets.
+</p>
+
+<p>
+The boxwhisker plot shows several different pieces of information.
+</p>
+<ol>
+<li>The line across the middle of the yellow box shows the median</li>
+<li>The upper and lower extremities of the yellow box show the
+25th and 75th percentile of the set of data</li>
+<li>The upper and lower black whiskers show the median plus/minus the
+interquartile (25-75%) range multiplied by 2</li>
+<li>Any individual points which fall outside this range are shown as
+filled circles.  Each circle represents a single probe.
+</li>
+</ol>
+<p>
+Where multiple plots are drawn they will all be placed onto the same
+scale so you can quickly compare between them.
+</p>
+<p>
+Within the BoxWhisker plot menu you can choose to plot either:
+</p>
+<ul>
+<li>One probe list against the currently visible set of DataStores</li>
+<li>The currently active data store against a selected set of probe lists</li>
+<li>A set of probe lists against the currently visible data stores (in this case
+you can choose within the plot if the data stores or the probe lists go on
+the x-axis)</li>
+
+
+<p>
+If you want to extract the list of outliers from the boxwhisker plot
+you can use the 
+<a href="../../5%20Filtering/5.2%20Statistical%20Filters/5.2.1%20BoxWhisker%20Filter.html">BoxWhisker Filter</a>
+to pull them out as a probe list.
+</p>
+</body>
+</html>

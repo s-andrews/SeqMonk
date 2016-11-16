@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<title>Individual Probe Value Difference Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Individual Probe Value Difference Filter</h1>
+<p>
+The individual probe value difference filter allows you to filter probes
+based on the difference in their currently quantitated values between two
+or more DataStores.  Each probe is treated individually.
+</p>
+<p><img src="individual_probe_value_difference_options.png" alt="Individual Probe Value Difference Filter Options"></p>
+<h2>Options</h2>
+<ul>
+<li>You need to select two or more DataStores from the list on the left.  Data
+Sets are shown in red and Data Stores are shown in Blue.</li>
+<li>You can select an upper and a lower limit for the range of differences you want
+to include.  You only have to specify one of these values.  If you leave the lower
+value blank then anything under the upper cutoff will pass.  If you leave the upper
+value blank then anything above the lower cutoff will pass.  All differences are
+absolute values so you don't need to specify negative values in the filter.</li>
+<li>If you have selected more that two DataStores then all pairwise combinations will
+be tested.  You need to specify whether the filter range applies to the average, 
+maximum or minimum difference seen.</li>
+</ul>
+</body>
+</html>

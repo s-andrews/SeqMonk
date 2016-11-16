@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>Memory Settings</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Memory Settings</h1>
+<p>
+SeqMonk works with very large data sets (both genome annotations and
+mapping data), and it therefore requires a large amount of RAM to run.
+</p>
+<p>
+Whilst most aspects of the program can be altered from within SeqMonk
+itself, the total amount of memory available to the program is determined
+when it is started.  The SeqMonk launcher program will try to determine the
+optimal amount of memory to assign to SeqMonk when it starts, but you 
+may need to take steps to adjust this in some cases.
+</p>
+
+<h2>General Limitations</h2>
+<p>
+The default configuration of SeqMonk is to assign the program 2/3 of the
+physical memory installed on your machine.  Thus on a machine with 6GB of
+RAM, 4GB will be allocated to SeqMonk. Because of overheads in java itself
+the amount of available memory reported in the welcome screen will be around
+80% of the originally allocated memory.
+</p>
+<p>
+This default allocation is then limited in some cases.  If you are running
+a 32 bit operating system, or a 64 bit operating system but a 32 bit version
+of java then the maximum memory allocation is limited to 1.5GB however much
+RAM is installed.  If you want to make use of more memory than this you will
+need a 64 bit OS and version of java.  On 64 bit machines running 64 bit 
+java the top memory limit for SeqMonk is 8GB, and it's unlikely that you'll
+benefit from using more than that.
+</p>
+
+<p>
+If you do want to manually set the SeqMonk memory allocation you can do this.
+</p>
+
+<h2>Windows and Linux</h2>
+<p>
+Changing the memory allocation in windows or linux is as simple as passing
+an extra parameter when launching the program.  Instead of starting seqmonk
+by just running 'seqmonk' you would run 'seqmonk -m XXXX' where XXXX is the
+amount of memory (in MB) you want to use.
+</p>
+<h2>OSX</h2>
+<p>
+SeqMonk on OSX is distributed as an application bundle, inside which
+is the configuration file which determines the amount of available memory.
+To change this do the following:
+</p>
+<ol>
+<li>Find the SeqMonk application in the Finder.</li>
+
+<li>Control-click on the application and select "Show package Contents"</li>
+
+<li>Double click on the contents folder</li>
+
+<li>Double click the Info.plist file (this will open an application called
+Property List Editor.</li>
+
+<li>Look for the line which says 'executable file'</li>
+
+<li>Edit the value from 'seqmonk' to 'seqmonk -m XXXXX' where XXXXX is the 
+amount of memory (in MB) you want to use.</li>
+
+<li>Once you've finished, select File > Save to
+save your changes and then quit PropertyListEditor.</li>
+
+<li>Restart SeqMonk and the new memory limits will be used.</li>
+</ol>
+
+</body>
+</html>

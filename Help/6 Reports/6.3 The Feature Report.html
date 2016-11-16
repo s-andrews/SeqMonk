@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>The Feature Report</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Feature Report</h1>
+<p>
+The Feature Report allows you to construct a report based around a class of
+annotation features.  Each feature is associated with a set of probes which
+overlap that feature and the average quantitated value for that set of probes
+is reported.
+</p>
+<p>
+This kind of report is particularly useful where a feature is the main focus
+of your analysis.  The most common experiemnt type for this would be an
+mRNA-Seq experiment where you could perform your analysis at an exon level, but
+then reassemble the individual exons back into transcripts for the report.
+</p>
+
+<h2>Options</h2>
+<p><img src="feature_report_options.png" alt="Feature Report Options"></p>
+<ul>
+<li>You can choose what type of feature you want to use as the basis for the
+report.</li>
+<li>You can choose to either annotate each feature with any probe which overlaps
+it, or only with those probes which align exactly either with the feature as
+a whole, or any of the individual sublocations (exons)</li>
+<li>Finally, you can choose whether to see an entry for a feature to which
+no probes have been mapped.</li>
+</ul>
+
+<p><img src="feature_report.png" alt="A Feature Report"></p>
+
+<h2>Output Columns</h2>
+<p>The columns in an annotated probe report are:</p>
+<ol>
+<li>Chromosome</li>
+<li>Start Position</li>
+<li>End Position</li>
+<li>Average Probe Value - When a filter creates a probe list it can associate a value with
+each probe in the list (p-value etc.).  This column shows the average value for all probes
+in the region.  Some filters don't add a value in which case this column will be blank.</li>
+<li>Feature name - will be blank if there is no associated feature.  For overlapping
+features there will be multiple entries in this column (and description) if the
+probe is overlapped by more than one feature</li>
+<li>Description</li>
+<li>Number of Sublocations - How many sublocations (exons) are present in this feature</li>
+<li>Number of Probes - A count of how many probes were included in this region</li>
+<li>Data Columns - there will be two extra columns per data store containing the 
+mean and standard deviation of the current quantitated values for the probes associated 
+with each feature</li>
+</ol>
+
+<p>
+You can choose to sort the report on any of the columns.  Just click on a column
+header to sort the data on that column.  Click again to sort in the opposite direction.
+</p>
+<p>
+If you double click on any line in the report the chromosome view will jump to that
+point in the genome so you can see the data underlying that region.
+</p>
+
+<h2>Saving the Report</h2>
+<p>
+If you press the Save button at the bottom you can save the full report to a file.
+The files created are tab-delimited text files which you should be able to open in
+a spreadsheet application for further processing.  The saved report will keep the
+current order of the rows in the report.
+</p>
+
+</body>
+</html>

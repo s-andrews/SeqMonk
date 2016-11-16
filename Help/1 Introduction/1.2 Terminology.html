@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>SeqMonk Terminology</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>SeqMonk Terminology</h1>
+<p>
+There are a few terms used throughout the SeqMonk documentation which it is
+useful to understand before using the program.
+</p>
+<h2>Data Set</h2>
+<p>
+A data set refers to a set of regions imported from a single file.  These regions
+should all come from a single biological condition, but they may not be the only
+regions to come from that condition.
+</p>
+
+<h2>Data Group</h2>
+<p>
+A data group is a way of merging together two or more DataSets. When data from one
+biological sample is present in more that one DataSet you can use a DataGroup to
+combine them together.  A Data Group does not copy the original data it
+just transparently aggregates two or more data sets, but it will store its own
+quantitation information.
+</p>
+
+<h2>Replicate Set</h2>
+<p>
+A replicate set is a way of grouping together DataSets or DataGroups which come
+from different instances of the same biological condition.  As with the Data Group
+it does not copy any sequence data which is just taken from the underlying data
+sets, and it does not store its own quantiation information, it merely averages
+the quantitations present in the underlying data sets or groups.
+</p>
+
+<h2>Data Store</h2>
+<p>
+A Data Store simply refers to either a data set, data group or replicate set in a 
+situation where it doesn't matter which one you have.  Most analyses and displays 
+in SeqMonk operate on Data Stores and they work equally well with either Data Sets,
+Data Groups or replicate sets.
+</p>
+
+<h2>Probe</h2>
+<p>
+A probe is a genomic region in which a quantitated measurement can be made.  Probes
+can be defined in a variety of ways using the various Probe Generators available.
+After quantitation each probe will have a value for each Data Store.
+</p>
+
+<h2>Probe Set</h2>
+<p>
+A Probe Set is a collection of Probes.  You can have only one active Probe Set in your
+analysis and this will be the same for all Data Stores.  Whilst it is possible to
+regenerate your Probe Set, doing this will cause you to lose all of the data corresponding
+to the Probe Set being replaced.
+</p>
+
+<h2>Probe List</h2>
+<p>
+A Probe List is a subset of your Probe Set.  Probe Lists are produced by the various 
+Filters available within SeqMonk.  Each probe in a Probe List can have a value associated
+with it.  For example following a statistical filter the Probe List generated might store
+the p-value for each Probe in the list.
+</p>
+
+</body>
+</html>

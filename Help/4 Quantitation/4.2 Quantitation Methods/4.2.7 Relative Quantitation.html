@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>Relative Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Relative Quantitation</h1>
+
+<p>
+Relative quantitation normalises your data by adjusting it relative to the values
+in another data store.  This process is commonly used to remove one source of
+variation (an input sample for example) from another sample (a ChIP sample for
+example).
+</p>
+<h2>Options</h2>
+<p><img src="relative_quantitation.png" alt="Relative Quantitation"></p>
+
+The main options for this method are the pairings of references and targets.  The
+options panel shows a list of all samples which could act as reference on the left
+and the set of targets which can be corrected on the right.  Replicate sets are
+not shown since these are not themselves quantitated, but simply show the average
+quantiation of the data stores they contain.
+
+To pair up a reference with a sample first select the reference you want to use
+from the list on the left. Then you can select one or more samples in the table on
+the right by ticking the appropriate check boxes.  You can then press &quot;Apply
+to Selection&quot; to assign that reference to those targets.  Selecting a second
+reference for a target will remove the first selection.  Assigning a reference with
+no reference selected will clear any previous assignment for the selected samples.
+
+<p>Other options you have for this module are:</p>
+<ol>
+<li>How you want to do the relative quantitation (subtract, log subtract, divide or log divide). 
+Please note that if 'divide' or 'log divide' are selected, a minimum reference value threshold
+ of 0.001 will be applied, this is to avoid infinite values where the reference value is either very small or zero.
+If your enrichment could be either positive or negative you should take a log
+ratio so that the positive and negative scales are treated the same.</li>
+</ol>
+</body>
+</html>

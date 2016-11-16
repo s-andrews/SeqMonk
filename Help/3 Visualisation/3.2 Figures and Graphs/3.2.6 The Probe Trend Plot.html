@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>The Probe Trend Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Probe Trend Plot</h1>
+
+<p>
+The probe trend plot allows you to look at differences in read
+density over an &quot;average&quot; probe.  It takes all the 
+probes in a probe list and works out how many reads overlap
+with each position in each probe and then plots this out as an
+average over all of the probes.
+</p>
+<p><img src="probe_trend_plot.png" alt="A Probe Trend Plot"></p>
+
+<p>
+For example, if you designed your probes over all the genes in
+your genome* then you could see if there was a general trend
+to having more reads nearer the 5' or 3' end overall.
+</p>
+<p>
+The trend plot will plot values for probes with forward or unknown
+strand from left to right, and reverse probes from right to left
+so you can, for example, create probes over every promoter and get
+a sensible plot since the promoters from genes on the reverse strand
+will be adjusted to lie over the counts from those on the forward strand.
+</p>
+<p>
+If your probes are all the same length (eg coming from a windowed
+probe generator or some feature generators) then the plot will be 
+performed at 1bp resolution.  If your probes are different lengths
+(eg from a contig generator) then each probe will be divided into
+100 bins and reads will be mapped in that way.
+</p>
+<p>
+A plot is drawn for every visible data store when you launch the
+probe trend plot.
+</p>
+<h2>Options</h2>
+<p><img src="probe_trend_preferences.png" alt="Probe Trend Options"></p>
+<ol>
+<li>You can choose the type of plot.  A relative distribution plot will weight each probe 
+equally in the final profile, whereas the cumulative count plot will weight the probes according 
+to the number of bases of read falling into each probe.  The cumulative count plot is more
+susceptible to high read count outliers skewing your result, but will give you results in real
+read depths</li>
+<li>You can choose which direction of reads to use for your counts</li>
+<li>For the cumulative read count option you can correct your counts based on the total number of reads in each data store</li>
+<li>You can scale each datastore so that you are looking at the variation in just
+that store without reference to any of the other stores plotted</li>
+<li>You can choose to count each read position only once - removing duplicated reads 
+from the plot</li>
+<li>You can force a plot to be relative (uses 100 slots) rather than using bp resolution
+even if your probes are all the same length.  This may make sense if you have very
+long probes</li>
+<li>Once in the plot you can use the slider on the right to smooth your
+data using a running average over the raw counts</li>
+</ol>
+
+<p>
+Once you have your plot you can choose to export either a view of the
+plot itself, or alternatively you can export the underlying data as a
+tab delimited text file.
+</p>
+
+
+</body>
+</html>

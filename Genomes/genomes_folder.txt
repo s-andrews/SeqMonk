@@ -1,0 +1,6 @@
+This is the default Genomes Folder.  New Genomes which are downloaded by SeqMonk will
+automatically be added to this folder and kept for future use.
+
+Genones are stored in an ordered structure based on Species and then Assembly.  To
+remove an installed genome simply delete the folder whose name corresponds to the
+species/assembly you want to delete.

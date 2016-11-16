@@ -1,0 +1,80 @@
+<html>
+
+<head>
+<title>The Probe Group Report</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Probe Group Report</h1>
+<p>
+The Probe Group Report is similar to the
+<a href="6.1%20The%20Annotated%20Probe%20Report.html">Annotated Probe Report</a>
+except that it allows you to group together closely positioned probes
+to define larger regions of interest.
+</p>
+
+<h2>Options</h2>
+<p><img src="probe_group_report_options.png" alt="Probe Group Report Options"></p>
+<ul>
+<li>You can choose what sort of position a feature must have relative to
+a region of interest to become annotated.  You can choose from overlapping, enclosed, 
+closest, surrounding, upstream and downstream</li>
+<li>If you select anything other than overlapping or enclosed you need to set a cutoff
+for how far away a feature can be and still be associated with a region of interest.</li>
+<li>You can choose to omit any regions which couldn't be associated with a
+feature from the final report</li>
+<li>You can choose to append extra columns on the end of the report for all
+currently visible data stores which contain the average current quantitated data
+for each region</li>
+<li>You can choose how far apart adjacent probes can be to still be considered
+as part of the same region of interest.  There is no limit to how many probes
+can be within a region of interest.</li>
+</ul>
+
+<p><img src="probe_group_report.png" alt="A Probe Group Report"></p>
+
+<h2>Output Columns</h2>
+<p>The columns in an annotated probe report are:</p>
+<ol>
+<li>Chromosome</li>
+<li>Start Position</li>
+<li>End Position</li>
+<li>Average Probe Value - When a filter creates a probe list it can associate a value with
+each probe in the list (p-value etc.).  This column shows the average value for all probes
+in the region.  Some filters don't add a value in which case this column will be blank.</li>
+<li>Number of Probes - A count of how many probes were included in this region</li>
+<li>Feature name - will be blank if there is no associated feature.  For overlapping
+features there will be multiple entries in this column (and description) if the
+probe is overlapped by more than one feature</li>
+<li>Description</li>
+<li>Data Columns - if you selected to export data for current stores then there will
+be two extra columns per data store containing the mean and standard deviation of the
+set of current quantitated values for each set of probes</li>
+</ol>
+
+<p>
+You can choose to sort the report on any of the columns.  Just click on a column
+header to sort the data on that column.  Click again to sort in the opposite direction.
+</p>
+<p>
+If you double click on any line in the report the chromosome view will jump to that
+point in the genome so you can see the data underlying that region.
+</p>
+
+<h2>Saving the Report</h2>
+<p>
+If you press the Save button at the bottom you can save the full report to a file.
+The files created are tab-delimited text files which you should be able to open in
+a spreadsheet application for further processing.  The saved report will keep the
+current order of the rows in the report.
+</p>
+
+</body>
+</html>

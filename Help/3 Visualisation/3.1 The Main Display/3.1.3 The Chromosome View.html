@@ -1,0 +1,219 @@
+<html>
+<head>
+<title>The Chromosome View</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Chromosome View</h1>
+<p>
+The chromosome view is the most complex view in SeqMonk and is also where
+you're likely to focus most of your attention.  There are quite a lot
+of options for changing the information which it displays to you.
+</p>
+
+<p><img src="chromosome_view.png" alt="The Chromosome View"></p>
+
+<p>
+The view is divided into tracks.  The top of the display is a line of
+text which tells you which assembly and chromosome you are currently
+viewing.  It also lists the current position and provides the length
+of the current view.
+</p>
+<p>
+Below the text line come a set of annotation tracks which have a blue
+background, and below them are a set of data tracks which have a 
+white/grey background.
+</p>
+<p>
+Finally at the bottom is a status bar which can display various pieces
+of information - usually related to the feature which is currently 
+under the mouse.
+</p>
+
+<h2>Annotation Tracks</h2>
+<p>
+Annotation tracks show the features from an annotated genome.  Each track
+shows one type of feature (gene, CDS, exon etc).  The type of feature shown
+in each track is written on the far left hand side of the track.
+</p>
+<p>
+Features in an annotation track are coloured in either red or blue.  The colour
+indicates the direction of the feature along the genome.
+</p>
+<ul>
+<li>Red = Forward Strand</li>
+<li>Blue = Reverse Strand</li>
+</ul>
+<p>
+The feature itself is represented as a filled block of colour.  Where a feature
+has two or more linked locations (like exons in an mRNA transcript) the different
+blocks are joined with an arrow.  The arrow indicates the direction of the feature,
+ie it shows the same information as the feature's colour.
+</p>
+<p>
+If you put your mouse over a feature it will turn yellow.  If there is enough space
+then the feature type and name will be displayed underneath it.  If you want to 
+see more details about the feature you can double-click on it and a feature annotation
+window will open up.
+</p>
+<p><img src="feature_annotation.png" alt="Feature Annotation Window"></p>
+<p>
+Normally labels will only be displayed when you mouse over a feature.  You can turn
+all labels on all by selecting View &gt; Show All Labels, but you should be aware
+that unless you are looking at a very small region of genome the labels will sit on
+top of each other so they are illegible.
+</p>
+
+<h3>Changing Annotation Tracks</h3>
+<p>
+You can change which annotation tracks are shown and the order of the tracks by selecting
+View &gt; Set Annotation Tracks, or by using the toolbar shortcut.
+</p>
+<p><img src="set_annotation_tracks.png" alt="Set Annotation Tracks"></p>
+<p>
+The list of tracks on the right is the tracks which will be displayed in the chromosome
+view.  The list on the left are tracks which have been loaded, but aren't currently being
+displayed.  You can move tracks from one side to another, and move the visible tracks
+up and down the list to get the set you want.
+</p>
+<p>
+To save on memory usage only a subset of the available annotation tracks are actually
+loaded when SeqMonk starts.  If you want to add a track which isn't loaded by default then
+you need to <a href="../../8%20Configuration/8.1%20SeqMonk%20Preferences.html">enable the track in 
+your preferences</a>.
+</p>
+ 
+<h2>Data Tracks</h2>
+<p>
+Data tracks can show two kinds of information
+</p>
+<ol>
+<li>The position of the individual mapped reads</li>
+<li>The position and value associated with quantitated probes</li>
+</ol>
+
+<p>
+You can choose whether you want to display either or both of these pieces of information
+using the options under View &gt; Data Track Display or by using the corresponding
+toolbar buttons.
+</p>
+
+<h3>Raw Read Display</h3>
+<p>
+SeqMonk shows reads as coloured blocks where the colour indicates the strand against
+which the read was mapped.
+</p>
+<ul>
+<li>Red = Forward Strand</li>
+<li>Blue = Reverse Strand</li>
+<li>Grey = Unknown Strand</li>
+</ul>
+<p>
+If there is sufficient space then there will be several rows allocated to displaying
+reads.  Reads start off being positioned in the middle row and are moved up or down
+if they overlap with another read on the same row.  The collection of reads therefore
+expands vertically in regions of high read-density.
+</p>
+<p>
+If you put your mouse over a read it will be highlighted in yellow.  The status bar
+at the bottom will show the details of the position and length of the read.
+</p>
+<p>
+In the data track display options you can choose the data density, ie how much vertical
+space each read occupies so you can put more or fewer reads in the view.  You can also
+choose to split out the forward and reverse reads into separate parts of the display
+so that you can more clearly see the balance between the two.
+</p>
+
+<h3>Quantitated Probe Display</h3>
+<p>
+The quantitated probe part of each data track is shown initially as a histogram.  By default the
+origin for the histogram is the bottom of the track, but if you have performed a quantitation
+which can produce negative values then you can change this to be in the middle of the track.
+</p>
+
+<p>
+The program has a lot of options for how the data in the chromosome view is displayed.  The complete 
+set of  options can be found by selecting &quot;View &gt; Data Track Display&quot; and there
+is a shortcut to this dialog on the toolbar.
+</p>
+
+<p><img src="data_track_display_options.png" alt="Data Track Display Options"></p>
+
+<p>
+The main ways of representing data are:
+</p>
+
+<ul>
+<li>Bars: Each probe is a single bar on the histogram.  The height of the bar represents the
+value of the current quantitation</li>
+
+<li>Lines: All quantitations are represented by a single line which joins all probes along
+a chromosome. The height of the line at a probe represents the value.</li>
+
+<li>Points: Probes are represented by circles over their centre.  The height of the circle
+from the axis represents the value</li>
+
+<li>Blocks: Probes are represented by shaded rectangles.  Only the colour of the rectangle
+represents the value</li>
+
+</ul>
+
+When you are displaying a replicate set in the chromosome view you also have some additional
+display options.  Firstly you can choose to display the track as:
+
+<ul>
+<li>A single track showing the merged raw data and the average quantitated value</li>
+<li>A set of linked individual tracks showing the data stores contained in the replicate set</li>
+</ul>
+
+If you choose to display a replicate set as a single track then you can choose to indicate
+the variability in the track by the addition of error bars.  These bars can be set to show
+the standard deviation, standard error of the mean or min/max values.  You can also choose to
+overlay small points to show the actual values in the individual data stores within the replicate
+set. 
+
+<p>
+The view is not scaled to the values for your particular quantitation and you can adjust 
+the scaling to allow you to see the information you want.  To change the scaling of the quantitated
+data you should select View &gt; Set Data Zoom Level or press the corresponding toolbar button. 
+</p>
+<p><img src="data_zoom_level.png" alt="Data Zoom Level adjuster"></p>
+<p>
+If you drag the slider up you will extend the data range, if you drag
+it down you will compress the range.
+</p>
+<p>
+If you put your mouse over a probe it will be highlighted in yellow and its position and value
+will be shown in the status bar.
+</p>
+
+<h3>Changing Data Tracks</h3>
+<p>
+You can change which data tracks are shown and the order of the tracks by selecting
+View &gt; Set Data Tracks, or by using the toolbar shortcut.
+</p>
+<p><img src="set_data_tracks.png" alt="Set Annotation Tracks"></p>
+<p>
+The list of tracks on the right is the tracks which will be displayed in the chromosome
+view.  The lists on the left are tracks which  aren't currently being displayed.  You 
+can move tracks from one side to another, and move the visible tracks up and down the 
+list to get the set you want.
+</p>
+<p>
+Within the data track area you can mix DataSets and DataStores however you wish.  DataSets
+are shown with red names and DataGroups with blue names.
+</p>
+<p>
+In addition to the dialog for changing the displayed data tracks you can also add and remove
+individual tracks by using the popup menus available in the Data View.
+</p>
+</body>
+</html>

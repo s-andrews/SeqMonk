@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>Coverage Depth Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Coverage Depth Quantitation</h1>
+
+<p>
+The coverage depth quantitation quantitates your data based on the depth
+of overlapping reads within each probe.
+</p>
+<p>
+This kind of quantitation can be useful for resequencing experiments to 
+find underrepresented regions.  It is also useful in a variety of experiments
+to filter out sequences which are overrepresented.  These are often the
+result of biased amplification or mismapping and can skew the results of any
+subsequent analysis.
+</p>
+<h2>Options</h2>
+<p><img src="coverage_depth_quantitation.png" alt="Coverage Depth Quantitation Picture"></p>
+<p>The options you have for this module are:</p>
+<ol>
+<li>Whether you want to calculate the maximum or minimum depth of coverage.</li>
+<li>Whether you are interested in any kind of overlap, or only exact overlaps 
+where the start and end points (though not the strand) are exactly the same</li>
+<li>Whether you want a raw count for the number of overlapping reads, or 
+if you want to express this as a percentage of the total number of reads in
+this probe.
+</li>
+</ol>
+</body>
+</html>

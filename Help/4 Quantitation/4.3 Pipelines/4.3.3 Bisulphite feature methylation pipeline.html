@@ -1,0 +1,66 @@
+<html>
+
+<head>
+<title>The Bisulphite feature methylation pipeline</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Bisulphite feature methylation pipeline</h1>
+
+<p>
+The bisulphite feature methylation pipeline is a way to quantitate 
+methylation over a whole feature but using only individual bases
+whose methylation state is well observed.  It then calculates a 
+pecentage methylation for each base and averages these to give an
+overall value for the feature.
+</p>
+<p>
+The pipeline assumes that you have methlyation data which uses the
+standard convention of assigning methylated reads to the forward
+strand and unmethylated reads to the reverse strand.  The reads should
+generally only be 1bp in length.  This is the standard data you would
+get from importing the output of the bismark methylation extractor via 
+the text import option.
+</p>
+
+<p>
+Unlike most other quantitation methods it's possible that this pipeline
+won't assign a value to some probes in some datasets.  In these cases
+the probe will be given the Not a Number (NaN) value, and will generally
+be ignored in subsequent calulations and plots.
+</p>
+
+<h2>Options</h2>
+
+<img src="rpkm_options.png" alt="RPKM Pipeline Options">
+<p>The options you can set for this pipeline are:</p>
+<ol>
+<li>Which type of feature you want to quantitate (you can also opt
+to use the current probe set if you've already made probes)</li>
+
+<li>The minimum level of observation required to include a base in
+the methylation calculation.  This is simply the depth of count over
+that base. This value should be a fair reflection of the overall depth
+of coverage in your data.  If you only have a 3X average coverage of
+all bases then there's no point setting this value to 5 since you'll just
+throw away all of your data.</li>
+
+<li>The minimum level of observation for a feature - ie how many
+individual bases need to have been called to make a call for the
+feature as a whole.</li>
+
+<li>How to combine the measures for a given feature.  You can choose
+to report the mean, median, max or min value from the set of individual
+base measures.</li>
+
+</ol>
+
+</body>
+</html>

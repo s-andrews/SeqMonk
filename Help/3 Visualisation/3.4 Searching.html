@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>Searching</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Searching</h1>
+<p>
+Rather than manually moving around the genome there are a couple of 
+different search tools you can use to quickly take you to a region
+of interest.
+</p>
+<h2>Goto Position</h2>
+<p>
+If you know the genomic coordinates of the region you want to go to
+you can select Edit &gt; Goto position and manually enter the position
+you want to see.  The chromosome view will immediately update to show
+this region.  You can either enter chromosome, start and end separately
+or if you have a location string from another source (eg chr1:500-1000)
+then you can paste this into the location box - this understands locations
+both with and without the intial chr on the chromosome name.
+</p>
+<p><img src="goto_position.png" alt="Goto Position"></p>
+
+<p>
+The box also keeps a record of the last few locations you've been to do
+you can also use this to jump back to somewhere you've been recently.
+</p>
+
+<h2>Goto Window</h2>
+Sometimes you want to have a view window of a given size, centred on
+a point you know.  Rather than have to work out the values to use in
+the Goto Position dialog you can use Edit &gt; Goto Window and put
+these values in directly.
+
+<p><img src="goto_window.png" alt="Goto Position"></p>
+
+
+<h2>Search for Features</h2>
+<p>
+If you want to find a particular annotation feature then you can use 
+the Find Feature tool.  To launch this you select Edit &gt; Find Feature.
+</p>
+<p>
+The find feature tool searches for a single word or phrase in the 
+annotation for all of the features in the current genome.  You can limit
+your search to just the feature names, or you can search through the
+whole set of annotation.  You can also limit your search to a particular
+type of feature.
+</p>
+<p><img src="find_features.png" alt="Find Features"></p>
+<p>
+Once you have a list of results you can sort these by clicking on any
+of the column headers in the results table.
+</p>
+<p>
+If you want to see a feature in the chromosome view you can double
+click on any line of the feature results and the view will immediately
+jump to show the region covered by that feature.
+</p>
+<p>
+From within the results window of the feature search dialog you can easily
+turn the results of your search into a new annotation track.  You can 
+add all search results as a new track by pressing &quot;Save all as annotation track&quot;
+or you can select just a subset and then press &quot;Save selected as annotation track&quot; 
+</body>
+</html>

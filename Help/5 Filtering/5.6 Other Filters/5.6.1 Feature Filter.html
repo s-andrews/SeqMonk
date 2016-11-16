@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<title>Feature Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Feature Filter</h1>
+<p>
+The feature filter allows you to filter probes based on their proximity
+to a given class of features.
+</p>
+<p><img src="feature_filter_options.png" alt="Feature Filter Options"></p>
+<h2>Options</h2>
+<p>
+The options you have are to choose what class of features you want to
+compare to.  You can also choose the relationship you want your probes to
+have to the features
+</p>
+<ol>
+<li>Upstream (the probe must sit to the 5' end of the feature)</li>
+<li>Downstream (the probe must sit to the 3' end of the feature)</li>
+<li>Close to (takes the closest distance from any part of the probe to any part of the feature)</li>
+<li>Surrounded By (the probe must be completely enclosed within the feature</li>
+<li>Surrounded By or Upstream</li>
+<li>Surrounded By or Downstream</li>
+<li>Exact match to (start, end and strand must all match)</li>
+</ol>
+<p>
+For all of the options except Surrounded By you can also choose a distance
+cutoff to say how far beyond the probe a feature can be and still be 
+classed as a match.
+</p>
+<p>
+You can also choose to limit the features which are used based on their strand.
+</p>
+<p>
+Although this filter is useful in its own right, you might also want to consider
+using the 
+<a href="../../4%20Quantitation/4.1%20Probe%20Generators/4.1.3%20Feature%20Probe%20Generator.html">Feature Probe generator</a>
+to define your probes if a particular class of features is going to be the main 
+focus of your analysis.
+</p>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title>Monte Carlo Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Monte Carlo Filter</h1>
+<p>
+The Monte Carlo filter is a simple simulation which allows you to assess whether
+a subset of probes is unusual compared to a randomly selected set of the same size.
+It makes no assumptions about your data or the distribution of the current 
+quantitation values.
+</p>
+<p>
+A Monte Carlo simulation simply selects matched random sets of probes of the same
+size as your target set from your currently selected probe list.  It then compares
+either the mean, median or maximum values within the random set to the value from 
+your target set.  Finally after running many simulations it assignes a p-value to
+the simulation, which is the proportion of tests in which the randomly chosen set
+produced a value which was the same or higher than the value from your target set.
+</p>
+
+<p>
+The Monte Carlo filter isn't actually a filter, in that the probe list it produces
+always contains exactly the same set of probes as your target list.  It will add 
+the p-value for the overall simulation to each of the probes in this list.
+</p>
+
+<h2>Options</h2>
+<ul>
+<li>You can choose the data store you want to use for the test</li>
+<li>You can choose the target list you want to use.  This must be a child of the 
+currently selected probe list</li>
+<li>You can choose the number of iterations to perform. More iterations will
+produce more accurate p-values, but will take longer to compute</li>
+</ul>
+</body>
+</html>

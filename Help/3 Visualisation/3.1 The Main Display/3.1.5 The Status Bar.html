@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>The Status Bar</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Status Bar</h1>
+<p><img src="status_bar.png" alt="The Status Bar"></p>
+<p>
+The status bar is a notification area which usually shows
+relevant information for whatever object your mouse is over
+at the time.
+</p>
+<p>
+Near the right hand end of the status bar is a small graph showing
+SeqMonk's current memory usage.  It is worth keeping an eye on your
+memory usage since running out of memory will cause SeqMonk to run
+very slowly, and eventually to stop altogether.
+</p>
+<p>
+The memory usage graph is in three parts:
+</p>
+<ol>
+<li>The red part indicates the memory currently being used by SeqMonk.</li>
+<li>The orange part indicates memory which SeqMonk has reserved but isn't currently using</li>
+<li>The green part indicates memory which is available to SeqMonk but it isn't using.</li>
+</ol>
+<p>
+To get an accurate view of the current memory usage you can double click on this graph
+which will cause SeqMonk to pause and clean up all of its memory.  What you then see
+will be the actual amount of memory which is being consumed by the program.  At other times
+the usage will include inactive memory which SeqMonk hasn't got round to cleaning up.
+</p>
+<p>
+The percentage value shown is the percentage of total available memory (green) which
+is currently being used (red).  When this percentage reaches 90% you will get a warning
+since you are coming close to running out of available memory.  In this case you should 
+look at the
+<a href="../../8%20Configuration/8.2%20Memory%20Settings.html">memory settings</a> and 
+<a href="../../8%20Configuration/8.1%20SeqMonk%20Preferences.html">preferences</a>
+documentation to see how you can enable more memory or reduce the amount of memory SeqMonk requires.
+</p>
+<p>
+At the right hand end of the bar is a small icon which shows the current status of your
+disk cache.  If this icon is red then caching is not being used.  If it is green then
+caching is enabled but inactive.  If it is orange then caching is enabled and data is currently
+being read from the cache.  You can double click on this icon to turn disk caching on/off, but
+the change will not take effect until SeqMonk is restarted.
+</p>
+</body>
+</html>
+

@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<title>Enrichment Normalisation Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Enrichment Normalisation Quantitation</h1>
+
+<p>
+	Enrichment normalisation is useful in studies where you have a difference in
+	enrichment efficiency between different samples.  It is related to the 
+	percentile normalisation, where you specify a single reference percentile on
+	which to normalise your data and the data is corrected by a single factor so
+	that all samples have the same value at this reference point.
+</p>
+<p>
+	In enrichment normalisation you specify two normalisation percentiles.  The
+	lower percentile should represent the baseline value, and should be the 
+	last part of your distribution you consider to be unenriched.  The second
+	value should be the percentile at which you believe you have pretty much 
+	saturated your enrichment.
+</p>
+<p>
+	The way the enrichment normalisation works is that it applies a simple addition
+	correction to get the different datasets to match exactly at the lower 
+	percentile.  It then applies a multiplication correction so that the samples
+	match at the upper percentile.  The data is therefore scaled between the two
+	defined reference points, which should correct for any differences in 
+	enrichment efficiency between samples.
+</p>
+<p>
+	Enrichment normalisation would most commonly be used on ChIP-Seq samples where
+	the efficiency of the ChIP may vary between different experiments.  It could
+	also be used on other experiment types to try to even out other biases.  We
+	have used it for example on looking at genomic coverage in PBAT bisulphite
+	libraries where the data has an overall GC bias which is somewhat different
+	in different samples.
+</p>
+	
+</p>
+<h2>Options</h2>
+<ol>
+<li>You can choose the percentile values to set for the lower and upper reference
+points.  You should look at the shape of the traces on the cumulative distriubution
+plot to decide where you should sensibly set these.</li>
+<li>You can choose which probe list to use to calculate the correction values</li>
+</ol>
+</body>
+</html>

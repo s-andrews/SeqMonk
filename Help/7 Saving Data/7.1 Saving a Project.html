@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Saving a Project</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Saving a Project</h1>
+<p>
+You can choose to save a project at any point. A SeqMonk project
+file is a single file which saves both your data and many of
+your display preferences so that you can get back to working on
+your data very quickly.
+</p>
+<p>
+Data which is stored in a project file is:
+</p>
+<ul>
+<li>The positions of all of your reads</li>
+<li>The details of your samples</li>
+<li>The details of your sample groups</li>
+<li>The positions of your probes</li>
+<li>The quantitated value for all probes for all DataStores</li>
+<li>All current probe lists</li>
+<li>The list of currently visible data and annotation tracks</li>
+<li>The current position of the chromosome view</li>
+<li>The current data zoom level</li>
+<li>The current data view (probes+reads, just probes, just reads)</li>
+<li>The current data scale (positive or positive and negative</li>
+</ul>
+<p>
+Some preferences are not stored in the project file and won't be
+remembered when the program reopens.
+</p>
+<ul>
+<li>The genome annotation data (this is referenced and will be downloaded from the SeqMonk server if required)</li>
+<li>The size and layout of the panels in the current display (in case you open the file on a different sized screen)</li>
+</ul>
+<p>
+If you have changed any of the details which SeqMonk stores in its
+project file during your session, when you close the program you will
+be prompted to re-save the project before exiting.
+</p>
+<p>
+<img src="save_before_exit.png" alt="Save before exit dialog">
+</p>
+<p>
+You should be aware that because SeqMonk has to write out all of the read
+data when it saves a project that this can take a few minutes to complete
+if you have several large datasets open.
+</p>
+</body>
+</html>

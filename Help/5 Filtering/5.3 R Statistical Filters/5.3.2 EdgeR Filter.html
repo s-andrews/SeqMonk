@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>EdgeR Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>EdgeR Filter</h1>
+
+<p>This is an R based filter so will only be available if you have configured
+R in the SeqMonk preferences and installed the pre-requisite packages</p>
+
+<p>
+This filter can be used for differential count analysis.  It is normally used
+in RNA-Seq workflows, but can actually be applied to many different experiment
+types where the underlying data is a set of read counts.
+</p>
+
+<p>The filter allows you to select two replicate sets with at least two data stores
+in each and will identify probes whose representation in the two sets differs
+significantly.</p>
+
+<p>For this filter to run correctly your data must fulfil two criteria</p>
+
+<ol>
+<li>Your quantitation must be raw, uncorrected read counts.  If you're using the
+RNA-Seq filter then you must select the &quot;Generate Raw Counts&quot; option.  For
+other probe types you must use the read count quantitation with no normalisation
+or log transformation applied</li>
+
+<li>You must use either all probes, or a representative subset of probes which are
+not biased by the differences between the two replicate sets your tring to compare</li>
+
+</ol>
+
+<h2>Options</h2>
+<ul>
+<li>You need to two Replicate Sets to compare from the list on the left.</li>
+<li>You need to select a p-value cutoff for the filter</li>
+<li>You can select whether multiple testing correction should be applied to 
+your results.  For your p-values to be valid you must leave this box checked</li>
+</ul>
+</body>
+</html>

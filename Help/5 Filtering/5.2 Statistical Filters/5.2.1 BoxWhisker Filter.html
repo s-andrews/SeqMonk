@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>BoxWhisker Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>BoxWhisker Filter</h1>
+<p>
+This filter provides a method of identifying outlier probes based
+on their position in the whole distribution of probe values.  It is based
+on a BoxWhisker plot and is therefore applicable to any kind of distribution
+of probe values.
+</p>
+<p><img src="boxwhisker_filter_options.png" alt="BoxWhisker Filter Options"></p>
+<h2>Options</h2>
+<ul>
+<li>You need to select one or more DataStores from the list on the left.  Data
+Sets are shown in red and Data Stores are shown in Blue.</li>
+<li>You need to select a stringency.  The formula for picking a cutoff for
+outliers is the median +/- the interquartile range x the stringency.  A stringency
+of 1.5 is usual for defining outliers.  A stringency of 3 is often used for distant
+outliers, but you can pick any value you feel to be appropriate</li>
+<li>If you have selected more than one DataStore for the filter you need to
+define in how many stores a probe needs to be an outlier before it goes into the
+filtered set.  You can express this using an Exact, At least or No More Than cutoff.</li>
+</ul>
+<p>
+For a visual representation of the outliers in your dataset you can use the
+<a href="../../3%20Visualisation/3.2%20Figures%20and%20Graphs/3.2.1%20The%20BoxWhisker%20Plot.html">BoxWhisker Plot</a>.
+This shows a BoxWhisker plot with a stringency of 2.
+</p>
+</body>
+</html>

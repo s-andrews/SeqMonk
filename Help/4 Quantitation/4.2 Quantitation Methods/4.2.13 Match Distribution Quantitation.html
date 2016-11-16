@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>Match Distribution Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Match Distribution Quantitation</h1>
+
+<p>
+The match distribution quantitation is of use where you have normalised your data
+as best you can using tools like total sequence count correction, or maybe 
+percentile normalisation quantitation, but you are still seeing slight differences
+in the shape of the distributions in your data.
+</p>
+<p>
+It is possible to remove variations in distributions by simply converting your
+quantitated values to ranks, and then comparing these.  The problem with this
+approach is that this conversion loses any information about the scale of changes
+which happen in different parts of your distribution.
+</p>
+<p>
+The match distribution quantitation works by creating an averaged distribution of
+quantitated values across all of your data sets.  It then maps this distribution
+onto each individual dataset such that they all follow exactly the same profile.
+This provides much of the same benefits as ranking the data, but preserves the 
+magnitude of the differences at different parts of your distribution.
+</p>
+<p>
+Where you had repeated values in your original data these will still have identical
+values in the matched distribution created from the mean of the average distribution
+positions covered by your range of identical values.
+</p>
+<p>
+This correction is appropriate to use where you have generally similar distributions,
+but with some minor variations.  If you want to compare distributions which are
+markedly different you would be better to use the rank quantitation instead.
+</p>
+<h2>Options</h2>
+<p>
+You can choose a subset of data stores which will be normalised in this analysis.
+</p>
+</body>
+</html>

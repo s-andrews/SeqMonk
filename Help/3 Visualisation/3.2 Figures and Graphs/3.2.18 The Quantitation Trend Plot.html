@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>The Quantitation Trend Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Quantitation Trend Plot</h1>
+
+<p>
+The quantitation trend plot is related to the probe trend plot in that it generates 
+a profile over a set of genomic regions to look for trends which may not be apparent
+from looking at individual instances.
+</p>
+<p>
+The quantitation trend plot starts from a set of quantitated probes and then uses 
+the values in these probes to generate a profile around a set of features.  Any
+probes which map to the region used for the plot are averaged to generate an overall
+picture of the quantitation around the features.  The probe trend plot does something
+similar based on probe density, but the quantitation trend plot can use more complex
+measures (methylation percentages for example) to achieve the same effect.
+</p>
+<p><img src="quantitation_trend_plot.png" alt="The Quantitation Trend Plot"></p>
+
+
+<h2>Options</h2>
+
+<p><img src="quantitation_trend_options.png" alt="The Quantitation Trend Plot Options"></p>
+
+<ul>
+<li>You can choose the regions to be plotted.  These are defined from a set of features
+and the quantitated region can be upstream, downstream or surrounding these features.  To
+generate a sensible plot your probes should be smaller regions occurring within the region
+you choose for this plot.</li>
+
+<li>You can remove exactly duplicated features from inclusion in the average</li>
+<li>You can choose to ignore the strand information of features and always treat them from
+left to right on the top genomic strand</li>
+
+
+</body>
+</html>

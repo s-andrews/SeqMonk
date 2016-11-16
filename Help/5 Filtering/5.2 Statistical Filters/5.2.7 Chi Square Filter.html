@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>Chi Square Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Chi Square Filter</h1>
+<p>
+The Chi Square filter is somewhat unusual in that it doesn't use the current
+quantitations for your data, but instead is an independent test which uses
+a chi-square test to determine if the ratio of forward to reverse reads 
+underlying each probe in your test list changes significantly between two or 
+more data stores.  It was designed originally for use in bisulphite sequencing
+experiments, but may have applications for other types of experiment.
+</p>
+
+<p>
+This test groups together all reads underlying each probe and is therefore prone
+to bias for probes where read coverage is not even across the probe.  For 
+bisulphite analysis its results are therefore complementary to the results you'd
+get from running the bisulphite methylation over feature pipeline, where each
+position which is well enough observed is weighed equally in the final value and it's
+probably a good idea to combine these two types of filtering when assessing these
+kinds of data.
+</p>
+
+<h2>Options</h2>
+<ul>
+<li>You can choose the data stores you want to use for the test. At least 2
+stores must be selected.</li>
+<li>You can choose the significance threshold for the analysis</li>
+<li>You can choose whether to apply multiple testing correction to your raw
+p-values (you really should in nearly all cases)</li>
+<li>You can choose to test only probes which have a certain level of
+observation in each data store</li>
+<li>You can choose to filter the results based on the maximum percentile difference
+between the samples to ensure a certain absolute change, even if a smaller 
+difference would have been significant</li>
+</ul>
+</body>
+</html>

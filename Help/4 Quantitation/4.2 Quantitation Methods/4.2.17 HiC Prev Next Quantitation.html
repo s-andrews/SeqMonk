@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>HiC Prev Next Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>HiC Prev Next Quantitation</h1>
+
+<p>
+The prev next quantitation is an implementation of the Directionality
+index proposed by Dixon et al. (Nature doi:10.1038/nature11082).  It
+provides a way to look for correlated domains within a HiC dataset.
+Domain boundaries are represented by sudden changes in the DI measure.
+</p>
+<p>
+The measure itself looks at the relative strength of HiC interactions
+in windows upstream and downstream of each probe and produces a value
+which quantitates this.
+</p>
+<p><img src="hic_prev_next_quantitation.png" alt="HiC Prev/Next Quantitation"></p>
+<h2>Options</h2>
+<p>The options you have for this module are:</p>
+<ol>
+<li>What size window you want to use to capture the upstream and 
+downstream regions of each probe.
+<li>What is the minimum count of hits you need to see either upstream
+or downstream in order to make a measure of the DI. 
+<li>
+Whether you want to remove duplicate HiC pairs when counting.
+</li>
+</ol>
+</body>
+</html>

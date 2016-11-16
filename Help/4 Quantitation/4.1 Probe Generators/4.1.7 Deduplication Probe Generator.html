@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<title>Deduplication Probe Generator</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Interstitial probe generator</h1>
+
+<p>
+The deduplication probe generator is a way to merge closely
+positioned or overlapping probes together to reduce the complexity
+of a probe set.
+</p>
+<p><img src="deduplication_probe_generator.png" alt="Deduplication_Probe_Generator"></p>
+<h2>Options</h2>
+<ul>
+<li>The starting probe list.  This is the set of probes which will
+be merged to form the new probe set</li>
+<li>The maximum distance over which probes will be merged.  If set
+to zero then only overlapping probes will be merged</li>
+<li>Whether to merge strands separately.  If selected then only probes
+with the same strand setting will be merged.  If this is not set then
+any probes will be merged and merged probes will only retain a
+direction if all of the probes in the set had the same direction.</li>
+</ul>
+
+</body>
+</html>

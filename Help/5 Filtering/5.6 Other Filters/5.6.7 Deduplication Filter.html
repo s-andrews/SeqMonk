@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>Deduplication Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Deduplication Filter</h1>
+<p>
+The deduplication filter is designed to remove redundancy in a probe list.
+It can do this in one of two ways, either by comparing the names of probes
+and merging those with a common prefix, or by looking for overlaps between
+probes and merging those with a high enough degree of overlap.
+</p>
+<p>
+Where duplicates are detected you can choose which one to keep by either
+selecting on the length of the probes, or by using the annotated value on
+the probe list you are deduplicating.
+</p>
+<p>
+The most common use of this filter would be reducing a set of transcript probes
+to a minimal set by removing additional splice variants, leaving only one
+variant per gene.  The default name filter is set up to do this using the naming
+convention used by Ensembl (gene-123, where 123 is a transcript identifier).
+</p>
+
+
+<p><img src="deduplication_filter_options.png" alt="Deduplication Options"></p>
+<h2>Options</h2>
+<ol>
+<li>You can choose whether to deduplicate based on probe names or position overlap</li>
+<li>For name based deduplication you can specify a pattern which will be removed 
+from the probe name. Probes with the same remaining names after removal of the pattern
+will be merged.  The pattern can be a simple string or can use full regular expression
+syntax.</li>
+<li>For overlap based deduplication you can specify the minimum percentage overlap
+required between the two probes.  The overlap is always calculated against the shorter
+of the probes.</li>
+<li>Where duplicates are detected you can choose to select which one to keep based
+on the highest or lowest value for either the probe length, or the annotated value for
+that probe in the list being filtered</li>
+</ol>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>The HiC Length Histogram</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The HiC Length Histogram</h1>
+
+<p>
+The HiC length histogram can be used to view the distribution of distances
+between opposing ends of HiC interactions. The plot is can therefore only
+be drawn from HiC data stores.
+</p>
+<p>
+<img src="hic_length_histogram.png" alt="HiC Length Histogram">
+</p>
+
+<p>
+The plot only uses data from pairs of HiC ends which sit on the same 
+chromosome.  Pairs on different chromosomes are ignored.  The distance
+plotted is the minimal distance between the ends of the individually mapped
+reads.  Ends which overlap are shown with a distance of zero.
+</p>
+<p>
+The plot can be drawn by selecting &quot;Plots &gt; HiC Length Histogram&quot; from the 
+main menu, or by right-clicking on a HiC data store in the Data view and
+selecting &quot;Show HiC Length Histogram&quot;
+</p>
+<p>
+As with all histogram plots you can zoom into any region of the plot by dragging the
+mouse over a region of the x-axis.  You can zoom out by pressing the right mouse 
+button in the plot area.
+</p>
+<p>
+When selecting this plot from the main menu you can choose whether to use all reads
+in the active datastore, or only those which overlap with the currently selected
+probe list.
+</p>
+
+</body>
+</html>

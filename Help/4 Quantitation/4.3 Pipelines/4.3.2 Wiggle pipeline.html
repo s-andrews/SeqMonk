@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>The Wiggle pipeline</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Wiggle pipeline</h1>
+
+<p>
+The wiggle pipeline produces something equivalent to a wiggle plot commonly
+seen when viewing NGS data in generic genome browsing systems.  This provides
+a simple view of the quantitated density of reads along either a specific 
+region, or over the whole genome, giving a more quantitative way of looking
+at your raw data than looking at the raw reads directly, but with no bias
+for specific regions.
+</p>
+<p>
+The wiggle view isn't particularly useful for analysing your data, but is 
+mostly used as a better way to take an initial view of how your data is 
+distributed over your genome.
+</p>
+
+
+<h2>Options</h2>
+<p>The options you can set for this pipeline are:</p>
+<ol>
+<li>Which area you want to look at.  You can choose to cover either the
+whole genome, the current chromosome or the currently visible region.  Looking
+at smaller regions will allow you to place your probes more densely, since it
+is the total number of probes which tends to be limiting.  When you change 
+this selection SeqMonk will automatically suggest sensible values for the 
+width of your probes, but you are free to igore these and set your own size.</li>
+
+<li>The width and step size for your probes.  These will be set automatically 
+based on the size of the region you're analysing (the program aims to make
+10 million probes and adjusts the size of each probe to try to match this 
+figure).  By default the step size and probe width will be the same so probes
+don't overlap, but you can alter this value to whatever you like.  You should
+be aware that reducing the suggested step size could generate very large numbers
+of probes which could take a long time and a lot of resources to calculate.</li>
+
+<li>Whether the results should be log2 transformed.  The default is to 
+quantitate on a linear scale to emphasize any differences, but you can choose
+to use a log scale if this makes more sense for your data.  If your data is 
+on a linear scale you will probably need to adjust the automatically calibrated
+y-scale to allow you to see the high outliers.</li>
+
+<li>Whether you want to adjust your counts based on the total number of reads in
+your datasets. Setting this option will allow for a more direct comparison of
+your samples</li>
+
+</ol>
+
+</body>
+</html>

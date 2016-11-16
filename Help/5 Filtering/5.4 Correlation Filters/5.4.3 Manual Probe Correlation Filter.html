@@ -1,0 +1,49 @@
+<html>
+
+<head>
+<title>Manual Probe Correlation Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Manual Probe Correlation Filter</h1>
+<p>
+The manual probe correlation filter operates in a similar way to the probe list
+correlation filter, in that it allows you to find probes which show correlation
+to a set of reference quantitation profiles across several Data Stores.  The difference
+in the manual filter is that the reference profiles are generated interactively
+so you can construct whichever quantitation profiles you like.
+</p>
+<p>
+<img src="manual_correlation.png">
+</p>
+<p>
+To create a correlation profile simply select the data stores you want to use from
+the list on the left and then drag the green boxes on the profile plot to generate
+the profile you wish to correlate against.  You can filter against up to 12 profiles
+simultaneously. If a probe is able to correlate against more than one of the constructed
+profiles then it will be added to the profile with the highest correlation (or lowest
+if your correlation cutoff is less than 0).  In this way you can ensure that you get
+no overlap between correlation clusters.
+</p>
+
+<h2>Options</h2>
+
+<ul>
+<li>You can choose which data stores you want to use for your correlation.  You
+must choose at least 3 stores and there is no upper limit to the number you choose.</li>
+<li>You can choose how many manual profiles you want to create</li>
+<li>You must generate your reference profiles using the selected data stores.</li>
+<li>You can choose how correlated a probe has to be to the reference profile in order
+to be included in the filtered output.  If you specify a negative R value then the
+filter will search for correlation less than that value, so this becomes an anti-correlation filter</li>
+</ul>
+
+</body>
+</html>

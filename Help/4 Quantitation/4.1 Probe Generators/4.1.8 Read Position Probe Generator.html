@@ -1,0 +1,51 @@
+<html>
+
+<head>
+<title>Read Position Probe Generator</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Read Position probe generator</h1>
+
+<p>
+The read position is a somewhat specialised probe generator which
+is designed to be used for datasets where you have reads occurring
+at a defined number of positions.  It places a probe at
+every distinct read position in the dataset.  Applications which
+could use this generator would be tag counting applications (such
+as 4C experiments), the analysis of introns to find changes in
+splicing usage, or when grouping positions, for the analysis of 
+larger positional datasets use as bisulphite sequencing.
+</p>
+<h2>Warning</h2>
+<p>
+This probe generator is NOT suitable for any type of diverse dataset
+where reads could conceivably occur at any point in the genome.
+Trying to use this generator on a diverse dataset will result in the
+generation of millions of probes which is likely to cause your
+machine to grind to a halt.
+</p>
+<p><img src="read_position_probe_generator.png" alt="Read Position Probe Generator Picture"></p>
+<h2>Options</h2>
+<ul>
+<li>The data stores which whose data will be used to define the probes</li>
+<li>The minimum number of read position occurrences required to generate
+a probe</li>
+<li>Whether to merge read positions which are the same except for their
+strand</li>
+<li>Whether to group valid positions together in larger windows, and how
+many valid positions to include in each window</li>
+<li>Whether you want to restrict the design to a specific region.  This can
+either be the currently visible region in the chromosome view, or the set
+of probes in the current active probe list</li>
+</ul>
+
+</body>
+</html>

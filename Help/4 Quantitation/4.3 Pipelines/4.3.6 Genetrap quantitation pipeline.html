@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>Genetrap quantitation pipeline</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Genetrap quantitation pipeline</h1>
+
+<p>
+This pipeline is specialised for use in GeneTrap experiments.  It takes in 
+a feature track of spliced features and does a read count quantitation.  The
+unusual aspect of the pipeline is that it will only count a read against
+a feature if either:
+
+<ol>
+<li>It overlaps with an exon of that feature, or</li>
+<li>It sits within an intron, but in the same orientation as the feature</li>
+</ol>
+
+<h2>Options</h2>
+
+<img src="genetrap_options.png" alt="RPKM Pipeline Options">
+<p>The options you can set for this pipeline are:</p>
+<ol>
+<li>Which type of feature you want to quantitate</li>
+
+<li>Whether to generate raw counts, or have counts which are normalised by total count</li>
+
+<li>Whether to log transform the counts</li>
+</ol>
+
+</body>
+</html>

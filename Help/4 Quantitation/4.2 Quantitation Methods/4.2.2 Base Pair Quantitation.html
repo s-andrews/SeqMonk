@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<title>Base Pair Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Base Pair Quantitation</h1>
+
+<p>
+The Base Pair quantitation closely related to the 
+<a href="4.2.1%20Read%20Count%20Quantitation.html">Read Count Quantitation</a>
+except that instead of counting the number of reads which overlap
+with a probe it counts the actual number of bases.  This gives a more fine
+grained view of the data.  It can correct the counts according to a few different 
+factors which might bias the result - allowing it to be compared to other data sets.
+</p>
+<p>
+The base pair quantitaiton is ideally suited for use where you have small probes
+with split or partial overlaps.  It is particularly useful for mRNA-Seq experiments
+where you are putting probes over exons which will have vastly different sizes, and
+where you will get spliced reads mapping only a few bases into some exons.
+</p>
+<h2>Options</h2>
+<p><img src="base_pair_quantitation.png" alt="Base Pair Quantitation"></p>
+<p>The options you have for this module are:</p>
+<ol>
+<li>The types of reads you want to count (All / Forward / Reverse / Unknown)</li>
+<li>Whether you want to correct for the total read count.  If you are comparing
+different datasets with different total counts then this will normalise the average
+count per probe.  This correction is done relative to either the largest count in the 
+stores being quantitated, such that the largest set will show raw counts and the
+counts in all other sets will be scaled up proportionally, or per million reads</li>
+<li>If you want the total read count correction to be applied only using reads
+inside the current probeset.  This would be useful if you wanted to exclude certain
+regions of the genome from this correction (eg Chr X/Y).
+</li>
+<li>Whether you want to correct for the length of your probes.  If your probes are
+of different sizes you would expect to get a higher count in longer probes.  This
+correction adjusts the count to a count of bases of read per base of probe.
+</li>
+<li>If you want to log transform your count.  If you have a large range of values
+in your count you can calculate them on a log2 scale to make them easier to view.</li>
+<li>If you want to ignore duplicated reads.  If you select this option then every
+unique read position (start, end and strand must be the same) will only be counted
+once and duplicates will be ignored</li>
+</ol>
+<h2>Warning</h2>
+<p>
+If you choose to quantitate your data on a log scale then any probes which contain
+no reads will have their initial read count increased to 0.01 bases to avoid problems
+with infinite values when log transforming. This value is set before any subsequent
+correction for total read length or probe size.  This means that in log transformed
+data different data stores could end up with different absolute values for probes
+containing no reads.  If probe length correction is applied then probes with no
+reads will end up with a range of low values reflecting the different lengths of the
+probes. In these cases you might want to use an initial linear quantitation to allow you
+to flag and possibly filter out the regions with no reads, before later moving on to
+quantitate on a log scale.
+</p>
+</body>
+</html>

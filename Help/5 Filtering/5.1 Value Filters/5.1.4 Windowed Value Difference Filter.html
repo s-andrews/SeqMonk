@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>Windowed Probe Value Difference Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Windowed Probe Value Difference Filter</h1>
+<p>
+The windowed value difference filter acts in a very similar way to the
+<a href="5.1.3%20Individual%20Probe%20Value%20Difference%20Filter.html">Individual Probe Value Difference Filter</a>
+except that it tests the differences of the averages the values of
+all probes in a window.
+</p>
+<p><img src="windowed_probe_value_difference_options.png" alt="Windowed Probe Value Difference Filter Options"></p>
+<h2>Options</h2>
+<ul>
+<li>You need to select two or more DataStores from the list on the left.  Data
+Sets are shown in red and Data Stores are shown in Blue.</li>
+<li>You can select an upper and a lower limit for the range of differences you want
+to include.  You only have to specify one of these values.  If you leave the lower
+value blank then anything under the upper cutoff will pass.  If you leave the upper
+value blank then anything above the lower cutoff will pass.  All differences are
+absolute values so you don't need to specify negative values in the filter.</li>
+<li>You can select how to construct the windows inside which the value difference test will
+be performed.  This can be expressed either as a fixed number
+of bases, or as a number of consecutive probes to slide over the genome. You can also choose to use a class of
+features as the windows in which to aggregate probes.</li>
+<li>If you have selected more that two DataStores then all pairwise combinations will
+be tested.  You need to specify whether the filter range applies to the average, 
+maximum or minimum difference seen.</li>
+</ul>
+</body>
+</html>

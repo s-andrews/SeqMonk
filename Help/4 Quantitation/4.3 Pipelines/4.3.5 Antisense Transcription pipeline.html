@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>The Antisense Transcription pipeline</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Antisense Transcription pipeline</h1>
+
+<p>
+The antisense transcription pipeline is intended to be used on strand specific
+RNA-Seq libraries to find regions which show significant levels of antisense
+transcription.
+</p>
+<p>
+It works by taking a set of known features (usually genes but could be exons
+microRNAs or anything else which makes sense), and intially finding the overall
+level of antisense reads over the whole genome.  Any strand specific library will
+contain some mapped reads from the wrong strand, and we assume that overall the
+level of antisense transcription over all genes is low enough that we can consider
+it as noise.
+</p>
+<p>
+Once the global antisense level has been measured we can go back and test each
+gene individually.  A binomial distribution is used to determine how likely we 
+see the observed number of antisense reads in a region, given the total number 
+of reads seen there and the global rate of antisense transcription.  After calculating
+this value for each feature the set of p-values is corrected using a Benjamini and
+Hochberg multiple testing correction.  Each probe
+is quantitated by the obs/exp ratio for antisense reads, but alongside that a 
+probe list is constructed for each data store which contains the list of features
+whose antisense level passed the significance threshold set in the pipeline options.
+</p>
+
+<h2>Options</h2>
+
+<ol>
+<li>You can specify the annotation track to use to define the features for this
+analysis.  All features must have an associated strand or they will be ignored</li>
+
+<li>You can opt to ignore any features which have an antisense overlap to another
+feature in the same track to allow you to look for novel antisense transcription</li>
+
+<li>You can specify whether your library is same strand or opposing strand specific.
+Different protocols can alter which strand is actually sequenced</li>
+
+<li>You can set the significance threshold for the lists of significantly antisense
+transcribing features</li>
+
+</ol>
+
+
+
+</body>
+</html>

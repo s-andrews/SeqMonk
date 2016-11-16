@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>Importing GFF or GTF Annotation Files</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Importing GFF or GTF Annotation Files</h1>
+<p>
+GFF and its relative GTF are simple text formats designed to
+describe annotation features.  Older versions of GFF were able
+to describe only single locus features, but newer versions
+are able to link together multiple entries to create split
+location features.
+</p>
+<p>
+SeqMonk is able to import annotation tracks from all variants
+of GFF or GTF files.
+</p>
+
+<h2>Options</h2>
+<p>
+Since some GFF files (and GTF files in particular) will contain
+features of types which will be present in the core annotation 
+tracks the GFF importer will allow you to specify a prefix which
+will be applied to all of your feature names when they are
+imported. So for example if you specify a prefix of &quot;custom_&quot;
+then any CDS features will be imported as custom_CDS features so you
+can easily tell them apart from the CDS features in the core annotation
+set.
+</p>
+
+</body>
+</html>

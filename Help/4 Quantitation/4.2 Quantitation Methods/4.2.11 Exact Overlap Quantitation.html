@@ -1,0 +1,43 @@
+<html>
+
+<head>
+<title>Exact Overlap Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Exact Overlap Quantitation</h1>
+
+<p>
+The exact overlap quantitation is generally used in concert with the 
+read position probe generator.  It is used to count the number of
+reads whose positions exactly match those of the probe. 
+</p>
+<p><img src="exact_overlap_count_quantitiation.png" alt="Exact Overlap Count Picture"></p>
+<h2>Options</h2>
+<p>
+<ol>
+<li>The types of reads you want to count (All / Forward / Reverse / Unknown)</li>
+<li>Whether you want to correct for the total read count.  If you are comparing
+different datasets with different total counts then this will normalise the average
+count per probe.  This correction is done relative to either the largest count in the 
+stores being quantitated, such that the largest set will show raw counts and the
+counts in all other sets will be scaled up proportionally, or per million reads</li>
+<li>If you want the total read count correction to be applied only using reads
+inside the current probeset.  This would be useful if you wanted to exclude certain
+regions of the genome from this correction (eg Chr X/Y).
+</li>
+<li>If you want to log transform your count.  If you have a large range of values
+in your count you can calculate them on a log2 scale to make them easier to view.</li>
+<li>If you want to ignore duplicated reads.  If you select this option then every
+unique read position (start, end and strand must be the same) will only be counted
+once and duplicates will be ignored</li>
+</ol></p>
+</body>
+</html>

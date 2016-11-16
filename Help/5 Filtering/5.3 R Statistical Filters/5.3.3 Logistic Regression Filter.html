@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<title>Logistic Regression Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Logistic Regression Filter</h1>
+
+<p>This is an R based filter so will only be available if you have configured
+R in the SeqMonk preferences and installed the pre-requisite packages</p>
+
+<p>
+The logistic regression filter is of use for data sets where you are interested in
+the difference in the proportion of forward and reverse reads in two replicate
+sets which each have at least 3 data stores in them.  It is most commonly used for
+the analysis of replicated bisulphite sequencing data.
+</p>
+
+
+<h2>Options</h2>
+<ul>
+<li>You need to two Replicate Sets to compare from the list on the left.</li>
+<li>You need to select a p-value cutoff for the filter</li>
+<li>You can choose to pre-filter your data by an absolute difference in the 
+percentage of forward reads in the two data sets</li>
+</ul>
+</body>
+</html>

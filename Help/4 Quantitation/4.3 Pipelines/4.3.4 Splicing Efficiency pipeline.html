@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<title>The Splicing Efficiency pipeline</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Splicing Efficiency pipeline</h1>
+
+<p>
+The splicing efficincy pipeline is similar to the RPKM pipeline in that it is 
+a pipeline which is designed specifically for RNA-Seq data, and looks at the
+content of exons but in the context of whole transcripts or genes.
+</p>
+<p>
+The purpose of the pipeline is to provide a way to measure the relative proportion
+of reads falling into introns and exons in a quantitative way.  This proportion
+can be useful in a number of ways but is most likely to be used when the relative
+propotion of mature and unspliced transcript can be used to indirectly measure the
+efficiency of splicing, or the efficiency of the degradation of the mature message.
+<p>
+<img src="splicing_efficiency_quantitiation.png" alt="Splicing Efficiency Quantitation">
+</p>
+<p>
+The pipeline generates a set of probes covering every gene in the genome, it also
+makes up a merged set of regions covering all of the exons of all of the splice forms
+of that gene.  It can then count the number of reads falling into either the exonic
+or intronic parts of the gene and can base its calculation on these.
+</p>
+
+
+<h2>Options</h2>
+<p>The options you can set for this pipeline are:</p>
+<ol>
+<li>The feature type to use as genes and transcripts for this analysis. This will
+default to gene and mRNA if these are present.  Other types can be selected, but 
+it is important that the transcript features use the Ensembl convention of naming
+transcripts by the feature name followed by a dash and a 3 digit number indicating
+the splice form.  If this convention is not used then the pipeline will not be able
+to correctly match transcripts to their corresponding gene and the counts produced
+will be wrong.</li>
+
+<li>The type of library you are quantitating. Some RNA-Seq libraries are strand specific
+and in these cases the pipeline can ignore reads coming from the wrong strand.  You can
+also choose between strand specific libraries which produce reads on the same strand as
+the feature or the opposing strand.
+</li>
+
+<li>Whether you want to count reads instead of bases.  The basic counts for this 
+quantitation are made in bases since many reads will be split over two or more exons
+and would otherwise be counted multiple times.  If this option is selected the 
+pipeline works out the longest read length from each dataset and divides the base
+counts by this value, rounding down any fractional values, to obtain a number of
+reads per transcript.  You generally want to apply this transformation otherwise
+undue emphasis is placed on the set of reads which only have part of one read overlapping
+them.</li>
+
+<li>Whether the results should be log2 transformed.  Data analysis and visualisation of
+this type of data is often easier when performed on a log scale.  If this option is selected then
+empty exons or introns will be given a count of 0.9 bases (or 0.9 reads if read length correction
+is applied).  This count is applied before read length or total read count correction is applied.</li>
+
+<li>Whether to correct for the length of each transcript.  If this option is selected then
+the quantitated values are expressed per kilobase of transcript.  This option is selected by 
+default and makes sense when comparing the density of reads in exons and introns where you
+can say that a 1:1 ratio indicates the same read density in both contexts.</li>
+
+</ol>
+
+</body>
+</html>

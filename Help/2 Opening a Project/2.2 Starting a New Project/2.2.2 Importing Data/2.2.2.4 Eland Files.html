@@ -1,0 +1,41 @@
+<html>
+
+<head>
+<title>Importing Eland Files</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Importing Eland Files</h1>
+<p>
+Eland produces several different file formats, but the ones you need to load data
+into SeqMonk are the _export.txt or _sorted.txt files.  These both have the same
+format, but the sorted file has undergone additional filtering to the export file.
+</p>
+<p>
+Because the Eland format is well defined you don't need to specify much information
+to import your data.
+</p>
+<p><img src="eland_options.png" alt="Eland Options"></p>
+<h2>Options</h2>
+<p>
+There are no Eland specific options so you will just see the common options for 
+both single and paired end data.
+</p>
+<h2>Paired End Data Import</h2>
+<p>
+If you have done a paired end run you will have two sorted or export files.  If you
+want to import your data as a single end run then you will need to select both 
+files and then combine the results in a data group once you've imported them.  If you
+want to do a paired end import then you only need to select one of the files (it doesn't
+matter which one).  If you select them both you will end up with the same regions imported
+twice.
+</p>
+</body>
+</html>

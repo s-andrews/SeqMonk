@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>The Bean Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Bean Plot</h1>
+
+<p>
+The Bean Plot is a view designed to let you compare the
+distribution of probe values across several data stores, or
+several probe lists across a single data store.
+</p>
+
+<p><img src="bean_plot.png" alt="The Bean Plot"></p>
+
+<p>
+A bean plot is a more complete way to represent a distribution than
+more summarised plots such as a box whisker plot.  It shows the 
+smoothed density of points over a window called the 'bandwidth' so
+you can more easily represent more complex distributions accurately.
+</p>
+
+<p>
+In SeqMonk the bandwidth used is 5% of the total range of the 
+quantitation displayed in the plot.
+</p>
+
+<p>
+To create a Bean plot select Plots &gt; Bean Plot
+from the main menu.  You can then choose whether you want the plot
+to show all visible data stores for the currently active probe list
+or whether you want to select a set of probe lists to plot for the
+currently active data store. The plot window will appear immediately and
+the individual plots will appear as they are calculated.  This 
+may take a few seconds for larger data sets.
+</p>
+
+<p>
+Where multiple plots are drawn they will all be placed onto the same
+scale so you can quickly compare between them.
+</p>
+<p>
+Within the Bean plot menu you can choose to plot either:
+</p>
+<ul>
+<li>One probe list against the currently visible set of DataStores</li>
+<li>The currently active data store against a selected set of probe lists</li>
+<li>A set of probe lists against the currently visible data stores (in this case
+you can choose within the plot if the data stores or the probe lists go on
+the x-axis)</li>
+
+</body>
+</html>

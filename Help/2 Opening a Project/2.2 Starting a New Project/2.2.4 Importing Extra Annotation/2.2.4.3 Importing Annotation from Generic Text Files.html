@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>Importing an Annotation Set from a Text File</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Importing an Annotation Set from a Text File</h1>
+<p>
+If you have genome annotations in a non-standard format then you can use the
+generic text import option to bring them in to SeqMonk.
+</p>
+<p>
+The program will present you with a view of the top of your file and series
+of contols you can use to tell SeqMonk how to read the format.
+</p>
+<p>
+<img src="generic_text_import_annotation.png">
+</p>
+<p>
+To define your format simply use the drop down boxes on the right to tell
+SeqMonk what character is used as a delimiter in your file, and which
+columns contain which pieces of information.  To import data the columns of
+information you need to supply are:
+</p>
+<ul>
+<li>The chromosome</li>
+<li>The start position</li>
+<li>The end position</li>
+</ul>
+
+<p>
+All other fields are optional, but can be useful:
+</p>
+<ul>
+<li>The strand - features will be marked as unknown strand if this is not supplied</li>
+<li>The type (eg CDS, mRNA)</li>
+<li>The name of the feature - this will be the location if no name is supplied</li>
+<li>A longer description - this will be blank if not supplied</li>
+</ul>
+
+For the type of feature there is also a text box into which you can enter a
+type which will be applied to all features imported from the current file.  If you don't
+specify a type column or a manual type then the name of the file will be used as
+the type.
+
+</body>
+</html>

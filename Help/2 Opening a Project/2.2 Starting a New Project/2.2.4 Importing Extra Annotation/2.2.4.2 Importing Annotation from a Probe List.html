@@ -1,0 +1,42 @@
+<html>
+
+<head>
+<title>Importing a ProbeList as an Annotation Set</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Importing a ProbeList as an Annotation Set</h1>
+<p>
+SeqMonk can only store one probe list so if you regenerate your probes
+then the previous list is lost.  If you therefore want to be able to make
+some comparisons between different ways of generating probes then you
+need to create parallel versions of your project.
+</p>
+<p>
+An alternative to this is to convert a filtered probe list to a feature
+track before generating a new list.  In this way you can preserve the 
+positions of regions of interest and use them either visually or 
+to annotate future probe lists.
+</p>
+<p>
+The ProbeList annotation parser simply converts the currently active
+probe list into an annotation track.  Both the annotation set and the
+individual features created are named after the probe list you choose
+by default.  You can opt to change the type of features created when
+you make the new annotation set. The name of the annotation set can be
+changed later, but the feature type cannot.
+</p>
+<p>
+There are no options to set so as soon as you select this option you
+will see a new annotation set appear in your data view and the new
+track will immediately be available in the annotaton track selector.
+</p>
+</body>
+</html>

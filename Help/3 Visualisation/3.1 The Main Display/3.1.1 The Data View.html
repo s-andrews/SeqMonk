@@ -1,0 +1,109 @@
+<html>
+
+<head>
+<title>The Data View</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Data View</h1>
+
+<p>
+The data view gives you a quick overview of your DataSets, DataGroups, Replicate
+Sets, Annotation sets and ProbeLists.
+</p>
+<p><img src="data_view.png" alt="The Data View"></p>
+<p>
+The view consists of a set of folders which can be expanded or collapsed either by
+double clicking them or by clicking on the little + or - symbols which may appear
+next to them.
+</p>
+<h2>DataSets, DataGroups and Replicate Sets</h2>
+<p>
+As well as seeing your DataSets, DataGroups and Replicate Sets you can also use the
+data view to perform operations on them.
+</p>
+<p>
+If you click on any DataStore entry in the data view you will see it 
+become highlighted.  If that DataStore is currently visible in the chromosome
+view then it will have a red line at the top and bottom of the track so you can
+quickly see where it is.
+</p>
+<p>
+If you right click (or Apple+click) on any DataStore you will see a 
+popup menu of options appear.
+</p>
+<p><img src="data_view_datastore_popup.png" alt="Popup Menu"></p>
+<p>
+The options are:
+</p>
+<ul>
+<li>Show track in chromosome view:  This is a toggle option to turn a track on or
+off in the chromosome view.  If the track is currently visible you will see a tick
+next to this option.  New tracks are added a the end of the current set of tracks.
+For more flexible options for adding/removing tracks use the View &gt; Set Data Tracks
+option in the main menu.
+</li>
+<li>Show Read Length Histogram: Where you have a range of read sizes in your data it
+can be useful to see the distribution of sizes.  Selecting this option will bring up
+a histogram showing the abundace of reads of different lengths.</li>
+<li>Show Probe Value Histogram: After you have quantitated your data you can use this
+option to display a histogram of the range of values assigned to the probes in your
+current probe set.</li>
+<li>Rename: This allows you to change the name of this DataStore</li>
+<li>Delete (Not DataSets): You can delete this data store.</li>
+<li>Properties: This will show some basic information about your data store.
+</ul>
+<h2>Annotation Sets</h2>
+<p>
+The annotation sets folder will initially only show you an entry for the
+core genome annotations which come with each imported SeqMonk genome.  If you
+<a href="../../2%20Opening%20a%20Project/2.2%20Starting%20a%20New%20Project/2.2.4%20Importing%20Extra%20Annotation/2.2.4%20Importing%20Extra%20Annotation.html">Import Extra Annotation</a>
+then this will show up in this folder.
+</p>
+<p>
+Right-clicking on an entry in this folder brings up a popup menu with the following options:
+</p>
+<ul>
+	<li>Properties: Brings up a summary of the types of features in this annotation set</li>
+	<li>Rename: Allows you to change the name of this set (not allowed for Core Genome annotation)</li>
+	<li>Delete: Deletes this annotation from your project (not allowed for Core Genome annotation)</li>
+</ul>
+
+<h2>Probe Lists</h2>
+<p>
+The set of probe lists will initially be empty until you have created some probes and
+run one or more filters to generate some lists.  The lists appear in a heirarchical
+tree representing the order in which they were generated.
+</p>
+<p>
+If you select a probe list then your chromosome view will change to show only the probes
+which are present in that list.  If you want to change back to seeing all probes again 
+you should click on the All Probes list at the root of the tree.
+</p>
+<p>
+As with the DataStores you can right-click (or Apple+click) on a probe list to bring up
+a popup menu of options.  These allow you rename or delete this list.  There is also an
+option to view the list, you can do this either by selecting this option from the menu, or
+by double clicking on the list.  This will generate a dialog which looks like this:
+</p>
+<p><img src="probe_list_view.png" alt="The Probe List View"></p>
+<p>
+This is a simple dialog which gives you minimal information about the probes in your list.
+But will tell you what filter options were used to create the list.  In the case of the
+all probes list you will be told what options were used to create the initial probe set.
+You can sort the dialog by clicking on the column headers and can view any probe in the
+chromosome view by double clicking on any row of the table.
+</p>
+<p>
+For a more informative view of a probe list you might prefer to use the Annotated Probe
+Report or the Probe Group Report.
+</p>
+</body>
+</html>

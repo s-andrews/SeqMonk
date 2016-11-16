@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title>Common Problems</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Common Problems</h1>
+<p>
+There are a few common problems which can arise when running SeqMonk.  Below are the
+most common things you are likely to see along with a work-round to get you going again.
+</p>
+
+<h2>SeqMonk fails to start</h2>
+
+<p>
+SeqMonk is a java application. This means that in order to run SeqMonk you need to have installed 
+a java runtime environment (JRE). If you do not have a JRE installed then SeqMonk will not start.
+</p>
+<p>
+There are a number of free available JREs. SeqMonk has been tested to work with Sun JRE v1.5 and v1.6
+running under windows, linux and MacOSX. If you don't have this JRE already you can get it from 
+http://java.sun.com. Other java environments/versions may also work, but we haven't tested them.
+</p>
+
+<h2>SeqMonk runs slowly or dies whilst loading data</h2>
+
+<p>
+The nature of the data SeqMonk has to deal with is that it is very large. Both genome annotations and 
+sequence data take up huge amounts of memory. SeqMonk requires at least 1GB of RAM for small experiments,
+and large experiments may require more. If you're having problems with memory usage then look at the 
+<a href="../8%20Configuration/8.2%20Memory%20Settings.html">memory settings</a> and 
+<a href="../8%20Configuration/8.1%20SeqMonk%20Preferences.html">preferences</a>
+documentation to see how you can enable more memory or reduce the amount of memory SeqMonk requires.
+</p>
+
+<h2>SeqMonk won't download new genomes</h2>
+
+<p>
+If SeqMonk fails to import new genomes it's probably because it was unable to contact the web server 
+which provides this data. In order to do this your machine needs to be able to access the internet.
+</p>
+<p>
+If your machine is networked and genome importing still doesn't work then the most common cause is 
+the proxy server settings (under Network from Edit > Preferences). If your network uses a proxy server 
+you should enter its details here. If not then the proxy server name should be left blank. 
+</p>
+
+<h2>SeqMonk reports you have stale temp files</h2>
+
+<p>
+If SeqMonk is ever closed without going through a normal shutdown process (eg crashing, or being killed
+in TaskManager) then it can leave behind cache files which will not be cleaned up. These won't prevent
+SeqMonk from running in the future, but they will take up space on your system and they serve no useful
+purpose.  You will therefore be warned on startup if you have old temp files in your cache directory.
+</p>
+<p>
+To clean up stale temp files simply close all instances of SeqMonk, then check in your cache directory
+and delete any file whose name starts with seqmonk and ends with .temp.
+</p>
+<p>
+If you have two copies of SeqMonk running at the same time you will be incorrectly warned that you have
+stale temp files since the second copy will see the temp files from the first copy.  In this case you
+can safely ignore this warning.
+</p>
+
+
+</body>
+</html>

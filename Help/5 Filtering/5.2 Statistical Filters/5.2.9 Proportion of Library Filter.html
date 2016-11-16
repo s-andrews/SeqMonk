@@ -1,0 +1,37 @@
+<html>
+
+<head>
+<title>Proportion of Library Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Proportion of Library Filter</h1>
+<p>
+The proportion of library filter is a simplistic enrichment filter which 
+uses a Chi-square test to examine whether the proportion of reads from
+the whole library falling into a given probe has changed between two
+data stores.
+</p>
+<p>
+The test does not re-quantitate your data, but expects that your quantitations
+will be raw uncorrected count values.
+</p>
+
+<h2>Options</h2>
+<ul>
+<li>You can choose the data stores you want to use for the test. At least 2
+stores must be selected.</li>
+<li>You can choose the significance threshold for the analysis</li>
+<li>You can choose whether to apply multiple testing correction to your raw
+p-values (you really should in nearly all cases)</li>
+<li>You can choose to check only for enrichment, rather than enrichment or depletion</li>
+</ul>
+</body>
+</html>
