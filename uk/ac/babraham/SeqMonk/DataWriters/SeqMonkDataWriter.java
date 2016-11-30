@@ -156,7 +156,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 	 * @param file the file
 	 */
 	public void writeData (DataCollection data, File file) {
-		data = this.data;
+		this.data = data;
 		genome = data.genome();
 		this.file = file;
 		
@@ -310,9 +310,11 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 		p.println("Genome\t"+genome.species()+"\t"+genome.assembly());
 		
 		// Now we print out the list of default feature tracks to show
-		p.println("Features\t"+defaultFeatureTracks.length);
-		for (int i=0;i<defaultFeatureTracks.length;i++) {
-			p.println(defaultFeatureTracks[i]);
+		if (defaultFeatureTracks != null) {
+			p.println("Features\t"+defaultFeatureTracks.length);
+			for (int i=0;i<defaultFeatureTracks.length;i++) {
+				p.println(defaultFeatureTracks[i]);
+			}
 		}
 	}
 	

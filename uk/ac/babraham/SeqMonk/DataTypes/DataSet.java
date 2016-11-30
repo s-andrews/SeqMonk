@@ -451,7 +451,9 @@ public class DataSet extends DataStore implements Runnable {
 					return lastCachedReads;
 				}
 				
-				SeqMonkApplication.getInstance().cacheUsed();
+				if (SeqMonkApplication.getInstance() != null) {
+					SeqMonkApplication.getInstance().cacheUsed();
+				}
 				
 				
 				// If not then we need to reload the data from the

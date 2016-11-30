@@ -7,6 +7,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BAMFileParser;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Genome;
 import uk.ac.babraham.SeqMonk.DataWriters.SeqMonkDataWriter;
@@ -36,6 +37,7 @@ public class SeqMonkImporter implements ProgressListener {
 	
 	private boolean wait = false;
 	private Genome genome;
+	private DataCollection data;
 	
 	public SeqMonkImporter (String [] args) {
 		
@@ -79,7 +81,9 @@ public class SeqMonkImporter implements ProgressListener {
 			System.exit(1);
 		}
 		
-		DataCollection data = new DataCollection(genome);
+		data = new DataCollection(genome);
+		
+		System.err.println("Genome for data collection is "+data.genome());
 
 		System.err.println("Parsing Files");
 
@@ -135,8 +139,18 @@ public class SeqMonkImporter implements ProgressListener {
 
 	public void progressComplete(String command, Object result) {
 		
+		System.err.println(command);
+		
 		if (command.equals("load_genome")) {
 			genome = (Genome)result;
+		}
+	
+		if (command.equals("datasets_loaded")) {
+			DataSet [] newSets = (DataSet [])result;
+			
+			for (int i=0;i<newSets.length;i++) {
+				data.addDataSet(newSets[i]);
+			}
 		}
 		
 		wait = false;
