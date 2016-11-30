@@ -105,7 +105,7 @@ public class BeanPlotPanel extends JPanel {
 		
 		float binWidth = (maxValue-minValue)/(numberOfBins-1);
 		
-		System.err.println("Bin Width is "+binWidth);
+//		System.err.println("Bin Width is "+binWidth);
 		
 		for (int i=0;i<centres.length;i++) {
 			centres[i] = minValue+(binWidth*i);
@@ -135,7 +135,8 @@ public class BeanPlotPanel extends JPanel {
 				for (int bin2=bin;bin2<centres.length;bin2++) {
 					if (binMins[bin2] > data[d]) continue DATA;
 					++counts[bin2];
-				}	
+				}
+				continue DATA;
 			}
 		}
 		
