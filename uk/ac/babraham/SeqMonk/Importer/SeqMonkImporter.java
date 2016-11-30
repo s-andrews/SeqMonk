@@ -83,25 +83,30 @@ public class SeqMonkImporter implements ProgressListener {
 		
 		data = new DataCollection(genome);
 		
-		System.err.println("Genome for data collection is "+data.genome());
+		System.err.println("Genome loaded for "+data.genome());
 
-		System.err.println("Parsing Files");
+		System.err.println("Parsing Data");
 
 		BAMFileParser parser = new BAMFileParser(data);
-		parser.setFiles(files);
-		parser.addProgressListener(this);
-		wait = true;
-		try {
-			parser.parseData();
-		} catch (SeqMonkException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 		
-		while(wait) {
+		for (int f=0;f<files.length;f++) {
+		
+			System.err.println("Parsing "+files[f].getName());
+			parser.setFiles(new File[]{files[f]});
+			parser.addProgressListener(this);
+			wait = true;
 			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {}
+				parser.parseData();
+			} catch (SeqMonkException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		
+			while(wait) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {}
+			}
 		}
 		
 		SeqMonkDataWriter writer = new SeqMonkDataWriter();
@@ -138,9 +143,7 @@ public class SeqMonkImporter implements ProgressListener {
 	public void progressCancelled() {}
 
 	public void progressComplete(String command, Object result) {
-		
-		System.err.println(command);
-		
+				
 		if (command.equals("load_genome")) {
 			genome = (Genome)result;
 		}

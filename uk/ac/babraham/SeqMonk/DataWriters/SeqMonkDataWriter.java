@@ -160,6 +160,9 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 		genome = data.genome();
 		this.file = file;
 		
+		// We made all data sets visible by default
+		visibleStores = data.getAllDataStores();
+		
 		Thread t = new Thread(this);
 		t.start();
 	}
