@@ -149,6 +149,23 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 		t.start();
 	}
 
+	/**
+	 * Write data.
+	 * 
+	 * @param application the application
+	 * @param file the file
+	 */
+	public void writeData (DataCollection data, File file) {
+		data = this.data;
+		genome = data.genome();
+		this.file = file;
+		
+		Thread t = new Thread(this);
+		t.start();
+	}
+	
+	
+	
 	public void cancel() {
 		cancel = true;
 	}
@@ -224,7 +241,9 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 				}
 			}
 
-			printVisibleDataStores(dataSets, dataGroups, replicateSets, p);
+			if (visibleStores != null) {
+				printVisibleDataStores(dataSets, dataGroups, replicateSets, p);
+			}
 
 			if (probes != null) {
 				if (!printProbeLists(probes,p)) {
@@ -232,7 +251,9 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 				}
 			}
 			
-			printDisplayPreferences(p);
+			if (defaultFeatureTracks != null) {
+				printDisplayPreferences(p);
+			}
 			
 			p.close();
 
