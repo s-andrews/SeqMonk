@@ -124,6 +124,12 @@ public class SeqMonkImporter implements ProgressListener {
 	
 	
 	public static void main(String[] args) {
+		
+//		for (int i=0;i<args.length;i++) {
+//			System.err.println(""+(i+1)+":"+args[i]);
+//		}
+		
+		
 		new SeqMonkImporter(args);
 	}
 
