@@ -6,6 +6,11 @@ use FindBin qw($RealBin);
 use Getopt::Long;
 use IPC::Open3;
 
+# Quick check that they've supplied some arguments
+unless (@ARGV) {
+	die "SeqMonk non-interactive project creator\nUsage is seqmonk_import --outfile [out.smk] --genome [Species/assembly] [file1.bam] [file2.bam]\nRun seqmonk_import --help for more options\n";
+}
+
 # Check to see if they've mistakenly downloaded the source distribution
 # since several people have made this mistake
 
@@ -35,7 +40,7 @@ my @java_args= ("-Djava.awt.headless=true");
 
 my $help;
 my $memory;
-my $mapq;
+my $mapq = -1;
 my $genome;
 my $outfile;
 my $spliced;
@@ -108,7 +113,12 @@ unshift @java_args,"-Xmx${actual_memory}m";
 # Expand the default stack size to allow for large recursive sorts
 unshift @java_args,"-Xss4m";
 
-exec "java",@java_args, "uk.ac.babraham.SeqMonk.Importer.SeqMonkImporter", $genome, $outfile, "0",$mapq, @files;
+# Work out the value we're using for splicing, 0 = auto, 1 = unspliced, 2 = spliced
+my $spliced_value = 0;
+$spliced_value = 1 if ($unspliced);
+$spliced_value = 2 if ($spliced);
+
+exec "java",@java_args, "uk.ac.babraham.SeqMonk.Importer.SeqMonkImporter", $genome, $outfile, $spliced_value,$mapq, @files;
 
 sub print_error {
 	

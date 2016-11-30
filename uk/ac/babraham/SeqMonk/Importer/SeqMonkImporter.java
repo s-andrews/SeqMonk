@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BAMFileParser;
+import uk.ac.babraham.SeqMonk.DataParsers.DataParserOptionsPanel;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
@@ -38,6 +39,7 @@ public class SeqMonkImporter implements ProgressListener {
 	private boolean wait = false;
 	private Genome genome;
 	private DataCollection data;
+	private int warningsCount;
 	
 	public SeqMonkImporter (String [] args) {
 		
@@ -88,11 +90,35 @@ public class SeqMonkImporter implements ProgressListener {
 		System.err.println("Parsing Data");
 
 		BAMFileParser parser = new BAMFileParser(data);
-		
+				
 		for (int f=0;f<files.length;f++) {
 		
 			System.err.println("Parsing "+files[f].getName());
 			parser.setFiles(new File[]{files[f]});
+			
+			if (f==0) {
+				// Fetching this will trigger the auto-configure of the settings
+				// we only want to call this once so that we keep consistent settings
+				// for all of the files we parse.
+				DataParserOptionsPanel options = (DataParserOptionsPanel)parser.getOptionsPanel();
+
+				
+				// If they've chosen to do auto-configure then we don't need to change the
+				// splicing options.  If they've forced it then we do.
+				if (splitReads == 1) {
+					options.setSpliced(false);
+				}
+				else if (splitReads == 2) {
+					options.setSpliced(true);
+				}
+				
+				
+				// We'll assume that any positive MAPQ is a real cutoff.
+				if (mapqCutoff >= 0) {
+					options.setMinMappingQuality(mapqCutoff);
+				}
+			}
+			
 			parser.addProgressListener(this);
 			wait = true;
 			try {
@@ -107,6 +133,13 @@ public class SeqMonkImporter implements ProgressListener {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {}
 			}
+			
+			// See if there were any warnings
+			if (warningsCount > 0) {
+				System.err.println("There were "+warningsCount+" import warnings for "+files[f].getName());
+				warningsCount = 0;
+			}
+			
 		}
 		
 		SeqMonkDataWriter writer = new SeqMonkDataWriter();
@@ -141,7 +174,7 @@ public class SeqMonkImporter implements ProgressListener {
 	}
 
 	public void progressWarningReceived(Exception e) {
-		System.err.println(e.getMessage());
+		++warningsCount;
 	}
 
 	public void progressUpdated(String message, int current, int max) {}
