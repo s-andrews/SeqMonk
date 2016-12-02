@@ -1,3 +1,23 @@
+RELEASE NOTES FOR SeqMonk v1.36.0
+---------------------------------
+
+This release adds one new major piece of functionality to seqmonk and fixes a 
+bug in the bean plot.
+
+The new functionality is a non-interactive import script 'seqmonk_import'.  This
+script allows you to create a new seqmonk project in a completely automated way
+so that you don't need to launch an interactive session to do your initial data
+import.  This can be really useful where data might be stored on a cluster where
+interactive sessions are impractical, and will save the hassle of having to 
+transfer all of the BAM files to a local machine to set up the project.
+
+The bug fix affects the high end of the quantitation distribution in beanplots.  In
+some cases probes with counts in the highest bins were being counted multiple times
+causing the top end of the plot to stretch in a way which didn't actually reflect the
+distribution of the data.  This issue is now fixed.
+
+
+
 RELEASE NOTES FOR SeqMonk v1.35.0
 ---------------------------------
 
