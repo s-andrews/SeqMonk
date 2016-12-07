@@ -50,6 +50,7 @@ import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
 import uk.ac.babraham.SeqMonk.Gradients.InvertedGradient;
+import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class HierarchicalClusterDialog extends JDialog implements ProgressListener, ChangeListener, ActionListener {
@@ -65,10 +66,20 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 	private JComboBox gradients;
 	private JCheckBox invertGradient;
 	private ClusterDataSource clusterDataSource;
+	private boolean negativeScale;
 
 	public HierarchicalClusterDialog (ProbeList probes, DataStore [] stores, boolean normalise) {
 		super(SeqMonkApplication.getInstance(),"Hierarchical Clusters for "+probes.name());
 		this.probes = probes;
+		
+		// Work out whether we're using a pos-neg or just pos scale
+		if (normalise) {
+			negativeScale = true;
+		}
+		else if (DisplayPreferences.getInstance().getScaleType() == DisplayPreferences.SCALE_TYPE_POSITIVE_AND_NEGATIVE) {
+			negativeScale = true;
+		}
+		
 		
 		// Only use stores which are actually quantitated
 		Vector<DataStore> keptStores = new Vector<DataStore>();
@@ -236,7 +247,12 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 		if (invertGradient.isSelected()) {
 			gradient = new InvertedGradient(gradient);
 		}
-		scaleBar = new GradientScaleBar(gradient, -2, 2);
+		if (negativeScale) {
+			scaleBar = new GradientScaleBar(gradient, -2, 2);
+		}
+		else {
+			scaleBar = new GradientScaleBar(gradient, 0, 2);
+		}
 		JPanel topBottomSplit = new JPanel();
 		topBottomSplit.setLayout(new GridLayout(2, 1));
 		topBottomSplit.add(new JPanel());
@@ -262,7 +278,12 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 			if (ce.getSource() == dataZoomSlider) {
 				double value = Math.pow(2,dataZoomSlider.getValue()/10d);
 				clusterPanel.setMaxValue(value);
-				scaleBar.setLimits(0-value, value);
+				if (negativeScale) {
+					scaleBar.setLimits(0-value, value);
+				}
+				else {
+					scaleBar.setLimits(0, value);
+				}
 			}
 			else if (ce.getSource() == clusterSlider) {
 				int sliderValue = clusterSlider.getValue();

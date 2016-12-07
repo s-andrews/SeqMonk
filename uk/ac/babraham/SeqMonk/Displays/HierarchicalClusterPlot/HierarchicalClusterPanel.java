@@ -73,6 +73,10 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 	
 	// The gradient we're using
 	private ColourGradient gradient;
+	
+	// This is a flag to say whether the gradient we're using is going to be negative
+	// as well as positive
+	private boolean negativeScale = false;
 
 
 	public HierarchicalClusterPanel (ProbeList probes, DataStore [] stores, ClusterPair clusters, boolean normalise, ColourGradient gradient) {
@@ -82,7 +86,14 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 		this.probes = probeList.getAllProbes();
 		this.normalise = normalise;
 		this.gradient = gradient;
-
+		
+		if (normalise) {
+			negativeScale = true;
+		}
+		else if (DisplayPreferences.getInstance().getScaleType() == DisplayPreferences.SCALE_TYPE_POSITIVE_AND_NEGATIVE) {
+			negativeScale = true;
+		}
+		
 		clusterPostions = new int [this.probes.length];
 		Integer [] clusterOrder = clusters.getAllIndices();
 		for (int i=0;i<clusterOrder.length;i++) {
@@ -250,6 +261,7 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 			calculateSkippablePositions();
 		}
 
+		
 		// Work out how big a font we can use
 		Font nameFont = new Font("sans",Font.PLAIN,10);
 		Font originalFont = g.getFont();
@@ -293,7 +305,14 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 				int startX = getXForPosition(d);
 				int endX = getXForPosition(d+1);
 
-				g.setColor(gradient.getColor(theseValues[d], 0-maxValue, maxValue));
+				if (Float.isNaN(theseValues[d])) continue;
+				
+				if (negativeScale) {
+					g.setColor(gradient.getColor(theseValues[d], 0-maxValue, maxValue));
+				}
+				else {
+					g.setColor(gradient.getColor(theseValues[d], 0, maxValue));
+				}
 
 				g.fillRect(startX, endY, endX-startX, yHeight);
 
