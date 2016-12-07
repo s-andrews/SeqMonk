@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Vector;
 
+import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
@@ -24,6 +26,8 @@ public class PCAData implements Runnable {
 	private DataStore [] stores;
 	private ProbeList probeList;
 	
+	private Probe [] usedProbes;
+	
 	private float [] variances;
 	private float [][] pcaResults;
 	private float [][] pcaRotations;
@@ -32,8 +36,41 @@ public class PCAData implements Runnable {
 	public PCAData (ProbeList probes,DataStore [] stores) {
 		this.stores = stores;
 		this.probeList = probes;
-		
+			
 		pd = new ProgressDialog("Running PCA...");
+	
+		// We need to filter the probes to only get those which have valid 
+		// values in all datasets otherwise we'll get a crash from R
+		
+		Vector<Probe> validProbes = new Vector<Probe>();
+		
+		usedProbes = probes.getAllProbes();
+		
+		PROBE: for (int p=0;p<usedProbes.length;p++) {
+			for (int s=0;s<stores.length;s++) {
+				try {
+					float value = stores[s].getValueForProbe(usedProbes[p]);
+					if (Float.isInfinite(value) || Float.isNaN(value)) {
+						continue PROBE;
+					}
+				}
+				catch (SeqMonkException sme) {
+					continue PROBE;
+				}
+			}
+			validProbes.add(usedProbes[p]);
+		}
+
+		if (validProbes.size() == 0) {
+			pd.progressExceptionReceived(new SeqMonkException("There weren't any probes which had valid (non-null, non-infinite) values across all Data Sets.  Can't run PCA."));
+			return;
+		}
+		
+		if (validProbes.size() < usedProbes.length) {
+			pd.progressWarningReceived(new SeqMonkException("Had to exclude "+(usedProbes.length-validProbes.size())+" probes which had invalid (null or infinite) values in at least one data store."));
+			usedProbes = validProbes.toArray(new Probe[0]);
+		}
+		
 		
 		Thread t = new Thread(this);
 		t.start();
@@ -44,9 +81,7 @@ public class PCAData implements Runnable {
 	private void runPCA () {
 		
 		File tempDir;
-		
-		Probe [] probes = probeList.getAllProbes();
-		
+				
 		try {
 
 			pd.progressUpdated("Creating temp directory",0,1);
@@ -77,13 +112,13 @@ public class PCAData implements Runnable {
 
 			pd.progressUpdated("Writing count data",0,1);
 			
-			for (int p=0;p<probes.length;p++) {
+			for (int p=0;p<usedProbes.length;p++) {
 								
 				sb = new StringBuffer();
 				for (int d=0;d<stores.length;d++) {
 					if (d>0) sb.append("\t");
 				
-					sb.append(stores[d].getValueForProbe(probes[p]));
+					sb.append(stores[d].getValueForProbe(usedProbes[p]));
 				}
 
 				pr.println(sb.toString());
@@ -183,7 +218,7 @@ public class PCAData implements Runnable {
 
 			line = br.readLine();
 
-			pcaRotations = new float[probeList.getAllProbes().length][variances.length];
+			pcaRotations = new float[usedProbes.length][variances.length];
 			
 			int probeIndex = 0;
 			while ((line = br.readLine()) != null) {
@@ -230,15 +265,14 @@ public class PCAData implements Runnable {
 	}
 	
 	public int getProbeCount () {
-		return probeList.getAllProbes().length;
+		return usedProbes.length;
 	}
 	
 	public Probe [] getProbesAt (int [] indices) {
 		
 		Probe [] returnProbes = new Probe[indices.length];
-		Probe [] allProbes = probeList.getAllProbes();
 		for (int i=0;i<indices.length;i++) {
-			returnProbes[i] = allProbes[indices[i]];
+			returnProbes[i] = usedProbes[indices[i]];
 		}
 		
 		return returnProbes;
@@ -285,17 +319,15 @@ public class PCAData implements Runnable {
 		return min;	
 	}
 	
-	public ProbeList getProbeList (int pcaIndex,double weightCutoff) {
+	public ProbeList getProbeList (int pcaIndex,double rotationCutoff) {
 
-		float [] weights = getPCARotations(pcaIndex);
-		Probe [] probes = probeList.getAllProbes();
-		
+		float [] rotations = getPCARotations(pcaIndex);		
 		
 		IntVector higherIndices = new IntVector();
 		IntVector lowerIndices = new IntVector();
 		
-		for (int i=0;i<weights.length;i++) {
-			if (weights[i] > weightCutoff) {
+		for (int i=0;i<rotations.length;i++) {
+			if (rotations[i] > rotationCutoff) {
 				higherIndices.add(i);
 			}
 			else {
@@ -315,11 +347,19 @@ public class PCAData implements Runnable {
 			direction = "above";
 		}
 		
+		String descriptionDirection;
+		if (direction.equals("below")) {
+			descriptionDirection = "low";
+		}
+		else {
+			descriptionDirection = "high";
+		}
 		
-		ProbeList filteredList = new ProbeList(probeList, "PC"+(pcaIndex+1)+" weighted probes", "Probes from PC"+(pcaIndex+1)+" with a weight "+direction+" "+weightCutoff, "Weight");
+		
+		ProbeList filteredList = new ProbeList(probeList, "PC"+(pcaIndex+1)+" "+descriptionDirection+" rotation probes", "Probes from PC"+(pcaIndex+1)+" with a rotation "+direction+" "+rotationCutoff, "Rotation");
 		
 		for (int i=0;i<indicesToAdd.length;i++) {
-			filteredList.addProbe(probes[indicesToAdd[i]], weights[indicesToAdd[i]]);
+			filteredList.addProbe(usedProbes[indicesToAdd[i]], rotations[indicesToAdd[i]]);
 		}
 				
 		return filteredList;	
