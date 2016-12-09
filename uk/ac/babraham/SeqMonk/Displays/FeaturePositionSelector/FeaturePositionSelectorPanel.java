@@ -43,7 +43,7 @@ import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 public class FeaturePositionSelectorPanel extends JPanel {
 
 	private JComboBox featureTypeBox;
-	private JCheckBox useSubfeaturesCheckbox;
+	private JComboBox subFeatureTypeBox;
 	private JCheckBox removeDuplicatesCheckbox;
 	private JCheckBox ignoreDirectionCheckbox;
 	private JComboBox positionTypeBox;
@@ -73,12 +73,11 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		gbc.gridy++;
 		gbc.gridx = 2;
 		gbc.weightx = 0.1;
-		add(new JLabel ("Split into subfeatures (exons)"),gbc);
+		add(new JLabel ("Split into subfeatures"),gbc);
 
 		gbc.gridx = 3;
-		useSubfeaturesCheckbox = new JCheckBox();
-		useSubfeaturesCheckbox.setSelected(false);
-		add(useSubfeaturesCheckbox,gbc);
+		subFeatureTypeBox = new JComboBox(new String [] {"No","Exons","Introns"});
+		add(subFeatureTypeBox,gbc);
 
 		if (showDuplicatesOptions) {
 			gbc.gridy++;
@@ -137,11 +136,26 @@ public class FeaturePositionSelectorPanel extends JPanel {
 	}
 	
 	public boolean useSubFeatures() {
-		return useSubfeaturesCheckbox.isSelected();
+		return !subFeatureTypeBox.getSelectedItem().equals("No");
 	}
 	
-	public void setUseSubFeatures (boolean b) {
-		useSubfeaturesCheckbox.setSelected(b);
+	public boolean useExonSubfeatures () {
+		return subFeatureTypeBox.getSelectedItem().equals("Exons");
+	}
+	
+	public void setUseSubFeatures (boolean useSubFeatures, boolean useExons) {
+		// The order of the options is No, Exons, Introns
+		if (useSubFeatures) {
+			if (useExons) {
+				subFeatureTypeBox.setSelectedIndex(1);
+			}
+			else {
+				subFeatureTypeBox.setSelectedIndex(2);
+			}
+		}
+		else {
+			subFeatureTypeBox.setSelectedIndex(0);
+		}
 	}
 	
 	public boolean removeDuplicates () {
@@ -194,15 +208,33 @@ public class FeaturePositionSelectorPanel extends JPanel {
 
 			for (int f=0;f<features.length;f++) {
 
-				if (useSubFeatures()  && (features[f].location() instanceof SplitLocation)) {
-					SplitLocation location = (SplitLocation)features[f].location();
-					Location [] subLocations = location.subLocations();
-					for (int s=0;s<subLocations.length;s++) {
-						makeProbes(features[f],chromosomes[c],subLocations[s],newProbes,false);
+				
+				if (useSubFeatures()) {
+					// We need to split this up so get the sub-features
+					if (features[f].location() instanceof SplitLocation) {
+						SplitLocation location = (SplitLocation)features[f].location();
+						Location [] subLocations = location.subLocations();
+						if (useExonSubfeatures()) {
+							System.err.println("Making exon probes");
+							for (int s=0;s<subLocations.length;s++) {
+								makeProbes(features[f],chromosomes[c],subLocations[s],newProbes,false);
+							}							
+						}
+						else {
+							System.err.println("Making intron probes");
+							// We're making introns
+							for (int s=1;s<subLocations.length;s++) {
+								makeProbes(features[f],chromosomes[c],new Location(subLocations[s-1].end()+1, subLocations[s].start()-1, features[f].location().strand()),newProbes,false);
+							}							
+						}
 					}
-				}
-				else {
-					makeProbes(features[f], chromosomes[c], features[f].location(), newProbes,false);
+					else {
+						if (useExonSubfeatures()) {
+							// We can still make a single probe
+							makeProbes(features[f], chromosomes[c], features[f].location(), newProbes,false);
+						}
+						// If we're making introns then we're stuffed and we give up.
+					}
 				}
 			}			
 		}
@@ -235,15 +267,30 @@ public class FeaturePositionSelectorPanel extends JPanel {
 
 			for (int f=0;f<features.length;f++) {
 
-				if (useSubFeatures()  && (features[f].location() instanceof SplitLocation)) {
-					SplitLocation location = (SplitLocation)features[f].location();
-					Location [] subLocations = location.subLocations();
-					for (int s=0;s<subLocations.length;s++) {
-						makeProbes(features[f],chromosomes[c],subLocations[s],newProbes,true);
+				if (useSubFeatures()) {
+					// We need to split this up so get the sub-features
+					if (features[f].location() instanceof SplitLocation) {
+						SplitLocation location = (SplitLocation)features[f].location();
+						Location [] subLocations = location.subLocations();
+						if (useExonSubfeatures()) {
+							for (int s=0;s<subLocations.length;s++) {
+								makeProbes(features[f],chromosomes[c],subLocations[s],newProbes,true);
+							}							
+						}
+						else {
+							// We're making introns
+							for (int s=1;s<subLocations.length;s++) {
+								makeProbes(features[f],chromosomes[c],new Location(subLocations[s-1].end()+1, subLocations[s].start()-1, features[f].location().strand()),newProbes,true);
+							}							
+						}
 					}
-				}
-				else {
-					makeProbes(features[f], chromosomes[c], features[f].location(), newProbes,true);
+					else {
+						if (useExonSubfeatures()) {
+							// We can still make a single probe
+							makeProbes(features[f], chromosomes[c], features[f].location(), newProbes,true);
+						}
+						// If we're making introns then we're stuffed and we give up.
+					}
 				}
 			}			
 		}

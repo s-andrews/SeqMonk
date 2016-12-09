@@ -29,10 +29,6 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
-import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
-import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
-import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
-import uk.ac.babraham.SeqMonk.DataTypes.Genome.SplitLocation;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.Displays.FeaturePositionSelector.FeaturePositionSelectorPanel;
@@ -50,6 +46,7 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 	private int endValue;
 
 	private boolean useSubfeatures = false;
+	private boolean useExonSubfeatures = false;
 	private boolean removeDuplicates = true;
 	private boolean ignoreDirection = false;
 	private String featureType;
@@ -77,6 +74,7 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 		ignoreDirection = optionPanel.ignoreDirection();
 		removeDuplicates = optionPanel.removeDuplicates();
 		useSubfeatures = optionPanel.useSubFeatures();
+		useExonSubfeatures = optionPanel.useExonSubfeatures();
 		featureType = optionPanel.selectedFeatureType();
 
 		startValue = optionPanel.startOffset();
@@ -99,7 +97,7 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 		
 		optionPanel = new FeaturePositionSelectorPanel(collection, true, true);
 		
-		optionPanel.setUseSubFeatures(useSubfeatures);
+		optionPanel.setUseSubFeatures(useSubfeatures, useExonSubfeatures);
 		optionPanel.setRemoveDuplicates(removeDuplicates);
 		optionPanel.setIgnoreDirection(ignoreDirection);
 
@@ -114,165 +112,18 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 		return true;
 	}
 
-	/**
-	 * Make a set of probes within an individual feature.
-	 * 
-	 * @param feature The individual feature to make probes around
-	 * @param chromosome
-	 * @param location The actual location to use - must be the whole region
-	 * @param newProbes The vector to add the new probes to
-	 * @param sets DataSets to check for reads if we're ignoring blanks
-	 */
-	private void makeProbes (Feature feature, Chromosome chromosome, Location location, Vector<Probe> newProbes) {
-		int start;
-		int end;
-		int strand = location.strand();
-
-		if (ignoreDirection) strand = Location.UNKNOWN;
-
-		if (optionPanel.positionType().equals("Upstream of feature")) {
-			if (strand == Location.FORWARD || strand == Location.UNKNOWN) {
-				start = location.start()-startValue;
-				end = location.start()+endValue;
-			}
-			else {
-				start = location.end()-endValue;
-				end = location.end()+startValue;
-			}
-
-			Probe p = makeProbe(feature.name()+"_upstream",chromosome,start,end,strand);
-			if (p != null) {
-
-				// Add this probe 
-				newProbes.add(p);
-			}
-		}
-
-		else if (optionPanel.positionType().equals("Over feature")) {
-			if (strand == Location.FORWARD || strand == Location.UNKNOWN) {
-				start = location.start()-startValue;
-				end = location.end()+endValue;
-			}
-			else {
-				start = location.start()-endValue;
-				end = location.end()+startValue;
-			}
-
-			Probe p = makeProbe(feature.name(),chromosome,start,end,strand);
-			if (p != null) {
-				// Add this probe 
-				newProbes.add(p);
-				
-			}
-		}
-
-
-		else if (optionPanel.positionType().equals("Downstream of feature")) {
-			if (strand == Location.FORWARD || strand == Location.UNKNOWN) {
-				start = location.end()-startValue;
-				end = location.end()+endValue;
-			}
-			else {
-				start = location.start()-endValue;
-				end = location.start()+startValue;
-			}
-
-			Probe p = makeProbe(feature.name()+"_downstream",chromosome,start,end,strand);
-			if (p != null) {
-				// Add this probe 
-				newProbes.add(p);
-				
-			}
-		}
-
-		else if (optionPanel.positionType().equals("Centered on feature")) {
-			
-			int center = location.start()+((location.end()-location.start())/2);
-		
-			if (strand == Location.FORWARD || strand == Location.UNKNOWN) {
-				start = center-startValue;
-				end = center+endValue;
-			}
-			else {
-				start = center-endValue;
-				end = center+startValue;
-			}
-
-			Probe p = makeProbe(feature.name(),chromosome,start,end,strand);
-			if (p != null) {
-				// Add this probe 
-				newProbes.add(p);
-				
-			}
-		}
-		
-		else {
-			throw new IllegalStateException("Unknown position type "+optionPanel.positionType());
-		}
-
-
-	}
-
-
-	/**
-	 * Makes an individual probe
-	 * 
-	 * @param name The name for the probe
-	 * @param c The Chromosome
-	 * @param start Start position
-	 * @param end End position
-	 * @return The newly generated probe
-	 */
-	private Probe makeProbe (String name,Chromosome c, int start, int end, int strand) {
-
-		if (end > c.length()) end = c.length();
-		if (start < 1) start = 1;
-
-		if (end < start) return null;
-
-		Probe p = new Probe(c,start,end,strand);
-		p.setName(name);
-		return p;
-
-	}
-
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
 
-		Chromosome [] chromosomes = collection.genome().getAllChromosomes();
-
-		Vector<Probe> newProbes = new Vector<Probe>();
-
-		for (int c=0;c<chromosomes.length;c++) {
-			// Time for an update
-			updateGenerationProgress("Processed "+c+" chromosomes", c, chromosomes.length);
-
-			Feature [] features = collection.genome().annotationCollection().getFeaturesForType(chromosomes[c],featureType);
-
-			for (int f=0;f<features.length;f++) {
-
-				// See if we need to quit
-				if (cancel) {
-					generationCancelled();
-					return;
-				}
-
-				if (useSubfeatures  && (features[f].location() instanceof SplitLocation)) {
-					SplitLocation location = (SplitLocation)features[f].location();
-					Location [] subLocations = location.subLocations();
-					for (int s=0;s<subLocations.length;s++) {
-						makeProbes(features[f],chromosomes[c],subLocations[s],newProbes);
-					}
-				}
-				else {
-					makeProbes(features[f], chromosomes[c], features[f].location(), newProbes);
-				}
-			}			
-		}
-
-		Probe [] finalList = newProbes.toArray(new Probe[0]);
+		// We get the problem here that we won't get per chromosome updates, but this should be
+		// so quick I don't think we care:
+		
+		updateGenerationProgress("Making probes...", 0, 1);
+		
+		Probe [] finalList = optionPanel.getProbes();
 
 		if (removeDuplicates) {
 //			System.out.println("Removing duplicates from original list of "+finalList.length+" probes");
@@ -297,7 +148,12 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 		b.append(featureType);
 
 		if (useSubfeatures) {
-			b.append(" split into subfeatures");
+			if (useExonSubfeatures) {
+				b.append(" split into exons");
+			}
+			else {
+				b.append(" split into introns");
+			}
 		}
 		if (removeDuplicates) {
 			b.append(" duplicates removed");
