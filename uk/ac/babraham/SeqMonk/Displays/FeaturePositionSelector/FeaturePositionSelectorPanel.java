@@ -215,13 +215,13 @@ public class FeaturePositionSelectorPanel extends JPanel {
 						SplitLocation location = (SplitLocation)features[f].location();
 						Location [] subLocations = location.subLocations();
 						if (useExonSubfeatures()) {
-							System.err.println("Making exon probes");
+//							System.err.println("Making exon probes");
 							for (int s=0;s<subLocations.length;s++) {
 								makeProbes(features[f],chromosomes[c],subLocations[s],newProbes,false);
 							}							
 						}
 						else {
-							System.err.println("Making intron probes");
+//							System.err.println("Making intron probes");
 							// We're making introns
 							for (int s=1;s<subLocations.length;s++) {
 								makeProbes(features[f],chromosomes[c],new Location(subLocations[s-1].end()+1, subLocations[s].start()-1, features[f].location().strand()),newProbes,false);
