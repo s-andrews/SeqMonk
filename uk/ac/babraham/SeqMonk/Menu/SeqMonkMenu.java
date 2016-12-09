@@ -126,7 +126,7 @@ import uk.ac.babraham.SeqMonk.Filters.CorrelationFilter;
 import uk.ac.babraham.SeqMonk.Filters.DeduplicationFilter;
 import uk.ac.babraham.SeqMonk.Filters.DifferencesFilter;
 import uk.ac.babraham.SeqMonk.Filters.DistributionPositionFilter;
-import uk.ac.babraham.SeqMonk.Filters.FeatureFilter;
+import uk.ac.babraham.SeqMonk.Filters.OldFeatureFilter;
 import uk.ac.babraham.SeqMonk.Filters.FeatureNameFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityDifferenceFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityReplicateFilter;
@@ -2202,7 +2202,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					new FilterOptionsDialog(application.dataCollection(),new ProbeLengthFilter(application.dataCollection()));
 				}
 				else if (action.equals("filter_features")) {
-					new FilterOptionsDialog(application.dataCollection(),new FeatureFilter(application.dataCollection()));
+					new FilterOptionsDialog(application.dataCollection(),new OldFeatureFilter(application.dataCollection()));
 				}
 				else if (action.equals("filter_feature_names")) {
 					new FilterOptionsDialog(application.dataCollection(),new FeatureNameFilter(application.dataCollection()));

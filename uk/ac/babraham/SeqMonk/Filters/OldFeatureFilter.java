@@ -45,7 +45,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
  * The FeatureFilter filters probes based on their relationship to members
  * of a particular class of features.
  */
-public class FeatureFilter extends ProbeFilter {
+public class OldFeatureFilter extends ProbeFilter {
 
 	private static final int ANY_STRAND = 1;
 	private static final int FORWARD_ONLY = 2;
@@ -72,7 +72,7 @@ public class FeatureFilter extends ProbeFilter {
 	 * @param collection The dataCollection to filter
 	 * @throws SeqMonkException if the collection isn't quantitated
 	 */
-	public FeatureFilter (DataCollection collection)  throws SeqMonkException {
+	public OldFeatureFilter (DataCollection collection)  throws SeqMonkException {
 		this(collection,collection.genome().annotationCollection().listAvailableFeatureTypes()[0],false,true,false,false,2000);
 	}
 	
@@ -88,7 +88,7 @@ public class FeatureFilter extends ProbeFilter {
 	 * @param cutoffDistance How far from the feature counts as upstream / downstream
 	 * @throws SeqMonkException if the dataCollection isn't quantitated.
 	 */
-	public FeatureFilter (DataCollection collection,String annotationType, boolean matchExactly, boolean allowOvelapping, boolean allowUpstream, boolean allowDownstream, int cutoffDistance) throws SeqMonkException {
+	public OldFeatureFilter (DataCollection collection,String annotationType, boolean matchExactly, boolean allowOvelapping, boolean allowUpstream, boolean allowDownstream, int cutoffDistance) throws SeqMonkException {
 		super(collection);
 		this.annotationType = annotationType;
 		overlapping = allowOvelapping;
