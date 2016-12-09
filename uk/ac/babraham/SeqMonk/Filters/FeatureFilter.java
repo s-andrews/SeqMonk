@@ -1,5 +1,7 @@
 package uk.ac.babraham.SeqMonk.Filters;
 
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -66,6 +68,7 @@ public class FeatureFilter extends ProbeFilter {
 		private FeaturePositionSelectorPanel featurePositions;
 		private JComboBox relationshipTypeBox;
 		private JTextField distanceField;
+		private JComboBox directionalityBox;
 		
 		public FeatureFilterOptionsPanel () {
 			setLayout(new GridBagLayout());
@@ -79,17 +82,23 @@ public class FeatureFilter extends ProbeFilter {
 			
 			gbc.gridwidth=2;
 
-			add(new JLabel("Define Feature Positions",JLabel.CENTER),gbc);
+			JLabel header1 = new JLabel("Define Feature Positions",JLabel.CENTER);
+			header1.setFont(new Font(header1.getFont().getName(), Font.BOLD, (int)(header1.getFont().getSize()*1.5)));
+			
+			add(header1,gbc);
 			
 			gbc.gridy++;
 
-			featurePositions = new FeaturePositionSelectorPanel(collection, true, false);
+			featurePositions = new FeaturePositionSelectorPanel(collection, false, false);
 			add(featurePositions,gbc);
 
 			
 			gbc.gridy++;
 			
-			add(new JLabel("Define Relationship with Probes",JLabel.CENTER),gbc);
+			JLabel header2 = new JLabel("Define Relationship with Probes",JLabel.CENTER);
+			header2.setFont(new Font(header2.getFont().getName(), Font.BOLD, (int)(header2.getFont().getSize()*1.5)));
+			
+			add(header2,gbc);
 			
 			gbc.gridy++;
 			gbc.gridwidth = 1;
@@ -132,6 +141,12 @@ public class FeatureFilter extends ProbeFilter {
 			distanceField.addKeyListener(new NumberKeyListener(false, false));
 			distanceField.setEnabled(false);
 			
+			add(distanceField,gbc);
+			
+		}
+		
+		public Dimension getPreferredSize () {
+			return new Dimension(600,300);
 		}
 		
 	}
