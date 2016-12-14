@@ -44,7 +44,12 @@ public class SeqMonkImporter implements ProgressListener {
 	public SeqMonkImporter (String [] args) {
 		
 		String genomeString = args[0];
-		File outFile = new File(args[1]);
+		
+		// We need to turn whatever the user supplies into an absolute file path
+		// otherwise later on when we call getParent on it we get a null value.
+		// This step forces the extrapolation of a full system path which won't
+		// have this problem.
+		File outFile = new File(args[1]).getAbsoluteFile();
 		int splitReads = Integer.parseInt(args[2]);
 		int mapqCutoff = Integer.parseInt(args[3]);
 		
@@ -53,6 +58,12 @@ public class SeqMonkImporter implements ProgressListener {
 		for (int i=0; i<files.length;i++) {
 			files[i] = new File(args[i+4]);
 		}
+		
+//		System.err.println("Genome = "+genomeString);
+//		System.err.println("Outfile = "+args[1]);
+//		System.err.println("Outfile path = "+outFile.getAbsolutePath());
+//		System.err.println("Split Reads = "+splitReads);
+//		System.err.println("MapqCutoff = "+mapqCutoff);
 		
 		SeqMonkPreferences prefs = SeqMonkPreferences.getInstance();
 		
