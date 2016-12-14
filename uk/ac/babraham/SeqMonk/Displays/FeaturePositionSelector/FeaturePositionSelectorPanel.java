@@ -236,6 +236,9 @@ public class FeaturePositionSelectorPanel extends JPanel {
 						// If we're making introns then we're stuffed and we give up.
 					}
 				}
+				else {
+					makeProbes(features[f], chromosomes[c], features[f].location(), newProbes,false);
+				}
 			}			
 		}
 
@@ -291,6 +294,9 @@ public class FeaturePositionSelectorPanel extends JPanel {
 						}
 						// If we're making introns then we're stuffed and we give up.
 					}
+				}
+				else {
+					makeProbes(features[f], chromosomes[c], features[f].location(), newProbes,true);
 				}
 			}			
 		}
