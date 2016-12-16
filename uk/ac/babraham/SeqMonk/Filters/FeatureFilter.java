@@ -4,8 +4,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Arrays;
+import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -14,12 +19,36 @@ import javax.swing.JTextField;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.SplitLocation;
+import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
+import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Displays.FeaturePositionSelector.FeaturePositionSelectorPanel;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 
 public class FeatureFilter extends ProbeFilter {
 
-	private JPanel options;
+	private FeatureFilterOptionsPanel options;
+	
+	private static final int ANY_STRAND = 1;
+	private static final int FORWARD_ONLY = 2;
+	private static final int REVERSE_ONLY = 3;
+	private static final int SAME_STRAND = 4;
+	private static final int OPPOSING_STRAND = 5;
+	
+	
+	private static final int OVERLAPPING = 101;
+	private static final int CLOSE_TO = 102;
+	private static final int EXACTLY_MATCHING = 103;
+	private static final int SURROUNDING = 104;
+	private static final int CONTAINED_WITHIN = 105;
+	
+	private int strand = ANY_STRAND;
+	private int relationship = OVERLAPPING;
+	
+	
 	
 	public FeatureFilter(DataCollection collection) throws SeqMonkException {
 		super(collection);
@@ -28,23 +57,158 @@ public class FeatureFilter extends ProbeFilter {
 
 	
 	protected String listName() {
-		// TODO Auto-generated method stub
-		return null;
+		return options.getListNameSuggestion();
 	}
 
 	protected String listDescription() {
 		// TODO Auto-generated method stub
-		return null;
+		return "This is a description";
 	}
 
 	protected void generateProbeList() {
-		// TODO Auto-generated method stub
 
+		// We'll start by getting the complete set of probes from the position
+		// filter.  We'll split these by chromosome at a later date but we
+		// have to get them as a set to start with.
+		Probe [] probesToMatch = options.featurePositions.getProbes();
+		
+		
+		// This is the set of passing probes we're going to build up.
+		ProbeList passedProbes = new ProbeList(startingList,"","",null);
+		
+		// We need to know how far beyond the feature we might need to look
+		int annotationLimit = options.closenessLimit();
+		
+		// Since we're going to be making the annotations on the
+		// basis of position we should go through all probes one
+		// chromosome at a time.
+		
+		Chromosome [] chrs = collection.genome().getAllChromosomes();
+		
+		for (int c=0;c<chrs.length;c++) {
+			
+			progressUpdated("Processing features on Chr "+chrs[c].name(),c, chrs.length);
+			
+			Probe [] probes = startingList.getProbesForChromosome(chrs[c]);
+			
+			Vector<Probe> featuresForThisChromosome = new Vector<Probe>();
+			for (int f=0;f<probesToMatch.length;f++) {
+				if (probesToMatch[f].chromosome().equals(chrs[c])) {
+					featuresForThisChromosome.add(probesToMatch[f]);
+				}
+			}
+			
+			Probe [] features = featuresForThisChromosome.toArray(new Probe[0]);
+			
+			Arrays.sort(probes);
+			Arrays.sort(features);
+			
+			int lastFoundIndex = 0;
+			
+			// We can now step through the probes looking for the best feature match
+			for (int p=0;p<probes.length;p++) {
+				
+				for (int f=lastFoundIndex;f<features.length;f++) {
+					
+					if (cancel) {
+						cancel = false;
+						progressCancelled();
+						return;
+					}
+					
+					if (features[f].end()+annotationLimit < probes[p].start()) {
+						lastFoundIndex = f;
+						continue;
+					}
+					
+					// See if we're skipping this feature for this probe based on its strand
+					if (strand != ANY_STRAND) {
+						switch (strand) {
+						
+							case FORWARD_ONLY: {
+								if (features[f].strand() != Location.FORWARD) continue;
+								break;
+							}
+							case REVERSE_ONLY: {
+								if (features[f].strand() != Location.REVERSE) continue;
+								break;
+							}
+							case SAME_STRAND: {
+								if (features[f].strand() != probes[p].strand()) continue;
+								break;
+							}
+							case OPPOSING_STRAND: {
+								if (!
+										(features[f].strand() == Location.FORWARD  && probes[p].strand() == Location.REVERSE) ||
+										(features[f].strand() == Location.REVERSE  && probes[p].strand() == Location.FORWARD)
+										)
+										continue;
+								break;
+							}
+												
+						}
+					}
+
+					if (relationship == EXACTLY_MATCHING) {
+						
+						// We can make a simple check to see if we're matching this exactly, either
+						// overall or with one of our subfeatures.
+						
+						if (probes[p].start() == features[f].start() && probes[p].end() == features[f].end()) {
+							passedProbes.addProbe(probes[p], null);
+							break;
+						}						
+					}
+					
+					else if (relationship == OVERLAPPING) {
+						// Quickest check is whether a probe overlaps a feature
+					
+						if (probes[p].start() < features[f].end() && probes[p].end() > features[f].start()) {
+							passedProbes.addProbe(probes[p],null);
+							break;
+						}
+					}
+
+					
+					else if (relationship == SURROUNDING) {
+						// The feature has to surround the probe
+						
+						if (probes[p].start() >= features[f].start() && probes[p].end() <= features[f].end()) {
+							passedProbes.addProbe(probes[p],null);
+							break;
+						}
+					}
+
+
+					else if (relationship == CONTAINED_WITHIN) {
+						// The probe has to surround the feature
+						
+						if (probes[p].start() <= features[f].start() && probes[p].end() >= features[f].end()) {
+							passedProbes.addProbe(probes[p],null);
+							break;
+						}
+					}
+
+
+					else if (relationship == CLOSE_TO) {
+						// The probe has to surround the feature
+						
+						if (probes[p].start() <= features[f].start()-annotationLimit && probes[p].end() >= features[f].end()+annotationLimit) {
+							passedProbes.addProbe(probes[p],null);
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		filterFinished(passedProbes);
+		
+		
 	}
 
 	public boolean isReady() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public boolean hasOptionsPanel() {
@@ -63,12 +227,12 @@ public class FeatureFilter extends ProbeFilter {
 		return "A filter based on the relationship between probes and features";
 	}
 
-	private class FeatureFilterOptionsPanel extends JPanel {
+	private class FeatureFilterOptionsPanel extends JPanel implements ItemListener {
 		
 		private FeaturePositionSelectorPanel featurePositions;
 		private JComboBox relationshipTypeBox;
 		private JTextField distanceField;
-		private JComboBox directionalityBox;
+		private JComboBox strandBox;
 		
 		public FeatureFilterOptionsPanel () {
 			setLayout(new GridBagLayout());
@@ -79,6 +243,7 @@ public class FeatureFilter extends ProbeFilter {
 			gbc.weightx=0.5;
 			gbc.weighty=0.5;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.insets = new Insets(5, 5, 5, 5);
 			
 			gbc.gridwidth=2;
 
@@ -90,9 +255,10 @@ public class FeatureFilter extends ProbeFilter {
 			gbc.gridy++;
 
 			featurePositions = new FeaturePositionSelectorPanel(collection, false, false);
+			gbc.fill = GridBagConstraints.BOTH;
 			add(featurePositions,gbc);
 
-			
+			gbc.fill = GridBagConstraints.HORIZONTAL;
 			gbc.gridy++;
 			
 			JLabel header2 = new JLabel("Define Relationship with Probes",JLabel.CENTER);
@@ -137,16 +303,64 @@ public class FeatureFilter extends ProbeFilter {
 			
 			gbc.gridx=1;
 			
-			distanceField = new JTextField("2000");
+			distanceField = new JTextField("2000",10);
 			distanceField.addKeyListener(new NumberKeyListener(false, false));
 			distanceField.setEnabled(false);
 			
 			add(distanceField,gbc);
 			
+
+			gbc.gridy++;
+			gbc.gridx = 0;
+			
+			add(new JLabel("Use features on strand "),gbc);
+			
+			gbc.gridx=1;
+			
+			strandBox = new JComboBox(new String [] {"Any","Forward only","Reverse only","Same as probe","Opposite to probe"});
+			strandBox.addItemListener(this);
+			add(strandBox,gbc);
+			
+		}
+		
+		public int closenessLimit () {
+			if (distanceField.getText().trim().length() == 0) {
+				return 0;
+			}
+			else {
+				return Integer.parseInt(distanceField.getText().trim());
+			}
 		}
 		
 		public Dimension getPreferredSize () {
-			return new Dimension(600,300);
+			return new Dimension(600,400);
+		}
+		
+		public String getListNameSuggestion () {
+			return ""+relationshipTypeBox.getSelectedItem()+" "+featurePositions.selectedFeatureType();
+		}
+
+		public void itemStateChanged(ItemEvent e) {
+			String strandString = strandBox.getSelectedItem().toString();
+			
+			if (strandString.equals("Any")) {
+				strand = ANY_STRAND;
+			}
+			else if (strandString.equals("Forward only")) {
+				strand = FORWARD_ONLY;
+			}
+			else if (strandString.equals("Reverse only")) {
+				strand = REVERSE_ONLY;
+			}
+			else if (strandString.equals("Same as probe")) {
+				strand = SAME_STRAND;
+			}
+			else if (strandString.equals("Opposite to probe")) {
+				strand = OPPOSING_STRAND;
+			}
+			else {
+				throw new IllegalStateException("Unknown strand '"+strandString+"'");
+			}
 		}
 		
 	}

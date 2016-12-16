@@ -159,7 +159,10 @@ public class FeaturePositionSelectorPanel extends JPanel {
 	}
 	
 	public boolean removeDuplicates () {
-		return removeDuplicatesCheckbox.isSelected();
+		if (removeDuplicatesCheckbox != null) {
+			return removeDuplicatesCheckbox.isSelected();
+		}
+		return false;
 	}
 	
 	public void setRemoveDuplicates (boolean b) {
@@ -167,7 +170,10 @@ public class FeaturePositionSelectorPanel extends JPanel {
 	}
 	
 	public boolean ignoreDirection () {
-		return ignoreDirectionCheckbox.isSelected();
+		if (ignoreDirectionCheckbox != null) {
+			return ignoreDirectionCheckbox.isSelected();
+		}
+		return false;
 	}
 	
 	public void setIgnoreDirection (boolean b) {
