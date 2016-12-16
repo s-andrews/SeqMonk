@@ -191,10 +191,9 @@ public class FeatureFilter extends ProbeFilter {
 
 
 					else if (relationship == CLOSE_TO) {
-						// TODO: This is completley broken...
-						// The probe has to surround the feature
+						// The probe has to be close to the feature
 						
-						if (probes[p].start() <= features[f].start()-annotationLimit && probes[p].end() >= features[f].end()+annotationLimit) {
+						if (probes[p].start() < features[f].end()+annotationLimit && probes[p].end() > features[f].start()-annotationLimit) {
 							passedProbes.addProbe(probes[p],null);
 							break;
 						}
