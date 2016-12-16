@@ -20,9 +20,7 @@ import javax.swing.JTextField;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
-import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
-import uk.ac.babraham.SeqMonk.DataTypes.Genome.SplitLocation;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Displays.FeaturePositionSelector.FeaturePositionSelectorPanel;
@@ -61,8 +59,49 @@ public class FeatureFilter extends ProbeFilter {
 	}
 
 	protected String listDescription() {
-		// TODO Auto-generated method stub
-		return "This is a description";
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("Filter on regions based on ");
+		sb.append(options.featurePositions.selectedFeatureType());
+		sb.append(" ");
+		if (options.featurePositions.useSubFeatures()) {
+			if (options.featurePositions.useExonSubfeatures()) {
+				sb.append("exons ");
+			}
+			else {
+				sb.append("introns ");
+			}
+		}
+		
+		sb.append(options.featurePositions.positionType());
+		
+		sb.append(" ");
+		int startOffset = options.featurePositions.startOffset();
+		int endOffset = options.featurePositions.endOffset();
+		if (startOffset != 0 || endOffset != 0) {
+			sb.append("from ");
+			sb.append(startOffset);
+			sb.append(" to ");
+			sb.append(endOffset);
+		}
+		
+		if (strand != ANY_STRAND) {
+			sb.append(" with strand filter ");
+			sb.append(options.strandBox.getSelectedItem());
+		}
+		
+		sb.append(" relationship is ");
+		sb.append(options.relationshipTypeBox.getSelectedItem());
+		
+		
+		if (relationship == CLOSE_TO) {
+			sb.append(" with distance cutoff ");
+			sb.append(options.closenessLimit());
+		}
+		
+		
+		return sb.toString();
 	}
 
 	protected void generateProbeList() {
