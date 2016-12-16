@@ -170,7 +170,7 @@ public class FeatureFilter extends ProbeFilter {
 					}
 
 					
-					else if (relationship == SURROUNDING) {
+					else if (relationship == CONTAINED_WITHIN) {
 						// The feature has to surround the probe
 						
 						if (probes[p].start() >= features[f].start() && probes[p].end() <= features[f].end()) {
@@ -180,7 +180,7 @@ public class FeatureFilter extends ProbeFilter {
 					}
 
 
-					else if (relationship == CONTAINED_WITHIN) {
+					else if (relationship == SURROUNDING) {
 						// The probe has to surround the feature
 						
 						if (probes[p].start() <= features[f].start() && probes[p].end() >= features[f].end()) {
@@ -191,6 +191,7 @@ public class FeatureFilter extends ProbeFilter {
 
 
 					else if (relationship == CLOSE_TO) {
+						// TODO: This is completley broken...
 						// The probe has to surround the feature
 						
 						if (probes[p].start() <= features[f].start()-annotationLimit && probes[p].end() >= features[f].end()+annotationLimit) {
@@ -285,12 +286,36 @@ public class FeatureFilter extends ProbeFilter {
 				
 				public void actionPerformed(ActionEvent e) {
 					if (distanceField == null) return;
+					
+					if (relationshipTypeBox.getSelectedItem().equals("Close to")) {
+						relationship = CLOSE_TO;
+					}
+					else if (relationshipTypeBox.getSelectedItem().equals("Overlapping")) {
+						relationship = OVERLAPPING;
+					}
+					else if (relationshipTypeBox.getSelectedItem().equals("Exactly matching")) {
+						relationship = EXACTLY_MATCHING;
+					}
+					else if (relationshipTypeBox.getSelectedItem().equals("Surrounding")) {
+						relationship = SURROUNDING;
+					}
+					else if (relationshipTypeBox.getSelectedItem().equals("Contained within")) {
+						relationship = CONTAINED_WITHIN;
+					}
+					else {
+						throw new IllegalStateException("Unknown relationship type "+relationshipTypeBox.getSelectedItem());
+					}
+					
+					
 					if (relationshipTypeBox.getSelectedItem().equals("Close to")) {
 						distanceField.setEnabled(true);
 					}
 					else {
 						distanceField.setEnabled(false);
 					}
+					
+					
+					
 				}
 			});
 			
