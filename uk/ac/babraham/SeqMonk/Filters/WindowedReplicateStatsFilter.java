@@ -57,7 +57,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Filters.ProbeGroupGenerator.ConsecutiveProbeGenerator;
 import uk.ac.babraham.SeqMonk.Filters.ProbeGroupGenerator.FeatureProbeGroupGenerator;
@@ -215,7 +214,7 @@ public class WindowedReplicateStatsFilter extends ProbeFilter {
 					}
 				} 
 				catch (SeqMonkException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 
 				newListProbesVector.add(new ProbeGroupTTestValue(theseProbes,pValue));

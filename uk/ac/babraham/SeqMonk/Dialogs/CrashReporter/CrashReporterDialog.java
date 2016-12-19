@@ -17,7 +17,7 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.SeqMonk.Dialogs;
+package uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -53,8 +53,12 @@ import uk.ac.babraham.SeqMonk.R.RException;
  * The Class CrashReporter is the dialog which appears when an
  * unexpected exception is encountered.  It can generate a stack
  * trace and submit it back to the authors to fix.
+ * 
+ * This class shouldn't be called directly - you should use the CrashReporter
+ * class, which can in turn call this if we're in an environment which would
+ * allow this to be displayed.
  */
-public class CrashReporter extends JDialog implements ActionListener {
+public class CrashReporterDialog extends JDialog implements ActionListener {
 
 	/** The Constant reportURLString. */
 	public static final String reportURLString = "http://www.bioinformatics.babraham.ac.uk/cgi-bin/public/crashreporter.cgi";
@@ -69,7 +73,7 @@ public class CrashReporter extends JDialog implements ActionListener {
 	 * @param e the e
 	 * @param c the c
 	 */
-	public CrashReporter (Throwable e) {
+	public CrashReporterDialog (Throwable e) {
 		super(SeqMonkApplication.getInstance(),"Oops - Crash Reporter");
 		
 		this.e = e;
@@ -191,7 +195,7 @@ public class CrashReporter extends JDialog implements ActionListener {
 		private boolean foundSeqMonkClass = false;
 		
 		/** The cr. */
-		private CrashReporter cr;
+		private CrashReporterDialog cr;
 
 		
 		/**
@@ -199,7 +203,7 @@ public class CrashReporter extends JDialog implements ActionListener {
 		 * 
 		 * @param cr the cr
 		 */
-		public ReportSender (CrashReporter cr) {
+		public ReportSender (CrashReporterDialog cr) {
 			super(cr,"Send Error Report");
 			this.cr = cr;
 			setSize(500,500);

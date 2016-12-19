@@ -41,7 +41,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
@@ -216,7 +215,7 @@ public class HiCLengthHistogramPlot extends JDialog implements ActionListener, R
 			}
 
 			catch (IOException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 
 		}

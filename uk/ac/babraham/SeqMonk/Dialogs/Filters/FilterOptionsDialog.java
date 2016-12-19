@@ -36,7 +36,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Filters.OptionsListener;
 import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
@@ -168,8 +167,8 @@ public class FilterOptionsDialog extends JDialog implements OptionsListener, Pro
 
 
 	public void progressExceptionReceived(Exception e) {
-		new CrashReporter(e);
 		filterButton.setEnabled(true);
+		throw new IllegalStateException(e);
 	}
 
 

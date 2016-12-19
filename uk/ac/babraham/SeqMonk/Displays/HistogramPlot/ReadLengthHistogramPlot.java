@@ -35,7 +35,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
@@ -157,7 +156,7 @@ public class ReadLengthHistogramPlot extends JDialog implements ActionListener {
 			}
 
 			catch (IOException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 
 		}

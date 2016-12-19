@@ -43,7 +43,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeIntCounter;
@@ -259,7 +258,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 					
 				}
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
+					throw new IllegalStateException(ioe);
 				}
 				
 			

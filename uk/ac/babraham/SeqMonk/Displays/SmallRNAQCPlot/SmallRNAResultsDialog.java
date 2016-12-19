@@ -36,7 +36,6 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
@@ -185,8 +184,7 @@ public class SmallRNAResultsDialog extends JDialog {
 					
 				}
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
-				}
+					throw new IllegalStateException(ioe);				}
 				
 			
 			}

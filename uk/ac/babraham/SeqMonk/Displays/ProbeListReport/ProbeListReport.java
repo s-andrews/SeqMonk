@@ -32,7 +32,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 public class ProbeListReport {
 
@@ -402,7 +401,7 @@ public class ProbeListReport {
 
 		}
 		catch (XMLStreamException ex) {
-			new CrashReporter(ex);
+			throw new IllegalStateException(ex);
 		}
 
 	}

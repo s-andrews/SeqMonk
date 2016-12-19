@@ -27,7 +27,6 @@ import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterDataSource;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 public class HierarchicalClusterCorrelationDataSource implements ClusterDataSource {
 
@@ -92,8 +91,7 @@ public class HierarchicalClusterCorrelationDataSource implements ClusterDataSour
 			return PearsonCorrelation.calculateCorrelation(average1, average2);
 		}
 		catch (SeqMonkException sme) {
-			new CrashReporter(sme);
-			return 0;
+			throw new IllegalStateException(sme);
 		}
 	}
 

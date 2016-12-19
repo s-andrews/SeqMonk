@@ -43,7 +43,6 @@ import uk.ac.babraham.SeqMonk.Analysis.Correlation.DistanceMatrix;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 
@@ -150,14 +149,14 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 				saveFile(file);
 			}
 			catch (IOException e1) {
-				new CrashReporter(e1);
+				throw new IllegalStateException(e1);
 			}
 			
 			
 
 		}
 		else {
-			new CrashReporter(new Exception("Unknown command '"+e.getActionCommand()+"'"));
+			throw new IllegalStateException("Unknown command '"+e.getActionCommand()+"'");
 		}
 	}
 	
@@ -203,10 +202,8 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 				return matrix.getCorrelationForStoreIndices(r-1, c-1);
 			}
 			catch (SeqMonkException e) {
-				new CrashReporter(e);
-			}
-			return 0;
-			
+				throw new IllegalStateException(e);
+			}			
 		}
 		
 	}

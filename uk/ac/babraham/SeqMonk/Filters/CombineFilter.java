@@ -34,7 +34,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 /**
  * Creates a new probeList by combining two existing lists
@@ -228,7 +227,7 @@ public class CombineFilter extends ProbeFilter {
 			combineString = "BUTNOT";
 			break;
 		default:
-			new CrashReporter(new SeqMonkException("Unknown combine type "+combineType+" in combine filter"));
+			throw new IllegalStateException("Unknown combine type "+combineType+" in combine filter");
 		}
 		
 		return firstList.name()+" "+combineString+" "+secondList.name();
@@ -322,11 +321,11 @@ public class CombineFilter extends ProbeFilter {
 					combineType = BUTNOT;
 				}
 				else {
-					new CrashReporter(new SeqMonkException("Unknown combine type "+type+" when changing combine filter options"));
+					throw new IllegalStateException("Unknown combine type "+type+" when changing combine filter options");
 				}
 			}
 			else {
-				new CrashReporter(new SeqMonkException("Unknown source for selection event in combine filter"));
+				throw new IllegalStateException("Unknown source for selection event in combine filter");
 			}
 			optionsChanged();
 		}

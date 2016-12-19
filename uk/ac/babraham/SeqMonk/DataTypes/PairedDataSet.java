@@ -37,7 +37,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.NonThreadSafeIntCounter;
 import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeIntCounter;
@@ -273,7 +272,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 
 			}
 			catch (SeqMonkException sme) {
-				new CrashReporter(sme);
+				throw new IllegalStateException(sme);
 			}
 
 			lastRead = 0;
@@ -481,8 +480,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 					return lastCachedHits;
 				}
 				catch (Exception e) {
-					new CrashReporter(e);
-					return null;
+					throw new IllegalStateException(e);
 				}
 			}
 
@@ -920,7 +918,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 
 			}
 			catch (IOException ioe) {
-				new CrashReporter(ioe);
+				throw new IllegalStateException(ioe);
 			}
 
 			chromosomesStillToFinalise.decrement();

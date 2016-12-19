@@ -38,7 +38,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Genome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.MultiGenome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.SingleGenome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.SplitLocation;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 
 /**
@@ -191,7 +190,7 @@ public class GenomeParser implements Runnable {
 					readAliases(aliasesFile,singleGenomes[g]);
 				} 
 				catch (IOException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 
@@ -235,7 +234,8 @@ public class GenomeParser implements Runnable {
 				}
 			} 
 			catch (Exception e) {
-				new CrashReporter(e);
+				br.close();
+				throw new IllegalStateException(e);
 			}
 		}
 
@@ -274,7 +274,7 @@ public class GenomeParser implements Runnable {
 			br.close();
 		}
 		catch (Exception e) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 
 		File [] cacheFiles = cacheDir.listFiles(new FileFilter() {
@@ -458,7 +458,7 @@ public class GenomeParser implements Runnable {
 					readAliases(aliasesFile,genome);
 				} 
 				catch (IOException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 

@@ -43,7 +43,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Reports.Report;
@@ -249,7 +248,7 @@ public class ReportTableDialog extends JDialog implements MouseListener, ActionL
 			}
 
 			catch (IOException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 		}
 		

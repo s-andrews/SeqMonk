@@ -70,7 +70,6 @@ import uk.ac.babraham.SeqMonk.DataWriters.BedGraphDataWriter;
 import uk.ac.babraham.SeqMonk.Dialogs.AboutDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.AnnotationTrackSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.AutoSplitDataDialog;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.DataTrackSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.DataZoomSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.EditPreferencesDialog;
@@ -1552,8 +1551,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					try {
 						url = new URL(url.toString().replace("file://", "file://///"));
 					} catch (MalformedURLException e) {
-						new CrashReporter(e);
-						return;
+						throw new IllegalStateException(e);
 					}
 				}
 				new HelpDialog(new File(url.toURI()));
@@ -1663,7 +1661,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					new CumulativeDistributionDialog(application.drawnDataSets(),application.dataCollection().probeSet().getActiveList());
 				} 
 				catch (SeqMonkException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 		}
@@ -1744,7 +1742,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					new CumulativeDistributionDialog(application.dataCollection().getActiveDataStore(),probeLists);
 				} 
 				catch (SeqMonkException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 			else if (action.equals("multiprobe_view_line_graph")){
@@ -1789,7 +1787,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 						new ProbeValueHistogramPlot(application.dataCollection().getActiveDataStore(),application.dataCollection().probeSet().getActiveList());
 					} 
 					catch (SeqMonkException e) {
-						new CrashReporter(e);
+						throw new IllegalStateException(e);
 					}
 				}
 			}
@@ -2275,7 +2273,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			c.setContents(t, null);
 		}
 		else {
-			new CrashReporter(new SeqMonkException("Unknown command '"+action+"' from main menu"));
+			throw new IllegalStateException("Unknown command '"+action+"' from main menu");
 		}
 	}
 

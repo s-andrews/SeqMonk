@@ -322,7 +322,7 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 					availableGroupModel.addElement(removes[i]);
 				}
 				else {
-					new CrashReporter(new Exception("Unknown type of removed store "+removes[i]));
+					throw new IllegalStateException("Unknown type of removed store "+removes[i]);
 				}
 			}			
 		}

@@ -43,7 +43,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.BoxWhisker;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
@@ -297,7 +296,7 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 
 			}
 			catch (IOException ioe) {
-				new CrashReporter(ioe);
+				throw new IllegalStateException(ioe);
 			}
 
 		}
@@ -308,7 +307,7 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 			}
 		}
 		else {
-			new CrashReporter(new Exception("Unknown command "+ae.getActionCommand()));
+			throw new IllegalStateException("Unknown command "+ae.getActionCommand());
 		}
 	}
 
@@ -342,7 +341,7 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 
 		}
 		catch (SeqMonkException sme) {
-			new CrashReporter(sme);
+			throw new IllegalStateException(sme);
 		}
 	}	
 }

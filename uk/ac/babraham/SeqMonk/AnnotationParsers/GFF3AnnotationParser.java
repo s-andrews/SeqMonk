@@ -37,7 +37,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Genome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.SplitLocation;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Utilities.ChromosomeWithOffset;
 
 /**
@@ -433,7 +432,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				}
 			} 
 			catch (SeqMonkException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 			
 			return feature;

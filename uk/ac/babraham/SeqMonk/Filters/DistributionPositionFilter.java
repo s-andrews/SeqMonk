@@ -47,7 +47,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Utilities.ListDefaultSelector;
 
@@ -507,9 +506,8 @@ public class DistributionPositionFilter extends ProbeFilter {
 				return Float.compare(store.getValueForProbe(p1), store.getValueForProbe(p2));
 			} 
 			catch (SeqMonkException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
-			return 0;
 		}
 		
 	}

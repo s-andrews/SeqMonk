@@ -34,7 +34,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class CumulativeDistributionDialog extends JDialog implements ActionListener, ChangeListener {
@@ -97,7 +96,7 @@ public class CumulativeDistributionDialog extends JDialog implements ActionListe
 			ImageSaver.saveImage(graphPanel);
 		}
 		else {
-			new CrashReporter(new Exception("Unknown command "+ae.getActionCommand()));
+			throw new IllegalStateException("Unknown command "+ae.getActionCommand());
 		}
 	}
 

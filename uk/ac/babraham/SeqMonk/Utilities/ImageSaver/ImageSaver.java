@@ -32,7 +32,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.PNGFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.SVGFileFilter;
@@ -113,7 +112,7 @@ public class ImageSaver {
 		}
 
 		catch (IOException e) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 	}
 	

@@ -26,7 +26,6 @@ import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterDataSource;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 public class HierarchicalClusterDistanceDataSource implements ClusterDataSource {
 
@@ -116,8 +115,7 @@ public class HierarchicalClusterDistanceDataSource implements ClusterDataSource 
 			return 0-absDiffs;
 		}
 		catch (SeqMonkException sme) {
-			new CrashReporter(sme);
-			return 0;
+			throw new IllegalStateException(sme);
 		}
 	}
 

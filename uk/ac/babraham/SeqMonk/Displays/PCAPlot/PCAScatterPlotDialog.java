@@ -39,7 +39,6 @@ import javax.swing.event.ChangeListener;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.OrderedReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
@@ -236,7 +235,7 @@ public class PCAScatterPlotDialog extends JDialog implements ActionListener, Cha
 			}
 
 			catch (IOException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 
 		}

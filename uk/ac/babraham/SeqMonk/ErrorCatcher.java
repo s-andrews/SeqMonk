@@ -19,8 +19,7 @@
  */
 package uk.ac.babraham.SeqMonk;
 
-
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
+import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter.CrashReporter;
 
 /**
  * The error catcher can be attached to the main JVM and is triggered

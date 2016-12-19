@@ -36,7 +36,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeIntCounter;
@@ -465,11 +464,10 @@ public class DataSet extends DataStore implements Runnable {
 					return lastCachedReads;
 				}
 				catch (Exception e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 			
-			return readData.get(c).reads;
 		}
 		else {
 			lastCachedReads = new long[0];
@@ -666,7 +664,7 @@ public class DataSet extends DataStore implements Runnable {
 				oos.close();
 			}
 			catch (IOException ioe) {
-				new CrashReporter(ioe);
+				throw new IllegalStateException(ioe);
 			}
 			
 			chromosomesStillToFinalise.decrement();

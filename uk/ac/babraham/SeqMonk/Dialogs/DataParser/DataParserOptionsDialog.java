@@ -31,9 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataParsers.DataParser;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 public class DataParserOptionsDialog extends JDialog implements ActionListener {
 
@@ -103,7 +101,7 @@ public class DataParserOptionsDialog extends JDialog implements ActionListener {
 		}
 		
 		else {
-			new CrashReporter(new SeqMonkException("Don't know how to handle action '"+ae.getActionCommand()+"'"));
+			throw new IllegalStateException("Don't know how to handle action '"+ae.getActionCommand()+"'");
 		}
 	}
 }

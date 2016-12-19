@@ -528,8 +528,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			try {
 				p.savePreferences();
 			} catch (IOException e) {
-				new CrashReporter(e);
-				return;
+				throw new IllegalStateException(e);	
 			}
 			setVisible(false);
 		}

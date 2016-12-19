@@ -56,7 +56,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSetChangeListener;
 import uk.ac.babraham.SeqMonk.DataWriters.SeqMonkDataWriter;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.GenomeSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreviewPanel;
@@ -168,8 +167,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			}
 		}
 		catch (Exception e) {
-			new CrashReporter(e);
-			e.printStackTrace();
+			throw new IllegalStateException(e);
 		}
 	}
 	
@@ -363,7 +361,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			parser.parseData();
 		}
 		catch (SeqMonkException ex) {
-			new CrashReporter(ex);
+			throw new IllegalStateException(ex);
 		}
 	}
 		

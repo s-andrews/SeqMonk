@@ -126,7 +126,7 @@ public class SimilarProbeListsDialog extends JDialog implements Runnable, MouseL
 			collection.probeSet().setActiveList(newActiveList);
 		}
 		catch (SeqMonkException e) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 	}
 

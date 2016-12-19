@@ -29,7 +29,6 @@ import javax.swing.JOptionPane;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.HTMLFileFilter;
 
@@ -79,7 +78,7 @@ public class ProbeListReportCreator {
 		}
 
 		catch (IOException e) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 
 	}

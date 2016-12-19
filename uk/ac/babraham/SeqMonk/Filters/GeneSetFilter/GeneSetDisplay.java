@@ -65,7 +65,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Displays.ScatterPlot.ScatterPlotPanel;
 import uk.ac.babraham.SeqMonk.Filters.GeneSetFilter.GeneSetScatterPlotPanel;
 
@@ -472,10 +471,10 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 				
 					
 			catch (FileNotFoundException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 			catch (IOException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 			
 		}		

@@ -55,7 +55,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.CoreAnnotationSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.Dialogs.AnnotationSetPropertiesDialog;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.DataStorePropertiesDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProbeListCommentEditDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProbeListViewer;
@@ -249,7 +248,7 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 			}
 		}
 		catch (SeqMonkException e) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 
 	}
@@ -364,7 +363,7 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 					new ProbeValueHistogramPlot(d,collection.probeSet().getActiveList());
 				} 
 				catch (SeqMonkException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 			else if (ae.getActionCommand().equals("scatter")) {
@@ -473,7 +472,7 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 					new ProbeValueHistogramPlot(d,collection.probeSet().getActiveList());
 				} 
 				catch (SeqMonkException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 			else if (ae.getActionCommand().equals("display_track")) {
@@ -568,7 +567,7 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 					new ProbeValueHistogramPlot(d,collection.probeSet().getActiveList());
 				} 
 				catch (SeqMonkException e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 			else if (ae.getActionCommand().equals("display_track")) {

@@ -43,7 +43,6 @@ import javax.swing.table.TableModel;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Reports.Interaction.InteractionReport;
@@ -237,10 +236,10 @@ public class InteractionReportTableDialog extends JDialog implements MouseListen
 				
 					
 			catch (FileNotFoundException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 			catch (IOException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 			
 		}

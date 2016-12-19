@@ -40,7 +40,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataGroup;
 import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
@@ -271,7 +270,7 @@ public class AutoSplitDataDialog extends JDialog implements ActionListener {
 			createGroups();
 		}
 		else {
-			new CrashReporter(new SeqMonkException("Unknown action "+ae.getActionCommand()));
+			throw new IllegalStateException("Unknown action "+ae.getActionCommand());
 		}
 	}
 	

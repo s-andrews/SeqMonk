@@ -38,7 +38,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 
 /**
@@ -323,7 +322,7 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 			clusterCounts();
 		} 
 		catch (SeqMonkException e) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 
 		smoother.smooth();

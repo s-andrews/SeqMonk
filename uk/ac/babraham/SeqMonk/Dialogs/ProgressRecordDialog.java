@@ -36,7 +36,6 @@ import javax.swing.text.DefaultCaret;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 /**
  * The Class ProgressDialog is a generic progress dialog showing a progress
@@ -215,7 +214,7 @@ public class ProgressRecordDialog extends JDialog implements Runnable, ProgressL
 		reportedException = e;
 		
 		if (! ignoreExceptions) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 	}
 

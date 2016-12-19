@@ -35,7 +35,6 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 
 /**
@@ -580,7 +579,7 @@ public class AnnotationSet {
 					
 				}
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
+					throw new IllegalStateException(ioe);
 				}
 			}
 
@@ -598,7 +597,7 @@ public class AnnotationSet {
 						Runtime.getRuntime().addShutdownHook(new Thread(this));
 					}
 					catch (IOException ioe) {
-						new CrashReporter(ioe);
+						throw new IllegalStateException(ioe);
 					}
 				}
 			}
@@ -633,7 +632,7 @@ public class AnnotationSet {
 					return returnedFeatures;
 				}
 				catch (Exception e) {
-					new CrashReporter(e);
+					throw new IllegalStateException(e);
 				}
 			}
 			return featureList;

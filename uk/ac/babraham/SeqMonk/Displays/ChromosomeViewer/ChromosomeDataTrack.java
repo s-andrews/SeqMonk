@@ -47,7 +47,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
@@ -613,7 +612,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			repaint(0,getHeight()/2,getWidth(),getHeight()/2);
 		}
 		else {
-			new CrashReporter(new SeqMonkException("Unknown display mode "+DisplayPreferences.getInstance().getDisplayMode()));
+			throw new IllegalStateException("Unknown display mode "+DisplayPreferences.getInstance().getDisplayMode());
 		}
 	}
 

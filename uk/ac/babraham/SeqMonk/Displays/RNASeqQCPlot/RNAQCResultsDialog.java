@@ -38,7 +38,6 @@ import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
@@ -187,7 +186,7 @@ public class RNAQCResultsDialog extends JDialog implements SampleSelectionListen
 
 				}
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
+					throw new IllegalStateException(ioe);
 				}
 
 

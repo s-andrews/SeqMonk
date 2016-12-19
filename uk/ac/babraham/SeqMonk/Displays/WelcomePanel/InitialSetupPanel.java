@@ -23,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 
@@ -239,8 +238,7 @@ public class InitialSetupPanel extends JDialog implements ActionListener {
 			try {
 				p.savePreferences();
 			} catch (IOException e) {
-				new CrashReporter(e);
-				return;
+				throw new IllegalStateException(e);
 			}
 
 			

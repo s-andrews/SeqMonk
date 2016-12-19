@@ -43,7 +43,6 @@ import javax.swing.JPanel;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressRecordDialog;
 import uk.ac.babraham.SeqMonk.Network.GenomeUpgrader;
@@ -572,7 +571,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 					populatePanel();
 				} 
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
+					throw new IllegalStateException(ioe);
 				}
 			}
 		}
@@ -587,7 +586,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 					populatePanel();
 				} 
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
+					throw new IllegalStateException(ioe);
 				}
 			}
 		}
@@ -606,7 +605,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 						return;
 					} 
 					catch (IOException ioe) {
-						new CrashReporter(ioe);
+						throw new IllegalStateException(ioe);
 					}
 				}
 			}
@@ -626,7 +625,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 					populatePanel();
 				} 
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
+					throw new IllegalStateException(ioe);
 				}
 			}
 		}
@@ -715,7 +714,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 						populatePanel();
 					}
 					catch (Exception ex) {
-						new CrashReporter(ex);
+						throw new IllegalStateException(ex);
 					}
 					
 				}
@@ -754,8 +753,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 							
 							for (int g=0;g<files.length;g++) {
 								if (!files[g].delete()) {
-									new CrashReporter(new IOException("Failed to delete "+files[g].getAbsolutePath()));
-									break;
+									throw new IllegalStateException(new IOException("Failed to delete "+files[g].getAbsolutePath()));
 								}
 							}
 							

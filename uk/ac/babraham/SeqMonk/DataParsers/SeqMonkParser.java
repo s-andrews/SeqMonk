@@ -52,7 +52,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Network.GenomeDownloader;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
@@ -309,7 +308,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 				br.close();
 			} 
 			catch (IOException e1) {
-				new CrashReporter(e1);
+				throw new IllegalStateException(e1);
 			}
 			return;
 		}

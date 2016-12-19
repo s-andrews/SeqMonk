@@ -37,7 +37,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runnable {
@@ -301,7 +300,7 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 			}
 		}
 		else {
-			new CrashReporter(new Exception("Unknown command "+ae.getActionCommand()));
+			throw new IllegalStateException("Unknown command "+ae.getActionCommand());
 		}
 	}
 
@@ -345,7 +344,7 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 
 		}
 		catch (SeqMonkException sme) {
-			new CrashReporter(sme);
+			throw new IllegalStateException(sme);
 		}
 	}	
 }

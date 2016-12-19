@@ -38,7 +38,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 import uk.ac.babraham.SeqMonk.Gradients.HotColdColourGradient;
@@ -233,7 +232,7 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 		}
 
 		catch (SeqMonkException e) {
-			new CrashReporter(e);
+			throw new IllegalStateException(e);
 		}
 
 		// Now we need to put all of the ProbePairValues into

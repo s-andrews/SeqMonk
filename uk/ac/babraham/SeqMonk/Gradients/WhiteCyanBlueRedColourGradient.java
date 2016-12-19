@@ -21,8 +21,6 @@ package uk.ac.babraham.SeqMonk.Gradients;
 
 import java.awt.Color;
 
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
-
 public class WhiteCyanBlueRedColourGradient extends ColourGradient {
 
 	protected Color[] makeColors() {
@@ -231,8 +229,7 @@ public class WhiteCyanBlueRedColourGradient extends ColourGradient {
 			colours[199] = Color.decode("#FF0000");
 		}
 		catch(NumberFormatException nfe) {
-			new CrashReporter(nfe);
-			return null;
+			throw new IllegalStateException(nfe);
 		}
 		return colours;
 	}

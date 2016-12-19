@@ -33,7 +33,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class LineGraphDialog extends JDialog implements ActionListener {
@@ -127,7 +126,7 @@ public class LineGraphDialog extends JDialog implements ActionListener {
 			}
 		}
 		else {
-			new CrashReporter(new Exception("Unknown command "+ae.getActionCommand()));
+			throw new IllegalStateException("Unknown command "+ae.getActionCommand());
 		}
 	} 
 	

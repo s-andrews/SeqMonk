@@ -326,10 +326,10 @@ public class ProbeListViewer extends JDialog implements MouseListener, ActionLis
 				
 					
 			catch (FileNotFoundException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 			catch (IOException e) {
-				new CrashReporter(e);
+				throw new IllegalStateException(e);
 			}
 			
 		}

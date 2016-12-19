@@ -24,7 +24,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -40,7 +39,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
@@ -48,8 +46,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataGroup;
 import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
-import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreviewPanel;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
@@ -133,8 +129,7 @@ public class ManualCorrectionQuantitation extends Quantitation {
 				} 
 
 				catch (SeqMonkException e) {
-					new CrashReporter(e);
-					continue;
+					throw new IllegalStateException(e);
 				}	
 
 			}	

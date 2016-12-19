@@ -46,7 +46,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
@@ -286,8 +285,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 			}
 			}
 			catch (IOException ioe) {
-				new CrashReporter(ioe);
-				return;
+				throw new IllegalStateException(ioe);
 			}
 			
 			// Make the assembly folder and bail out if it exists
@@ -322,8 +320,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 
 			}
 			catch (IOException ioe) {
-				new CrashReporter(ioe);
-				return;
+				throw new IllegalStateException(ioe);
 			}
 			
 			JOptionPane.showMessageDialog(this, "Successfully created new custom genome","Success",JOptionPane.INFORMATION_MESSAGE);

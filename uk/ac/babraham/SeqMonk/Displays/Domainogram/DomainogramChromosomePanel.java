@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 
 public class DomainogramChromosomePanel extends JPanel {
@@ -176,8 +175,7 @@ public class DomainogramChromosomePanel extends JPanel {
 						++validCount;
 					}
 					catch (SeqMonkException e) {
-						new CrashReporter(e);
-						return;
+						throw new IllegalStateException(e);
 					}
 				}
 				

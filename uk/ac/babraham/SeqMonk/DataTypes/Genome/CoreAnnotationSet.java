@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 
 /**
@@ -107,7 +106,7 @@ public class CoreAnnotationSet extends AnnotationSet {
 			pr.close();
 		}
 		catch (IOException ioe) {
-			new CrashReporter(ioe);
+			throw new IllegalStateException(ioe);
 		}
 		
 		
@@ -122,7 +121,7 @@ public class CoreAnnotationSet extends AnnotationSet {
 			pr.close();
 		}
 		catch (IOException ioe) {
-			new CrashReporter(ioe);
+			throw new IllegalStateException(ioe);
 		}
 	}
 	

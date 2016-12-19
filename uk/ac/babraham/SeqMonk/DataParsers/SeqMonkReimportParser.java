@@ -47,7 +47,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Genome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.MultiGenome;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 /**
  * This data parser is not used to read SeqMonk projects being opened, but
@@ -153,7 +152,7 @@ public class SeqMonkReimportParser extends DataParser {
 					br.close();
 				} 
 				catch (IOException e1) {
-					new CrashReporter(e1);
+					throw new IllegalStateException(e1);
 				}
 				return;
 			}

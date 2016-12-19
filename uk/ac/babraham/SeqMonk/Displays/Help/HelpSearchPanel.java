@@ -35,7 +35,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 
 /**
@@ -130,9 +129,8 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 				results = root.findPagesForTerm(queryField.getText().trim());
 			} 
 			catch (IOException e) {
-				new CrashReporter(e);
 				searchButton.setEnabled(true);
-				return;
+				throw new IllegalStateException(e);
 			}
 			if (results.length > 0) {
 				for (int r=0;r<results.length;r++) {

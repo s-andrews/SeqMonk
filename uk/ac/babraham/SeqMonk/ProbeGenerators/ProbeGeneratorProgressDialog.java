@@ -33,7 +33,6 @@ import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 
 // TODO: Move over to using a standard progress dialog
 /**
@@ -120,8 +119,8 @@ public class ProbeGeneratorProgressDialog extends JDialog implements Runnable, P
 	 */
 	public void generationExceptionReceived(Exception e) {
 		setVisible(false);
-		new CrashReporter(e);
 		dispose();
+		throw new IllegalStateException(e);
 	}
 
 	/* (non-Javadoc)

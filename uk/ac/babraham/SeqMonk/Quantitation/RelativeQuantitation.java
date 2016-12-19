@@ -46,7 +46,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 
 /**
@@ -120,7 +119,7 @@ public class RelativeQuantitation extends Quantitation implements ItemListener, 
 					}
 
 					if (value == Float.POSITIVE_INFINITY || value == Float.NEGATIVE_INFINITY) {
-						new CrashReporter(new SeqMonkException("Infinite value when dividing by "+referenceValue+" limit is "+THRESHOLD));
+						throw new IllegalStateException("Infinite value when dividing by "+referenceValue+" limit is "+THRESHOLD);
 					}
 
 					if (logTransform) {
@@ -140,7 +139,7 @@ public class RelativeQuantitation extends Quantitation implements ItemListener, 
 			}
 		}
 		catch (SeqMonkException sme) {
-			new CrashReporter(sme);
+			throw new IllegalStateException(sme);
 		}
 
 		quantitatonComplete();

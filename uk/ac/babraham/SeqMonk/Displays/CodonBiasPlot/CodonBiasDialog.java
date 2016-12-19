@@ -32,7 +32,6 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
-import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class CodonBiasDialog extends JDialog implements ActionListener {
@@ -114,7 +113,7 @@ public class CodonBiasDialog extends JDialog implements ActionListener {
 			graphPanel.setDisplay(currentFeature, (DataStore)dataStoreBox.getSelectedItem(), reverseBox.getSelectedItem().equals("Opposing Strand Specific"));
 		}
 		else {
-			new CrashReporter(new Exception("Unknown command "+ae.getActionCommand()));
+			throw new IllegalStateException("Unknown command "+ae.getActionCommand());
 		}
 	} 
 	
