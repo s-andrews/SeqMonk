@@ -61,6 +61,7 @@ public class VisibleStoresParser extends DataParser {
 	private boolean excludeFeature = false;
 	private boolean filterByLength = false;
 	private boolean extractCentres = false;
+	private boolean filterByStrand = false;
 	private Integer minLength = null;
 	private Integer maxLength = null;
 	private Integer centreExtractContext = null;
@@ -68,6 +69,10 @@ public class VisibleStoresParser extends DataParser {
 	private boolean downsample;
 	private double downsampleProbabilty = 0;
 
+	private boolean keepForward = true;
+	private boolean keepReverse = true;
+	private boolean keepUnknown = true;
+	
 	/**
 	 * Instantiates a new active store parser.
 	 * 
@@ -91,6 +96,33 @@ public class VisibleStoresParser extends DataParser {
 	 */
 	public void run() {
 
+		filterByStrand = prefs.filterStrandCheckbox.isSelected();
+		if (filterByStrand) {
+			if (prefs.strandFilterDirectionBox.getSelectedItem().equals("Forward")) {
+				keepForward = true;
+				keepReverse = false;
+				keepUnknown = false;
+			}
+			if (prefs.strandFilterDirectionBox.getSelectedItem().equals("Reverse")) {
+				keepForward = false;
+				keepReverse = true;
+				keepUnknown = false;
+			}
+
+			if (prefs.strandFilterDirectionBox.getSelectedItem().equals("Forward or Reverse")) {
+				keepForward = true;
+				keepReverse = true;
+				keepUnknown = false;
+			}
+
+			if (prefs.strandFilterDirectionBox.getSelectedItem().equals("Unknown")) {
+				keepForward = false;
+				keepReverse = false;
+				keepUnknown = true;
+			}
+
+		}
+		
 		filterByFeature = prefs.filterFeatureCheckbox.isSelected();
 		if (filterByFeature) {
 			excludeFeature = prefs.filterTypeBox.getSelectedItem().equals("Excluding");
@@ -208,6 +240,12 @@ public class VisibleStoresParser extends DataParser {
 				int end = SequenceRead.end(reads[r]);
 
 				int strand = SequenceRead.strand(reads[r]);
+				
+				if (filterByStrand) {
+					if (strand == Location.FORWARD && !keepForward) continue;
+					if (strand == Location.REVERSE && !keepReverse) continue;
+					if (strand == Location.UNKNOWN && !keepUnknown) continue;
+				}
 
 				if (filterByLength) {
 					int length = SequenceRead.length(reads[r]);
@@ -513,6 +551,8 @@ public class VisibleStoresParser extends DataParser {
 		private JComboBox filterTypeBox;
 		private JCheckBox filterFeatureCheckbox;
 		private JComboBox filterFeatureBox;
+		private JCheckBox filterStrandCheckbox;
+		private JComboBox strandFilterDirectionBox;
 		private JCheckBox filterByLengthBox;
 		private JTextField minLengthField;
 		private JTextField maxLengthField;
@@ -604,6 +644,38 @@ public class VisibleStoresParser extends DataParser {
 					reverseReads.setEnabled(!removeStrandInfo.isSelected());
 				}
 			});
+
+			
+			gbc.gridx=1;
+			gbc.gridy++;
+			commonOptions.add(new JLabel("Filter by strand"),gbc);
+			gbc.gridx=2;
+
+			filterStrandCheckbox = new JCheckBox();
+			commonOptions.add(filterStrandCheckbox,gbc);
+
+			JPanel directionPanel = new JPanel();
+
+			strandFilterDirectionBox = new JComboBox(new String [] {"Forward","Reverse","Forward or Reverse","Unknown"});
+			strandFilterDirectionBox.setEnabled(false);
+			strandFilterDirectionBox.setPrototypeDisplayValue("No longer than this please");
+
+			filterStrandCheckbox.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent arg0) {
+					if (filterStrandCheckbox.isSelected()) {
+						strandFilterDirectionBox.setEnabled(true);
+					}
+					else {
+						strandFilterDirectionBox.setEnabled(false);
+					}
+				}
+			});
+			directionPanel.add(new JLabel("Keep only "));
+			directionPanel.add(strandFilterDirectionBox);
+			gbc.gridx=3;
+			commonOptions.add(directionPanel,gbc);
+			
 			
 			gbc.gridx=1;
 			gbc.gridy++;
@@ -823,7 +895,7 @@ public class VisibleStoresParser extends DataParser {
 		
 
 		public Dimension getPreferredSize () {
-			return new Dimension(600,200);
+			return new Dimension(600,300);
 		}
 
 		public void actionPerformed(ActionEvent ae) {
