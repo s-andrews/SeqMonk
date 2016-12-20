@@ -288,10 +288,19 @@ public class Probe extends Location {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString () {
-		if (name != null) {
-			return name+" "+location()+"("+PositionFormat.formatLength(length())+")";
+		
+		String strand = "UNK";
+		if (strand() == Location.FORWARD) {
+			strand = "FOR";
 		}
-		return location()+"("+PositionFormat.formatLength(length())+")";
+		if (strand() == Location.REVERSE) {
+			strand = "REV";
+		}
+		
+		if (name != null) {
+			return name+" "+location()+" "+strand+" ("+PositionFormat.formatLength(length())+")";
+		}
+		return location()+" "+strand+" ("+PositionFormat.formatLength(length())+")";
 	}
 
 	private String location () {
