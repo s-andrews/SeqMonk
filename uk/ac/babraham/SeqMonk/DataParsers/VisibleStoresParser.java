@@ -540,7 +540,7 @@ public class VisibleStoresParser extends DataParser {
 
 	private class VisibleStoresOptionsPanel extends JPanel implements ActionListener {
 
-		private JCheckBox removeDuplicates;
+		private JComboBox removeDuplicates;
 		private JCheckBox isHiC;
 		private JTextField hiCDistance;
 		private JCheckBox hiCIgnoreTransBox;
@@ -577,9 +577,11 @@ public class VisibleStoresParser extends DataParser {
 			gbc.insets = new Insets(5,5,5,5);
 
 			commonOptions.add(new JLabel("Remove duplicate reads"),gbc);
-			removeDuplicates = new JCheckBox();
-			gbc.gridx=2;
-			commonOptions.add(removeDuplicates,gbc);
+			JPanel dupPanel = new JPanel();
+			removeDuplicates = new JComboBox(new String [] {"No","Yes, based on start", "Yes, based on end", "Yes, start and end"});
+			dupPanel.add(removeDuplicates);
+			gbc.gridx=3;
+			commonOptions.add(dupPanel,gbc);
 
 			gbc.gridx=1;
 			gbc.gridy++;
@@ -862,8 +864,21 @@ public class VisibleStoresParser extends DataParser {
 			return hiCIgnoreTransBox.isSelected();
 		}
 
-		public boolean removeDuplicates () {
-			return removeDuplicates.isSelected();
+		public int removeDuplicates () {
+			if (removeDuplicates.getSelectedItem().equals("No")) {
+				return DataSet.DUPLICATES_REMOVE_NO;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, based on start")) {
+				return DataSet.DUPLICATES_REMOVE_START;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, based on end")) {
+				return DataSet.DUPLICATES_REMOVE_END;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, start and end")) {
+				return DataSet.DUPLICATES_REMOVE_START_END;
+			}
+			
+			throw new IllegalStateException("Didn't understand duplicate string "+removeDuplicates.getSelectedItem());
 		}
 
 

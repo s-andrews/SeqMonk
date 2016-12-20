@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -134,7 +135,7 @@ public class GenericSeqReadParser extends DataParser {
 			// it's never been called for before.
 			getOptionsPanel();
 
-			boolean removeDuplicates = optionsPanel.removeDuplicates();
+			int removeDuplicates = optionsPanel.removeDuplicates();
 			int extendBy = optionsPanel.extendBy();
 			
 			File [] probeFiles = getFiles();
@@ -375,7 +376,7 @@ public class GenericSeqReadParser extends DataParser {
 		private JComboBox strandCol;
 		private JComboBox countCol;
 		private JTextField extendBy;
-		private JCheckBox removeDuplicates;
+		private JComboBox removeDuplicates;
 		private JCheckBox hiCData;
 		private JTextField hiCDistance;
 		private String [] previewData = new String [50];
@@ -428,6 +429,7 @@ public class GenericSeqReadParser extends DataParser {
 			c.weightx=0.5;
 			c.weighty=0.5;
 			c.fill = GridBagConstraints.NONE;
+			c.insets = new Insets(2, 2, 2, 2);
 
 			optionPanel.add(new JLabel("Column Delimiter"),c);
 			delimiters = new JComboBox(new String [] {"Tab","Space","Comma"});
@@ -516,8 +518,8 @@ public class GenericSeqReadParser extends DataParser {
 			c.gridx=0;
 			c.weightx=0.5;
 			c.gridy++;
-			optionPanel.add(new JLabel("Remove duplicates"),c);
-			removeDuplicates = new JCheckBox();
+			optionPanel.add(new JLabel("Deduplicate"),c);
+			removeDuplicates = new JComboBox(new String [] {"No","Yes, based on start", "Yes, based on end", "Yes, start and end"});
 			c.gridx=1;
 			c.weightx=0.1;
 			optionPanel.add(removeDuplicates,c);
@@ -567,8 +569,22 @@ public class GenericSeqReadParser extends DataParser {
 		 * Says whether the options panel was set to remove duplicate reads
 		 * @return true if we should remove duplicates
 		 */
-		public boolean removeDuplicates () {
-			return removeDuplicates.isSelected();
+		public int removeDuplicates () {
+			if (removeDuplicates.getSelectedItem().equals("No")) {
+				return DataSet.DUPLICATES_REMOVE_NO;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, based on start")) {
+				return DataSet.DUPLICATES_REMOVE_START;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, based on end")) {
+				return DataSet.DUPLICATES_REMOVE_END;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, start and end")) {
+				return DataSet.DUPLICATES_REMOVE_START_END;
+			}
+			
+			throw new IllegalStateException("Didn't understand duplicate string "+removeDuplicates.getSelectedItem());
+
 		}
 		
 		public boolean isHiC () {

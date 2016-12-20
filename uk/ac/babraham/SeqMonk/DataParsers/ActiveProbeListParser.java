@@ -240,7 +240,7 @@ public class ActiveProbeListParser extends DataParser {
 
 	private class ActiveDataParserOptionsPanel extends JPanel {
 
-		private JCheckBox removeDuplicates;
+		private JComboBox removeDuplicates;
 		private JCheckBox reverseReads;
 		private JTextField extendReads;
 		private JComboBox strandOptionBox;
@@ -261,7 +261,8 @@ public class ActiveProbeListParser extends DataParser {
 			gbc.insets = new Insets(5,5,5,5);
 
 			commonOptions.add(new JLabel("Remove duplicate reads"),gbc);
-			removeDuplicates = new JCheckBox();
+			removeDuplicates = new JComboBox(new String [] {"No","Yes, based on start", "Yes, based on end", "Yes, start and end"});
+			
 			gbc.gridx=2;
 			commonOptions.add(removeDuplicates,gbc);
 
@@ -310,8 +311,21 @@ public class ActiveProbeListParser extends DataParser {
 		}
 
 
-		public boolean removeDuplicates () {
-			return removeDuplicates.isSelected();
+		public int removeDuplicates () {
+			if (removeDuplicates.getSelectedItem().equals("No")) {
+				return DataSet.DUPLICATES_REMOVE_NO;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, based on start")) {
+				return DataSet.DUPLICATES_REMOVE_START;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, based on end")) {
+				return DataSet.DUPLICATES_REMOVE_END;
+			}
+			else if (removeDuplicates.getSelectedItem().equals("Yes, start and end")) {
+				return DataSet.DUPLICATES_REMOVE_START_END;
+			}
+			
+			throw new IllegalStateException("Didn't understand duplicate string "+removeDuplicates.getSelectedItem());
 		}
 
 

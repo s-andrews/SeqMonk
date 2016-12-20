@@ -69,7 +69,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 
 	private int minDistance;
 
-	private boolean removeDuplicates;
+	private int removeDuplicates;
 	private boolean ignoreTrans;
 
 	private Hashtable<Chromosome, ChromosomeDataStore> readData = new Hashtable<Chromosome, ChromosomeDataStore>();
@@ -110,7 +110,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 	private static final int MAX_CONCURRENT_FINALISE = Math.min(Runtime.getRuntime().availableProcessors(), 6);
 
 
-	public PairedDataSet (String name, String fileName, boolean removeDuplicates, int minDistance, boolean ignoreTrans) {
+	public PairedDataSet (String name, String fileName, int removeDuplicates, int minDistance, boolean ignoreTrans) {
 
 		/*
 		 * Because our duplicate removal will be based on HiC duplication (ie both ends are the
@@ -119,7 +119,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 		 * flag value here so we don't rely on the one from the superclass.
 		 */
 
-		super(name, fileName, false);
+		super(name, fileName, DataSet.DUPLICATES_REMOVE_NO);
 		this.minDistance = minDistance;
 		filterOnMinDistance = minDistance > 0;
 		this.removeDuplicates = removeDuplicates;
@@ -764,7 +764,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 				hitCollection.trim();
 			}
 
-			if (removeDuplicates) {
+			if (removeDuplicates != DataSet.DUPLICATES_REMOVE_NO) {
 				hitCollection.deduplicateCollection();
 			}
 

@@ -213,17 +213,17 @@ public class SeqMonkReimportParser extends DataParser {
 			// indicates the type of dataset.  The only unusual one is a HiC dataset
 			// anything else is assumed to be a normal dataset.
 			if (sections.length == 1) {
-				dataSets[i] = new DataSet(sections[0],"Not known",false);
+				dataSets[i] = new DataSet(sections[0],"Not known",DataSet.DUPLICATES_REMOVE_NO);
 			}
 			else if (sections.length == 2) {
-				dataSets[i] = new DataSet(sections[0],sections[1],false);
+				dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO);
 			}
 			else if (sections.length == 3) {
 				if (sections[2].equals("HiC")) {
-					dataSets[i] = new PairedDataSet(sections[0],sections[1],false,0,false);					
+					dataSets[i] = new PairedDataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,0,false);					
 				}
 				else {
-					dataSets[i] = new DataSet(sections[0],sections[1],false);
+					dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO);
 				}
 			}
 		}

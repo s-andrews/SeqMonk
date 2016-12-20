@@ -109,11 +109,11 @@ public class HiCOtherEndExtractor extends DataParser {
 				
 				if (baits.length == 1) {
 					System.err.println("Only one bait");
-					newData[d] = new DataSet(prefs.prefix.getText()+"_"+visibleHiCDataSets[d].name(),"HiC other end of "+visibleHiCDataSets[d].name()+" for region "+baits[0].chromosome().name()+":"+baits[0].start()+"-"+baits[0].end(),false);
+					newData[d] = new DataSet(prefs.prefix.getText()+"_"+visibleHiCDataSets[d].name(),"HiC other end of "+visibleHiCDataSets[d].name()+" for region "+baits[0].chromosome().name()+":"+baits[0].start()+"-"+baits[0].end(),DataSet.DUPLICATES_REMOVE_NO);
 				}
 				else if (mergeIntoOne){
 					System.err.println("Multiple baits, but merging");
-					newData[d] = new DataSet(prefs.prefix.getText()+"_"+visibleHiCDataSets[d].name(),"HiC other end of "+visibleHiCDataSets[d].name()+" for "+baits.length+" regions",false);
+					newData[d] = new DataSet(prefs.prefix.getText()+"_"+visibleHiCDataSets[d].name(),"HiC other end of "+visibleHiCDataSets[d].name()+" for "+baits.length+" regions",DataSet.DUPLICATES_REMOVE_NO);
 				}
 
 				for (int b=0;b<baits.length;b++) {
@@ -125,7 +125,7 @@ public class HiCOtherEndExtractor extends DataParser {
 
 					progressUpdated("Getting other ends from "+visibleHiCDataSets[d].name()+" and "+baits[b].toString(),(d*baits.length)+b,visibleHiCDataSets.length*baits.length);
 					if (!(baits.length == 1 || mergeIntoOne)) {
-						newData[(d*baits.length)+b] = new DataSet(baits[b].toString()+"_"+visibleHiCDataSets[d].name(),"HiC other end of "+visibleHiCDataSets[d].name()+" for region "+baits[b].chromosome().name()+":"+baits[b].start()+"-"+baits[b].end(),false);						
+						newData[(d*baits.length)+b] = new DataSet(baits[b].toString()+"_"+visibleHiCDataSets[d].name(),"HiC other end of "+visibleHiCDataSets[d].name()+" for region "+baits[b].chromosome().name()+":"+baits[b].start()+"-"+baits[b].end(),DataSet.DUPLICATES_REMOVE_NO);						
 					}
 
 					HiCHitCollection hiCCollection = visibleHiCDataSets[d].getHiCReadsForProbe(baits[b]);

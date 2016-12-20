@@ -52,6 +52,14 @@ import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeMinMax;
  */
 public class DataSet extends DataStore implements Runnable {
 	
+
+	// These are a set of flags which say how we need to treat duplicates
+	public static final int DUPLICATES_REMOVE_NO = 5715;
+	public static final int DUPLICATES_REMOVE_START = 5716;
+	public static final int DUPLICATES_REMOVE_END = 5717;
+	public static final int DUPLICATES_REMOVE_START_END = 5718;
+
+	
 	// I've tried using a HashMap and a linked list instead of 
 	// a hashtable and a vector but they proved to be slower and
 	// use more memory.
@@ -71,7 +79,7 @@ public class DataSet extends DataStore implements Runnable {
 	private ThreadSafeIntCounter chromosomesStillToFinalise;
 	
 	/** A flag to say if we should remove duplicates when finalising */
-	private boolean removeDuplicates = false;
+	private int removeDuplicates = DUPLICATES_REMOVE_NO;
 	
 	/** We cache the total read count to save having to reload
 	 * every chromosome just to get the read count
@@ -135,7 +143,7 @@ public class DataSet extends DataStore implements Runnable {
 	 * @param name The initial value for the user changeable name
 	 * @param fileName The name of the data source  - which can't be changed by the user
 	 */
-	public DataSet (String name, String fileName, boolean removeDuplicates) {
+	public DataSet (String name, String fileName, int removeDuplicates) {
 		super(name);
 		this.fileName = fileName;
 		this.removeDuplicates = removeDuplicates;
@@ -154,7 +162,7 @@ public class DataSet extends DataStore implements Runnable {
 		}
 	}
 	
-	protected boolean removeDuplicates () {
+	protected int removeDuplicates () {
 		return removeDuplicates;
 	}
 	
@@ -586,7 +594,7 @@ public class DataSet extends DataStore implements Runnable {
 			}
 			originalReads.clear();
 						
-			if (removeDuplicates) {
+			if (removeDuplicates != DUPLICATES_REMOVE_NO) {
 				long lastRead = 0;
 				for (int i=0;i<reads.length;i++) {
 					if (lastRead == 0 || SequenceRead.compare(lastRead, reads[i]) != 0) {
