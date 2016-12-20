@@ -322,7 +322,7 @@ public class ExactOverlapQuantitation extends Quantitation {
 				int [] counts = positionCounts.toArray();
 				positionCounts = null;
 				
-				System.err.println("Found "+positions.length+" positions in "+data[d].name()+" on chr "+chrs[c].name());
+//				System.err.println("Found "+positions.length+" positions in "+data[d].name()+" on chr "+chrs[c].name());
 				
 				quantitationType.resetLastRead();
 				
