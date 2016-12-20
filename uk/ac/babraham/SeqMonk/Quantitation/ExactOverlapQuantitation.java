@@ -23,6 +23,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -31,9 +32,12 @@ import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.QuantitationStrandType;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
+import uk.ac.babraham.SeqMonk.Utilities.IntVector;
+import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 
 /**
  * A quantitation based on the number of reads exactly overlapping each probe
@@ -264,63 +268,116 @@ public class ExactOverlapQuantitation extends Quantitation {
 			}
 			
 		}
-
-		for (int p=0;p<probes.length;p++) {
+		
+		
+		// To make this more efficient we'll do this chromosome by chromosome
+		Chromosome [] chrs = application.dataCollection().genome().getAllChromosomes();
+		
+		for (int c=0;c<chrs.length;c++) {
 			
-			// See if we need to quit
-			if (cancel) {
-				progressCancelled();
-				return;
-			}
-			
-			progressUpdated(p, probes.length);
+			progressUpdated("Quantiating probes on "+chrs[c].name(),c,chrs.length);
+						
+			Probe [] thisChrProbes = application.dataCollection().probeSet().getProbesForChromosome(chrs[c]);
+			Arrays.sort(thisChrProbes);
 			
 			for (int d=0;d<data.length;d++) {
+			
+				if (cancel) {
+					progressCancelled();
+					return;
+				}
 				
-				quantitationType.resetLastRead();
+				// We'll fetch all reads for this chr and then do a count per position
 				
-				float count = 0;
-
-				long [] reads = data[d].getReadsForProbe(probes[p]);
+				long [] reads = data[d].getReadsForChromosome(chrs[c]);
+				
+				LongVector uniquePositions = new LongVector();
+				IntVector positionCounts = new IntVector();
+				
+				long currentRead = 0;
+				int currentCount = 0;
 				
 				for (int r=0;r<reads.length;r++) {
+					if (reads[r] == currentRead) currentCount++;
 					
-					// Check if we can ignore this one					
-					if (quantitationType.useRead(probes[p], reads[r])) {
-						if (SequenceRead.start(reads[r])==probes[p].start() && SequenceRead.end(reads[r])==probes[p].end()) {
-							++count;
+					else {
+						if (currentCount >  0) {
+							uniquePositions.add(currentRead);
+							positionCounts.add(currentCount);
 						}
+						currentRead = reads[r];
+						currentCount = 1;
 					}
 				}
 				
-				/*
-				 * Log transforming is a pain due to infinite values coming
-				 * from zero counts. We've tried a few different solutions but the
-				 * one we're going with now is that if we're log transforming then
-				 * we set zero counts to 0.9 counts.  All of the subsequent 
-				 * corrections for total read count and length are then applied as
-				 * normal.  The downside of this is that zero counts end up with
-				 * different values in different datasets (due to total count correction)
-				 * and a range of values in the same dataset (due to read length correction)
-				 * but at least we are guaranteed that the zero counts are always 
-				 * lower than the probes which actually have a count.
-				 */
+				if (currentCount > 0) {
+					uniquePositions.add(currentRead);
+					positionCounts.add(currentCount);
+				}					
 				
+				reads = null;
 				
-				if (logTransform && count==0) {
-					count=0.9f;
-				}
-								
-				if (correctTotal) {
-					count *= corrections[d];
-				}
+				long [] positions = uniquePositions.toArray();
+				uniquePositions = null;
+				int [] counts = positionCounts.toArray();
+				positionCounts = null;
 				
-				if (logTransform) {
-					count = (float)Math.log(count)/log2;
-				}
+				System.err.println("Found "+positions.length+" positions in "+data[d].name()+" on chr "+chrs[c].name());
 				
-				data[d].setValueForProbe(probes[p], count);					
+				quantitationType.resetLastRead();
+				
+				int startIndex = 0;
+				
+				for (int p=0;p<thisChrProbes.length;p++) {
 					
+					int rawCount = 0;
+					
+					for (int r=startIndex;r<positions.length;r++) {
+						if (SequenceRead.start(positions[r]) < thisChrProbes[p].start()) {
+							startIndex = r;
+						}
+						
+						if (SequenceRead.start(positions[r]) > thisChrProbes[p].start()) break;
+						
+						if (quantitationType.useRead(thisChrProbes[p], positions[r])) {
+							if (SequenceRead.start(positions[r])==thisChrProbes[p].start() && SequenceRead.end(positions[r])==thisChrProbes[p].end()) {
+								rawCount += counts[r];
+							}
+						}
+					}
+					
+					// We have the counts now work out any correction.
+					float count = rawCount;
+					
+					/*
+					 * Log transforming is a pain due to infinite values coming
+					 * from zero counts. We've tried a few different solutions but the
+					 * one we're going with now is that if we're log transforming then
+					 * we set zero counts to 0.9 counts.  All of the subsequent 
+					 * corrections for total read count and length are then applied as
+					 * normal.  The downside of this is that zero counts end up with
+					 * different values in different datasets (due to total count correction)
+					 * and a range of values in the same dataset (due to read length correction)
+					 * but at least we are guaranteed that the zero counts are always 
+					 * lower than the probes which actually have a count.
+					 */
+					
+					
+					if (logTransform && count==0) {
+						count=0.9f;
+					}
+									
+					if (correctTotal) {
+						count *= corrections[d];
+					}
+					
+					if (logTransform) {
+						count = (float)Math.log(count)/log2;
+					}
+					
+					data[d].setValueForProbe(thisChrProbes[p], count);					
+						
+				}
 				
 			}
 			
