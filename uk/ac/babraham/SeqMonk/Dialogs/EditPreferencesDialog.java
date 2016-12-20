@@ -84,6 +84,9 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	/** The check for updates. */
 	private JCheckBox checkForUpdates;
 	
+	/** The email used to send crash reports by default */
+	private JTextField crashEmailAddress;
+	
 	/** Whether to compress output */
 	private JCheckBox compressOutput;
 	
@@ -218,7 +221,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		c.weighty=0.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
-		memoryPanel.add(new JLabel("Cache read data to disk"),c);
+		memoryPanel.add(new JLabel("Cache Folder Location"),c);
 		c.gridx=1;
 		c.weightx=0.5;
 		JPanel tempDirPanel = new JPanel();
@@ -324,6 +327,16 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		c.weightx=0.5;
 		downloadLocation = new JTextField(p.getGenomeDownloadLocation());
 		networkPanel.add(downloadLocation,c);
+		
+		c.gridx=0;
+		c.gridy++;
+		c.weightx=0.1;
+		networkPanel.add(new JLabel("Email for crash reports"),c);
+		c.gridx=1;
+		c.weightx=0.5;
+		crashEmailAddress = new JTextField(p.getCrashEmail());
+		networkPanel.add(crashEmailAddress,c);
+		
 		tabs.addTab("Network",networkPanel);
 		
 		JPanel updatesPanel = new JPanel();
@@ -503,6 +516,11 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 				return;								
 			}
 			
+			String crashEmailString = crashEmailAddress.getText().trim();
+			
+			if (crashEmailString.length() == 0) crashEmailString = null;
+			
+			// Should we try to validate the email?
 			
 			// OK that's everything which could have gone wrong.  Let's save it
 			// to the preferences file
@@ -510,6 +528,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			SeqMonkPreferences p = SeqMonkPreferences.getInstance();
 			
 			p.setCheckForUpdates(checkForUpdates.isSelected());
+			p.setCrashEmail(crashEmailString);
 			p.setDataLocation(dataLocationFile);
 			p.setSaveLocation(saveLocationFile);
 			p.setRLocation(rLocationString);
