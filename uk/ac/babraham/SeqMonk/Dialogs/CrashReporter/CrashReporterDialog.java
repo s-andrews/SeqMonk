@@ -241,7 +241,7 @@ public class CrashReporterDialog extends JDialog implements ActionListener {
 			getContentPane().add(notifyLabel,gbc);
 			
 			JPanel emailPanel = new JPanel();
-			emailPanel.add(new JLabel("Email:"));
+			emailPanel.add(new JLabel("Your Email:"));
 			email = new JTextField(30);
 			email.setText(SeqMonkPreferences.getInstance().getCrashEmail());
 			emailPanel.add(email);
@@ -355,23 +355,24 @@ public class CrashReporterDialog extends JDialog implements ActionListener {
 					if (reply == JOptionPane.NO_OPTION) return;
 				}
 				
+				if (email.getText().toLowerCase().equals("simon.andrews@babraham.ac.uk") | email.getText().toLowerCase().equals("babraham.bioinformatics@babraham.ac.uk")) {
+					JOptionPane.showMessageDialog(this, "<html>That isn't your email - it's mine!<br><br>We need your email so we know who to reply to.</html>", "Can't reply to that...", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				
 				// Check if we need to store their email
 				if (rememberEmail.isSelected()) {
 					SeqMonkPreferences.getInstance().setCrashEmail(email.getText());
+					try {
+						SeqMonkPreferences.getInstance().savePreferences();
+					} 
+					catch (IOException e) {
+						// We're going to ignore this in the UI since we're already
+						// inside a crash dialog.
+						e.printStackTrace();
+					}
 				}
-				else {
-					SeqMonkPreferences.getInstance().setCrashEmail(null);
-				}
-				
-				try {
-					SeqMonkPreferences.getInstance().savePreferences();
-				} 
-				catch (IOException e) {
-					// We're going to ignore this in the UI since we're already
-					// inside a crash dialog.
-					e.printStackTrace();
-				}
-				
 				
 				Thread t = new Thread(this);
 				t.start();
