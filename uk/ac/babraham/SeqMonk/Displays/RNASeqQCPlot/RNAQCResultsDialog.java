@@ -201,13 +201,16 @@ public class RNAQCResultsDialog extends JDialog implements SampleSelectionListen
 
 			public void actionPerformed(ActionEvent ae) {
 
-
 				String prefix = JOptionPane.showInputDialog(RNAQCResultsDialog.this, "Prefix to add", "BADQC_");
 
 				if (prefix == null || prefix.length()==0) return;
 
 				for (int d=0;d<selectedStores.length;d++) {
-					selectedStores[d].setName(prefix+selectedStores[d].name());
+					
+					// Don't add the prefix if it's already there
+					if (!selectedStores[d].name().startsWith(prefix)) {
+						selectedStores[d].setName(prefix+selectedStores[d].name());
+					}
 				}
 
 

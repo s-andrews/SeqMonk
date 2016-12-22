@@ -194,7 +194,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 //		setSize(800, 600);
 		setLocationRelativeTo(null);
 		// We maximise the display by default
-		setExtendedState(getExtendedState()|MAXIMIZED_BOTH);
+//		setExtendedState(getExtendedState()|MAXIMIZED_BOTH);
 		menu = new SeqMonkMenu(this);
 		setJMenuBar(menu);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
