@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BAMFileParser;
+import uk.ac.babraham.SeqMonk.DataParsers.BismarkCovFileParser;
+import uk.ac.babraham.SeqMonk.DataParsers.DataParser;
 import uk.ac.babraham.SeqMonk.DataParsers.DataParserOptionsPanel;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
@@ -100,17 +102,39 @@ public class SeqMonkImporter implements ProgressListener {
 
 		System.err.println("Parsing Data");
 
-		BAMFileParser parser = new BAMFileParser(data);
+		
+		// We'll let them import either BAM files or coverage files
+		// but we need to figure out which we've got.
 				
+		DataParser parser;
+		
+		boolean importBAM = true;
+		
+		if (files.length > 0 && (files[0].getName().toLowerCase().endsWith(".cov.gz") || files[0].getName().toLowerCase().endsWith(".cov"))) {
+			importBAM = false;
+		}
+
+		if (importBAM) {
+			System.err.println("Importing as BAM files");
+			parser = new BAMFileParser(data);
+		}
+		else {
+			System.err.println("Importing as Bismark coverage files");
+			parser = new BismarkCovFileParser(data);
+		}
+		
+		
 		for (int f=0;f<files.length;f++) {
 		
 			System.err.println("Parsing "+files[f].getName());
 			parser.setFiles(new File[]{files[f]});
 			
-			if (f==0) {
+			if (f==0 && importBAM) {
 				// Fetching this will trigger the auto-configure of the settings
 				// we only want to call this once so that we keep consistent settings
-				// for all of the files we parse.
+				// for all of the files we parse.  We also only call it if we're 
+				// parsing BAM files.  There are no options to set if we're importing
+				// coverage files.
 				DataParserOptionsPanel options = (DataParserOptionsPanel)parser.getOptionsPanel();
 
 				

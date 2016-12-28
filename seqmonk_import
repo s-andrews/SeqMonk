@@ -65,6 +65,10 @@ if ($help) {
 	exit;
 }
 
+unless (@files) {
+	die "No files to import specified\n";
+}
+
 unless ($outfile) {
 	die "No output file (--outfile) supplied\n";
 }
@@ -356,8 +360,9 @@ SYNOPSIS
 DESCRIPTION
 
 	This script allows you to run seqmonk in a non-interactive mode to read in
-	a number of BAM files and save these into a single project file which you
-	can then transfer to an interactive server to do further downstream analysis.
+	a number of BAM or Bismark coverage files and save these into a single project 
+	file which you can then transfer to an interactive server to do further 
+	downstream analysis.
     
     The options for the program as as follows:
 
