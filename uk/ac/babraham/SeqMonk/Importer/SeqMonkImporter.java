@@ -69,6 +69,19 @@ public class SeqMonkImporter implements ProgressListener {
 		
 		SeqMonkPreferences prefs = SeqMonkPreferences.getInstance();
 		
+		// They may have defined a temp directory but not created it (happens a lot on clusters)
+		// so we'll check this and try to make it if it's missing.
+		
+		File tempDir = SeqMonkPreferences.getInstance().tempDirectory();
+		
+		if (tempDir != null && !tempDir.exists()) {
+			tempDir.mkdirs();
+		}
+
+		if (!tempDir.exists()) {
+			System.err.println("ERROR: Cache directory "+tempDir.getAbsolutePath()+" doesn't exist and couldn't be created");
+			System.exit(1);
+		}
 		
 		System.err.println("Reading Genome");
 

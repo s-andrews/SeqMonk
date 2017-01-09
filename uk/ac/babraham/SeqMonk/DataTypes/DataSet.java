@@ -696,8 +696,6 @@ public class DataSet extends DataStore implements Runnable {
 				
 			}
 			
-			
-			
 						
 			vector = null;
 
