@@ -1,3 +1,37 @@
+RELEASE NOTES FOR SeqMonk v1.37.0
+---------------------------------
+
+This release adds a lot of new and modified functionality to make the program 
+easier to use for some common tasks.
+
+The changes in this release are:
+
+- Changed the heatmap view to use the currently set positive/negative scale
+  when performing euclidean clustering
+  
+- Fixed a bug in PCA plotting where NA or infinite quantitated values were
+  present
+  
+- Rewrote the features filter to make it much more powerful
+
+- Fixed a bug in seqmonk_import if you specified a filename in the current
+  directory
+  
+- Updated seqmonk_import to allow the import of bismark coverage files
+
+- Fixed error reporting in seqmonk_import
+
+- Hugely optimised the exact overlap quantitation
+
+- Made the status bar show the stand of any highlighted probe
+
+- Allow the crash email to be changed from the preferences dialog
+
+- Added more options to deduplication to account for different duplication types
+
+- Stopped the RNA-Seq QC plot from duplicating prefixes when doing multiple filters
+
+
 RELEASE NOTES FOR SeqMonk v1.36.0
 ---------------------------------
 
