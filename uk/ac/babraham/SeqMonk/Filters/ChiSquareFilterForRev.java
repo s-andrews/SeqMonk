@@ -62,6 +62,7 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 	private boolean applyMultipleTestingCorrection = true;
 	private int minObservations = 10;
 	private int minPercentShift = 10;
+	private boolean resample = false;
 
 	/**
 	 * Instantiates a new box whisker filter.
@@ -174,6 +175,10 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 			b.append(" after multiple testing correction");
 		}
 		
+		if (resample) {
+			b.append(" resampled from current quantitation");
+		}
+		
 		b.append(" Min observations was ");
 		b.append(minObservations);
 		
@@ -202,7 +207,6 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 	 */
 	protected void generateProbeList () {
 
-
 		if (options.stringencyField.getText().length() == 0) {
 			stringency = 0.05;
 		}
@@ -224,6 +228,40 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 
 		applyMultipleTestingCorrection = options.multiTestBox.isSelected();
 
+		resample = options.resampleBox.isSelected();
+
+		Probe [] probes = startingList.getAllProbes();
+		
+		if (resample) {
+			// Do a sanity check that the current quantitation actually looks like
+			// percentage values.
+			
+			progressUpdated("Checking current quantitations", 0,1);
+			
+			for (int p=0;p<probes.length;p++) {
+				if (cancel) {
+					progressCancelled();
+					return;
+				}
+				try {
+					for (int d=0;d<stores.length;d++) {
+						float value = stores[d].getValueForProbe(probes[p]);
+						if (Float.isNaN(value)) continue; // NaN is OK
+					
+						if (value < 0 || value > 100) {
+							progressExceptionReceived(new SeqMonkException("For resampling quantitations must be between 0 and 100.  Probe "+probes[p].name()+" had value "+value+" in "+stores[d].name()));
+							return;
+						}
+					}
+				}
+				catch (SeqMonkException sme) {
+					progressExceptionReceived(sme);
+					return;
+				}
+			}
+			
+		}
+
 		ProbeList newList;
 		
 		if (applyMultipleTestingCorrection) {
@@ -233,7 +271,6 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 			newList = new ProbeList(startingList,"Filtered Probes","","P-value");			
 		}
 
-		Probe [] probes = startingList.getAllProbes();
 
 		int [][] forRevCounts = new int[stores.length][2];
 		
@@ -253,20 +290,39 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 				return;
 			}
 			
-			
 			// For each dataset make up a list of forward and reverse probes under this probe
 			for (int d=0;d<stores.length;d++) {
 				long [] reads = stores[d].getReadsForProbe(probes[p]);
 				
 				forRevCounts[d][0] = 0;
 				forRevCounts[d][1] = 0;
-				
-				for (int r=0;r<reads.length;r++) {
-					if (SequenceRead.strand(reads[r]) == Location.FORWARD) {
-						++forRevCounts[d][0];
+			
+				if (resample) {
+					try {
+						float value = stores[d].getValueForProbe(probes[p]);
+						
+						// We redistribute the total count based on the percentage value
+						// in the quantitation
+						
+						int methCount = Math.round((reads.length * value)/100);
+						int unmethCount = reads.length - methCount;
+						
+						forRevCounts[d][0] = methCount;
+						forRevCounts[d][1] = unmethCount;
+						
 					}
-					else if (SequenceRead.strand(reads[r]) == Location.REVERSE) {
-						++forRevCounts[d][1];
+					catch (SeqMonkException sme) {
+						continue PROBE;
+					}
+				}
+				else {
+					for (int r=0;r<reads.length;r++) {
+						if (SequenceRead.strand(reads[r]) == Location.FORWARD) {
+							++forRevCounts[d][0];
+						}
+						else if (SequenceRead.strand(reads[r]) == Location.REVERSE) {
+							++forRevCounts[d][1];
+						}
 					}
 				}
 			}
@@ -330,6 +386,7 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 		private JList dataList;
 		private JTextField stringencyField;
 		private JCheckBox multiTestBox;
+		private JCheckBox resampleBox;
 		private JTextField minObservationsField;
 		private JTextField minDifferenceField;
 
@@ -395,6 +452,18 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 			multiTestBox = new JCheckBox();
 			multiTestBox.setSelected(applyMultipleTestingCorrection);
 			choicePanel.add(multiTestBox,gbc);
+
+			
+			gbc.gridx=1;
+			gbc.gridy++;
+
+			choicePanel.add(new JLabel("Resample counts from current quantitation"),gbc);
+
+			gbc.gridx=2;
+
+			resampleBox = new JCheckBox();
+			resampleBox.setSelected(resample);
+			choicePanel.add(resampleBox,gbc);
 
 			gbc.gridx=1;
 			gbc.gridy++;
