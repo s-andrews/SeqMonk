@@ -72,6 +72,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 	private static Double absDiffCutoff = 5d;
 
 	private static boolean multiTest = true;
+	private static boolean resample = false;
 
 	private final LogisticRegressionOptionsPanel optionsPanel;
 
@@ -111,6 +112,40 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		File tempDir;
 		try {
 
+			Probe [] probes = startingList.getAllProbes();
+
+			if (resample) {
+				// We need to check that the data stores are quantitated
+				for (int i=0;i<fromStores.length;i++) {
+					if (!fromStores[i].isQuantitated()) {
+						progressExceptionReceived(new SeqMonkException("Data Store "+fromStores[i].name()+" wasn't quantitated"));
+						return;
+					}
+					for (int p=0;p<probes.length;p++) {
+						float value = fromStores[i].getValueForProbe(probes[p]);
+						if ((!Float.isNaN(value)) && (value < 0 || value > 100)) {
+							progressExceptionReceived(new SeqMonkException("Data Store "+fromStores[i].name()+" had a value outside the range 0-100 ("+value+")"));
+							return;							
+						}
+
+					}
+				}
+				for (int i=0;i<toStores.length;i++) {
+					if (!toStores[i].isQuantitated()) {
+						progressExceptionReceived(new SeqMonkException("Data Store "+toStores[i].name()+" wasn't quantitated"));
+						return;
+					}
+					for (int p=0;p<probes.length;p++) {
+						float value = toStores[i].getValueForProbe(probes[p]);
+						if ((!Float.isNaN(value)) && (value < 0 || value > 100)) {
+							progressExceptionReceived(new SeqMonkException("Data Store "+toStores[i].name()+" had a value outside the range 0-100 ("+value+")"));
+							return;							
+						}
+
+					}
+				}
+			}
+
 			progressUpdated("Creating temp directory",0,1);
 
 			tempDir = TempDirectory.createTempDirectory();
@@ -134,8 +169,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			else {
 				template.setValue("MULTITEST", "FALSE");
 			}
-			
-			
+
+
 			// Write the script file
 			File scriptFile = new File(tempDir.getAbsoluteFile()+"/script.r");
 			PrintWriter pr = new PrintWriter(scriptFile);
@@ -143,14 +178,13 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			pr.close();
 
 			// Write the count data
-			Probe [] probes = startingList.getAllProbes();
-			
+
 			// Sort these so we can get probes from the same chromsome together
 			Arrays.sort(probes);
 			pr = null;
 			String lastChr = "";
-			
-			for (int p=0;p<probes.length;p++) {
+
+			PROBE: for (int p=0;p<probes.length;p++) {
 
 				if (!probes[p].chromosome().name().equals(lastChr)) {
 					if (pr != null) pr.close();
@@ -160,7 +194,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					pr.println("id\tgroup\treplicate\tstate\tcount");
 				}
 
-				
+
 				if (p%1000 == 0) {
 					progressUpdated("Writing data for chr"+lastChr,p,probes.length);
 				}
@@ -176,10 +210,22 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					int totalCount = 0;
 					int methCount = 0;
 
-					for (int r=0;r<reads.length;r++) {
-						totalCount++;
-						if (SequenceRead.strand(reads[r]) == Location.FORWARD) {
-							++methCount;
+
+					if (resample) {
+						float value = fromStores[i].getValueForProbe(probes[p]);
+						if (Float.isNaN(value)) {
+							continue PROBE;
+						}
+						totalCount = reads.length;
+						methCount = Math.round((totalCount*value)/100f);
+					}
+
+					else {
+						for (int r=0;r<reads.length;r++) {
+							totalCount++;
+							if (SequenceRead.strand(reads[r]) == Location.FORWARD) {
+								++methCount;
+							}
 						}
 					}
 
@@ -194,10 +240,21 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					int totalCount = 0;
 					int methCount = 0;
 
-					for (int r=0;r<reads.length;r++) {
-						totalCount++;
-						if (SequenceRead.strand(reads[r]) == Location.FORWARD) {
-							++methCount;
+					if (resample) {
+						float value = toStores[i].getValueForProbe(probes[p]);
+						if (Float.isNaN(value)) {
+							continue PROBE;
+						}
+						totalCount = reads.length;
+						methCount = Math.round((totalCount*value)/100f);
+					}
+
+					else {
+						for (int r=0;r<reads.length;r++) {
+							totalCount++;
+							if (SequenceRead.strand(reads[r]) == Location.FORWARD) {
+								++methCount;
+							}
 						}
 					}
 
@@ -209,7 +266,6 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 				// Check to see we meet the requirements for the min amount of information
 				// and the min diff.
-
 
 				int totalFromMeth = 0;
 				int totalFrom = 0;
@@ -329,7 +385,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				String [] sections = line.split("\t");
 
 				String [] indexSections = sections[0].split("\\.");
-				
+
 				int probeIndex = Integer.parseInt(indexSections[indexSections.length-1]);
 				float pValue = Float.parseFloat(sections[sections.length-1]);
 
@@ -416,9 +472,13 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			b.append(" after Benjamimi and Hochberg correction");
 		}
 		
+		if (resample) {
+			b.append(" with ratios recalculated from normalised quantitation");
+		}
+
 		b.append(" with a minimum difference of ");
 		b.append(absDiffCutoff);
-		
+
 		return b.toString();
 	}
 
@@ -439,7 +499,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 		b.append(". Min diff ");
 		b.append(absDiffCutoff);
-		
+
 		return b.toString();	
 	}
 
@@ -452,6 +512,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		private JTextField pValueCutoffField;
 		private JTextField absDiffCutoffField;
 		private JCheckBox multiTestBox;
+		private JCheckBox resampleBox;
 
 		/**
 		 * Instantiates a new windowed replicate options panel.
@@ -533,15 +594,23 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 
 			multiTestBox = new JCheckBox();
-			if (multiTest) {
-				multiTestBox.setSelected(true);
-			}
-			else {
-				multiTestBox.setSelected(false);
-			}
+			multiTestBox.setSelected(multiTest);
 			multiTestBox.addChangeListener(this);
 			choicePanel.add(multiTestBox,gbc);
 
+			gbc.gridx=1;
+			gbc.gridy++;
+			gbc.weightx=0.2;
+
+			choicePanel.add(new JLabel("Resample counts from current quantitation"),gbc);
+
+			gbc.gridx++;
+			gbc.weightx=0.6;
+
+			resampleBox = new JCheckBox();
+			resampleBox.setSelected(resample);
+			resampleBox.addChangeListener(this);
+			choicePanel.add(resampleBox,gbc);
 
 			add(new JScrollPane(choicePanel),BorderLayout.CENTER);
 
@@ -621,6 +690,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		 */
 		public void stateChanged(ChangeEvent ce) {
 			multiTest = multiTestBox.isSelected();
+			resample = resampleBox.isSelected();
 			optionsChanged();
 		}
 
