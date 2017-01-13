@@ -598,7 +598,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			multiTestBox.addChangeListener(this);
 			choicePanel.add(multiTestBox,gbc);
 
-			gbc.gridx=1;
+			gbc.gridx=0;
 			gbc.gridy++;
 			gbc.weightx=0.2;
 
