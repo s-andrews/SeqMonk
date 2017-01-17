@@ -6,6 +6,10 @@ easier to use for some common tasks.
 
 The changes in this release are:
 
+- Added an option to the ChiSquare and Logistic Regression statistics to 
+  resample the read ratios based on a current normalised percentage quantitation.
+  Provides lots of new possibilities for the analysis of BS-Seq data.
+
 - Changed the heatmap view to use the currently set positive/negative scale
   when performing euclidean clustering
   
