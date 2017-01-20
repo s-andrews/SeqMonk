@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-15 Simon Andrews and 2009 Ieuan Clay
+ * Copyright Copyright 2010-17 Simon Andrews and 2009 Ieuan Clay
  *
  *    This file is part of SeqMonk.
  *

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-15-15 Simon Andrews
+ * Copyright 2014-17 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *

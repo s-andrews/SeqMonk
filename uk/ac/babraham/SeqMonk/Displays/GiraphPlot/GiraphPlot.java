@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-15-15 Laura Biggins
+ * Copyright 2014-17 Laura Biggins
  *
  *    This file is part of SeqMonk.
  *
