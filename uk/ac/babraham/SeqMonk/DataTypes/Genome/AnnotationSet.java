@@ -570,7 +570,11 @@ public class AnnotationSet {
 						}
 					}
 					
-					cacheFile = new File(cacheBase.getAbsoluteFile()+"/"+chromosome+"%"+featureType+".cache");
+					// We need to remove forward slashes from feature names since they'll mess up the path
+					// we'll use 3 underscores for the replacement.
+					
+					String cacheFileName = cacheBase.getAbsoluteFile()+"/"+chromosome+"%"+(featureType.replaceAll("/", "___")+".cache");
+					cacheFile = new File(cacheFileName);
 					ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(cacheFile)));
 					oos.writeObject(featureList);
 					oos.close();

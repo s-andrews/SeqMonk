@@ -293,6 +293,10 @@ public class GenomeParser implements Runnable {
 			if (chrType.length != 2) {
 				throw new IllegalStateException("Cache name '"+name+"' didn't split into chr and type");
 			}
+			
+			// If the feature name had a forward slash in it we've replaced it with 3 underscores
+			chrType[1] = chrType[1].replaceAll("___", "/");
+			
 			coreAnnotation.addPreCachedFile(chrType[1], chrType[0], cacheFiles[i]);
 
 
