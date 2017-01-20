@@ -168,7 +168,8 @@ public class FilterOptionsDialog extends JDialog implements OptionsListener, Pro
 
 	public void progressExceptionReceived(Exception e) {
 		filterButton.setEnabled(true);
-		throw new IllegalStateException(e);
+		// We shouldn't need to do anything with the exception as it will be handled
+		// by the progress dialog we kicked off.
 	}
 
 
