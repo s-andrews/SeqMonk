@@ -1,3 +1,21 @@
+RELEASE NOTES FOR SeqMonk v1.37.1
+---------------------------------
+
+This release is a minor bugfix release.  Updating to this release is only 
+necessary for people directly affected by one of the bugs below:
+
+- Fixed a bug in the reporting of R errors where the full R trace wasn't 
+  attached to the crash report making it difficult to identify the cause
+  of R problems.
+  
+- Fixed a bug in the generation of custom genomes where feature names 
+  containing a forward slash in their names would cause a failure of the
+  feature caching system.
+  
+- Fixed an out of date warning in the RNA-Seq pipeline which hadn't been
+  updated to the new option names in the BAM import dialog.
+
+
 RELEASE NOTES FOR SeqMonk v1.37.0
 ---------------------------------
 
