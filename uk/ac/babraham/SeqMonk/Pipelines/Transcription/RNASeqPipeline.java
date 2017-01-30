@@ -654,7 +654,7 @@ public class RNASeqPipeline extends Pipeline {
 				gbc.gridx=1;
 				gbc.gridwidth = 2;
 				gbc.gridy=0;
-				JLabel warningLabel = new JLabel("<html><center>This quantitation requires data to have been imported with <br>the 'split spliced reads' option turned on<br>and your data doesn't look like it had that.</center></html>",JLabel.CENTER);
+				JLabel warningLabel = new JLabel("<html><center>This quantitation requires data to have been imported with <br>the 'Treat as RNA-Seq data' option turned on<br>and your data doesn't look like it had that.</center></html>",JLabel.CENTER);
 				warningLabel.setForeground(Color.RED);
 				add(warningLabel,gbc);
 				gbc.gridwidth = 1;
