@@ -910,7 +910,7 @@ public class VisibleStoresParser extends DataParser {
 		
 
 		public Dimension getPreferredSize () {
-			return new Dimension(600,300);
+			return new Dimension(600,500);
 		}
 
 		public void actionPerformed(ActionEvent ae) {
