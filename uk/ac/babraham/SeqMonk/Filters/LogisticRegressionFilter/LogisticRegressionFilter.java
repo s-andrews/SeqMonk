@@ -670,7 +670,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			}
 
 			else {
-				System.err.println("Unknown text field "+f);
+				throw new IllegalStateException("Unknown text field "+f);
 			}	
 		}
 
