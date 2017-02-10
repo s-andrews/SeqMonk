@@ -36,6 +36,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
@@ -101,6 +103,18 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 		dataTree.addMouseListener(this);
 		dataTree.addTreeSelectionListener(this);
 		dataTree.setCellRenderer(new DataTreeRenderer());
+		model.addTreeModelListener(new TreeModelListener() {
+			
+			public void treeStructureChanged(TreeModelEvent e) {}
+			
+			public void treeNodesRemoved(TreeModelEvent e) {}
+			
+			public void treeNodesInserted(TreeModelEvent e) {
+				dataTree.expandPath(e.getTreePath());
+			}
+			
+			public void treeNodesChanged(TreeModelEvent e) {}
+		});
 		add(dataTree,con);
 		
 		con.gridy++;
@@ -110,6 +124,19 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 		probeSetTree.addMouseListener(this);
 		probeSetTree.addTreeSelectionListener(this);
 		probeSetTree.setCellRenderer(new DataTreeRenderer());
+		probeModel.addTreeModelListener(new TreeModelListener() {
+			
+			public void treeStructureChanged(TreeModelEvent e) {}
+			
+			public void treeNodesRemoved(TreeModelEvent e) {}
+			
+			public void treeNodesInserted(TreeModelEvent e) {
+				probeSetTree.expandPath(e.getTreePath());
+			}
+			
+			public void treeNodesChanged(TreeModelEvent e) {}
+		});
+
 		add(probeSetTree,con);
 		
 		
