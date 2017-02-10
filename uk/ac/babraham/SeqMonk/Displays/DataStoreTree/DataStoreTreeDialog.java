@@ -37,9 +37,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterPair;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.HierarchicalClusterSet;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
+import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
-import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class DataStoreTreeDialog extends JDialog implements ProgressListener {
@@ -48,14 +47,16 @@ public class DataStoreTreeDialog extends JDialog implements ProgressListener {
 	private HierarchicalClusterSet heirarchy;
 	private DataStoreClusterPanel clusterPanel;
 	private JSlider rValueSlider;
+	private String listName;
 	
 	
-	public DataStoreTreeDialog (Probe [] probes, DataStore [] stores) {
+	public DataStoreTreeDialog (ProbeList probeList, DataStore [] stores) {
 		
-		setTitle("Data Store Tree");
+		super(SeqMonkApplication.getInstance(),"Data Store Tree ["+probeList.name()+"]");
 		this.stores = stores;
+		this.listName = probeList.name();
 		
-		DataStoreCorrelationDataSource cds = new DataStoreCorrelationDataSource(probes, stores);
+		DataStoreCorrelationDataSource cds = new DataStoreCorrelationDataSource(probeList.getAllProbes(), stores);
 		
 		heirarchy = new HierarchicalClusterSet(cds);
 		heirarchy.addListener(new ProgressDialog("Clustering...",heirarchy));
@@ -83,7 +84,7 @@ public class DataStoreTreeDialog extends JDialog implements ProgressListener {
 	public void progressComplete(String command, Object result) {
 
 		getContentPane().setLayout(new BorderLayout());
-		clusterPanel = new DataStoreClusterPanel((ClusterPair)result,stores);
+		clusterPanel = new DataStoreClusterPanel((ClusterPair)result,stores,listName);
 		getContentPane().add(clusterPanel, BorderLayout.CENTER);
 		
 		rValueSlider = new JSlider(JSlider.HORIZONTAL, 0, 1000, 0);

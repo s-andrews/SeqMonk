@@ -37,14 +37,16 @@ public class DataStoreClusterPanel extends JPanel {
 	private ClusterPair clusterSet;
 	private DataStore [] stores;
 	private float [] rRange;
+	private String listName;
 	
 	// This value is the proprtion through the r range at which we're 
 	// currently segmenting the tree
 	private float rProportion = 0;
 	
-	public DataStoreClusterPanel (ClusterPair clusterSet, DataStore [] stores) {
+	public DataStoreClusterPanel (ClusterPair clusterSet, DataStore [] stores, String listName) {
 		this.clusterSet = clusterSet;
 		this.stores = stores;
+		this.listName = listName;
 		
 		// We also need to know the range of r values we can see
 		rRange = new float[]{clusterSet.rValue(),clusterSet.rValue()};
@@ -87,6 +89,9 @@ public class DataStoreClusterPanel extends JPanel {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
+		
+		// Put the list name in the top left
+		g.drawString(listName, 10, g.getFontMetrics().getHeight());
 		
 		// First get the set of indices which are going to dictate the final order
 		Integer [] indices = clusterSet.getAllIndices();

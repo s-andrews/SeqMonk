@@ -1988,7 +1988,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
 			}
 			else {
-				new DataStoreTreeDialog(application.dataCollection().probeSet().getActiveList().getAllProbes(),application.drawnDataSets());
+				new DataStoreTreeDialog(application.dataCollection().probeSet().getActiveList(),application.drawnDataSets());
 			}
 		}
 		else if (action.equals("view_pca")) {
