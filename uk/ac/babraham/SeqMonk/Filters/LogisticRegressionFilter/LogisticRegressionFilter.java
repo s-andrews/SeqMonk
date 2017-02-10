@@ -657,7 +657,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				}
 			}
 
-			if (f.equals(absDiffCutoffField)) {
+			else if (f.equals(absDiffCutoffField)) {
 				if (f.getText().length() == 0) absDiffCutoff = 0d;
 				else {
 					try {
