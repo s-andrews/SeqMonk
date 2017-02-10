@@ -352,10 +352,12 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			while (true) {
 				if (listener.cancelled()) {
 					progressCancelled();
+					pr.close();
 					return;
 				}
 				if (listener.exceptionReceived()) {
 					progressExceptionReceived(new SeqMonkException("R Script failed"));
+					pr.close();
 					return;
 				}
 				if (listener.complete()) break;
@@ -644,7 +646,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			JTextField f = (JTextField)ke.getSource();
 
 			if (f.equals(pValueCutoffField)) {
-				if (f.getText().length() == 0) pValueCutoff = null;
+				if (f.getText().length() == 0) pValueCutoff = 0.05d;
 				else {
 					try {
 						pValueCutoff = Double.parseDouble(pValueCutoffField.getText());
@@ -656,7 +658,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			}
 
 			if (f.equals(absDiffCutoffField)) {
-				if (f.getText().length() == 0) absDiffCutoff = null;
+				if (f.getText().length() == 0) absDiffCutoff = 0d;
 				else {
 					try {
 						absDiffCutoff = Double.parseDouble(absDiffCutoffField.getText());
