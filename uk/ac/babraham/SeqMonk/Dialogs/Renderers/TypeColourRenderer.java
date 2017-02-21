@@ -34,6 +34,13 @@ import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 public class TypeColourRenderer extends DefaultListCellRenderer {
 		
 	public Component getListCellRendererComponent (JList list,Object value, int index, boolean selected, boolean hasFocus) {
+
+		// This shouldn't ever happen but we've seen it in crash reporters so hopefully this
+		// will make it do something more sensible
+		if (value == null) {
+			return new JLabel("null");
+		}
+		
 		JLabel l = new JLabel(value.toString());
 		
 		if (value instanceof HiCDataStore) {
