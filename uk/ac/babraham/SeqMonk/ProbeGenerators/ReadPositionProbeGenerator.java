@@ -408,8 +408,17 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 
 		b.append(" MinCount=");
 		b.append(minCount);
+		
+		b.append(" Positions per window=");
+		b.append(readsPerWindow);
+		
 		if (ignoreStrand) {
 			b.append (" Ignoring strand");
+		}
+		
+		if (limitWithinRegion) {
+			b.append(" Designed within ");
+			b.append(limitRegionBox.getSelectedItem());
 		}
 
 		return b.toString();
