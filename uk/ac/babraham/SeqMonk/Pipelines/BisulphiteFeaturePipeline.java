@@ -289,8 +289,9 @@ public class BisulphiteFeaturePipeline extends Pipeline {
 
 		}
 
-
-		collection().probeSet().setDescription("Probes over "+optionsPanel.getSelectedFeatureType()+" features");
+		if (optionsPanel.getSelectedFeatureType() != "[Existing Probes]") {
+			collection().probeSet().setDescription("Probes over "+optionsPanel.getSelectedFeatureType()+" features");
+		}
 
 		StringBuffer quantitationDescription = new StringBuffer();
 		quantitationDescription.append("Methylation feature pipeline quantitation using ");
