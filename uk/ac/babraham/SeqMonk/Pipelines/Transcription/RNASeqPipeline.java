@@ -489,7 +489,7 @@ public class RNASeqPipeline extends Pipeline {
 						return;
 					}
 
-					int totalCount = 0;
+					long totalCount = 0;
 
 					for (int s=0;s<subLocations.length;s++) {
 						long [] reads = data[d].getReadsForProbe(new Probe(chrs[c], subLocations[s].start(), subLocations[s].end()));
