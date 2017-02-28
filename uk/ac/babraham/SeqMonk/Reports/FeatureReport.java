@@ -276,7 +276,7 @@ public class FeatureReport extends Report {
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 9+(stores.length*2);
+			return 10+(stores.length*2);
 		}
 
 		/* (non-Javadoc)
@@ -287,18 +287,19 @@ public class FeatureReport extends Report {
 			case 0: return "Chr";
 			case 1: return "Start";
 			case 2: return "End";
-			case 3: if (list != null)return "Average "+list.getValueName(); else return "No value";
-			case 4: return "Feature";
-			case 5: return "ID";
-			case 6: return "Description";
-			case 7: return "No. Sublocations";
-			case 8: return "No. Probes";
+			case 3: return "Strand";
+			case 4: if (list != null)return "Average "+list.getValueName(); else return "No value";
+			case 5: return "Feature";
+			case 6: return "ID";
+			case 7: return "Description";
+			case 8: return "No. Sublocations";
+			case 9: return "No. Probes";
 			default: 
-				if ((c-9) % 2 == 0) {
+				if ((c-10) % 2 == 0) {
 					return "Mean "+stores[(c-9)/2].name();
 				}
 				else {
-					return "StDev "+stores[(c-9)/2].name();					
+					return "StDev "+stores[(c-10)/2].name();					
 				}
 			}
 		}
@@ -312,12 +313,13 @@ public class FeatureReport extends Report {
 			case 0: return String.class;
 			case 1: return Integer.class;
 			case 2: return Integer.class;
-			case 3: return Float.class;
-			case 4: return String.class;
+			case 3: return String.class;
+			case 4: return Float.class;
 			case 5: return String.class;
 			case 6: return String.class;
-			case 7: return Integer.class;
+			case 7: return String.class;
 			case 8: return Integer.class;
+			case 9: return Integer.class;
 			default: return Float.class;
 			}
 		}
@@ -337,25 +339,30 @@ public class FeatureReport extends Report {
 				return new Integer(data[r].feature().location().end());
 				
 			case 3:
+				if (data[r].feature().location().strand() == Location.FORWARD) return "+";
+				if (data[r].feature().location().strand() == Location.REVERSE) return "-";
+				if (data[r].feature().location().strand() == Location.UNKNOWN) return ".";
+			
+			case 4:
 				return data[r].getAnnotationValue();
 
-			case 4:
+			case 5:
 				return data[r].feature().name();
 
-			case 5:
+			case 6:
 				return data[r].feature().id();
 	
-			case 6:
+			case 7:
 				return data[r].feature().description();
 
-			case 7:
+			case 8:
 				if (data[r].feature().location() instanceof SplitLocation) {
 					return ((SplitLocation)data[r].feature().location()).subLocations().length;					
 				}
 				return 1;
 
 				
-			case 8:
+			case 9:
 				return new Integer(data[r].numberOfProbes());
 			
 				
@@ -365,12 +372,12 @@ public class FeatureReport extends Report {
 				double [] values = new double [theseProbes.length];
 				for (int i=0;i<theseProbes.length;i++) {
 					try {
-						values[i] = stores[(c-9)/2].getValueForProbe(theseProbes[i]);
+						values[i] = stores[(c-10)/2].getValueForProbe(theseProbes[i]);
 					} 
 					catch (SeqMonkException e) {}
 				}
 				
-				if ((c-9) % 2 == 0) {
+				if ((c-10) % 2 == 0) {
 					return new Float(SimpleStats.mean(values));
 				}
 				else {
