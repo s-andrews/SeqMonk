@@ -526,7 +526,7 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 12+stores.length;
+			return 13+stores.length;
 		}
 
 		/* (non-Javadoc)
@@ -538,15 +538,16 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 			case 1: return "Chromosome";
 			case 2: return "Start";
 			case 3: return "End";
-			case 4: return "Strand";
+			case 4: return "Probe Strand";
 			case 5: if (list != null)return list.getValueName(); else return "No value";
 			case 6: return "Feature";
 			case 7: return "ID";
 			case 8: return "Description";
-			case 9: return "Type";
-			case 10: return "Orientation";
-			case 11: return "Distance";
-			default: return stores[c-12].name();
+			case 9: return "Feature Strand";
+			case 10: return "Type";
+			case 11: return "Orientation";
+			case 12: return "Distance";
+			default: return stores[c-13].name();
 			}
 		}
 
@@ -567,7 +568,8 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 			case 8: return String.class;
 			case 9: return String.class;
 			case 10: return String.class;
-			case 11: return Integer.class;
+			case 11: return String.class;
+			case 12: return Integer.class;
 			default: return Float.class;
 			}
 		}
@@ -613,22 +615,28 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 					return data[r].feature.description();
 				else 
 					return "";
-
+				
 			case 9:
+				if (data[r].feature.location().strand() == Location.FORWARD) return "+";
+				if (data[r].feature.location().strand() == Location.REVERSE) return "-";
+				return "";
+
+
+			case 10:
 				if (data[r].feature != null) 
 					return data[r].feature.type();
 				else 
 					return "";
 
-			case 10:
+			case 11:
 				return data[r].orientation;
 
-			case 11:
+			case 12:
 				return new Integer(data[r].distance);
 
 			default:
 				try {
-					return new Float(stores[c-12].getValueForProbe(data[r].probe));
+					return new Float(stores[c-13].getValueForProbe(data[r].probe));
 				} 
 				catch (SeqMonkException e) {
 					return null;
