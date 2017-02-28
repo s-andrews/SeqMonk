@@ -341,7 +341,7 @@ public class FeatureReport extends Report {
 			case 3:
 				if (data[r].feature().location().strand() == Location.FORWARD) return "+";
 				if (data[r].feature().location().strand() == Location.REVERSE) return "-";
-				if (data[r].feature().location().strand() == Location.UNKNOWN) return ".";
+				if (data[r].feature().location().strand() == Location.UNKNOWN) return "";
 			
 			case 4:
 				return data[r].getAnnotationValue();
