@@ -617,6 +617,7 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 					return "";
 				
 			case 9:
+				if (data[r].feature == null) return "";
 				if (data[r].feature.location().strand() == Location.FORWARD) return "+";
 				if (data[r].feature.location().strand() == Location.REVERSE) return "-";
 				return "";
