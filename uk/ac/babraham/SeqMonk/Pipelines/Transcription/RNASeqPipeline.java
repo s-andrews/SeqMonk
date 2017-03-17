@@ -547,18 +547,32 @@ public class RNASeqPipeline extends Pipeline {
 					// We also correct by the total read count
 					if (!rawCounts) {
 
-						//						System.err.println("True total is "+data[d].getTotalReadCount()+" corrected total is "+correctedTotalCounts[d]);
+						//	System.err.println("True total is "+data[d].getTotalReadCount()+" corrected total is "+correctedTotalCounts[d]);
 
+						// If these libraries are paired end then the total number of
+						// reads is also effectively halved.
+						
 						if (correctDNAContamination) {
 							// We need to estimate total counts minus contamination							
-							value /= (correctedTotalCounts[d] /1000000f);
+							
+							if (pairedEnd) {
+								value /= (correctedTotalCounts[d] /2000000f);
+							}
+							else {
+								value /= (correctedTotalCounts[d] /1000000f);
+							}
 						}
 						else {
-							value /= (data[d].getTotalReadCount()/1000000f);
+							if (pairedEnd) {
+								value /= (data[d].getTotalReadCount()/2000000f);
+							}
+							else {
+								value /= (data[d].getTotalReadCount()/1000000f);
+							}
 						}
 					}
 
-					//					System.err.println("Total corrected read count for "+mergedTranscripts[f].name+" is "+totalCount);
+					//	System.err.println("Total corrected read count for "+mergedTranscripts[f].name+" is "+totalCount);
 
 
 					// Finally we do the log transform if we've been asked to
