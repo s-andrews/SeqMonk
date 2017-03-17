@@ -22,6 +22,8 @@ package uk.ac.babraham.SeqMonk.DataTypes.Probes;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 
@@ -31,24 +33,24 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
  * All probe lists are therefore subsets of the containing probeset.
  */
 public class ProbeSet extends ProbeList{
-		
+
 	/** The active list. */
 	private ProbeList activeList = null;
-	
+
 	/** The listeners. */
 	private Vector<ProbeSetChangeListener> listeners = new Vector<ProbeSetChangeListener>();
-	
+
 	/** The index count. */
 	private int indexCount = 0;
-	
+
 	/** The expected total count. */
 	private int expectedTotalCount = 0;
-	
+
 	/** The containing data collection */
 	private DataCollection collection = null;
-	
+
 	private String currentQuantitation = null;
-	
+
 	/**
 	 * Instantiates a new probe set.
 	 * 
@@ -59,7 +61,7 @@ public class ProbeSet extends ProbeList{
 		super(null,"All Probes",description,null);
 		setProbes(probes);
 	}
-	
+
 	/**
 	 * Instantiates a new probe set.
 	 * 
@@ -76,52 +78,52 @@ public class ProbeSet extends ProbeList{
 		super(null,"All Probes",description,null);
 		expectedTotalCount = expectedSize;
 	}
-		
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#addProbe(uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe, java.lang.Double)
 	 */
 	public void addProbe (Probe p, Float value) {
-		
+
 		/**
 		 * This method is only used by the SeqMonk parser.  All other probe
 		 * generators add their probes in bulk using the setProbes method
 		 * which is more efficient.
 		 */
-		
+
 		// Update the index
 		p.setIndex(indexCount);
 		indexCount++;
-		
+
 		// Call the super method so we can still be treated like a
 		// normal probe list
 		super.addProbe(p, value);
 	}
-	
+
 	public void setCollection (DataCollection collection) {
 		this.collection = collection;
 	}
-	
+
 	/**
 	 * Sets the probes.
 	 * 
 	 * @param probes the new probes
 	 */
 	private void setProbes (Probe [] probes) {
-		
+
 		// Reset the probe index
 		indexCount = 0;
 		expectedTotalCount = probes.length;
-				
+
 		for (int p=0;p<probes.length;p++) {
 			addProbe(probes[p],null);
 		}
-		
+
 	}
 
 	public String justDescription () {
 		return super.description();
 	}
-	
+
 	public String description () {
 		if (currentQuantitation != null) {
 			return super.description()+". Quantitated with "+currentQuantitation;
@@ -130,15 +132,15 @@ public class ProbeSet extends ProbeList{
 			return super.description();
 		}
 	}
-	
+
 	public String currentQuantitation () {
 		return currentQuantitation;
 	}
-	
+
 	public void setCurrentQuantitation (String currentQuantitation) {
 		this.currentQuantitation = currentQuantitation;
 	}
-	
+
 	/**
 	 * Size.
 	 * 
@@ -147,8 +149,8 @@ public class ProbeSet extends ProbeList{
 	public int size () {
 		return expectedTotalCount;
 	}
-	
-	
+
+
 	/**
 	 * Sets the active list.
 	 * 
@@ -156,18 +158,18 @@ public class ProbeSet extends ProbeList{
 	 * @throws SeqMonkException the seq monk exception
 	 */
 	public void setActiveList (ProbeList list) throws SeqMonkException {
-		
+
 		if (list == null) {
 			activeList = null;
 			return;
 		}
 		activeList = list;
-		
+
 		if (collection != null) {
 			collection.activeProbeListChanged(list);
 		}
 	}
-	
+
 	/**
 	 * Gets the active list.
 	 * 
@@ -181,8 +183,8 @@ public class ProbeSet extends ProbeList{
 			return this;
 		}
 	}
-	
-			
+
+
 	/**
 	 * Adds the probe set change listener.
 	 * 
@@ -204,7 +206,7 @@ public class ProbeSet extends ProbeList{
 			listeners.remove(l);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#delete()
 	 */
@@ -217,41 +219,65 @@ public class ProbeSet extends ProbeList{
 		// Drop the link to the collection
 		collection = null;
 	}
-	
+
 	// These methods propogate up through the tree of probe lists
 	// to here where we override them to pass the messages on to
 	// any listeners we have
+	//
+	// Because these methods are often called from other threads we
+	// can have problems when the things listening to these events
+	// are swing components because they really don't like messages
+	// coming from sources other than the Event Dispatch Thread.  We
+	// therefore wrap these calls in a SwingUtilites.invokeLater call
+	// so that the actual notifications happen on the EDT.
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#probeListAdded(uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList)
 	 */
-	protected void probeListAdded (ProbeList l) {
+	protected void probeListAdded (final ProbeList l) {
 		if (listeners == null) return;
-		Enumeration<ProbeSetChangeListener>e = listeners.elements();
-		while (e.hasMoreElements()) {
-			ProbeSetChangeListener pl = e.nextElement();
-			pl.probeListAdded(l);
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				Enumeration<ProbeSetChangeListener>e = listeners.elements();
+				while (e.hasMoreElements()) {
+					ProbeSetChangeListener pl = e.nextElement();
+					pl.probeListAdded(l);
+				}
+			}
+		});
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#probeListRemoved(uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList)
 	 */
-	protected void probeListRemoved (ProbeList l) {
-		Enumeration<ProbeSetChangeListener>e = listeners.elements();
-		while (e.hasMoreElements()) {
-			e.nextElement().probeListRemoved(l);
-		}
+	protected void probeListRemoved (final ProbeList l) {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				Enumeration<ProbeSetChangeListener>e = listeners.elements();
+				while (e.hasMoreElements()) {
+					e.nextElement().probeListRemoved(l);
+				}
+			}
+		});
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#probeListRenamed(uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList)
 	 */
-	protected void probeListRenamed (ProbeList l) {
-		Enumeration<ProbeSetChangeListener>e = listeners.elements();
-		while (e.hasMoreElements()) {
-			e.nextElement().probeListRenamed(l);
-		}
+	protected void probeListRenamed (final ProbeList l) {
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				Enumeration<ProbeSetChangeListener>e = listeners.elements();
+				while (e.hasMoreElements()) {
+					e.nextElement().probeListRenamed(l);
+				}
+			}
+		});
 	}
-	
-	
+
+
 }
