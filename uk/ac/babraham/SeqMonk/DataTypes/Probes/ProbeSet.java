@@ -236,31 +236,21 @@ public class ProbeSet extends ProbeList{
 	 */
 	protected void probeListAdded (final ProbeList l) {
 		if (listeners == null) return;
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				Enumeration<ProbeSetChangeListener>e = listeners.elements();
-				while (e.hasMoreElements()) {
-					ProbeSetChangeListener pl = e.nextElement();
-					pl.probeListAdded(l);
-				}
-			}
-		});
+		Enumeration<ProbeSetChangeListener>e = listeners.elements();
+		while (e.hasMoreElements()) {
+			ProbeSetChangeListener pl = e.nextElement();
+			pl.probeListAdded(l);
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#probeListRemoved(uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList)
 	 */
 	protected void probeListRemoved (final ProbeList l) {
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				Enumeration<ProbeSetChangeListener>e = listeners.elements();
-				while (e.hasMoreElements()) {
-					e.nextElement().probeListRemoved(l);
-				}
-			}
-		});
+		Enumeration<ProbeSetChangeListener>e = listeners.elements();
+		while (e.hasMoreElements()) {
+			e.nextElement().probeListRemoved(l);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -268,15 +258,10 @@ public class ProbeSet extends ProbeList{
 	 */
 	protected void probeListRenamed (final ProbeList l) {
 
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				Enumeration<ProbeSetChangeListener>e = listeners.elements();
-				while (e.hasMoreElements()) {
-					e.nextElement().probeListRenamed(l);
-				}
-			}
-		});
+		Enumeration<ProbeSetChangeListener>e = listeners.elements();
+		while (e.hasMoreElements()) {
+			e.nextElement().probeListRenamed(l);
+		}
 	}
 
 
