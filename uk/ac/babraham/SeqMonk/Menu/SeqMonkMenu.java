@@ -145,6 +145,7 @@ import uk.ac.babraham.SeqMonk.Filters.DESeqFilter.DESeqFilter;
 import uk.ac.babraham.SeqMonk.Filters.EdgeRFilter.EdgeRFilter;
 import uk.ac.babraham.SeqMonk.Filters.GeneSetFilter.GeneSetIntensityDifferenceFilter;
 import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionFilter;
+import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionSplicingFilter;
 import uk.ac.babraham.SeqMonk.Filters.ManualCorrelation.ManualCorrelationFilter;
 import uk.ac.babraham.SeqMonk.Filters.Variance.VarianceIntensityDifferenceFilter;
 import uk.ac.babraham.SeqMonk.Filters.Variance.VarianceValuesFilter;
@@ -851,13 +852,17 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		edgeRFilter.setMnemonic(KeyEvent.VK_E);
 		rStatsMenu.add(edgeRFilter);		
 
-		JMenuItem logisticRegressionFilter = new JMenuItem("Logisitc Regression (for/rev)...");
+		JMenuItem logisticRegressionFilter = new JMenuItem("Logisitic Regression (for/rev)...");
 		logisticRegressionFilter.setActionCommand("filter_r_logistic_regression");
 		logisticRegressionFilter.addActionListener(this);
 		logisticRegressionFilter.setMnemonic(KeyEvent.VK_L);
 		rStatsMenu.add(logisticRegressionFilter);		
 
-
+		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("Logisitic Regression Splicing...");
+		logisticRegressionSplicingFilter.setActionCommand("filter_r_logistic_regression_splicing");
+		logisticRegressionSplicingFilter.addActionListener(this);
+		logisticRegressionSplicingFilter.setMnemonic(KeyEvent.VK_S);
+		rStatsMenu.add(logisticRegressionSplicingFilter);
 
 		filterStatsMenu.add(rStatsMenu);
 
@@ -2110,6 +2115,10 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					else if (action.equals("filter_r_logistic_regression")) {
 						new FilterOptionsDialog(application.dataCollection(),new LogisticRegressionFilter(application.dataCollection()));
 					}
+					else if (action.equals("filter_r_logistic_regression_splicing")) {
+						new FilterOptionsDialog(application.dataCollection(),new LogisticRegressionSplicingFilter(application.dataCollection()));
+					}
+
 					else {
 						throw new IllegalArgumentException("Didn't understand command '"+action+"'");
 					}
