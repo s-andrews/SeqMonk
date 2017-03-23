@@ -127,14 +127,18 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 
 		// Make pairs of probes based on whether they have matching start
 		// or end positions.
-		Arrays.sort(probes);
 		
 		Vector<ProbePair> pairs = new Vector<ProbePair>();
 				
 		for (int p=0;p<probes.length;p++) {
 			for (int i=p+1;i<probes.length;i++) {
-				if (probes[p].chromosome() != probes[i].chromosome()) break;
-				if (probes[i].start() > probes[p].end()) break;
+				
+				if (probes[p].chromosome() != probes[i].chromosome()) {
+					break;
+				}
+				if (probes[i].start() > probes[p].end()) {
+					break;
+				}
 				
 				if (probes[i].start() == probes[p].start() || probes[i].end() == probes[p].end()) {
 					// Make a pair
@@ -188,8 +192,6 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 			// Substitute in the variables we need to change
 			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
 
-			template.setValue("DIFFERENCE", ""+absCountCutoff);
-
 			template.setValue("PVALUE", ""+pValueCutoff);
 
 			if (multiTest) {
@@ -219,7 +221,7 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 					if (pr != null) pr.close();
 					File outFile = new File(tempDir.getAbsoluteFile()+"/data_chr"+pairs[p].probe1.chromosome().name()+".txt");
 					pr = new PrintWriter(outFile);
-					lastChr = probes[p].chromosome().name();
+					lastChr = pairs[p].probe1.chromosome().name();
 					pr.println("id\tgroup\treplicate\tstate\tcount");
 				}
 
@@ -411,7 +413,7 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 	protected String listName() {
 		StringBuffer b = new StringBuffer();
 
-		b.append("Logistic regression p<");
+		b.append("Splicing Logistic regression p<");
 
 		b.append(pValueCutoff);
 
@@ -419,7 +421,7 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 			b.append(" after correction");
 		}
 
-		b.append(". Min diff ");
+		b.append(". Min count ");
 		b.append(absCountCutoff);
 
 		return b.toString();	

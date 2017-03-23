@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<title>Logistic Regression Splicing Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Logistic Regression Splicing Filter</h1>
+
+<p>This is an R based filter so will only be available if you have configured
+R in the SeqMonk preferences and installed the pre-requisite packages</p>
+
+<p>
+The logistic regression splicing filter is useful for detecting certain classes
+of alternate splicing events in RNA-Seq data.  There are some pre-requisites
+for using this filter.
+</p>
+
+<ol>
+<li>You must be analysing RNA-Seq data which has been imported setting the
+option to &quot;Import Introns Rather than Exons&quot; so that the data you see
+are the introns from splicing events</li>
+<li>You must have generated probes such that the probes lie directly over 
+introns.  You would normally to this using the Read Position probe generator, but
+you could also theoretically use the Feature probe generator to specifically define
+introns</li>
+<li>Your quantitation must be a raw count of how many times that intron was observed
+in each sample.  This would normally be achieved using the Exact Overlap Count 
+quantitation method with all of the normalisation options turned off.</li>
+<li>Your datasets must be assembled into replicate sets with at least 3 replicates
+per set</li>
+</ol>
+
+What the filter does is to identify putative splicing events by finding pairs of
+probes whose start or end positions are exactly the same.  It then uses a logistic
+regression test to test whether the ratio of the counts in these two introns changes
+significantly between the two replicate sets you're testing.  A change in the ratio
+would imply a change in the splicing decisions being made by that transcript.
+
+
+<h2>Options</h2>
+<ul>
+<li>You need to two Replicate Sets to compare from the list on the left.</li>
+<li>You need to select a p-value cutoff for the filter</li>
+<li>You can choose to pre-filter your data by the minimum count an intron has across all the samples in a condition</li>
+<li>You can choose whether to apply multiple testing correction (you pretty much always want to leave this turned on)</li>
+</ul>
+</body>
+</html>
