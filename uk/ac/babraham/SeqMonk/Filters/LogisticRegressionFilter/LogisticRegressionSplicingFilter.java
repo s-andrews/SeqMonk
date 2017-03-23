@@ -37,6 +37,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -45,6 +46,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
@@ -83,6 +85,43 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 	public LogisticRegressionSplicingFilter (DataCollection collection) throws SeqMonkException {
 		super(collection);
 		optionsPanel = new LogisticRegressionOptionsPanel();
+		
+		// Do a quick check that the data we're being given are integers.  We don't 
+		// need to check everything - a sample will do in most cases
+		ReplicateSet [] repSets = collection.getAllReplicateSets();
+		int validRepSetCount = 0;
+
+		Probe [] probes = startingList.getAllProbes();
+
+		for (int r=0;r<repSets.length;r++) {
+			if (repSets[r].isQuantitated() && repSets[r].dataStores().length>=2) {
+				++validRepSetCount;
+			}
+			else {
+				continue;
+			}
+
+			DataStore [] stores = repSets[r].dataStores();
+
+			for (int i=0;i<probes.length;i++) {
+				if (i==1000) break;
+
+				for (int s=0;s<stores.length;s++) {
+					float value = stores[s].getValueForProbe(probes[i]);
+					if (value != (int)value) {
+						JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>This filter requires raw counts as input<br>You must re-quantitate your data as raw,uncorrected counts to use this filter<br>It won't work with the quantitation you're currently using.</html>", "Non-integer data", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+				}
+			}
+		}
+
+		if (validRepSetCount < 2) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>We didn't find enough data to run this filter.<br>You need at least 2 replicate sets with at least 2 data stores in each to run this.</html>", "Not enough data", JOptionPane.WARNING_MESSAGE);
+		}
+
+		
+		
 	}
 
 
