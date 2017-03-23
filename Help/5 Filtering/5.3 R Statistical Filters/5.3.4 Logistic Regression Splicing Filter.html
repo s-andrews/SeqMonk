@@ -38,11 +38,17 @@ quantitation method with all of the normalisation options turned off.</li>
 per set</li>
 </ol>
 
-What the filter does is to identify putative splicing events by finding pairs of
+<p>What the filter does is to identify putative splicing events by finding pairs of
 probes whose start or end positions are exactly the same.  It then uses a logistic
 regression test to test whether the ratio of the counts in these two introns changes
 significantly between the two replicate sets you're testing.  A change in the ratio
-would imply a change in the splicing decisions being made by that transcript.
+would imply a change in the splicing decisions being made by that transcript.</p>
+
+<p>This filter will therefore find differential splicing events where the location
+of the splice donor or splice acceptor changes, but will not find events such as
+novel splice introductions, or changes from a splice to reading through an intron.
+For these types of change you would need to use a DESeq2 comparison on the splice
+junction count data</p>
 
 
 <h2>Options</h2>
