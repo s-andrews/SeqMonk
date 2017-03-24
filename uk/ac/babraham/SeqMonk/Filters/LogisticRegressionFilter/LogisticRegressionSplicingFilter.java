@@ -85,7 +85,7 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 	public LogisticRegressionSplicingFilter (DataCollection collection) throws SeqMonkException {
 		super(collection);
 		optionsPanel = new LogisticRegressionOptionsPanel();
-		
+
 		// Do a quick check that the data we're being given are integers.  We don't 
 		// need to check everything - a sample will do in most cases
 		ReplicateSet [] repSets = collection.getAllReplicateSets();
@@ -120,8 +120,8 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>We didn't find enough data to run this filter.<br>You need at least 2 replicate sets with at least 2 data stores in each to run this.</html>", "Not enough data", JOptionPane.WARNING_MESSAGE);
 		}
 
-		
-		
+
+
 	}
 
 
@@ -132,11 +132,11 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 	public String description() {
 		return "Filter to look for significant changes between sets of replicate count data";
 	}
-	
+
 	private Probe [] filterProbesByCount (Probe [] probes, DataStore [] fromStores, DataStore [] toStores) {
-	
+
 		Vector<Probe> passedProbes = new Vector<Probe>();
-		
+
 		for (int p=0;p<probes.length;p++) {
 			try {
 				boolean passedFrom = true;
@@ -151,45 +151,81 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 						passedTo = false;
 					}
 				}
-				
+
 				if (passedFrom || passedTo)
 					passedProbes.add(probes[p]);
 			}
 			catch (SeqMonkException sme) {}
 		}
-		
+
 		return passedProbes.toArray(new Probe[0]);
-		
+
 	}
-	
-	private ProbePair [] makeProbePairs (Probe [] probes) {
+
+	private ProbePair [] makeProbePairs (Probe [] probes, DataStore [] fromStores, DataStore [] toStores) {
 
 		// Make pairs of probes based on whether they have matching start
 		// or end positions.
-		
+
 		Vector<ProbePair> pairs = new Vector<ProbePair>();
-				
+
 		for (int p=0;p<probes.length;p++) {
 			for (int i=p+1;i<probes.length;i++) {
-				
+
 				if (probes[p].chromosome() != probes[i].chromosome()) {
 					break;
 				}
 				if (probes[i].start() > probes[p].end()) {
 					break;
 				}
-				
+
 				if (probes[i].start() == probes[p].start() || probes[i].end() == probes[p].end()) {
+					// In each condition, one of the pair of probes must have at
+					// least the minimum count otherwise we'll get stupid ratios
+
+					boolean fromProbe1passed = true;
+					boolean fromProbe2passed = true;
+					boolean toProbe1passed = true;
+					boolean toProbe2passed = true;
+
+					try {
+						for (int s=0;s<fromStores.length;s++) {
+							if (fromStores[s].getValueForProbe(probes[p]) < absCountCutoff) {
+								fromProbe1passed = false;
+							}
+							if (fromStores[s].getValueForProbe(probes[i]) < absCountCutoff) {
+								fromProbe2passed = false;
+							}
+						}
+						for (int s=0;s<toStores.length;s++) {
+							if (toStores[s].getValueForProbe(probes[p]) < absCountCutoff) {
+								toProbe1passed = false;
+							}
+							if (toStores[s].getValueForProbe(probes[i]) < absCountCutoff) {
+								toProbe2passed = false;
+							}
+						}
+
+						if ((!(fromProbe1passed || fromProbe2passed)) || (!(toProbe1passed || toProbe2passed))) {
+							// There wasn't enough data in either the from or to stores
+							continue;
+						}
+					}
+					catch (SeqMonkException sme) {
+						continue;
+					}
+
+
 					// Make a pair
 					pairs.add(new ProbePair(probes[p], probes[i]));
 				}
 			}
 		}
-		
-		
+
+
 		return pairs.toArray(new ProbePair[0]);
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.Filters.ProbeFilter#generateProbeList()
@@ -208,16 +244,16 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 		try {
 
 			Probe [] probes = startingList.getAllProbes();
-			
+
 			probes = filterProbesByCount(probes, fromStores, toStores);
 
 			progressUpdated("Pairing Probes",0,1);
 			// Make pairs of probes to test
-			
-			ProbePair [] pairs = makeProbePairs(probes);
-			
+
+			ProbePair [] pairs = makeProbePairs(probes, fromStores, toStores);
+
 			System.err.println("Found "+pairs.length+" pairs to test");
-			
+
 			progressUpdated("Creating temp directory",0,1);
 
 			tempDir = TempDirectory.createTempDirectory();
@@ -365,7 +401,7 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 			runner.cleanUp();
 
 			filterFinished(newList);
-			
+
 		}
 		catch (Exception ioe) {
 			progressExceptionReceived(ioe);
@@ -437,7 +473,7 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 		if (multiTest) {
 			b.append(" after Benjamimi and Hochberg correction");
 		}
-		
+
 
 		b.append(" with a minimum count of ");
 		b.append(absCountCutoff);
@@ -466,20 +502,20 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 		return b.toString();	
 	}
 
-	
+
 	private class ProbePair {
-		
+
 		public Probe probe1;
 		public Probe probe2;
-		
+
 		public ProbePair (Probe probe1, Probe probe2) {
 			this.probe1 = probe1;
 			this.probe2 = probe2;
 		}
-		
-		
+
+
 	}
-	
+
 	/**
 	 * The WindowedReplicateOptionsPanel.
 	 */
