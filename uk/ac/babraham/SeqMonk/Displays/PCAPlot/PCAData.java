@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
+import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
@@ -58,6 +61,24 @@ public class PCAData implements Runnable {
 			
 		pd = new ProgressDialog("Running PCA...");
 	
+		// Use only the stores which are quantitated
+		Vector<DataStore> validStores = new Vector<DataStore>();
+		
+		for (int s=0;s<stores.length;s++) {
+			if (stores[s].isQuantitated()) {
+				validStores.add(stores[s]);
+			}
+		}
+		
+		this.stores = validStores.toArray(new DataStore[0]);
+		
+		if (this.stores.length < 2) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Can't run PCA - you need at least 2 visible, quantitated data stores to run this.","Can't run PCA",JOptionPane.ERROR_MESSAGE);
+			pd.progressCancelled();
+			return;
+		}
+		
+		
 		// We need to filter the probes to only get those which have valid 
 		// values in all datasets otherwise we'll get a crash from R
 		

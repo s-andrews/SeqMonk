@@ -2000,6 +2000,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			if (! application.dataCollection().isQuantitated()) {
 				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
 			}
+			
 			else {
 				new PCAData(application.dataCollection().probeSet().getActiveList(),application.drawnDataSets());
 			}
