@@ -336,6 +336,10 @@ public class WigglePipeline extends Pipeline implements ProgressListener {
 			
 			totalLength+=1;
 			
+			// Kludge around an inefficiency in our quantitation if we use a probe size of 1
+			if (totalLength == 1) totalLength=2;
+			
+			
 			sizeField.setText(""+totalLength);
 			stepField.setText(""+totalLength);
 		}
