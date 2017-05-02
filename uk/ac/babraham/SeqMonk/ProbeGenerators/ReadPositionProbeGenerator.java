@@ -181,7 +181,15 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 		designWithinExistingBox = new JCheckBox();
 		limitPanel.add(designWithinExistingBox,BorderLayout.WEST);
 
-		limitRegionBox = new JComboBox(new String [] {"Active Probe List","Currently Visible Region"});
+		// They're not going to be given the option to select in the active probe
+		// list if there isn't one.
+		
+		if (collection.probeSet() == null) {
+			limitRegionBox = new JComboBox(new String [] {"Currently Visible Region"});			
+		}
+		else {
+			limitRegionBox = new JComboBox(new String [] {"Active Probe List","Currently Visible Region"});			
+		}
 
 		limitRegionBox.setEnabled(false);
 		designWithinExistingBox.addActionListener(new ActionListener() {
