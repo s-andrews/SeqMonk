@@ -107,7 +107,7 @@ public class DistanceMatrix implements Runnable, Cancellable {
 		for (int s1=0;s1<stores.length;s1++) {
 			for (int s2=s1+1;s2<stores.length;s2++) {
 				float thisCorr = getCorrelationForStoreIndices(s1, s2);
-				if (thisCorr < maxCorr) maxCorr = thisCorr;
+				if (thisCorr > maxCorr) maxCorr = thisCorr;
 			}			
 		}
 		

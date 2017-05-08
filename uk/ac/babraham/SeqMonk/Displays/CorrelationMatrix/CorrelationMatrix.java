@@ -20,6 +20,7 @@
 package uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.swing.CellRendererPane;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -39,8 +39,6 @@ import javax.swing.JTable;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
@@ -97,7 +95,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 		JTable table = new JTable(model);
 		table.setTableHeader(null);
-		table.setDefaultRenderer(Float.class,new CorrelationCellRenderer(model));
+		table.setDefaultRenderer(String.class,new CorrelationCellRenderer(model));
 		getContentPane().add(new JScrollPane(table),BorderLayout.CENTER);
 		setVisible(true);
 				
@@ -232,6 +230,11 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 			}			
 		}
 		
+		public Class getColumnClass (int c) {
+			return String.class;
+		}
+		
+		
 	}
 	
 	private class CorrelationCellRenderer extends DefaultTableCellRenderer {
@@ -253,13 +256,24 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		}
 		
 		public Component getTableCellRendererComponent (JTable table, Object object, boolean a3,boolean a4, int a5, int a6) {
-			
-			System.err.println("Called renderer");
-			
+						
 			Component c = super.getTableCellRendererComponent(table, object, a3, a4, a5, a6);
 			
-			((JLabel)c).setOpaque(true);
-			((JLabel)c).setBackground(gradient.getColor(((Float)object).doubleValue(), minCorrelation, maxCorrelation));
+			try {
+				float f = Float.parseFloat(((JLabel)c).getText());
+				
+//				System.err.println("Parsed number is "+f+" min="+minCorrelation+" max="+maxCorrelation);
+				
+				if (f >= minCorrelation && f <= maxCorrelation) {						
+					((JLabel)c).setOpaque(true);
+					((JLabel)c).setBackground(gradient.getColor(f, minCorrelation, maxCorrelation));
+				}
+			}
+			catch (NumberFormatException nfe) {
+//				System.err.println(((JLabel)c).getText()+" wasn't a number");
+				((JLabel)c).setOpaque(false);
+			}
+			
 			
 			return(c);
 			
