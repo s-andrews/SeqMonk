@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -382,6 +384,12 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 			BufferedReader br = new BufferedReader(new FileReader(hitsFile));
 
 			String line = br.readLine();
+			
+			// In case the same probe is found multiple times we'll cache the p-values
+			// we see and report the best one.
+			
+			HashMap<Probe, Float> cachedHits = new HashMap<Probe, Float>();
+			
 
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
@@ -392,12 +400,36 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 				float pValue = Float.parseFloat(sections[sections.length-1]);
 
 				// TODO: Work out what to do if the same probe is found multiple times
-				newList.addProbe(pairs[probeIndex].probe1,pValue);
-				newList.addProbe(pairs[probeIndex].probe2,pValue);
+				
+				if (! cachedHits.containsKey(pairs[probeIndex].probe1)) {
+					cachedHits.put(pairs[probeIndex].probe1, pValue);
+				}
+
+				if (! cachedHits.containsKey(pairs[probeIndex].probe2)) {
+					cachedHits.put(pairs[probeIndex].probe2, pValue);
+				}
+
+				
+				// See if the pvalue we've got is better than the one we're storing
+				if (pValue < cachedHits.get(pairs[probeIndex].probe1)) {
+					cachedHits.put(pairs[probeIndex].probe1, pValue);
+				}
+
+				if (pValue < cachedHits.get(pairs[probeIndex].probe2)) {
+					cachedHits.put(pairs[probeIndex].probe2, pValue);
+				}
+				
 			}
 
 			br.close();
 
+			// Finally we can go through the cached hits adding them to the 
+			// final probe list
+
+			for (Probe probeHit : cachedHits.keySet()) {
+				newList.addProbe(probeHit,cachedHits.get(probeHit));
+			}			
+			
 			runner.cleanUp();
 
 			filterFinished(newList);
