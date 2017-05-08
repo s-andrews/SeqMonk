@@ -88,6 +88,36 @@ public class DistanceMatrix implements Runnable, Cancellable {
 		return getCorrelationForStoreIndices(st1, st2);
 	}
 	
+	public float getMinCorrelation () throws SeqMonkException {
+		
+		float minCorr = 1;
+		
+		for (int i=0;i<matrix.length;i++) {
+			if (matrix[i] < minCorr) minCorr = matrix[i];
+		}
+		
+		return minCorr;
+
+	}
+	
+	public float getMaxCorrelation () throws SeqMonkException {
+		
+		float maxCorr = -1;
+		
+		for (int s1=0;s1<stores.length;s1++) {
+			for (int s2=s1+1;s2<stores.length;s2++) {
+				float thisCorr = getCorrelationForStoreIndices(s1, s2);
+				if (thisCorr < maxCorr) maxCorr = thisCorr;
+			}			
+		}
+		
+		return(maxCorr);
+		
+		
+	}
+	
+	
+	
 	public float getCorrelationForStoreIndices (int st1, int st2) throws SeqMonkException {
 
 		if (! calculationComplete) {

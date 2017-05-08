@@ -20,21 +20,26 @@
 package uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.swing.CellRendererPane;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
@@ -44,12 +49,14 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
+import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 
 public class CorrelationMatrix extends JDialog implements ProgressListener, ActionListener {
 
 	private DistanceMatrix matrix;
-	private TableModel model;
+	private DistanceTableModel model;
 	
 	public CorrelationMatrix (DataStore [] stores, ProbeList probes) {
 		super(SeqMonkApplication.getInstance(),"Correlation table ["+probes.name()+"]");
@@ -90,6 +97,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 		JTable table = new JTable(model);
 		table.setTableHeader(null);
+		table.setDefaultRenderer(Float.class,new CorrelationCellRenderer(model));
 		getContentPane().add(new JScrollPane(table),BorderLayout.CENTER);
 		setVisible(true);
 				
@@ -186,7 +194,25 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		public int getRowCount() {
 			return matrix.stores().length+1;
 		}
-	
+		
+		public float getMinCorrelation() {
+			try {
+				return(matrix.getMinCorrelation());
+			}
+			catch (SeqMonkException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+
+		public float getMaxCorrelation() {
+			try {
+				return(matrix.getMaxCorrelation());
+			}
+			catch (SeqMonkException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		
 		public Object getValueAt(int r, int c) {
 			
 			if (r==0 && c==0) {
@@ -207,6 +233,41 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		}
 		
 	}
+	
+	private class CorrelationCellRenderer extends DefaultTableCellRenderer {
+		
+		
+		private float minCorrelation;
+		private float maxCorrelation;
+		
+		private ColourGradient gradient;
+		
+		
+		public CorrelationCellRenderer (DistanceTableModel model) {
+			minCorrelation = model.getMinCorrelation();
+			maxCorrelation = model.getMaxCorrelation();
+						
+			
+			gradient = DisplayPreferences.getInstance().getGradient();
+			
+		}
+		
+		public Component getTableCellRendererComponent (JTable table, Object object, boolean a3,boolean a4, int a5, int a6) {
+			
+			System.err.println("Called renderer");
+			
+			Component c = super.getTableCellRendererComponent(table, object, a3, a4, a5, a6);
+			
+			((JLabel)c).setOpaque(true);
+			((JLabel)c).setBackground(gradient.getColor(((Float)object).doubleValue(), minCorrelation, maxCorrelation));
+			
+			return(c);
+			
+		}
+		
+		
+	}
+	
 	
 	
 }
