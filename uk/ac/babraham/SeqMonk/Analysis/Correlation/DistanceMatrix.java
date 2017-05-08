@@ -134,7 +134,7 @@ public class DistanceMatrix implements Runnable, Cancellable {
 			st1 = temp;
 		}
 		
-		System.out.println("Retrieving information for "+st1+" and "+st2);
+//		System.out.println("Retrieving information for "+st1+" and "+st2);
 		if (st2 == st1) return 1;
 		
 		// Work out the position in the line up for these stores
