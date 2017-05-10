@@ -52,7 +52,7 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 	private int yIndex;
 
 	/** The probe list. */
-	private PCADataCalculator data;
+	private PCASource data;
 
 	/** The set of sublists to highlight */
 	private ReplicateSet [] highlightedSets;
@@ -124,7 +124,7 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 	 * @param showLabels the common scale
 	 * @param dotSize the dot size
 	 */
-	public PCAScatterPlotPanel (PCADataCalculator data, int xIndex, int yIndex, ReplicateSet [] highlightedSets, boolean showLabels, int dotSize) {
+	public PCAScatterPlotPanel (PCASource data, int xIndex, int yIndex, ReplicateSet [] highlightedSets, boolean showLabels, int dotSize) {
 
 		this.xIndex = xIndex;
 		this.yIndex = yIndex;

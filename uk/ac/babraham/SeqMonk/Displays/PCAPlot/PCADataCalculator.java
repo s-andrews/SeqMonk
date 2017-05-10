@@ -42,7 +42,7 @@ import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.TempDirectory;
 import uk.ac.babraham.SeqMonk.Utilities.Templates.Template;
 
-public class PCADataCalculator implements Runnable {
+public class PCADataCalculator implements Runnable, PCASource {
 
 	private ProgressDialog pd;
 	private DataStore [] stores;
