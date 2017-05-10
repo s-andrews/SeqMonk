@@ -56,14 +56,14 @@ public class PCAVarianceDialog extends JDialog implements ActionListener, Change
 	private JComboBox xStores;
 
 	/** The collection. */
-	private PCAData data;
+	private PCADataCalculator data;
 
 	/**
 	 * Instantiates a new scatter plot dialog.
 	 * 
 	 * @param collection the collection
 	 */
-	public PCAVarianceDialog (PCAData data) {
+	public PCAVarianceDialog (PCADataCalculator data) {
 		super(SeqMonkApplication.getInstance(),"PCA Variances");
 		this.data = data;
 

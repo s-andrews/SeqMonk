@@ -63,7 +63,7 @@ public class PCAScatterPlotDialog extends JDialog implements ActionListener, Cha
 	private JButton repSetButton;
 	
 	/** The collection. */
-	private PCAData data;;
+	private PCADataCalculator data;;
 	
 	/** The dot size slider. */
 	private JSlider dotSizeSlider;
@@ -79,7 +79,7 @@ public class PCAScatterPlotDialog extends JDialog implements ActionListener, Cha
 	 * 
 	 * @param collection the collection
 	 */
-	public PCAScatterPlotDialog (PCAData data) {
+	public PCAScatterPlotDialog (PCADataCalculator data) {
 		super(SeqMonkApplication.getInstance(),"PCA Plot");
 		this.data = data;
 		

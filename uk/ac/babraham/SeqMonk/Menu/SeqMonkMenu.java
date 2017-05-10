@@ -107,7 +107,7 @@ import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeValueHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ReadLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.LineGraph.LineGraphDialog;
 import uk.ac.babraham.SeqMonk.Displays.MAPlot.MAPlotDialog;
-import uk.ac.babraham.SeqMonk.Displays.PCAPlot.PCAData;
+import uk.ac.babraham.SeqMonk.Displays.PCAPlot.PCADataCalculator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeTrendPlot.TrendOverProbePreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantiationTrendPlotPreferencesDialog;
@@ -2002,7 +2002,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			}
 			
 			else {
-				new PCAData(application.dataCollection().probeSet().getActiveList(),application.drawnDataSets());
+				new PCADataCalculator(application.dataCollection().probeSet().getActiveList(),application.drawnDataSets());
 			}
 		}
 

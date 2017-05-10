@@ -42,7 +42,7 @@ import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.TempDirectory;
 import uk.ac.babraham.SeqMonk.Utilities.Templates.Template;
 
-public class PCAData implements Runnable {
+public class PCADataCalculator implements Runnable {
 
 	private ProgressDialog pd;
 	private DataStore [] stores;
@@ -55,7 +55,7 @@ public class PCAData implements Runnable {
 	private float [][] pcaRotations;
 
 	
-	public PCAData (ProbeList probes,DataStore [] stores) {
+	public PCADataCalculator (ProbeList probes,DataStore [] stores) {
 		this.stores = stores;
 		this.probeList = probes;
 			

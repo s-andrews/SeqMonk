@@ -268,9 +268,11 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 					((JLabel)c).setOpaque(true);
 					((JLabel)c).setBackground(gradient.getColor(f, minCorrelation, maxCorrelation));
 				}
+				else {
+					((JLabel)c).setOpaque(false);
+				}
 			}
 			catch (NumberFormatException nfe) {
-//				System.err.println(((JLabel)c).getText()+" wasn't a number");
 				((JLabel)c).setOpaque(false);
 			}
 			
