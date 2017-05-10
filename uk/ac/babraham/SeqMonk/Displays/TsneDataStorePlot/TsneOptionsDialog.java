@@ -17,7 +17,9 @@ public class TsneOptionsDialog extends JDialog {
 		
 		super(SeqMonkApplication.getInstance(),"Tsne Options");
 		
+		// For now we'll just launch the calculator.
 		
+		new TsneDataStoreResult(probes, stores, 3, 10);
 		
 		
 		

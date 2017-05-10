@@ -89,6 +89,7 @@ import uk.ac.babraham.SeqMonk.Displays.BeanPlot.MultiBeanPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.BoxWhisker.MultiBoxWhiskerDialog;
 import uk.ac.babraham.SeqMonk.Displays.SmallRNAQCPlot.SmallRNAQCPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.StarWars.MultiStarWarsDialog;
+import uk.ac.babraham.SeqMonk.Displays.TsneDataStorePlot.TsneOptionsDialog;
 import uk.ac.babraham.SeqMonk.Displays.VariancePlot.VariancePlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.CisTransScatterplot.CisTransScatterPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix.CorrelationMatrix;
@@ -463,6 +464,13 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewPCA.setMnemonic(KeyEvent.VK_P);
 		viewPCA.addActionListener(this);
 		storeSimilarityMenu.add(viewPCA);
+
+		JMenuItem viewTSNE = new JMenuItem("TSNE Plot...");
+		viewTSNE.setActionCommand("view_tsne");
+		viewTSNE.setMnemonic(KeyEvent.VK_T);
+		viewTSNE.addActionListener(this);
+		storeSimilarityMenu.add(viewTSNE);
+		
 		
 		JMenuItem viewCorrelationMatrix = new JMenuItem("Correlation Matrix...");
 		viewCorrelationMatrix.setActionCommand("view_correlation_matrix");
@@ -2003,6 +2011,16 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			
 			else {
 				new PCADataCalculator(application.dataCollection().probeSet().getActiveList(),application.drawnDataSets());
+			}
+		}
+
+		else if (action.equals("view_tsne")) {
+			if (! application.dataCollection().isQuantitated()) {
+				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+			else {
+				new TsneOptionsDialog(application.dataCollection().probeSet().getActiveList(),application.drawnDataSets());
 			}
 		}
 
