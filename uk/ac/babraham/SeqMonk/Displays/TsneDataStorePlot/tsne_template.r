@@ -1,5 +1,7 @@
 setwd("%%WORKING%%")
 
+library(tsne)
+
 # Read in the full data table from SeqMonk
 tsne.data <- read.delim("data.txt",quote="",header=FALSE)
 
