@@ -3,6 +3,9 @@ source("http://bioconductor.org/biocLite.R")
 # We need to work around a bug in the latest bioconductor/R combination
 install.packages("data.table", repos="http://cloud.r-project.org")
 
+
+install.packages("tsne", repos="http://cloud.r-project.org")
+
 biocLite()
 biocLite("DESeq2")
 biocLite("edgeR")
@@ -11,5 +14,6 @@ biocLite("edgeR")
 
 library("DESeq2")
 library("edgeR")
+library("tsne")
 
 
