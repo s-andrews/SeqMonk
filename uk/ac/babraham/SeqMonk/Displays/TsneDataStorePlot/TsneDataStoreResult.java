@@ -280,6 +280,11 @@ public class TsneDataStoreResult implements PCASource, Runnable {
 		pr.close();
 		
 	}
+
+
+	public String getPCName(int index) {
+		return "Tsne Dim"+(index+1);
+	}
 	
 	
 

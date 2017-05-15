@@ -19,6 +19,6 @@ public interface PCASource {
 	
 	public DataStore getStore(int index);
 	
-	public float [] variances();	
+	public String getPCName(int index);
 	
 }

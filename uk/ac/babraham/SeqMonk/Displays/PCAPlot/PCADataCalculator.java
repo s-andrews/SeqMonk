@@ -304,6 +304,11 @@ public class PCADataCalculator implements Runnable, PCASource {
 		return stores.length;
 	}
 	
+	public String getPCName(int index) {
+		return "PC"+(index+1)+" ("+(int)variances[index]+"%)";
+	}
+
+
 	public int getProbeCount () {
 		return usedProbes.length;
 	}

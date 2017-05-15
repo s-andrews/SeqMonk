@@ -40,6 +40,7 @@ import javax.swing.event.ChangeListener;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.Dialogs.OrderedReplicateSetSelector;
+import uk.ac.babraham.SeqMonk.Displays.TsneDataStorePlot.TsneDataStoreResult;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
@@ -83,7 +84,12 @@ public class PCAScatterPlotDialog extends JDialog implements ActionListener, Cha
 		super(SeqMonkApplication.getInstance(),"PCA Plot");
 		this.data = data;
 		
-		setTitle("PCA Plot ["+data.probeListName()+"]");
+		if (data instanceof TsneDataStoreResult) {
+			setTitle("T-SNE Plot ["+data.probeListName()+"]");
+		}
+		else {
+			setTitle("PCA Plot ["+data.probeListName()+"]");
+		}
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				
@@ -110,10 +116,13 @@ public class PCAScatterPlotDialog extends JDialog implements ActionListener, Cha
 		yStores.addActionListener(this);
 		yStores.setActionCommand("plot");
 		
-		optionsPanel.add(new JLabel("Plot"));
-		optionsPanel.add(xStores);
-		optionsPanel.add(new JLabel("vs"));
-		optionsPanel.add(yStores);
+		// Don't show drop down options if there aren't actually any options.
+		if (PCList.length > 2) {
+			optionsPanel.add(new JLabel("Plot"));
+			optionsPanel.add(xStores);
+			optionsPanel.add(new JLabel("vs"));
+			optionsPanel.add(yStores);
+		}
 		
 		showLabelsBox = new JCheckBox("Labels");
 		showLabelsBox.setSelected(false);

@@ -334,11 +334,11 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 		}
 
 		// X label
-		String xLabel = "PC"+(xIndex+1)+" ("+(int)(data.variances()[xIndex])+"%)";
+		String xLabel = data.getPCName(xIndex);
 		g.drawString(xLabel,(getWidth()/2)-(metrics.stringWidth(xLabel)/2),getHeight()-3);		
 
 		// Y label
-		String yLabel = "PC"+(yIndex+1)+" ("+(int)(data.variances()[yIndex])+"%)";
+		String yLabel = data.getPCName(yIndex);
 		g.drawString(yLabel,X_AXIS_SPACE+3,15);
 
 		// If we have sublists draw them below this in the right colours
@@ -405,6 +405,17 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 			for (int i=0;i<nonRedundantValues.length;i++) {
 				
 				ProbePairValue thisPoint = nonRedundantValues[i];
+				
+				// TODO: This is producing a null pointer under some odd circumstances.
+				// Need to get to the bottom of why.
+				
+				if (thisPoint == null) {
+					throw new IllegalStateException("Point was null when it should never be");
+				}
+				
+				if (thisPoint.store == null) {
+					throw new IllegalStateException("Store was null when it should never be");
+				}
 				
 				int closestX = thisPoint.x+1;
 				if (closestX + g.getFontMetrics().stringWidth(thisPoint.store.name()) > getWidth()) {
