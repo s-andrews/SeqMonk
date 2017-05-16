@@ -48,6 +48,11 @@ public class TsneOptionsDialog extends JDialog implements ActionListener {
 		getContentPane().add(new JLabel("Perplexity"), gbc);
 		
 		gbc.gridx++;
+		int defaultPerplexity = stores.length/5;
+		
+		if (defaultPerplexity < 2) defaultPerplexity = 2;
+		if (defaultPerplexity > 50) defaultPerplexity = 50;
+		
 		perplexity = new JTextField(""+Math.max(stores.length/5, 2));
 		perplexity.addKeyListener(new NumberKeyListener(false, false));
 		
