@@ -1,3 +1,28 @@
+RELEASE NOTES FOR SeqMonk v1.38.0
+---------------------------------
+This release adds some new plotting options for data store similarity and 
+greatly improves the workflow for the analysis of splicing as well as 
+adding some more general bug fixes and improvements.
+
+Major changes are:
+
+- Added a TSNE plot for clustering data stores
+
+- Fixed a bug in the launcher for UTF8 locales
+
+- Added a logistic regression splicing statistical filter
+
+- Greatly improved the efficiency of the exactly overlap quantitation
+
+- Added colouring to the correlation matrix
+
+- Fixed a bug in the normalisation of paired end RNA-Seq data
+
+- Fixed a crash in bioconductor installation
+
+- Added strand information to probe reports
+
+
 RELEASE NOTES FOR SeqMonk v1.37.1
 ---------------------------------
 
