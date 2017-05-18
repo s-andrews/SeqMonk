@@ -20,7 +20,7 @@
 package uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -33,11 +33,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
@@ -49,11 +46,13 @@ import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class CorrelationMatrix extends JDialog implements ProgressListener, ActionListener {
 
 	private DistanceMatrix matrix;
 	private DistanceTableModel model;
+	private JPanel tablePanel = null;
 	
 	public CorrelationMatrix (DataStore [] stores, ProbeList probes) {
 		super(SeqMonkApplication.getInstance(),"Correlation table ["+probes.name()+"]");
@@ -70,10 +69,16 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		closeButton.addActionListener(this);
 		buttonPanel.add(closeButton);
 		
-		JButton saveButton = new JButton("Save");
-		saveButton.setActionCommand("save");
+		JButton saveButton = new JButton("Save Data");
+		saveButton.setActionCommand("save_data");
 		saveButton.addActionListener(this);
 		buttonPanel.add(saveButton);
+
+		JButton saveImageButton = new JButton("Save Image");
+		saveImageButton.setActionCommand("save_image");
+		saveImageButton.addActionListener(this);
+		buttonPanel.add(saveImageButton);
+
 		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
 		
@@ -92,10 +97,10 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 	public void progressComplete(String command, Object result) {
 		model = new DistanceTableModel();
 		
-		JTable table = new JTable(model);
-		table.setTableHeader(null);
-		table.setDefaultRenderer(String.class,new CorrelationCellRenderer(model));
-		getContentPane().add(new JScrollPane(table),BorderLayout.CENTER);
+		tablePanel = new CorrelationPanel(model, new CorrelationCellRenderer(model));
+		
+		getContentPane().add(tablePanel, BorderLayout.CENTER);
+		
 		setVisible(true);
 				
 	}
@@ -112,7 +117,14 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 			setVisible(false);
 			dispose();
 		}
-		else if (e.getActionCommand().equals("save")) {
+		
+		else if (e.getActionCommand().equals("save_data")) {
+			if (tablePanel == null) return; // There's nothing to see...
+			
+			ImageSaver.saveImage(tablePanel);
+			
+		}
+		else if (e.getActionCommand().equals("save_data")) {
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 			chooser.setMultiSelectionEnabled(false);
 			chooser.setFileFilter(new FileFilter() {
@@ -249,7 +261,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 	}
 	
-	private class CorrelationCellRenderer extends DefaultTableCellRenderer {
+	private class CorrelationCellRenderer {
 		
 		private DistanceTableModel model;
 		private float minCorrelation;
@@ -267,35 +279,49 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 			
 		}
 		
-		public Component getTableCellRendererComponent (JTable table, Object object, boolean a3,boolean a4, int row, int col) {
-						
-			Component c = super.getTableCellRendererComponent(table, object, a3, a4, row, col);
-			
-			((JLabel)c).setToolTipText(model.getLabel(row, col));
-			
+		public JLabel getLabel (int r, int c) {
+			JLabel l = new JLabel(""+model.getValueAt(r, c),JLabel.CENTER);
+			l.setVerticalAlignment(JLabel.CENTER);
+			l.setToolTipText(model.getLabel(r, c));
 			try {
-				float f = Float.parseFloat(((JLabel)c).getText());
+				float f = Float.parseFloat(l.getText());
 				
 //				System.err.println("Parsed number is "+f+" min="+minCorrelation+" max="+maxCorrelation);
 				
 				if (f >= minCorrelation && f <= maxCorrelation) {						
-					((JLabel)c).setOpaque(true);
-					((JLabel)c).setBackground(gradient.getColor(f, minCorrelation, maxCorrelation));
+					l.setOpaque(true);
+					l.setBackground(gradient.getColor(f, minCorrelation, maxCorrelation));
 				}
 				else {
-					((JLabel)c).setOpaque(false);
+					l.setOpaque(false);
 				}
 			}
 			catch (NumberFormatException nfe) {
-				((JLabel)c).setOpaque(false);
+				l.setOpaque(false);
 			}
 			
-			
-			return(c);
+			return(l);
 			
 		}
 		
+	}
+	
+	private class CorrelationPanel extends JPanel {
 		
+		public CorrelationPanel (DistanceTableModel model, CorrelationCellRenderer renderer) {
+			
+			System.err.println("Rows="+model.getRowCount()+" cols="+model.getColumnCount());
+			
+			setLayout(new GridLayout(model.getRowCount(), model.getColumnCount()));
+			for (int r=0;r<model.getRowCount();r++) {
+				for (int c=0;c<model.getColumnCount();c++) {
+					add(renderer.getLabel(r, c));
+				}
+			}
+			
+			
+		}
+				
 	}
 	
 	
