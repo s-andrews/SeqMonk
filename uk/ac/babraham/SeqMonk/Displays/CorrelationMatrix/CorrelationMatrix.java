@@ -20,7 +20,6 @@
 package uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -234,12 +233,25 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 			return String.class;
 		}
 		
+		public String getLabel(int row, int col) {
+			if (row==0 || col==0) {
+				return "";
+			}
+			
+			try {
+				return matrix.stores()[row-1]+" vs "+matrix.stores()[col-1]+" r="+matrix.getCorrelationForStoreIndices(row-1, col-1);
+			}
+			catch (SeqMonkException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		
 		
 	}
 	
 	private class CorrelationCellRenderer extends DefaultTableCellRenderer {
 		
-		
+		private DistanceTableModel model;
 		private float minCorrelation;
 		private float maxCorrelation;
 		
@@ -249,15 +261,17 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		public CorrelationCellRenderer (DistanceTableModel model) {
 			minCorrelation = model.getMinCorrelation();
 			maxCorrelation = model.getMaxCorrelation();
-						
+			this.model = model;			
 			
 			gradient = DisplayPreferences.getInstance().getGradient();
 			
 		}
 		
-		public Component getTableCellRendererComponent (JTable table, Object object, boolean a3,boolean a4, int a5, int a6) {
+		public Component getTableCellRendererComponent (JTable table, Object object, boolean a3,boolean a4, int row, int col) {
 						
-			Component c = super.getTableCellRendererComponent(table, object, a3, a4, a5, a6);
+			Component c = super.getTableCellRendererComponent(table, object, a3, a4, row, col);
+			
+			((JLabel)c).setToolTipText(model.getLabel(row, col));
 			
 			try {
 				float f = Float.parseFloat(((JLabel)c).getText());
