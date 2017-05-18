@@ -22,7 +22,15 @@ else {
 }
 
 # We need to make sure the language is English so we can parse the output of some
-# standard commands
+# standard commands, however if we leave this in place it can break things for people
+# in other locales so we need to restore the original value.
+
+my $original_lang = undef;
+
+if (exists $ENV{LANG}) {
+	$original_lang = $ENV{LANG};
+}	
+
 $ENV{LANG}='C';
 
 my @java_args;
@@ -66,6 +74,14 @@ unshift @java_args,"-Xmx${actual_memory}m";
 
 # Expand the default stack size to allow for large recursive sorts
 unshift @java_args,"-Xss4m";
+
+# Put the environment back to how we found it
+if (defined $original_lang) {
+	$ENV{LANG} = $original_lang;
+}
+else {
+	delete $ENV{LANG};
+}
 
 exec "java",@java_args, "uk.ac.babraham.SeqMonk.SeqMonkApplication", @files;
 
