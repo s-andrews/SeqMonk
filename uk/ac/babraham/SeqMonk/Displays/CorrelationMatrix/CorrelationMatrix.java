@@ -20,7 +20,8 @@
 package uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -30,7 +31,6 @@ import java.io.PrintWriter;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
@@ -101,7 +101,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		tablePanel = new JPanel();
 		tablePanel.setLayout(new BorderLayout());
 		
-		tablePanel.add(new CorrelationPanel(model, new CorrelationCellRenderer(model)),BorderLayout.CENTER);
+		tablePanel.add(new CorrelationPanel(),BorderLayout.CENTER);
 		tablePanel.add(new GradientScaleBar(DisplayPreferences.getInstance().getGradient(), model.getMinCorrelation(), model.getMaxCorrelation()), BorderLayout.EAST);
 		
 		getContentPane().add(tablePanel, BorderLayout.CENTER);
@@ -266,66 +266,69 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 	}
 	
-	private class CorrelationCellRenderer {
-		
-		private DistanceTableModel model;
-		private float minCorrelation;
-		private float maxCorrelation;
-		
-		private ColourGradient gradient;
-		
-		
-		public CorrelationCellRenderer (DistanceTableModel model) {
-			minCorrelation = model.getMinCorrelation();
-			maxCorrelation = model.getMaxCorrelation();
-			this.model = model;			
-			
-			gradient = DisplayPreferences.getInstance().getGradient();
-			
-		}
-		
-		public JLabel getLabel (int r, int c) {
-			JLabel l = new JLabel(""+model.getValueAt(r, c),JLabel.CENTER);
-			l.setVerticalAlignment(JLabel.CENTER);
-			l.setToolTipText(model.getLabel(r, c));
-			try {
-				float f = Float.parseFloat(l.getText());
-				
-//				System.err.println("Parsed number is "+f+" min="+minCorrelation+" max="+maxCorrelation);
-				
-				if (f >= minCorrelation && f <= maxCorrelation) {						
-					l.setOpaque(true);
-					l.setBackground(gradient.getColor(f, minCorrelation, maxCorrelation));
-				}
-				else {
-					l.setOpaque(false);
-				}
-			}
-			catch (NumberFormatException nfe) {
-				l.setOpaque(false);
-			}
-			
-			return(l);
-			
-		}
-		
-	}
-	
 	private class CorrelationPanel extends JPanel {
 		
-		public CorrelationPanel (DistanceTableModel model, CorrelationCellRenderer renderer) {
+		private ColourGradient gradient = DisplayPreferences.getInstance().getGradient();
+		private float minCorrelation = model.getMinCorrelation();
+		private float maxCorrelation = model.getMaxCorrelation();
+				
+		public void paintComponent (Graphics g) {
 			
-			System.err.println("Rows="+model.getRowCount()+" cols="+model.getColumnCount());
+			int lastEndX = 0;
+			int lastEndY = 0;
 			
-			setLayout(new GridLayout(model.getRowCount(), model.getColumnCount()));
 			for (int r=0;r<model.getRowCount();r++) {
+				
+				// Reset the X pointer
+				lastEndX = 0;
+				
+				// See if we need to draw this row at all
+				int thisEndY = getY(r+1);
+				if (thisEndY <= lastEndY) continue; // We can't even see this row
+				
 				for (int c=0;c<model.getColumnCount();c++) {
-					add(renderer.getLabel(r, c));
+					
+					// See if we need to draw this column
+					int thisEndX = getX(c+1);
+					if (thisEndX <= lastEndX) continue; // Can't see it
+					
+					
+					try {
+						float f = Float.parseFloat(""+model.getValueAt(r, c));
+												
+						if (f >= minCorrelation && f <= maxCorrelation) {
+							g.setColor(gradient.getColor(f, minCorrelation, maxCorrelation));
+						}
+						else {
+							g.setColor(Color.WHITE);
+						}
+					}
+					catch (NumberFormatException nfe) {
+						g.setColor(Color.WHITE);
+					}
+				
+					g.fillRect(lastEndX, lastEndY, thisEndX-lastEndX, thisEndY-lastEndY);
+					
+					//TODO: add text
+					
+					lastEndX = thisEndX;
+					
 				}
+				
+				lastEndY = thisEndY;
 			}
-			
-			
+		
 		}
+		
+		public int getX(int index) {
+			return((int)((getWidth()/(double)model.getColumnCount())*index));
+		}
+		
+		public int getY(int index) {
+			return((int)((getWidth()/(double)model.getColumnCount())*index));
+		}
+
+		
 				
 	}
 	
