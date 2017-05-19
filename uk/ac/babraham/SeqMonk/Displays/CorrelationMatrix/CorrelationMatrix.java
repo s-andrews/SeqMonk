@@ -43,6 +43,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
@@ -97,7 +98,11 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 	public void progressComplete(String command, Object result) {
 		model = new DistanceTableModel();
 		
-		tablePanel = new CorrelationPanel(model, new CorrelationCellRenderer(model));
+		tablePanel = new JPanel();
+		tablePanel.setLayout(new BorderLayout());
+		
+		tablePanel.add(new CorrelationPanel(model, new CorrelationCellRenderer(model)),BorderLayout.CENTER);
+		tablePanel.add(new GradientScaleBar(DisplayPreferences.getInstance().getGradient(), model.getMinCorrelation(), model.getMaxCorrelation()), BorderLayout.EAST);
 		
 		getContentPane().add(tablePanel, BorderLayout.CENTER);
 		
@@ -118,7 +123,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 			dispose();
 		}
 		
-		else if (e.getActionCommand().equals("save_data")) {
+		else if (e.getActionCommand().equals("save_image")) {
 			if (tablePanel == null) return; // There's nothing to see...
 			
 			ImageSaver.saveImage(tablePanel);
