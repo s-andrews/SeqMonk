@@ -25,6 +25,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -252,8 +254,14 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		}
 		
 		public String getLabel(int row, int col) {
-			if (row==0 || col==0) {
+			if (row==0 && col==0) {
 				return "";
+			}
+			else if (row == 0) {
+				return matrix.stores()[col-1].name();
+			}
+			else if (col == 0) {
+				return matrix.stores()[row-1].name();
 			}
 			
 			try {
@@ -267,12 +275,16 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 	}
 	
-	private class CorrelationPanel extends JPanel {
+	private class CorrelationPanel extends JPanel implements MouseMotionListener {
 		
 		private ColourGradient gradient = DisplayPreferences.getInstance().getGradient();
 		private float minCorrelation = model.getMinCorrelation();
 		private float maxCorrelation = model.getMaxCorrelation();
 				
+		public CorrelationPanel () {
+			addMouseMotionListener(this);
+		}
+		
 		public void paintComponent (Graphics g) {
 			
 			int lastEndX = 0;
@@ -373,6 +385,18 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 		public int getY(int index) {
 			return((int)((getHeight()/(double)model.getColumnCount())*index));
+		}
+
+		public void mouseDragged(MouseEvent arg0) {}
+
+		public void mouseMoved(MouseEvent me) {
+			// We set the tooltip to show what's under the current position
+			
+			int c = (int)(me.getX() / (getWidth()/(double)model.getColumnCount()));
+			int r = (int)(me.getY() / (getHeight()/(double)model.getRowCount()));
+			
+			setToolTipText(model.getLabel(r, c));
+			
 		}
 
 		
