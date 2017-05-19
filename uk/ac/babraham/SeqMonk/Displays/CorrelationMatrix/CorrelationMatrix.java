@@ -21,6 +21,7 @@ package uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -277,6 +278,40 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 			int lastEndX = 0;
 			int lastEndY = 0;
 			
+			// We need to work out whether it's worth trying to draw text and if so
+			// at what font size we'd be working.
+			
+			boolean drawText = true;
+			
+			// We'll base the font size on being half the height of the boxes
+			int boxHeight = (getY(1) - getY(0))/2;
+			int boxWidth = getX(1) - getX(0);
+			
+			int fontSize = 1;
+			
+			while (true) {
+				
+				g.setFont(new Font("sans",Font.PLAIN,fontSize));
+				if (g.getFontMetrics().getAscent() > boxHeight) break;
+				
+				++fontSize;
+			}
+			
+			// If we don't have at least a 5 point font then give up
+			if (fontSize < 2) {
+				drawText = false;
+			}
+			else {
+			
+				// Now we need to see if we have enough width to draw anything
+				// sensible
+				if (g.getFontMetrics().stringWidth("0.99") > boxWidth) {
+					drawText = false;
+				}
+				
+			}
+			
+			
 			for (int r=0;r<model.getRowCount();r++) {
 				
 				// Reset the X pointer
@@ -309,7 +344,19 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 				
 					g.fillRect(lastEndX, lastEndY, thisEndX-lastEndX, thisEndY-lastEndY);
 					
-					//TODO: add text
+					if (drawText) {
+						g.setColor(Color.BLACK);
+						
+						String string = ""+model.getValueAt(r, c);
+						
+						while (g.getFontMetrics().stringWidth(string) > boxWidth) {
+							string = string.substring(0, string.length()-1);
+						}
+						
+						int stringX = (lastEndX+((thisEndX-lastEndX)/2))-(g.getFontMetrics().stringWidth(string)/2);
+						
+						g.drawString(string, stringX, lastEndY+g.getFontMetrics().getHeight());
+					}
 					
 					lastEndX = thisEndX;
 					
@@ -325,7 +372,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		}
 		
 		public int getY(int index) {
-			return((int)((getWidth()/(double)model.getColumnCount())*index));
+			return((int)((getHeight()/(double)model.getColumnCount())*index));
 		}
 
 		
