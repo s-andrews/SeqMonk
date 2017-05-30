@@ -31,6 +31,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 public class HeatmapGenomePanelCollection extends JPanel {
 
 	private HeatmapGenomePanel genomePanel;
+	private HiCGradientPanel gradient;
 	
 	public HeatmapGenomePanelCollection (HiCDataStore store, ProbeList probes, HeatmapMatrix matrix, Genome genome) {
 		
@@ -38,6 +39,10 @@ public class HeatmapGenomePanelCollection extends JPanel {
 		genomePanel = new HeatmapGenomePanel(store, probes, matrix, genome);
 		matrix.addOptionListener(genomePanel);
 		add(genomePanel,BorderLayout.CENTER);
+		
+		gradient = new HiCGradientPanel(matrix);
+		matrix.addOptionListener(gradient);
+		add(gradient,BorderLayout.EAST);
 		
 	}
 		
