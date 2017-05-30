@@ -434,20 +434,17 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 
 				for (int f=0;f<fastaFiles.length;f++) {
 					
-					if (cancel) {
-						pd.progressCancelled();
-						return;
-					}
 					
-					pd.progressUpdated("Reading "+fastaFiles[f].getName(), f, fastaFiles.length);
-
+					FileInputStream fis;
 					BufferedReader br;
 					
+					fis = new FileInputStream(fastaFiles[f]);
+					
 					if (fastaFiles[f].getName().toLowerCase().endsWith(".gz")) {
-						br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(fastaFiles[f]))));
+						br = new BufferedReader(new InputStreamReader(new GZIPInputStream(fis)));
 					}
 					else {
-						br = new BufferedReader(new FileReader(fastaFiles[f]));
+						br = new BufferedReader(new InputStreamReader(fis));
 					}
 
 					String name = null;
@@ -455,7 +452,20 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 					String line;
 					while ((line = br.readLine()) != null) {
 
+						if (cancel) {
+							pd.progressCancelled();
+							br.close();
+							fis.close();
+							return;
+						}
+						
+						
+											
 						if (line.startsWith(">")) {
+
+							// This overflows an int if we leave it at raw positions so we divide by 100 to get it into
+							// a sensible range.
+							pd.progressUpdated("Reading "+fastaFiles[f].getName(), (int)(fis.getChannel().position()/100), (int)(fastaFiles[f].length()/100));
 							
 							if (name != null) {
 								final String updateName = name;
@@ -489,6 +499,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 					}
 					
 					br.close();
+					fis.close();
 
 				}
 
