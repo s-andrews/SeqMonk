@@ -362,19 +362,29 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 			manualGenome.suspendUpdates();
 			
 			try {
-				
+								
+				FileInputStream fis;
 				BufferedReader br;
 				
+				fis = new FileInputStream(gffFile);
+				
+				
 				if (gffFile.getName().toLowerCase().endsWith(".gz")) {
-					br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(gffFile))));
+					br = new BufferedReader(new InputStreamReader(new GZIPInputStream(fis)));
 				}
 				else {
-					br = new BufferedReader(new FileReader(gffFile));
+					br = new BufferedReader(new InputStreamReader(fis));
 				}
 
 				String line;
+				long count = 0;
 				while ((line = br.readLine()) != null) {
 
+					++count;
+					if (count % 1000 == 0) {
+						pd.progressUpdated("Reading "+gffFile.getName(), (int)(fis.getChannel().position()/100), (int)(gffFile.length()/100));
+
+					}
 					if (line.startsWith("#")) continue;
 
 					String [] fields = line.split("\t");
@@ -390,6 +400,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 				}
 
 				br.close();
+				fis.close();
 
 				pd.progressComplete("simple_gff", null);
 
