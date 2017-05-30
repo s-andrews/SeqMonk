@@ -33,17 +33,32 @@ public class ManualGenome extends AbstractTableModel {
 	private Vector<ManualGenomeChromosome> chrs = new Vector<ManualGenomeChromosome>();
 	private Hashtable<String, ManualGenomeChromosome> chrNames = new Hashtable<String, ManualGenomeChromosome>();
 	private ManualPseudoGenome pseudoGenome = null;
+	
+	private boolean incrementalUpdates = true;
+	
+	
 
 	public ManualGenomeChromosome getChromosome (String name) {
 		if (!chrNames.containsKey(name)) {
 			ManualGenomeChromosome chr = new ManualGenomeChromosome(name,this);
 			chrs.add(chr);
 			chrNames.put(name,chr);
-			fireTableRowsInserted(chrs.size()-1, chrs.size()-1);
+			if (incrementalUpdates) fireTableRowsInserted(chrs.size()-1, chrs.size()-1);
 			updatePseudoGenome();
 		}
 		
 		return chrNames.get(name);
+	}
+	
+	public void suspendUpdates() {
+		incrementalUpdates = false;
+	}
+	
+	public void enableUpdates () {
+		incrementalUpdates = true;
+		updatePseudoGenome();
+		fireTableDataChanged();
+		
 	}
 	
 	public ManualGenomeChromosome getChromosome (int index) {
@@ -54,8 +69,8 @@ public class ManualGenome extends AbstractTableModel {
 		int index = chrs.indexOf(chr);
 		chrs.remove(chr);
 		chrNames.remove(chr.name());
-		fireTableRowsDeleted(index, index);
-		updatePseudoGenome();
+		if (incrementalUpdates) fireTableRowsDeleted(index, index);
+		if (incrementalUpdates) updatePseudoGenome();
 	}
 
 	public void removeChromosome (ManualGenomeChromosome [] chrsToDelete) {
@@ -69,8 +84,8 @@ public class ManualGenome extends AbstractTableModel {
 			chrs.remove(indices[i]);
 		}
 
-		fireTableDataChanged();
-		updatePseudoGenome();
+		if (incrementalUpdates) fireTableDataChanged();
+		if (incrementalUpdates) updatePseudoGenome();
 	}
 
 	
@@ -110,17 +125,17 @@ public class ManualGenome extends AbstractTableModel {
 	}
 	
 	protected void addedFeatures(ManualGenomeChromosome chr) {
-		fireTableCellUpdated(chrs.indexOf(chr), 4);
+		if (incrementalUpdates) fireTableCellUpdated(chrs.indexOf(chr), 4);
 	}
 	
 	protected void lengthUpdated (ManualGenomeChromosome chr) {
-		fireTableCellUpdated(chrs.indexOf(chr), 1);
-		updatePseudoGenome();
+		if (incrementalUpdates) fireTableCellUpdated(chrs.indexOf(chr), 1);
+		if (incrementalUpdates) updatePseudoGenome();
 	}
 
 	protected void pseudoChromosomeUpdated (ManualGenomeChromosome chr) {
-		fireTableCellUpdated(chrs.indexOf(chr), 2);		
-		fireTableCellUpdated(chrs.indexOf(chr), 3);		
+		if (incrementalUpdates) fireTableCellUpdated(chrs.indexOf(chr), 2);		
+		if (incrementalUpdates) fireTableCellUpdated(chrs.indexOf(chr), 3);		
 	}
 
 	public void removePseudoGenome () {

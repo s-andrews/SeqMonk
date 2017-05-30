@@ -46,6 +46,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
+import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
@@ -355,6 +356,11 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 
 		public void run () {
 
+			
+			// For performance reasons we disable updates on the table model whilst
+			// we're loading new data
+			manualGenome.suspendUpdates();
+			
 			try {
 				
 				BufferedReader br;
@@ -394,31 +400,44 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 				pd.progressExceptionReceived(ioe);
 			}
 
+			manualGenome.enableUpdates();
+			
 
 		}
 
 	}
 
 
-	private class SimpleFastaReader implements Runnable {
+	private class SimpleFastaReader implements Runnable, Cancellable {
 
 		private File [] fastaFiles;
 		private ProgressDialog pd;
+		private boolean cancel = false;
 
 		public SimpleFastaReader (File [] fastaFiles) {
 			this.fastaFiles = fastaFiles;
 
-			pd = new ProgressDialog("Reading Fasta files");
+			pd = new ProgressDialog("Reading Fasta files",this);
 
 			Thread t = new Thread(this);
 			t.start();
 		}
 
 		public void run () {
+			
+			// For performance reasons we disable updates on the table model whilst
+			// we're loading new data
+			manualGenome.suspendUpdates();
+
 
 			try {
 
 				for (int f=0;f<fastaFiles.length;f++) {
+					
+					if (cancel) {
+						pd.progressCancelled();
+						return;
+					}
 					
 					pd.progressUpdated("Reading "+fastaFiles[f].getName(), f, fastaFiles.length);
 
@@ -481,7 +500,11 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 				pd.progressExceptionReceived(ioe);
 			}
 
+			manualGenome.enableUpdates();
+		}
 
+		public void cancel() {
+			cancel = true;
 		}
 
 	}
