@@ -4,7 +4,7 @@ source("http://bioconductor.org/biocLite.R")
 install.packages("data.table", repos="http://cloud.r-project.org")
 
 
-install.packages("tsne", repos="http://cloud.r-project.org")
+install.packages("Rtsne", repos="http://cloud.r-project.org")
 
 biocLite()
 biocLite("DESeq2")
@@ -14,6 +14,6 @@ biocLite("edgeR")
 
 library("DESeq2")
 library("edgeR")
-library("tsne")
+library("Rtsne")
 
 

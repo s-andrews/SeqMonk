@@ -1,4 +1,4 @@
 library("DESeq2")
 library("edgeR")
-library("tsne")
+library("Rtsne")
 

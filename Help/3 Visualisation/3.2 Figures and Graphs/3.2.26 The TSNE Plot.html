@@ -66,12 +66,10 @@ cluster you expect to see.  The technique is reasonably robust to the value you
 use here but altering it will have some effect.  The default is the number of 
 data stores divided by 5 (so assuming we'll see 5 groups) but with a limit of
 >=2 and <=50.</li>
-<li>Minimum cost - TSNE is an iterative process where at each iteration the 
-degree of change to the last iteration is calculated.  Setting this value to >0
-allows the process to terminate when the degree of change is small, and before the
-normal 1000 iterations have been performed.  Sensible values for this will be between
-1 and 5 and you only need to use this if the normal 1000 cycles are taking too
-long to compute</li>
+<li>Max Iterations - TSNE is an iterative process the differences between samples
+are continually refined. You can set a limit on the maximum number of iterations
+to be performed.  For large datasets this might speed up the time taken to get 
+an answer, but for the most part you should leave this set to the default of 1000</li>
 </ul>
 
 

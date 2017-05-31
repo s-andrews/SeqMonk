@@ -28,7 +28,7 @@ public class TsneDataStoreResult implements PCASource, Runnable {
 	private ProgressDialog pd;
 	private DataStore [] stores;
 	private ProbeList probeList;
-	private float cutoff;
+	private int iterations;
 	private int perplexity;
 	
 	private Probe [] usedProbes;
@@ -37,10 +37,10 @@ public class TsneDataStoreResult implements PCASource, Runnable {
 	private float [][] pcaResults;
 
 	
-	public TsneDataStoreResult (ProbeList probes,DataStore [] stores, float cutoff, int perplexity) {
+	public TsneDataStoreResult (ProbeList probes,DataStore [] stores, int iterations, int perplexity) {
 		this.stores = stores;
 		this.probeList = probes;
-		this.cutoff = cutoff;
+		this.iterations = iterations;
 		this.perplexity = perplexity;
 			
 		pd = new ProgressDialog("Running Tsne...");
@@ -120,7 +120,7 @@ public class TsneDataStoreResult implements PCASource, Runnable {
 
 			// Substitute in the variables we need to change
 			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
-			template.setValue("CUTOFF",""+cutoff);
+			template.setValue("ITERATIONS",""+iterations);
 			template.setValue("PERPLEXITY", ""+perplexity);
 
 			// Write the script file

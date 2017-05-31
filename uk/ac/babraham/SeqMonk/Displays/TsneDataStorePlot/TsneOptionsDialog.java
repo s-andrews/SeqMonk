@@ -23,7 +23,7 @@ import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 public class TsneOptionsDialog extends JDialog implements ActionListener {
 
 	private JTextField perplexity;
-	private JTextField cost;
+	private JTextField iterations;
 	private ProbeList probes;
 	private DataStore [] stores;
 	
@@ -61,13 +61,13 @@ public class TsneOptionsDialog extends JDialog implements ActionListener {
 		gbc.gridx=1;
 		gbc.gridy++;
 		
-		getContentPane().add(new JLabel("Min Cost"), gbc);
+		getContentPane().add(new JLabel("Max Iterations"), gbc);
 		
 		gbc.gridx++;
-		cost = new JTextField("0");
-		cost.addKeyListener(new NumberKeyListener(true, false));
+		iterations = new JTextField("1000");
+		iterations.addKeyListener(new NumberKeyListener(false, false));
 		
-		getContentPane().add(cost, gbc);
+		getContentPane().add(iterations, gbc);
 		
 		
 		gbc.gridx=1;
@@ -91,7 +91,7 @@ public class TsneOptionsDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent ae) {
 
 		int perplexityValue = 0;
-		float costValue = 0;
+		int iterationValue = 0;
 		
 		if (perplexity.getText().length()>0) {
 			int tempPerplexity = Integer.parseInt(perplexity.getText());
@@ -99,14 +99,14 @@ public class TsneOptionsDialog extends JDialog implements ActionListener {
 		}
 		
 
-		if (cost.getText().length()>0) {
-			int tempCost = Integer.parseInt(cost.getText());
-			if (tempCost>0) costValue = tempCost;
+		if (iterations.getText().length()>0) {
+			int tempIterations = Integer.parseInt(iterations.getText());
+			if (tempIterations>0) iterationValue = tempIterations;
 		}
 
 		setVisible(false);
 		
-		new TsneDataStoreResult(probes, stores, costValue, perplexityValue);
+		new TsneDataStoreResult(probes, stores, iterationValue, perplexityValue);
 		
 		dispose();
 		
