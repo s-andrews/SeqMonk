@@ -106,20 +106,74 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 			Feature [] transcriptFeatures = collection().genome().annotationCollection().getFeaturesForType(chrs[c], optionsPanel.getSelectedTranscriptFeatureType());
 			Arrays.sort(transcriptFeatures);
+			
+			// We need to figure out whether we can match based on name, or whether we need to do it based on location.
+			
+			boolean matchOnNames = true;
+			
+			for (int t=0;t<transcriptFeatures.length;t++) {
+				if (! transcriptFeatures[t].name().matches("-\\d\\d\\d$")) {
+					matchOnNames = false;
+					break;
+				}
+			}
+			
 
 			// Now group the transcripts into those coming from common genes so we can look
 			// this up quickly later
 			Hashtable<String, Vector<Feature>>transcriptLookup = new Hashtable<String, Vector<Feature>>();
 
-			for (int i=0;i<transcriptFeatures.length;i++) {
+			if (matchOnNames) {
+				for (int i=0;i<transcriptFeatures.length;i++) {
 
-				String name = transcriptFeatures[i].name();
-				name = name.replaceAll("-\\d\\d\\d$", "");
-				if (! transcriptLookup.containsKey(name)) {
-					transcriptLookup.put(name, new Vector<Feature>());
+					String name = transcriptFeatures[i].name();
+					name = name.replaceAll("-\\d\\d\\d$", "");
+					if (! transcriptLookup.containsKey(name)) {
+						transcriptLookup.put(name, new Vector<Feature>());
+					}
+
+					transcriptLookup.get(name).add(transcriptFeatures[i]);
+				}
+			}
+			
+			else {
+				
+				// We need to go through the genes and transcripts in parallel and match them up based on containment
+				// and direction.
+				
+				int lastGeneIndex = 0;
+				
+				for (int t=0;t<transcriptFeatures.length;t++) {
+					for (int g=lastGeneIndex;g<geneFeatures.length;g++) {
+						// If this transcript is off the end of this gene then
+						// we never need to look at this gene again
+						
+						if (transcriptFeatures[t].location().start() > geneFeatures[g].location().end()) {
+							lastGeneIndex = g;
+							continue;
+						}
+						
+						// If the gene is beyond the end of the transcript we can stop looking
+						if (geneFeatures[g].location().start() > transcriptFeatures[t].location().end()) {
+							break;
+						}
+
+						// If we're on the same strand and contained within the gene then we have a match
+						if (
+								geneFeatures[g].location().strand() == transcriptFeatures[t].location().strand() &&
+								transcriptFeatures[t].location().start() >= geneFeatures[g].location().start() &&
+								transcriptFeatures[t].location().end() <= geneFeatures[g].location().end()
+								) {
+							String name = geneFeatures[g].name();
+							if (! transcriptLookup.containsKey(name)) {
+								transcriptLookup.put(name, new Vector<Feature>());
+							}
+
+							transcriptLookup.get(name).add(transcriptFeatures[t]);
+						}
+					}
 				}
 
-				transcriptLookup.get(name).add(transcriptFeatures[i]);
 			}
 
 
