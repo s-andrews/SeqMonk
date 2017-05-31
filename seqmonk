@@ -21,6 +21,8 @@ else {
 	$ENV{CLASSPATH} = "$RealBin:$RealBin/sam-1.32.jar:$RealBin/Jama-1.0.2.jar:$RealBin/commons-math3-3.5.jar";
 }
 
+warn "CLASSPATH is : $ENV{CLASSPATH}\n";
+
 # We need to make sure the language is English so we can parse the output of some
 # standard commands, however if we leave this in place it can break things for people
 # in other locales so we need to restore the original value.
@@ -82,6 +84,8 @@ if (defined $original_lang) {
 else {
 	delete $ENV{LANG};
 }
+
+warn "Command is: java @java_args uk.ac.babraham.SeqMonk.SeqMonkApplication\n";
 
 exec "java",@java_args, "uk.ac.babraham.SeqMonk.SeqMonkApplication", @files;
 
