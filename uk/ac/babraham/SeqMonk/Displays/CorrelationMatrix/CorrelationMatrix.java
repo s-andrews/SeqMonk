@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -34,6 +35,7 @@ import java.io.PrintWriter;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
@@ -106,6 +108,8 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 		tablePanel.add(new CorrelationPanel(),BorderLayout.CENTER);
 		tablePanel.add(new GradientScaleBar(DisplayPreferences.getInstance().getGradient(), model.getMinCorrelation(), model.getMaxCorrelation()), BorderLayout.EAST);
+		
+		tablePanel.add(new CorrelationNamePanel(), BorderLayout.WEST);
 		
 		getContentPane().add(tablePanel, BorderLayout.CENTER);
 		
@@ -205,7 +209,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 	private class DistanceTableModel extends AbstractTableModel {
 	
 		public int getColumnCount() {
-			return matrix.stores().length+1;
+			return matrix.stores().length;
 		}
 	
 		public int getRowCount() {
@@ -232,17 +236,11 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 		public Object getValueAt(int r, int c) {
 			
-			if (r==0 && c==0) {
-				return "";
-			}
 			if (r==0) {
-				return matrix.stores()[c-1].name();
-			}
-			if (c==0) {
-				return matrix.stores()[r-1].name();
+				return matrix.stores()[c].name();
 			}
 			try {
-				return matrix.getCorrelationForStoreIndices(r-1, c-1);
+				return matrix.getCorrelationForStoreIndices(r-1, c);
 			}
 			catch (SeqMonkException e) {
 				throw new IllegalStateException(e);
@@ -254,25 +252,33 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		}
 		
 		public String getLabel(int row, int col) {
-			if (row==0 && col==0) {
-				return "";
-			}
-			else if (row == 0) {
-				return matrix.stores()[col-1].name();
-			}
-			else if (col == 0) {
-				return matrix.stores()[row-1].name();
+			if (row == 0) {
+				return matrix.stores()[col].name();
 			}
 			
 			try {
-				return matrix.stores()[row-1]+" vs "+matrix.stores()[col-1]+" r="+matrix.getCorrelationForStoreIndices(row-1, col-1);
+				return matrix.stores()[row-1]+" vs "+matrix.stores()[col]+" r="+matrix.getCorrelationForStoreIndices(row-1, col);
 			}
 			catch (SeqMonkException e) {
 				throw new IllegalStateException(e);
 			}
 		}
+	}
+	
+	
+	private class CorrelationNamePanel extends JPanel {
 		
-		
+		public CorrelationNamePanel () {
+			setBackground(Color.WHITE);
+			setOpaque(true);
+			setLayout(new GridLayout(matrix.stores().length+1, 1));
+
+			add(new JLabel(""));
+			
+			for (int i=0;i<matrix.stores().length;i++) {
+				add(new JLabel(" "+matrix.stores()[i].name()+" "));
+			}
+		}
 	}
 	
 	private class CorrelationPanel extends JPanel implements MouseMotionListener {
@@ -305,6 +311,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 				
 				g.setFont(new Font("sans",Font.PLAIN,fontSize));
 				if (g.getFontMetrics().getAscent() > boxHeight) break;
+				if (g.getFontMetrics().stringWidth("0.999") > boxWidth) break;
 				
 				++fontSize;
 			}
@@ -313,17 +320,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 			if (fontSize < 2) {
 				drawText = false;
 			}
-			else {
-			
-				// Now we need to see if we have enough width to draw anything
-				// sensible
-				if (g.getFontMetrics().stringWidth("0.99") > boxWidth) {
-					drawText = false;
-				}
-				
-			}
-			
-			
+						
 			for (int r=0;r<model.getRowCount();r++) {
 				
 				// Reset the X pointer
@@ -367,7 +364,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 						
 						int stringX = (lastEndX+((thisEndX-lastEndX)/2))-(g.getFontMetrics().stringWidth(string)/2);
 						
-						g.drawString(string, stringX, lastEndY+g.getFontMetrics().getHeight());
+						g.drawString(string, stringX, lastEndY+((boxHeight-g.getFontMetrics().getHeight())/2)+g.getFontMetrics().getHeight());
 					}
 					
 					lastEndX = thisEndX;
