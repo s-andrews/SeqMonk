@@ -104,6 +104,11 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 		Hashtable<String, Vector<Feature>>transcriptLookup = new Hashtable<String, Vector<Feature>>();
 		Vector<Feature> usedGeneFeatures = new Vector<Feature>();
+		
+		// We'll record the number of failures so we can report it
+		int noTranscriptCount = 0;
+		int noIntronCount = 0;
+
 
 		for (int c=0;c<chrs.length;c++) {
 			if (cancel) {
@@ -130,6 +135,10 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 				}
 			}
 
+			if (!matchOnNames) {
+				progressWarningReceived(new SeqMonkException("Non-Ensembl transcript names found - matching based on position"));
+			}
+			
 			if (matchOnNames) {
 				for (int i=0;i<transcriptFeatures.length;i++) {
 
@@ -191,34 +200,84 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 			// For us to keep a gene here we need to have at least one valid transcript (matches
 			// and ovelaps.  At least one of the transcripts also needs to be multi-exon.
 
+			
+			
 			for (int f=0;f<geneFeatures.length;f++) {
 				if (cancel) {
 					progressCancelled();
 					return;
 				}
 
-				if (! transcriptLookup.containsKey(geneFeatures[f].name())) continue; // No good making features for genes with no transcript.
+				if (! transcriptLookup.containsKey(geneFeatures[f].name())) {
+					++noTranscriptCount;
+					continue; // No good making features for genes with no transcript.
+				}
 
 				Feature [] localTranscripts = transcriptLookup.get(geneFeatures[f].name()).toArray(new Feature[0]);
 
-				boolean validTranscript = false;
+				boolean [] exonPositions = new boolean[geneFeatures[f].location().length()];
+				
+				
 				for (int t=0;t<localTranscripts.length;t++) {
-					if (!(localTranscripts[t].location() instanceof SplitLocation)) continue;
-					
-					if (((SplitLocation)localTranscripts[t].location()).subLocations().length < 2) continue;
 
-					if (SequenceRead.overlaps(geneFeatures[f].location().packedPosition(), localTranscripts[t].location().packedPosition())) {
-						validTranscript = true;
-						break;
+					if (!SequenceRead.overlaps(geneFeatures[f].location().packedPosition(), localTranscripts[t].location().packedPosition())) {
+						// It's not a match for this gene
+						continue;
+					}
+
+										
+					if (!(localTranscripts[t].location() instanceof SplitLocation)) {
+						for (int p=localTranscripts[t].location().start()-geneFeatures[f].location().start(); p<=localTranscripts[t].location().end()-geneFeatures[f].location().start();p++) {
+							if (p<0) continue;
+							if (p>=exonPositions.length) continue;
+							exonPositions[p] = true;
+						}
+						continue;
+					}
+					
+					Location [] exons = ((SplitLocation)localTranscripts[t].location()).subLocations();
+					
+					for (int e=0;e<exons.length;e++) {
+						for (int p=exons[e].start()-geneFeatures[f].location().start(); p<=exons[e].end()-geneFeatures[f].location().start();p++) {
+							if (p<0) continue;
+							if (p>=exonPositions.length) continue;
+							exonPositions[p] = true;
+						}						
 					}
 				}
-
-
-				if (validTranscript) {
-					probes.add(new Probe(chrs[c], geneFeatures[f].location().start(), geneFeatures[f].location().end(), geneFeatures[f].location().strand(),geneFeatures[f].name()));
-					usedGeneFeatures.add(geneFeatures[f]);
+				
+				
+				int exonPositionCount = 0;
+				int intronPositionCount = 0;
+				
+				for (int p=0;p<exonPositions.length;p++) {
+					if (exonPositions[p]) exonPositionCount++;
+					else intronPositionCount++;
 				}
+				
+				if (exonPositionCount == 0) {
+					++noTranscriptCount;
+					continue;
+				}
+				
+				if (intronPositionCount == 0) {
+					++noIntronCount;
+					continue;
+				}
+
+
+				probes.add(new Probe(chrs[c], geneFeatures[f].location().start(), geneFeatures[f].location().end(), geneFeatures[f].location().strand(),geneFeatures[f].name()));
+				usedGeneFeatures.add(geneFeatures[f]);
+				
 			}
+		}
+		
+		if (noTranscriptCount > 0) {
+			progressWarningReceived(new SeqMonkException(""+noTranscriptCount+" genes had no associated transcripts"));
+		}
+		
+		if (noIntronCount > 0) {
+			progressWarningReceived(new SeqMonkException(""+noIntronCount+" genes had no intron only areas"));
 		}
 
 		Probe [] allProbes = probes.toArray(new Probe[0]);
@@ -382,8 +441,7 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 
 			if (intronLength <= 0) {
-				progressWarningReceived(new IllegalStateException("Intron length of "+intronLength+" for gene "+geneFeatures[g]));
-				continue;
+				throw new IllegalStateException("Intron length of "+intronLength+" for gene "+geneFeatures[g]);
 			}
 			if (exonLength <= 0) {
 				throw new IllegalStateException("Exon length of "+exonLength+" for gene "+geneFeatures[g]);
