@@ -441,10 +441,18 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 
 			if (intronLength <= 0) {
-				throw new IllegalStateException("Intron length of "+intronLength+" for gene "+geneFeatures[g]);
+				progressWarningReceived(new IllegalStateException("Intron length of "+intronLength+" for gene "+geneFeatures[g]));
+				for (int d=0;d<data.length;d++) {
+					data[d].setValueForProbe(allProbes[g], Float.NaN);
+				}
+				continue;
 			}
 			if (exonLength <= 0) {
-				throw new IllegalStateException("Exon length of "+exonLength+" for gene "+geneFeatures[g]);
+				progressWarningReceived(new IllegalStateException("Exon length of "+exonLength+" for gene "+geneFeatures[g]));
+				for (int d=0;d<data.length;d++) {
+					data[d].setValueForProbe(allProbes[g], Float.NaN);
+				}
+				continue;				
 			}
 
 			for (int d=0;d<data.length;d++) {
