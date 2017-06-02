@@ -74,7 +74,7 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 	public boolean isReady() {
 		return true;
 	}
-	
+
 	public boolean createsNewProbes () {
 		return true;
 	}
@@ -91,7 +91,19 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 		boolean logTransform = optionsPanel.logTransform();
 		boolean applyTranscriptLengthCorrection = optionsPanel.applyTranscriptLengthCorrection();
 
+		// We need to make a lookup for chromosomes from their names for later on.
 		Chromosome [] chrs = collection().genome().getAllChromosomes();
+		
+		Hashtable<String, Chromosome> chrLookup = new Hashtable<String, Chromosome>();
+		for (int c=0;c<chrs.length;c++) {
+			chrLookup.put(chrs[c].name(), chrs[c]);
+		}
+
+		// We're going to cache the gene to transcript mappings so we don't have to re-do them
+		// later on.
+
+		Hashtable<String, Vector<Feature>>transcriptLookup = new Hashtable<String, Vector<Feature>>();
+		Vector<Feature> usedGeneFeatures = new Vector<Feature>();
 
 		for (int c=0;c<chrs.length;c++) {
 			if (cancel) {
@@ -106,22 +118,17 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 			Feature [] transcriptFeatures = collection().genome().annotationCollection().getFeaturesForType(chrs[c], optionsPanel.getSelectedTranscriptFeatureType());
 			Arrays.sort(transcriptFeatures);
-			
+
 			// We need to figure out whether we can match based on name, or whether we need to do it based on location.
-			
+
 			boolean matchOnNames = true;
-			
+
 			for (int t=0;t<transcriptFeatures.length;t++) {
 				if (! transcriptFeatures[t].name().matches("-\\d\\d\\d$")) {
 					matchOnNames = false;
 					break;
 				}
 			}
-			
-
-			// Now group the transcripts into those coming from common genes so we can look
-			// this up quickly later
-			Hashtable<String, Vector<Feature>>transcriptLookup = new Hashtable<String, Vector<Feature>>();
 
 			if (matchOnNames) {
 				for (int i=0;i<transcriptFeatures.length;i++) {
@@ -135,24 +142,24 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 					transcriptLookup.get(name).add(transcriptFeatures[i]);
 				}
 			}
-			
+
 			else {
-				
+
 				// We need to go through the genes and transcripts in parallel and match them up based on containment
 				// and direction.
-				
+
 				int lastGeneIndex = 0;
-				
+
 				for (int t=0;t<transcriptFeatures.length;t++) {
 					for (int g=lastGeneIndex;g<geneFeatures.length;g++) {
 						// If this transcript is off the end of this gene then
 						// we never need to look at this gene again
-						
+
 						if (transcriptFeatures[t].location().start() > geneFeatures[g].location().end()) {
 							lastGeneIndex = g;
 							continue;
 						}
-						
+
 						// If the gene is beyond the end of the transcript we can stop looking
 						if (geneFeatures[g].location().start() > transcriptFeatures[t].location().end()) {
 							break;
@@ -180,14 +187,35 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 			// We make probes over each gene, but use the combined set of transcripts to define the
 			// exonic regions.
+			// 
+			// For us to keep a gene here we need to have at least one valid transcript (matches
+			// and ovelaps.  At least one of the transcripts also needs to be multi-exon.
 
 			for (int f=0;f<geneFeatures.length;f++) {
 				if (cancel) {
 					progressCancelled();
 					return;
 				}
+
 				if (! transcriptLookup.containsKey(geneFeatures[f].name())) continue; // No good making features for genes with no transcript.
-				probes.add(new Probe(chrs[c], geneFeatures[f].location().start(), geneFeatures[f].location().end(), geneFeatures[f].location().strand(),geneFeatures[f].name()));
+
+				Feature [] localTranscripts = transcriptLookup.get(geneFeatures[f].name()).toArray(new Feature[0]);
+
+				boolean validTranscript = false;
+				for (int t=0;t<localTranscripts.length;t++) {
+					if (!(localTranscripts[t].location() instanceof SplitLocation)) continue;
+
+					if (SequenceRead.overlaps(geneFeatures[f].location().packedPosition(), localTranscripts[t].location().packedPosition())) {
+						validTranscript = true;
+						break;
+					}
+				}
+
+
+				if (validTranscript) {
+					probes.add(new Probe(chrs[c], geneFeatures[f].location().start(), geneFeatures[f].location().end(), geneFeatures[f].location().strand(),geneFeatures[f].name()));
+					usedGeneFeatures.add(geneFeatures[f]);
+				}
 			}
 		}
 
@@ -200,34 +228,18 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 		// and exons separately and then work out a ratio from there.
 
 		QuantitationStrandType readFilter = optionsPanel.readFilter();
-		int currentIndex = 0;
-		for (int c=0;c<chrs.length;c++) {
+
+		Feature [] geneFeatures = usedGeneFeatures.toArray(new Feature[0]);
+
+
+		for (int g=0;g<geneFeatures.length;g++) {
 			if (cancel) {
 				progressCancelled();
 				return;
 			}
 
-			progressUpdated("Quantitating features on chr"+chrs[c].name(), chrs.length+c, chrs.length*2);
-
-			Feature [] geneFeatures = collection().genome().annotationCollection().getFeaturesForType(chrs[c], optionsPanel.getSelectedGeneFeatureType());
-			Arrays.sort(geneFeatures);
-
-			Feature [] transcriptFeatures = collection().genome().annotationCollection().getFeaturesForType(chrs[c], optionsPanel.getSelectedTranscriptFeatureType());
-			Arrays.sort(transcriptFeatures);
-
-			// Now group the transcripts into those coming from common genes so we can look
-			// this up quickly later
-			Hashtable<String, Vector<Feature>>transcriptLookup = new Hashtable<String, Vector<Feature>>();
-
-			for (int i=0;i<transcriptFeatures.length;i++) {
-
-				String name = transcriptFeatures[i].name();
-				name = name.replaceAll("-\\d\\d\\d$", "");
-				if (! transcriptLookup.containsKey(name)) {
-					transcriptLookup.put(name, new Vector<Feature>());
-				}
-
-				transcriptLookup.get(name).add(transcriptFeatures[i]);
+			if (g % 100 == 0) {
+				progressUpdated("Quantitating features", g, geneFeatures.length);
 			}
 
 
@@ -240,272 +252,277 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 			}
 
-			for (int f=0;f<geneFeatures.length;f++) {
 
-				// Find the set of transcripts which relate to this gene.  
+			// Find the set of transcripts which relate to this gene.  
 
-				if (! transcriptLookup.containsKey(geneFeatures[f].name())) {
-					progressWarningReceived(new SeqMonkException("No transcripts for gene "+geneFeatures[f].name()));
-					continue;
+			Feature [] transcripts = transcriptLookup.get(geneFeatures[g].name()).toArray(new Feature[0]);
+			
+			Vector<Feature> validTranscripts = new Vector<Feature>();
+			
+			for (int t=0;t<transcripts.length;t++) {
+				if (SequenceRead.overlaps(geneFeatures[g].location().packedPosition(), transcripts[t].location().packedPosition())) {
+					validTranscripts.add(transcripts[t]);
 				}
+			}
+			
+			transcripts = validTranscripts.toArray(new Feature[0]);
+			
+			// We should never get a gene with no transcripts at this point as they should have been removed
+			// before so if we do then something has gone wrong.
+			if (transcripts.length == 0) {
+				throw new IllegalStateException("No transcripts for gene "+geneFeatures[g]+" on chr "+geneFeatures[g].chromosomeName());
+			}
+			
 
-				Feature [] transcripts = transcriptLookup.get(geneFeatures[f].name()).toArray(new Feature[0]);
+			Vector<Location> allExonsVector = new Vector<Location>();
 
-				Vector<Location> allExonsVector = new Vector<Location>();
-
-				for (int t=0;t<transcripts.length;t++) {
-					if (transcripts[t].location() instanceof SplitLocation) {
-						Location [] sublocs = ((SplitLocation)transcripts[t].location()).subLocations();
-						for (int i=0;i<sublocs.length;i++) allExonsVector.add(sublocs[i]);
-					}
-					else {
-						allExonsVector.add(transcripts[t].location());
-					}
+			for (int t=0;t<transcripts.length;t++) {
+				if (transcripts[t].location() instanceof SplitLocation) {
+					Location [] sublocs = ((SplitLocation)transcripts[t].location()).subLocations();
+					for (int i=0;i<sublocs.length;i++) allExonsVector.add(sublocs[i]);
 				}
+				else {
+					allExonsVector.add(transcripts[t].location());
+				}
+			}
 
-				//				if (geneFeatures[f].name().equals("Cpa6")) {
-				//					System.err.println("Cpa6 had "+allExonsVector.size()+" total exons");
-				//				}
+			//				if (geneFeatures[f].name().equals("Cpa6")) {
+			//					System.err.println("Cpa6 had "+allExonsVector.size()+" total exons");
+			//				}
 
-				Collections.sort(allExonsVector);
+			Collections.sort(allExonsVector);
 
-				// Now go through and make a merged set of exons to remove any redundancy
-				Vector<Location> mergedExonsVector = new Vector<Location>();
+			// Now go through and make a merged set of exons to remove any redundancy
+			Vector<Location> mergedExonsVector = new Vector<Location>();
 
-				Location lastLocation = null;
+			Location lastLocation = null;
 
-				Enumeration<Location> en = allExonsVector.elements();
+			Enumeration<Location> en = allExonsVector.elements();
 
-				while (en.hasMoreElements()) {					
+			while (en.hasMoreElements()) {					
 
-					Location l = en.nextElement();
+				Location l = en.nextElement();
 
-					//					if (geneFeatures[f].name().equals("Cpa6")) {
-					//						System.err.println("Looking at location "+l.toString());
-					//					}
+				//					if (geneFeatures[f].name().equals("Cpa6")) {
+				//						System.err.println("Looking at location "+l.toString());
+				//					}
 
 
-					if (lastLocation == null) {
-						//						if (geneFeatures[f].name().equals("Cpa6")) {
-						//							System.err.println("Setting as first location");
-						//						}
-						lastLocation = l;
-						continue;
-					}
-
-					// Check if it's the same as the last, which is likely
-					if (l.start() == lastLocation.start() && l.end() == lastLocation.end()) {
-						//						if (geneFeatures[f].name().equals("Cpa6")) {
-						//							System.err.println("Same as last location - skipping");
-						//						}
-
-						continue;
-					}
-
-					// Check if they overlap and can be merged
-					if (l.start() <= lastLocation.end() && l.end() >= lastLocation.start()) {
-						//						if (geneFeatures[f].name().equals("Cpa6")) {
-						//							System.err.println("Overlaps with last location");
-						//						}
-
-						// It overlaps with the last location so merge them
-						lastLocation = new Location(Math.min(l.start(),lastLocation.start()), Math.max(l.end(),lastLocation.end()), geneFeatures[f].location().strand());
-						//						if (geneFeatures[f].name().equals("Cpa6")) {
-						//							System.err.println("Made new location "+lastLocation.toString());
-						//						}
-						continue;
-					}
-
-					// Start a new location
-					//					if (geneFeatures[f].name().equals("Cpa6")) {
-					//						System.err.println("Doesn't overlap - adding last location and creating new one");
-					//					}
-
-					mergedExonsVector.add(lastLocation);
+				if (lastLocation == null) {
+					//						if (geneFeatures[f].name().equals("Cpa6")) {
+					//							System.err.println("Setting as first location");
+					//						}
 					lastLocation = l;
-				}
-
-				if (lastLocation != null) {
-					mergedExonsVector.add(lastLocation);
-				}
-
-				//				if (geneFeatures[f].name().equals("Cpa6")) {
-				//					System.err.println("Cpa6 had "+mergedExonsVector.size()+" merged exons");
-				//				}
-
-
-				// Now we can start the quantitation.
-
-				int intronLength = geneFeatures[f].location().length();
-				int exonLength = 0;
-
-				Location [] subLocs = mergedExonsVector.toArray(new Location[0]);
-
-				for (int l=0;l<subLocs.length;l++) {
-					exonLength += subLocs[l].length();
-				}
-
-				//				if (geneFeatures[f].name().equals("Cpa6")) {
-				//					System.err.println("Cpa6 total intron length="+intronLength+" exon length="+exonLength);
-				//				}
-
-				intronLength -= exonLength;
-
-				//				if (geneFeatures[f].name().equals("Cpa6")) {
-				//					System.err.println("Cpa6 corrected intron length="+intronLength);
-				//				}
-
-
-				if (intronLength <= 0) {
-					progressWarningReceived(new SeqMonkException("Intron length of "+intronLength+" for "+geneFeatures[f].name()));
-					currentIndex++;
-					continue;
-				}
-				if (exonLength <= 0) {
-					progressWarningReceived(new SeqMonkException("Exon length of "+exonLength+" for "+geneFeatures[f].name()));
-					currentIndex++;
 					continue;
 				}
 
-				for (int d=0;d<data.length;d++) {
-					if (cancel) {
-						progressCancelled();
-						return;
+				// Check if it's the same as the last, which is likely
+				if (l.start() == lastLocation.start() && l.end() == lastLocation.end()) {
+					//						if (geneFeatures[f].name().equals("Cpa6")) {
+					//							System.err.println("Same as last location - skipping");
+					//						}
+
+					continue;
+				}
+
+				// Check if they overlap and can be merged
+				if (l.start() <= lastLocation.end() && l.end() >= lastLocation.start()) {
+					//						if (geneFeatures[f].name().equals("Cpa6")) {
+					//							System.err.println("Overlaps with last location");
+					//						}
+
+					// It overlaps with the last location so merge them
+					lastLocation = new Location(Math.min(l.start(),lastLocation.start()), Math.max(l.end(),lastLocation.end()), geneFeatures[g].location().strand());
+					//						if (geneFeatures[f].name().equals("Cpa6")) {
+					//							System.err.println("Made new location "+lastLocation.toString());
+					//						}
+					continue;
+				}
+
+				// Start a new location
+				//					if (geneFeatures[f].name().equals("Cpa6")) {
+				//						System.err.println("Doesn't overlap - adding last location and creating new one");
+				//					}
+
+				mergedExonsVector.add(lastLocation);
+				lastLocation = l;
+			}
+
+			if (lastLocation != null) {
+				mergedExonsVector.add(lastLocation);
+			}
+
+			//				if (geneFeatures[f].name().equals("Cpa6")) {
+			//					System.err.println("Cpa6 had "+mergedExonsVector.size()+" merged exons");
+			//				}
+
+
+			// Now we can start the quantitation.
+
+			int intronLength = geneFeatures[g].location().length();
+			int exonLength = 0;
+
+			Location [] subLocs = mergedExonsVector.toArray(new Location[0]);
+
+			for (int l=0;l<subLocs.length;l++) {
+				exonLength += subLocs[l].length();
+			}
+
+			//				if (geneFeatures[f].name().equals("Cpa6")) {
+			//					System.err.println("Cpa6 total intron length="+intronLength+" exon length="+exonLength);
+			//				}
+
+			intronLength -= exonLength;
+
+			//				if (geneFeatures[f].name().equals("Cpa6")) {
+			//					System.err.println("Cpa6 corrected intron length="+intronLength);
+			//				}
+
+
+			if (intronLength <= 0) {
+				throw new IllegalStateException("Intron length of "+intronLength+" for gene "+geneFeatures[g]);
+			}
+			if (exonLength <= 0) {
+				throw new IllegalStateException("Exon length of "+exonLength+" for gene "+geneFeatures[g]);
+			}
+
+			for (int d=0;d<data.length;d++) {
+				if (cancel) {
+					progressCancelled();
+					return;
+				}
+
+				int totalIntronCount = 0;
+				int totalExonCount = 0;
+
+				long [] reads = data[d].getReadsForProbe(new Probe(chrLookup.get(geneFeatures[g].chromosomeName()), geneFeatures[g].location().start(), geneFeatures[g].location().end()));
+				for (int r=0;r<reads.length;r++) {	
+					if (! readFilter.useRead(geneFeatures[g].location(), reads[r])) {
+						continue;
 					}
 
-					int totalIntronCount = 0;
-					int totalExonCount = 0;
+					int overlap = (Math.min(geneFeatures[g].location().end(), SequenceRead.end(reads[r]))-Math.max(geneFeatures[g].location().start(), SequenceRead.start(reads[r])))+1;
+					totalIntronCount += overlap;
 
-					long [] reads = data[d].getReadsForProbe(new Probe(chrs[c], geneFeatures[f].location().start(), geneFeatures[f].location().end()));
-					for (int r=0;r<reads.length;r++) {	
-						if (! readFilter.useRead(geneFeatures[f].location(), reads[r])) {
-							continue;
-						}
-
-						int overlap = (Math.min(geneFeatures[f].location().end(), SequenceRead.end(reads[r]))-Math.max(geneFeatures[f].location().start(), SequenceRead.start(reads[r])))+1;
-						totalIntronCount += overlap;
-
-						// Now we see if we overlap with any of the exons
-						for (int s=0;s<subLocs.length;s++) {
-							if (subLocs[s].start()<=SequenceRead.end(reads[r]) && subLocs[s].end()>=SequenceRead.start(reads[r])) {
-								int exonOverlap = (Math.min(subLocs[s].end(), SequenceRead.end(reads[r]))-Math.max(subLocs[s].start(), SequenceRead.start(reads[r])))+1;
-								if (exonOverlap > 0) {
-									totalExonCount += exonOverlap;
-									totalIntronCount -= exonOverlap;
-								}
+					// Now we see if we overlap with any of the exons
+					for (int s=0;s<subLocs.length;s++) {
+						if (subLocs[s].start()<=SequenceRead.end(reads[r]) && subLocs[s].end()>=SequenceRead.start(reads[r])) {
+							int exonOverlap = (Math.min(subLocs[s].end(), SequenceRead.end(reads[r]))-Math.max(subLocs[s].start(), SequenceRead.start(reads[r])))+1;
+							if (exonOverlap > 0) {
+								totalExonCount += exonOverlap;
+								totalIntronCount -= exonOverlap;
 							}
 						}
-
 					}
 
-					//					if (geneFeatures[f].name().equals("Cpa6")) {
-					//						System.err.println("Total exon count="+totalExonCount+" total intron count="+totalIntronCount);
-					//					}
+				}
+
+				//					if (geneFeatures[f].name().equals("Cpa6")) {
+				//						System.err.println("Total exon count="+totalExonCount+" total intron count="+totalIntronCount);
+				//					}
 
 
-					if (totalIntronCount < 0) {
-						progressWarningReceived(new SeqMonkException("Intron count of "+totalIntronCount+" for "+geneFeatures[f].name()));
-						continue;						
+				if (totalIntronCount < 0) {
+					progressWarningReceived(new SeqMonkException("Intron count of "+totalIntronCount+" for "+geneFeatures[g].name()));
+					continue;						
+				}
+
+				// Now we correct the count by the total length of reads in the data and by
+				// the length of the split parts of the probe, and assign this to the probe.
+
+				// If we're correcting for read length then we work out the whole number of
+				// reads which this count could comprise, rounding down to a whole number.
+				if (correctReadLength) {
+					totalIntronCount /= readLengths[d];
+					totalExonCount /= readLengths[d];
+				}
+
+				float intronValue = totalIntronCount;
+				float exonValue = totalExonCount;
+
+				// If we're log transforming then we need to set zero values to 0.9
+				if (logTransform && intronValue == 0) {
+					intronValue = 0.9f;
+				}
+				if (logTransform && exonValue == 0) {
+					exonValue = 0.9f;
+				}
+
+				// We now correct by the length of the exons in the probe if we've
+				// been asked to.
+				if (applyTranscriptLengthCorrection) {
+					intronValue /= (intronLength/1000f);
+					exonValue /=  (exonLength/1000f);
+				}
+
+				// We also correct by the total read count, or length
+				if (correctReadLength) {
+					intronValue /= (data[d].getTotalReadCount()/1000000f);
+					exonValue /= (data[d].getTotalReadCount()/1000000f);
+				}
+				else {
+					intronValue /= (data[d].getTotalReadLength()/1000000f);
+					exonValue /= (data[d].getTotalReadLength()/1000000f);
+				}
+
+				//					if (geneFeatures[f].name().equals("Cpa6")) {
+				//						System.err.println("Raw corrected counts are exon="+exonValue+" intron="+intronValue);
+				//					}
+
+
+				// Finally we do the log transform if we've been asked to
+				if (logTransform) {
+					if (intronValue == 0) {
+						intronValue = 0.0001f;
 					}
-
-					// Now we correct the count by the total length of reads in the data and by
-					// the length of the split parts of the probe, and assign this to the probe.
-
-					// If we're correcting for read length then we work out the whole number of
-					// reads which this count could comprise, rounding down to a whole number.
-					if (correctReadLength) {
-						totalIntronCount /= readLengths[d];
-						totalExonCount /= readLengths[d];
+					if (exonValue == 0) {
+						exonValue = 0.0001f;
 					}
+					intronValue = (float)Math.log(intronValue)/log2;
+					exonValue = (float)Math.log(exonValue)/log2;
+				}
 
-					float intronValue = totalIntronCount;
-					float exonValue = totalExonCount;
+				//					if (geneFeatures[f].name().equals("Cpa6")) {
+				//						System.err.println("Logged corrected counts are exon="+exonValue+" intron="+intronValue);
+				//					}
 
-					// If we're log transforming then we need to set zero values to 0.9
-					if (logTransform && intronValue == 0) {
-						intronValue = 0.9f;
-					}
-					if (logTransform && exonValue == 0) {
-						exonValue = 0.9f;
-					}
 
-					// We now correct by the length of the exons in the probe if we've
-					// been asked to.
-					if (applyTranscriptLengthCorrection) {
-						intronValue /= (intronLength/1000f);
-						exonValue /=  (exonLength/1000f);
-					}
-
-					// We also correct by the total read count, or length
-					if (correctReadLength) {
-						intronValue /= (data[d].getTotalReadCount()/1000000f);
-						exonValue /= (data[d].getTotalReadCount()/1000000f);
+				// Now we check what value they actually wanted to record
+				switch (optionsPanel.quantitationType()) {
+				case (EXONS): {
+					data[d].setValueForProbe(allProbes[g], exonValue);
+					break;
+				}
+				case (INTRONS): {
+					data[d].setValueForProbe(allProbes[g], intronValue);
+					break;
+				}
+				case (RATIO): {
+					if (logTransform) {
+						data[d].setValueForProbe(allProbes[g], exonValue-intronValue);
 					}
 					else {
-						intronValue /= (data[d].getTotalReadLength()/1000000f);
-						exonValue /= (data[d].getTotalReadLength()/1000000f);
-					}
-
-					//					if (geneFeatures[f].name().equals("Cpa6")) {
-					//						System.err.println("Raw corrected counts are exon="+exonValue+" intron="+intronValue);
-					//					}
-
-
-					// Finally we do the log transform if we've been asked to
-					if (logTransform) {
 						if (intronValue == 0) {
 							intronValue = 0.0001f;
 						}
-						if (exonValue == 0) {
-							exonValue = 0.0001f;
-						}
-						intronValue = (float)Math.log(intronValue)/log2;
-						exonValue = (float)Math.log(exonValue)/log2;
+						data[d].setValueForProbe(allProbes[g], exonValue/intronValue);
 					}
-
-					//					if (geneFeatures[f].name().equals("Cpa6")) {
-					//						System.err.println("Logged corrected counts are exon="+exonValue+" intron="+intronValue);
-					//					}
-
-
-					// Now we check what value they actually wanted to record
-					switch (optionsPanel.quantitationType()) {
-					case (EXONS): {
-						data[d].setValueForProbe(allProbes[currentIndex], exonValue);
-						break;
-					}
-					case (INTRONS): {
-						data[d].setValueForProbe(allProbes[currentIndex], intronValue);
-						break;
-					}
-					case (RATIO): {
-						if (logTransform) {
-							data[d].setValueForProbe(allProbes[currentIndex], exonValue-intronValue);
-						}
-						else {
-							if (intronValue == 0) {
-								intronValue = 0.0001f;
-							}
-							data[d].setValueForProbe(allProbes[currentIndex], exonValue/intronValue);
-						}
-						break;
-					}
-					default: throw new IllegalStateException("Unknonwn quantitation type "+optionsPanel.quantitationType());
-					}
-
-					//					if (geneFeatures[f].name().equals("Cpa6")) {
-					//						try {
-					//							System.err.println("Stored value was "+data[d].getValueForProbe(allProbes[currentIndex]));
-					//						} catch (SeqMonkException e) {
-					//							e.printStackTrace();
-					//						}
-					//					}
-
-
+					break;
+				}
+				default: throw new IllegalStateException("Unknonwn quantitation type "+optionsPanel.quantitationType());
 				}
 
-				currentIndex++;
+				//					if (geneFeatures[f].name().equals("Cpa6")) {
+				//						try {
+				//							System.err.println("Stored value was "+data[d].getValueForProbe(allProbes[currentIndex]));
+				//						} catch (SeqMonkException e) {
+				//							e.printStackTrace();
+				//						}
+				//					}
+
+
 			}
+
 		}
 
 		StringBuffer quantitationDescription = new StringBuffer();
