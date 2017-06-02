@@ -204,6 +204,8 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 				boolean validTranscript = false;
 				for (int t=0;t<localTranscripts.length;t++) {
 					if (!(localTranscripts[t].location() instanceof SplitLocation)) continue;
+					
+					if (((SplitLocation)localTranscripts[t].location()).subLocations().length < 2) continue;
 
 					if (SequenceRead.overlaps(geneFeatures[f].location().packedPosition(), localTranscripts[t].location().packedPosition())) {
 						validTranscript = true;
@@ -380,7 +382,8 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 
 
 			if (intronLength <= 0) {
-				throw new IllegalStateException("Intron length of "+intronLength+" for gene "+geneFeatures[g]);
+				progressWarningReceived(new IllegalStateException("Intron length of "+intronLength+" for gene "+geneFeatures[g]));
+				continue;
 			}
 			if (exonLength <= 0) {
 				throw new IllegalStateException("Exon length of "+exonLength+" for gene "+geneFeatures[g]);
