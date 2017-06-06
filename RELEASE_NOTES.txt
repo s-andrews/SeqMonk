@@ -1,3 +1,27 @@
+RELEASE NOTES FOR SeqMonk v1.38.1
+---------------------------------
+This is a bugfix release which addresses some issues found in the previous
+release.  Specifically
+
+- We fixed a performance bug when creating custom genomes from fasta or gff
+  files with very large numbers of sequences in them.  This would have affected
+  people building custom genomes from very fragmented sets of contigs.
+  
+- We added a scale bar to the HiC heatmap
+
+- We changed the TSNE code to use Rtnse instead of tsne to work round a bug and
+  to improve performance
+  
+- We added some more debugging output to the launch script to make it easier to
+  debug launching problems
+  
+- We fixed a bug in the SplicingEfficiency pipeline affecting genomes with
+  non-Ensembl naming schemes
+  
+- We fixed a bug in PCA plotting when showing labels in plots with overlapping
+  points
+
+
 RELEASE NOTES FOR SeqMonk v1.38.0
 ---------------------------------
 This release adds some new plotting options for data store similarity and 
