@@ -182,9 +182,10 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 				// belong to
 				if (highlightedSets == null) grid[x][y].count++;
 
-				// As we have multiple probes at this point we remove the 
-				// specific probe annotation.
-				grid[x][y].setStore(null);
+				// We have multiple probes at this location but we'll leave
+				// the store set to the first one so we've got something
+				// to label at least.
+//				grid[x][y].setStore(null);
 			}
 		}
 
