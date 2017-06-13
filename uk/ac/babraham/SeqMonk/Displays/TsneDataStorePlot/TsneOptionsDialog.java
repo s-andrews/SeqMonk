@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
@@ -32,6 +33,12 @@ public class TsneOptionsDialog extends JDialog implements ActionListener {
 		super(SeqMonkApplication.getInstance(),"Tsne Options");
 		
 		
+		// We can't run Tsne with fewer than 4 stores.
+		if (stores.length < 4) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>Sorry - you can't run Tsne with fewer than 4 datasets.<br>You only had "+stores.length+" valid data stores</html>", "Can't run Tsne", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
 		this.probes = probes;
 		this.stores = stores;
 		
@@ -50,7 +57,7 @@ public class TsneOptionsDialog extends JDialog implements ActionListener {
 		gbc.gridx++;
 		int defaultPerplexity = stores.length/5;
 		
-		if (defaultPerplexity < 2) defaultPerplexity = 2;
+		if (defaultPerplexity < 1) defaultPerplexity = 1;
 		if (defaultPerplexity > 50) defaultPerplexity = 50;
 		
 		perplexity = new JTextField(""+defaultPerplexity);
