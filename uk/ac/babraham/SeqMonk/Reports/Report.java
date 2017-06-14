@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
@@ -257,11 +258,17 @@ public abstract class Report implements Runnable, Cancellable {
 	 *
 	 * @param report The completed report
 	 */
-	protected void reportComplete(TableModel report) {
-		Iterator<ProgressListener> i = listeners.iterator();
-		while (i.hasNext()) {
-			i.next().progressComplete("report_generated",report);
-		}
+	protected void reportComplete(final TableModel report) {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				Iterator<ProgressListener> i = listeners.iterator();
+				while (i.hasNext()) {
+					i.next().progressComplete("report_generated",report);
+				}
+			}
+		});
 	}
 
 	
