@@ -616,6 +616,12 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 			currentSelectedProbeList[0] = tempProbeList;
 		}
 		else {
+			
+			if(currentSelectedProbeList != null){
+
+				currentSelectedProbeList[0].delete();
+			}
+			
 			currentSelectedProbeList = null;
 		}
 		
