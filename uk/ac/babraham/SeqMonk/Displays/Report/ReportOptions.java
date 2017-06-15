@@ -146,10 +146,15 @@ public class ReportOptions extends JDialog implements ActionListener, ProgressLi
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.ProgressListener#progressComplete(java.lang.String, java.lang.Object)
 	 */
 	public void progressComplete(String command, Object result) {
+		
+		// For one specific JRE on OSX there is a bug which causes a hang if you make this
+		// dialog invisible too quickly after creating the report table.  We therefore need
+		// to make sure the setVisible call happens first.
+		setVisible(false);
+
 		if (result != null) {
 			new ReportTableDialog(application,report,(TableModel)result);
 		}
-		setVisible(false);
 		dispose();
 	}
 
