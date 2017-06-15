@@ -296,12 +296,7 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 	}	
 
 	public void actionPerformed(ActionEvent ae) {
-		
-	/*	if (ae.getActionCommand().equals("plot")) {
-
-			drawScatterPlot();			
-		}
-	*/	
+			
 		if (ae.getActionCommand().equals("save_image")){
 			ImageSaver.saveImage(scatterPlotPanel);
 		}
@@ -540,29 +535,7 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 		parentProbeList.setName(groupName);		
 		
 	}
-	
-/*	private void drawScatterPlot(){
-					
-		DataStore xStore = fromStore;
-		DataStore yStore = toStore;
-		plotPanel.remove(scatterPlotPanel);
-
-		// Check if these stores are quantitated
-		if (!xStore.isQuantitated()) {
-			JOptionPane.showMessageDialog(this, xStore.name()+" is not quantitated", "Can't make plot", JOptionPane.INFORMATION_MESSAGE);
-		}
-		else if (! yStore.isQuantitated()) {
-			JOptionPane.showMessageDialog(this, yStore.name()+" is not quantitated", "Can't make plot", JOptionPane.INFORMATION_MESSAGE);				
-		}
-		else {
-			scatterPlotPanel = new ZScoreScatterPlotPanel(xStore,yStore,probes,currentSelectedProbeList,dotSizeSlider.getValue(),zScoreLookupTable);
-			//scatterPlotPanel = new ZScoreScatterPlotPanel(xStore,yStore,startingProbeList,currentSelectedProbeList,false,dotSizeSlider.getValue(),geneSetFilter.probeZScoreLookupTable);
-			//scatterPlotPanel = new GeneSetScatterPlotPanel(xStore,yStore,startingProbeList,currentSelectedProbeList,true,dotSizeSlider.getValue(),geneSetFilter.customRegressionValues, geneSetFilter.simpleRegression);
-			plotPanel.add(scatterPlotPanel,BorderLayout.CENTER);
-		}
-		validate();				
-	}
-*/	
+		
 	
 	private boolean storesQuantitated(){
 		
