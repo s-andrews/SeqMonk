@@ -102,7 +102,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 	private Double pValueLimit = 0.05;
 	
 	/* The default minimum absolute z-score that we use to filter the results */
-	private Double zScoreThreshold = 0.2;
+	private Double zScoreThreshold = 1d;
 	
 	/* The mean values for each distribution slice */
 	protected float [][] customRegressionValues = null;
