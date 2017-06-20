@@ -123,7 +123,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 	private int probesPerSet;
 	
 	/* minimum number of genes in geneset for it to be imported */
-	private int minGenesInSet = 5;
+	private int minGenesInSet = 50;
 	
 	/* maximum number of genes in geneset for it to be imported */
 	private int maxGenesInSet = 500;
