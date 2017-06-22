@@ -1,3 +1,19 @@
+RELEASE NOTES FOR SeqMonk v1.38.2
+---------------------------------
+This is a bugfix release which mainly addresses a bug in the most recent 
+jave release on OSX.  Specific changes in this release are:
+
+- Fixed a hang bug specifically triggered in java v1.8_131 when creating
+  any report.  The bug doesn't affect other platforms, or previous versions
+  of the JRE.
+  
+- Fixed a problem with the auto-setup of the perplexity setting in the Tsne
+  plot which affected projects with fewer than 7 samnples.
+  
+- Fixed a bug which caused the intensity gene set plot to not clean up
+  temporary probe lists when the list of hits was sorted.
+
+
 RELEASE NOTES FOR SeqMonk v1.38.1
 ---------------------------------
 This is a bugfix release which addresses some issues found in the previous
