@@ -62,6 +62,8 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	private JPanel singleEndOptions;
 	private JPanel pairedEndOptions;
 	
+	private boolean forcePairedEnd = false;
+	
 	
 	public DataParserOptionsPanel (boolean allowsPairedEnd, boolean allowsSplicing, boolean allowsReversal, boolean supportsQuality) {
 		setLayout(new BorderLayout());
@@ -241,8 +243,9 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	}
 
 	public void forcePairedEnd () {
+		forcePairedEnd = true;
 		setPairedEnd(true);
-		readType.setEditable(false);
+		readType.setEnabled(false);
 	}
 
 	
@@ -381,6 +384,9 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 			distanceLimit.setEnabled(!isHiC());
 			if (readType != null) readType.setEnabled(!isHiC());
 			if (isHiC() & readType != null) readType.setSelectedIndex(0);
+			if (forcePairedEnd) {
+				if (! isHiC()) forcePairedEnd();
+			}
 		}
 	}
 }

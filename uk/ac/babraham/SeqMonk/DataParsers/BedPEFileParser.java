@@ -396,11 +396,11 @@ public class BedPEFileParser extends DataParser {
 	public FileFilter getFileFilter () {
 		return new FileFilter() {
 			public boolean accept(File pathname) {
-				return (pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".bed") || pathname.getName().toLowerCase().endsWith(".bed.gz"));
+				return (pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".bed") || pathname.getName().toLowerCase().endsWith(".bed.gz") || pathname.getName().toLowerCase().endsWith(".bedpe") || pathname.getName().toLowerCase().endsWith(".bedpe.gz"));
 			}
 
 			public String getDescription() {
-				return "BED Files";
+				return "BEDPE Files";
 			}
 		};
 	}
