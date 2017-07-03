@@ -57,6 +57,7 @@ import uk.ac.babraham.SeqMonk.DataParsers.QuasRFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.VisibleStoresParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BAMFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BedFileParser;
+import uk.ac.babraham.SeqMonk.DataParsers.BedPEFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BowtieFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.GenericSeqReadParser;
 import uk.ac.babraham.SeqMonk.DataParsers.GffFileParser;
@@ -1178,12 +1179,18 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			fileImportBam.addActionListener(this);
 			fileImportData.add(fileImportBam);
 
-			JMenuItem fileImportBed = new JMenuItem("Bed...");
+			JMenuItem fileImportBed = new JMenuItem("BED...");
 			fileImportBed.setMnemonic(KeyEvent.VK_B);
 			fileImportBed.setActionCommand("import_bed");
 			fileImportBed.addActionListener(this);
 			fileImportData.add(fileImportBed);
 
+			JMenuItem fileImportBedPE = new JMenuItem("BEDPE...");
+			fileImportBedPE.setMnemonic(KeyEvent.VK_P);
+			fileImportBedPE.setActionCommand("import_bedpe");
+			fileImportBedPE.addActionListener(this);
+			fileImportData.add(fileImportBedPE);
+			
 			JMenuItem fileImportBismarkCov = new JMenuItem("Bismark (Cov)...");
 			fileImportBismarkCov.setMnemonic(KeyEvent.VK_C);
 			fileImportBismarkCov.setActionCommand("import_bismark_cov");
@@ -1461,6 +1468,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		}
 		else if (action.equals("import_bed")) {
 			application.importData(new BedFileParser(application.dataCollection()));
+		}
+		else if (action.equals("import_bedpe")) {
+			application.importData(new BedPEFileParser(application.dataCollection()));
 		}
 		else if (action.equals("import_bowtie")) {
 			application.importData(new BowtieFileParser(application.dataCollection()));

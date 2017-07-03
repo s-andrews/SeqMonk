@@ -239,6 +239,12 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 			readType.setSelectedIndex(0);
 		}
 	}
+
+	public void forcePairedEnd () {
+		setPairedEnd(true);
+		readType.setEditable(false);
+	}
+
 	
 	public boolean pairedEnd () {
 		return readType.getSelectedItem().equals("Paired End");
