@@ -72,6 +72,10 @@ public class VisibleStoresParser extends DataParser {
 	private boolean keepForward = true;
 	private boolean keepReverse = true;
 	private boolean keepUnknown = true;
+
+	private int forwardOffset = 0;
+	private int reverseOffset = 0;
+	
 	
 	/**
 	 * Instantiates a new active store parser.
@@ -122,6 +126,10 @@ public class VisibleStoresParser extends DataParser {
 			}
 
 		}
+		
+		forwardOffset = prefs.forwardOffset();
+		reverseOffset = prefs.reverseOffset();
+		
 		
 		filterByFeature = prefs.filterFeatureCheckbox.isSelected();
 		if (filterByFeature) {
@@ -251,6 +259,16 @@ public class VisibleStoresParser extends DataParser {
 					int length = SequenceRead.length(reads[r]);
 					if (minLength != null && length < minLength) continue;
 					if (maxLength != null && length > maxLength) continue;
+				}
+				
+				if (strand == Location.FORWARD) {
+					start += forwardOffset;
+					end += forwardOffset;
+				}
+				
+				if (strand == Location.REVERSE) {
+					start -= reverseOffset;
+					end -= reverseOffset;
 				}
 
 				if (filterByFeature && features.length == 0 && !excludeFeature) continue;
@@ -949,6 +967,28 @@ public class VisibleStoresParser extends DataParser {
 			}
 			return Integer.parseInt(extendReads.getText());
 		}
+		
+		public int forwardOffset () {
+			if (shiftReadsBox.isSelected()) {
+				if (shiftOffsetForward.getText().length() > 0) {
+					return Integer.parseInt(shiftOffsetForward.getText());
+				}
+				return 0;
+			}
+			else return 0;
+		}
+
+		
+		public int reverseOffset () {
+			if (shiftReadsBox.isSelected()) {
+				if (shiftOffsetReverse.getText().length() > 0) {
+					return Integer.parseInt(shiftOffsetReverse.getText());
+				}
+				return 0;
+			}
+			else return 0;
+		}
+
 		
 		public boolean extractCentres () {
 			return extractCentresBox.isSelected();
