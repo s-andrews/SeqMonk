@@ -541,23 +541,38 @@ public class VisibleStoresParser extends DataParser {
 	private class VisibleStoresOptionsPanel extends JPanel implements ActionListener {
 
 		private JComboBox removeDuplicates;
+		
 		private JCheckBox isHiC;
 		private JTextField hiCDistance;
 		private JCheckBox hiCIgnoreTransBox;
+		
 		private JCheckBox reverseReads;
+
 		private JCheckBox removeStrandInfo;
+
 		private JTextField extendReads;
 		private JPanel singleEndOptions;
+
 		private JComboBox filterTypeBox;
+		
 		private JCheckBox filterFeatureCheckbox;
 		private JComboBox filterFeatureBox;
+
 		private JCheckBox filterStrandCheckbox;
 		private JComboBox strandFilterDirectionBox;
+
 		private JCheckBox filterByLengthBox;
 		private JTextField minLengthField;
 		private JTextField maxLengthField;
+
+		private JCheckBox shiftReadsBox;
+		private JTextField shiftOffsetForward;
+		private JTextField shiftOffsetReverse;
+
+		
 		private JCheckBox downsampleBox;
 		private JTextField downsampleTargetField;
+
 		private JCheckBox extractCentresBox;
 		private JTextField centreExtractContextField;
 
@@ -765,6 +780,44 @@ public class VisibleStoresParser extends DataParser {
 
 			gbc.gridx=3;
 			commonOptions.add(lengthFilterPanel,gbc);
+			
+			
+			gbc.gridx=1;
+			gbc.gridy++;
+			commonOptions.add(new JLabel("Shift Reads"),gbc);
+			gbc.gridx=2;
+			shiftReadsBox = new JCheckBox();
+			commonOptions.add(shiftReadsBox,gbc);
+
+			JPanel shiftReadsPanel = new JPanel();
+			shiftOffsetForward = new JTextField("5",4);
+			shiftOffsetForward.addKeyListener(new NumberKeyListener(false, true));
+			shiftOffsetForward.setEnabled(false);
+			shiftOffsetReverse = new JTextField("4",4);
+			shiftOffsetReverse.addKeyListener(new NumberKeyListener(false, true));
+			shiftOffsetReverse.setEnabled(false);
+
+			shiftReadsBox.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent ae) {
+					if (shiftReadsBox.isSelected()) {
+						shiftOffsetForward.setEnabled(true);
+						shiftOffsetReverse.setEnabled(true);
+					}
+					else {
+						shiftOffsetForward.setEnabled(false);
+						shiftOffsetReverse.setEnabled(false);
+					}
+				}
+			});
+			shiftReadsPanel.add(new JLabel("For offset"));
+			shiftReadsPanel.add(shiftOffsetForward);
+			shiftReadsPanel.add(new JLabel("bp. Rev offset"));
+			shiftReadsPanel.add(shiftOffsetReverse);			
+			shiftReadsPanel.add(new JLabel("bp."));
+			
+			gbc.gridx=3;
+			commonOptions.add(shiftReadsPanel,gbc);
 
 			gbc.gridx=1;
 			gbc.gridy++;
