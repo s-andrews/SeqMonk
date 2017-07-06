@@ -41,6 +41,8 @@ public class MappedGeneSet{// implements Comparable<MappedGeneSet> {
 	
 	public double meanZScore;
 	
+	public double meanBidirectionalZScore;
+	
 	public String summaryStatsDescription; 
 	
 	// the z scores for all the probes
