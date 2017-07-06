@@ -216,7 +216,7 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 				for (int s=0;s<subLists.length;s++) {
 					Probe [] subListProbes = subLists[s].getAllProbes();
 					
-					System.err.println("no of probes in sublist = " + subListProbes.length);
+					//System.err.println("no of probes in sublist = " + subListProbes.length);
 					
 					for (int p=0;p<subListProbes.length;p++) {
 						
