@@ -101,6 +101,9 @@ public class BedPEFileParser extends DataParser {
 					
 					if (line.trim().length() == 0) continue;  //Ignore blank lines
 					
+//					System.err.println(line);
+//					Thread.sleep(200);
+					
 					++lineCount;
 					if (lineCount%100000 == 0) {
 						progressUpdated("Read "+lineCount+" lines from "+probeFiles[f].getName(),f,probeFiles.length);
@@ -139,6 +142,11 @@ public class BedPEFileParser extends DataParser {
 						continue; // Skip this line...						
 					}
 						
+					
+					// Do a quick check.  If either Chr1 or Chr2 is "." then it's not mapped and we want to
+					// move on quickly.
+					if (sections[0].equals(".") || sections[3].equals(".")) continue;
+					
 					int strand1;
 					int start1;
 					int end1;
@@ -161,14 +169,14 @@ public class BedPEFileParser extends DataParser {
 						
 						// End must always be later than start
 						if (start1 > end1) {
-							progressWarningReceived(new SeqMonkException("End position "+end1+" was lower than start position "+start1));
+							progressWarningReceived(new SeqMonkException("End position1 "+end1+" was lower than start position "+start1));
 							int temp = start1;
 							start1 = end1;
 							end1 = temp;
 						}
 
 						if (start2 > end2) {
-							progressWarningReceived(new SeqMonkException("End position "+end2+" was lower than start position "+start2));
+							progressWarningReceived(new SeqMonkException("End position2 "+end2+" was lower than start position "+start2));
 							int temp = start2;
 							start2 = end2;
 							end2 = temp;
