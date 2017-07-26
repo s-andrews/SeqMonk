@@ -124,6 +124,18 @@ public class DataStoreTreeDialog extends JDialog implements ProgressListener {
 		createRepSetsButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
+				
+				// If they've plotted any replicate sets in the tree then they can't
+				// build new replicate sets from this so we need to tell them no.
+				
+				for (int s=0;s<stores.length;s++) {
+					if (stores[s] instanceof ReplicateSet) {
+						JOptionPane.showMessageDialog(DataStoreTreeDialog.this, "One of the stores you plotted is already a replicate set so you can't make a new set with it in.", "Can't split stores", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+				}
+				
+				
 				// TODO: Ask for min count per store
 				DataStore [][] splitStores = clusterPanel.getSplitStores(2);
 				
