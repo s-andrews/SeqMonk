@@ -321,7 +321,7 @@ public class BedPEFileParser extends DataParser {
 							
 							
 							if ((end - start)+1 > prefs.pairDistanceCutoff()) {
-								progressWarningReceived(new SeqMonkException("Distance between reads too great ("+(((end-start)+1)-prefs.pairDistanceCutoff())));
+								progressWarningReceived(new SeqMonkException("Distance between reads too great ("+(((end-start)+1)-prefs.pairDistanceCutoff())+")"));
 								continue;
 							}
 							
