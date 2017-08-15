@@ -72,6 +72,7 @@ public class BinomialFilterForRev extends ProbeFilter {
 	private boolean applyMultipleTestingCorrection = true;
 	private int minObservations = 10;
 	private int minPercentShift = 0;
+	private boolean useCurrentQuant;
 
 	/**
 	 * Instantiates a new box whisker filter.
@@ -160,6 +161,10 @@ public class BinomialFilterForRev extends ProbeFilter {
 		
 		b.append(" Min percentage difference was ");
 		b.append(minPercentShift);
+		
+		if (useCurrentQuant) {
+			b.append(" Difference also taken from existing quantitation ");
+		}
 
 
 		return b.toString();
@@ -207,6 +212,8 @@ public class BinomialFilterForRev extends ProbeFilter {
 		else {
 			minPercentShift = Integer.parseInt(options.minDifferenceField.getText());
 		}
+		
+		useCurrentQuant = options.useCurrentQuantBox.isSelected();
 
 		applyMultipleTestingCorrection = options.multiTestBox.isSelected();
 
@@ -330,6 +337,17 @@ public class BinomialFilterForRev extends ProbeFilter {
 			}
 			
 			if (Math.abs(toPercent-worseCaseExpectedPercent) < minPercentShift) continue;
+			
+			// If they want to use the current quantitation as well then we can do that calculation now.
+			if (useCurrentQuant) {
+				try {
+					if (Math.abs(toStore.getValueForProbe(probes[p])-expectedEnds[Math.round(fromStore.getValueForProbe(probes[p]))]) < minPercentShift) continue;
+				}
+				catch(SeqMonkException sme){
+					throw new IllegalStateException(sme);
+				}
+			}
+			
 
 			// Check the directionality
 			if (aboveOnly && worseCaseExpectedPercent-toPercent > 0) continue;
@@ -464,6 +482,7 @@ public class BinomialFilterForRev extends ProbeFilter {
 		private JCheckBox multiTestBox;
 		private JTextField minObservationsField;
 		private JTextField minDifferenceField;
+		private JCheckBox useCurrentQuantBox;
 
 		/**
 		 * Instantiates a new box whisker options panel.
@@ -552,6 +571,17 @@ public class BinomialFilterForRev extends ProbeFilter {
 			minDifferenceField = new JTextField(""+minPercentShift,5);
 			minDifferenceField.addKeyListener(new NumberKeyListener(false, false,100));
 			choicePanel.add(minDifferenceField,gbc);
+			
+			
+			gbc.gridx=1;
+			gbc.gridy++;
+
+			choicePanel.add(new JLabel("Use current quant for difference"),gbc);
+
+			gbc.gridx=2;
+
+			useCurrentQuantBox = new JCheckBox();
+			choicePanel.add(useCurrentQuantBox,gbc);
 			
 			gbc.gridx=1;
 			gbc.gridy++;

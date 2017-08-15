@@ -49,7 +49,7 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	 */
 	public ReplicateSet (String name, DataStore [] dataStores) {
 		super(name);
-		this.dataStores = dataStores;
+		setDataStores(dataStores);
 	}
 		
 	/**
@@ -68,6 +68,13 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	 * @param sets the new data sets
 	 */
 	public void setDataStores (DataStore [] stores) {
+		
+		// Check for invalid stores
+		for (int s=0;s<stores.length;s++) {
+			if (stores[s] instanceof ReplicateSet) {
+				throw new IllegalStateException("Can't add a replicate set to another replicate set");
+			}
+		}
 		dataStores = stores;
 		if (collection() != null) {
 			collection().replicateSetStoresChanged(this);
