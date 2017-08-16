@@ -19,6 +19,8 @@
  */
 package uk.ac.babraham.SeqMonk.GeneSets;
 
+import java.util.ArrayList;
+
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 
@@ -67,6 +69,10 @@ public class MappedGeneSet{// implements Comparable<MappedGeneSet> {
 		this.name = probeList.name();
 	}	
 	
+	public MappedGeneSet(){
+		
+	}
+	
 	public String name(){
 		
 		return name;
@@ -78,5 +84,14 @@ public class MappedGeneSet{// implements Comparable<MappedGeneSet> {
 	
 	public Probe [] getProbes(){
 		return probes;
-	}			
+	}
+	public String [] getProbeNames(){
+		ArrayList<String> probeNamesArrayList = new ArrayList<String>(); 
+		
+		for (int i=0; i<probes.length; i++){
+			probeNamesArrayList.add(probes[i].name());
+		}
+		return probeNamesArrayList.toArray(new String[0]);
+	}
+	
 }

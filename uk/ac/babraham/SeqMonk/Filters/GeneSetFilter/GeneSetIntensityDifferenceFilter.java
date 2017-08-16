@@ -504,6 +504,16 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				System.err.println("size of zScore lookup table = "+ probeZScoreLookupTable.size());
 			}
 			
+			System.err.println("total number of mapped gene sets = " + mappedGeneSets.length);
+			
+			//TODO: deduplicate our mappedGeneSets
+			if(optionsPanel.deduplicateGeneSetBox.isSelected()){
+			
+				mappedGeneSets = deduplicateMappedGeneSets(mappedGeneSets);
+			}
+				
+			System.err.println("deduplicated mapped gene sets = " + mappedGeneSets.length);
+			
 			/* we need to go through the mapped gene set and get all the values for the matched probes */
 			for(int i=0; i<mappedGeneSets.length; i++){
 				
@@ -733,6 +743,45 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		return "Gene Set Filter";
 	}
 
+	private MappedGeneSet[] deduplicateMappedGeneSets(MappedGeneSet[] mappedGS){
+		
+		ArrayList<MappedGeneSet> dedupMGSArrayList = new ArrayList<MappedGeneSet>(); 
+	
+		I_LOOP: for (int i=0; i<mappedGS.length-1; i++){
+			
+			// compare the lengths as a first pass 
+			int geneSetLength = mappedGS[i].getProbes().length;
+			
+			J_LOOP: for (int j=i+1; j<mappedGS.length; j++){
+				
+				if (mappedGS[j].getProbes().length == geneSetLength){
+					
+					// check whether all the genes are the same
+					String[] geneNames1 = mappedGS[i].getProbeNames();
+					String[] geneNames2 = mappedGS[j].getProbeNames();
+					
+					Arrays.sort(geneNames1);
+					Arrays.sort(geneNames2);
+										
+					for (int n=0; n<mappedGS.length-1; n++){
+						if(!(geneNames1[n].equals(geneNames2[n]))){
+							continue J_LOOP;
+						}						
+					}
+					// if we've got to here then all the probe names have matched so we want to get rid of the gene set
+					continue I_LOOP;
+				}
+				
+			}
+			// if no duplicates have been found, add to the deduplicated set
+			dedupMGSArrayList.add(mappedGS[i]);
+		}
+		// the last one is not a duplicate as we should have got rid of any duplicates of it
+		dedupMGSArrayList.add(mappedGS[mappedGS.length-1]);
+		
+		return dedupMGSArrayList.toArray(new MappedGeneSet[0]);
+	}
+	
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.Filters.ProbeFilter#listDescription()
 	 */
@@ -870,6 +919,9 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		// whether to calculate custom regression line
 		private JCheckBox calculateCustomRegressionBox;
 		
+		// whether to deduplicate the mapped gene sets
+		private JCheckBox deduplicateGeneSetBox;
+		
 		// number of probes to sample in each statistical test that is performed
 		private JTextField pointsToSampleField;		
 		
@@ -986,7 +1038,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			gbc.weightx=0.1;
 			gbc.gridy++;			
 			
-			choicePanel.add(new JLabel("Apply Multiple Testing Correction"),gbc);
+			choicePanel.add(new JLabel("Apply multiple testing correction"),gbc);
 			
 			gbc.gridx=2;
 			gbc.weightx=0.9;
@@ -1013,7 +1065,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			gbc.weightx=0.1;
 			gbc.gridy++;
 			
-			choicePanel.add(new JLabel("Calculate Custom distribution"),gbc);
+			choicePanel.add(new JLabel("Calculate custom distribution"),gbc);
 			
 			gbc.gridx=2;
 			gbc.weightx=0.9;
@@ -1022,6 +1074,20 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			calculateCustomRegressionBox.setSelected(false);
 			choicePanel.add(calculateCustomRegressionBox,gbc);
 						
+			gbc.gridx = 1;
+			gbc.weightx=0.1;
+			gbc.gridy++;
+			
+				
+			choicePanel.add(new JLabel("Deduplicate gene sets"),gbc);
+			
+			gbc.gridx=2;
+			gbc.weightx=0.9;		
+					
+			deduplicateGeneSetBox = new JCheckBox();
+			deduplicateGeneSetBox.setSelected(true);
+			choicePanel.add(deduplicateGeneSetBox, gbc);
+			
 			gbc.gridx = 1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
