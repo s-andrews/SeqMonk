@@ -28,24 +28,50 @@ package uk.ac.babraham.SeqMonk.GeneSets;
 
 public class GeneSet {
 	
+	// The identifier
+	private String geneSetIdentifier;
+	
 	// The ontology category
 	private String geneSetName;
 	
 	// The set of gene names belonging to the category
 	private String [] geneNames;
 	
+	// Some gmt files have a description
+	private String description;
+	
 	// create a gene set
-	public GeneSet(String geneSetName, String [] geneNames){
+	public GeneSet(String geneSetIdentifier, String geneSetName, String [] geneNames, String description){
 		
+		this.geneSetIdentifier = geneSetIdentifier;
 		this.geneSetName = geneSetName;
 		this.geneNames = geneNames;
+		this.description = description;
 		
 	}
 	
 	// returns the gene set category
+	public void setGeneSetDescription(String geneSetDescription){
+		
+		description = geneSetDescription;
+	}
+	
+	// returns the gene set identifier
+	public String geneSetIdentifier(){
+		
+		return geneSetIdentifier;
+	}
+	
+	// returns the gene set name
 	public String geneSetName(){
 		
 		return geneSetName;
+	}
+	
+	// returns the gene set category
+	public String geneSetDescription(){
+		
+		return description;
 	}
 	
 	// returns the array of gene names 

@@ -107,10 +107,30 @@ public class GeneSetCollectionParser {
 					
 					totalCount++;
 					
-					// The first field contains the name and the source. At the moment we're just interested in the name.
-					String[] nameInfo = splitLine[0].split("%"); 
+					String description = "";
 					
-					// The second field also contains name info so we want to ignore that.
+					String name;
+					
+					// The first field contains an identifier. Some files from pathway commons have a url.
+					// Some files may contain the name and the source separated by % but we'll put that into the description for now. //String[] nameInfo = splitLine[0].split("%"); 
+					String identifier = splitLine[0];
+					
+					if(!identifier.startsWith("http")){
+						description = identifier;	
+					}
+							
+					// The second field also contains name info, we'll use this as the name.
+					String nameInfo = splitLine[1];
+					
+					if(nameInfo.startsWith("name: ")){
+					
+						name = nameInfo.split(";")[0].substring(6);
+						description = nameInfo;
+					}
+					else{
+						name = nameInfo;
+					}
+										
 					// The rest of the information (fields 3+) should just be the gene names.
 					String [] genes = new String [splitLine.length - 2];
 					
@@ -129,7 +149,7 @@ public class GeneSetCollectionParser {
 						genes[i] = splitLine[i+2].toUpperCase();
 					}
 					
-					geneSetArrayList.add(new GeneSet(nameInfo[0], genes));	
+					geneSetArrayList.add(new GeneSet(identifier, name, genes, description));	
 					importCounter++;
 				}
 				

@@ -390,7 +390,7 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 
 		for (int p=0;p<nonRedundantValues.length;p++) {
 
-			if ((madeSelection||makingSelection) && nonRedundantValues[p].difference() >= Math.min(diffStart, diffEnd) && nonRedundantValues[p].difference() <= Math.max(diffStart, diffEnd)) {
+			if ((madeSelection||makingSelection) && nonRedundantValues[p].yValue >= Math.min(diffStart, diffEnd) && nonRedundantValues[p].yValue <= Math.max(diffStart, diffEnd)) {
 				g.setColor(Color.BLACK);
 			}
 			else {
@@ -622,7 +622,8 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 			if (y<10) y=10;
 			if (y>getHeight()-20) y = getHeight()-20;
 
-			diffEnd = getValueFromX(x)-getValueFromY(y);
+			
+			diffEnd = getValueFromY(y);
 		}
 		else {
 			// Set the start points
@@ -640,7 +641,9 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 			if (y>getHeight()-20) y = getHeight()-20;
 
 			makingSelection = true;
-			diffStart = getValueFromX(x)-getValueFromY(y);
+			
+			diffStart = getValueFromY(y);
+			
 			diffEnd = diffStart;
 		}
 
