@@ -34,12 +34,15 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -54,6 +57,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
@@ -149,9 +153,12 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 	
 	private SimpleRegression simpleRegression;
 	
+	/** whether analysis is birdectional or not */
+	private boolean bidirectional;
+	
 	
 	public GeneSetDisplay (DataCollection dataCollection, String description, DataStore fromStore, DataStore toStore, Probe[] probes, Hashtable zScoreLookupTable, 
-			MappedGeneSetTTestValue [] filterResults,  ProbeList startingProbeList, float[][] customRegressionValues, SimpleRegression simpleRegression){
+			MappedGeneSetTTestValue [] filterResults,  ProbeList startingProbeList, float[][] customRegressionValues, SimpleRegression simpleRegression, boolean bidirectional){
 
 		super(SeqMonkApplication.getInstance(),"Gene Set Results");
 		this.collection = dataCollection;	
@@ -164,6 +171,7 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 		this.zScoreLookupTable = zScoreLookupTable;
 		this.customRegressionValues = customRegressionValues;
 		this.simpleRegression = simpleRegression;
+		this.bidirectional = bidirectional;
 		this.addWindowListener(this);
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -213,8 +221,10 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 		table.setAutoCreateRowSorter(true);
 		table.getSelectionModel().addListSelectionListener(this);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setCellSelectionEnabled(true);
 		
 		// sort by z-score
+		table.getRowSorter().toggleSortOrder(3);
 		table.getRowSorter().toggleSortOrder(3);
 					
 		// Set our initial column widths
@@ -489,11 +499,24 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 		b.append(" matched probes, mean z-score = ");
 		b.append(geneSetTTestValue.mappedGeneSet.meanZScore);
 		b.append(", p value = ");
-		b.append((double)Math.round(geneSetTTestValue.p * 100000)/100000);
+		Double value = geneSetTTestValue.p;
+		if(value >= 0.001){
+			b.append((double)Math.round(value * 10000)/10000);	
+		}
+		else{
+			b.append(new String(String.format("%6.3e",value)));
+		}
+		
 		
 		if(geneSetTTestValue.q != null){
 			b.append(", adjusted p value = ");
-			b.append((double)Math.round(geneSetTTestValue.q * 100000)/100000);			
+			value = geneSetTTestValue.q;
+			if(value >= 0.001){
+				b.append((double)Math.round(value * 10000)/10000);	
+			}
+			else{
+				b.append(new String(String.format("%6.3e",value)));
+			}	
 		}
 		return b.toString();
 	}
@@ -699,9 +722,9 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 		public int getColumnCount() {
 			
 			if(multipleTestingCorrection){
-				return 7;
+				return 8;
 			}
-			return 6;
+			return 7;
 		}
 
 		/* (non-Javadoc)
@@ -712,12 +735,12 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 			case 0: return "select";
 			case 1: return "Term";
 			case 2: return "No of probes";
-			case 3: return "mean z-score";
-			case 4: return "mean abs z-score";
-			//case 3: return "median z-score";
-			//case 4: return "median abs z-score";
-			case 5: return "p-value";
-			case 6: return "adj p-value";
+			case 3: if(bidirectional) return "mean abs z-score";
+					else return "mean z-score";
+			case 4: return "identifier";
+			case 5: return "description";
+			case 6: return "p-value";
+			case 7: return "adj p-value";
 			
 			default: return "couldn't get the column name";
 			}
@@ -744,10 +767,11 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 			case 0: return Boolean.class;
 			case 1: return String.class;
 			case 2: return Integer.class;
-			case 3: return Float.class;
-			case 4: return Float.class;	
-			case 5: return Float.class;	
+			case 3: return Float.class;								
+			case 4: return String.class;
+			case 5: return String.class;
 			case 6: return Float.class;	
+			case 7: return Float.class;	
 			default: return Boolean.class;
 			}
 		}
@@ -758,22 +782,32 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 		 */
 		public Object getValueAt(int r, int c) {
 			switch (c) {
-			
-			case 0:
-				return new Boolean(selected[r]);					
-			case 1 :
-				return filterResults[r].mappedGeneSet.name();
-			case 2:
-				return new Integer(filterResults[r].mappedGeneSet.getProbes().length);
-			case 3:
-				return new Float(filterResults[r].mappedGeneSet.meanZScore);
-			case 4:
-				return new Float(Math.abs(filterResults[r].mappedGeneSet.meanZScore));	
-			case 5:
-				return new Float(filterResults[r].p);
-			case 6:
-				return new Float(filterResults[r].q);	
-
+									
+				case 0:
+					return new Boolean(selected[r]);					
+				case 1 :
+					return filterResults[r].mappedGeneSet.name();
+				case 2:
+					return new Integer(filterResults[r].mappedGeneSet.getProbes().length);
+				case 3:
+					if (bidirectional) return new Float(filterResults[r].mappedGeneSet.meanBidirectionalZScore);
+					else return new Float(filterResults[r].mappedGeneSet.meanZScore);				
+				case 4:
+					// If gene lists have come from existing probes we don't create gene sets
+					if(filterResults[r].mappedGeneSet.getGeneSet() != null){
+						return new String(filterResults[r].mappedGeneSet.getGeneSet().geneSetIdentifier());
+					}
+					else return new String("");
+				case 5:
+					// If gene lists have come from existing probes we don't create gene sets
+					if(filterResults[r].mappedGeneSet.getGeneSet() != null){
+						return new String(filterResults[r].mappedGeneSet.getGeneSet().geneSetDescription());
+					}
+					else return new String("");					
+				case 6:
+					return new Float(filterResults[r].p);
+				case 7:
+					return new Float(filterResults[r].q);	
 			}
 			throw new IllegalStateException("shouldn't have a row that doesn't ...");
 		}

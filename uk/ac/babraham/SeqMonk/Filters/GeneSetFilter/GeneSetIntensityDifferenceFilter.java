@@ -45,6 +45,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -57,6 +58,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
@@ -73,6 +75,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.Dialogs.ProbeListSelectorDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreviewPanel;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
 import uk.ac.babraham.SeqMonk.GeneSets.GeneSetCollection;
@@ -85,14 +88,7 @@ import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
  * Filters probes based on the the probability of their difference being
  * part of the local noise level for their average intensity.
  * 
- * interface for p value, benhoch correction
- * 
  * TODO: sort out no of matched probes when existing probe lists are used - when they don't have a quantitated value, the code is a bit messy - kick out unquantitated probes.
- * 
- * TODO: enable mixed directional 
- * 
- * TODO: annotate this code properly ....
- * 
  * 
  */
 public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements WindowListener{
@@ -357,7 +353,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				*/
 				try {
 					for (int j=startingIndex;j<startingIndex+(probesPerSet+1);j++) {
-					//for (int j=startingIndex;j<startingIndex+(probesPerSet);j++) {	
 
 						if (j == startingIndex) {
 
@@ -373,14 +368,14 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 								System.err.println(" j is too big, it's " + j + " and dedupProbes.length = " + dedupProbes.length + ", starting index = " + startingIndex);
 							}
 							double x = fromStore.getValueForProbe(dedupProbes[j]);
-							double expectedY =  (simpleRegression.getSlope() * x) + simpleRegression.getIntercept();
-							diff =  toStore.getValueForProbe(dedupProbes[j]) - expectedY;
+							double expectedY = (simpleRegression.getSlope() * x) + simpleRegression.getIntercept();
+							diff = toStore.getValueForProbe(dedupProbes[j]) - expectedY;
 							
 						}
 						
 						else {
 
-							diff =  toStore.getValueForProbe(dedupProbes[j]) - fromStore.getValueForProbe(dedupProbes[j]);
+							diff = toStore.getValueForProbe(dedupProbes[j]) - fromStore.getValueForProbe(dedupProbes[j]);
 						}
 						
 						if (j < startingIndex) {
@@ -419,42 +414,20 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					
 					else if(calculateCustomRegression == true){
 												
-						/* if(optionsPanel.bidirectionalRadioButton.isSelected()){
-						
-							diff =  Math.abs(toStore.getValueForProbe(probes[indices[i]]) - fromStore.getValueForProbe(probes[indices[i]]));
-							
-							mean = SimpleStats.mean(convertToAbsoluteValues(currentDiffSet));
-						}
-						
-						else{
-						
-							// y-x
-					*/		diff = toStore.getValueForProbe(probes[indices[i]]) - fromStore.getValueForProbe(probes[indices[i]]);			
+						diff = toStore.getValueForProbe(probes[indices[i]]) - fromStore.getValueForProbe(probes[indices[i]]);			
 								
-							mean = SimpleStats.mean(currentDiffSet);
+						mean = SimpleStats.mean(currentDiffSet);
 					}
 					
 					else {
 						
-					/*	if(optionsPanel.bidirectionalRadioButton.isSelected()){
-							
-							diff =  Math.abs(toStore.getValueForProbe(probes[indices[i]]) - fromStore.getValueForProbe(probes[indices[i]]));
-						}
-						
-						else {
-					*/		diff =  toStore.getValueForProbe(probes[indices[i]]) - fromStore.getValueForProbe(probes[indices[i]]);
-					//	}	
+						diff =  toStore.getValueForProbe(probes[indices[i]]) - fromStore.getValueForProbe(probes[indices[i]]);
+	
 					}
 					
 					double stdev;
 					
-					/*if(optionsPanel.bidirectionalRadioButton.isSelected()){
-						stdev = SimpleStats.stdev(convertToAbsoluteValues(currentDiffSet),mean); 
-					}
-					
-					else { */
 					stdev = SimpleStats.stdev(currentDiffSet,mean);
-					//}
 										
 					// if there are no reads in the probe for either of the datasets, should we set the zscore to 0?? 						
 					double zScore = (diff - mean) / stdev;
@@ -493,7 +466,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				MappedGeneSet [] allMappedGeneSets = geneSetCollection.getMappedGeneSets(probes);
 				
 				if(allMappedGeneSets == null){
-					JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "No sets of genes could be matched to probes.\nTo use gene sets from a file, probe names must contain the gene name.\nTry defining new probes over genes (e.g. using the RNA-seq quanitation pipeline) or use existing probes lists instead of a gene set file.", "No gene sets identified", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "No sets of genes could be matched to probes.\nCheck that the gmt file is for the right species. \nTo use gene sets from a file, probe names must contain the gene name. \nTry defining new probes over genes (e.g. using the RNA-seq quantitation pipeline) or use existing probes lists instead of a gene set file.", "No gene sets identified", JOptionPane.ERROR_MESSAGE);
 					throw new SeqMonkException("No sets of genes could be matched to probes.\nTo use gene sets from a file, probe names must contain the gene name.\nTry defining new probes over genes or use existing probes lists instead of a gene set file.");	
 				}
 				
@@ -531,6 +504,16 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				System.err.println("size of zScore lookup table = "+ probeZScoreLookupTable.size());
 			}
 			
+			System.err.println("total number of mapped gene sets = " + mappedGeneSets.length);
+			
+			//TODO: deduplicate our mappedGeneSets
+			if(optionsPanel.deduplicateGeneSetBox.isSelected()){
+			
+				mappedGeneSets = deduplicateMappedGeneSets(mappedGeneSets);
+			}
+				
+			System.err.println("deduplicated mapped gene sets = " + mappedGeneSets.length);
+			
 			/* we need to go through the mapped gene set and get all the values for the matched probes */
 			for(int i=0; i<mappedGeneSets.length; i++){
 				
@@ -555,16 +538,21 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					
 					double pVal;					
 					
-				/*	if(optionsPanel.bidirectionalRadioButton.isSelected()){
+					// TODO: this p value calculation always comes up massively significant as it's comparing positive values to 0.
+					/*if(optionsPanel.bidirectionalRadioButton.isSelected()){
 						 pVal = TTest.calculatePValue(convertToAbsoluteValues(geneSetZscores), 0);
 					}
 					
 					else{
-				*/		 pVal = TTest.calculatePValue(geneSetZscores, 0);
+					*/	 pVal = TTest.calculatePValue(geneSetZscores, 0);
 					//}
 					
 					mappedGeneSets[i].meanZScore = SimpleStats.mean(geneSetZscores); 
-					//mappedGeneSets[i].meanZScore = SimpleStats.median(geneSetZscores); 
+					
+					/*if(optionsPanel.bidirectionalRadioButton.isSelected()){	
+						mappedGeneSets[i].meanBidirectionalZScore = SimpleStats.mean(convertToAbsoluteValues(geneSetZscores)); 
+					}						 
+					*/
 					
 					// check the variance - we don't want variances of 0.
 					double stdev = SimpleStats.stdev(geneSetZscores);
@@ -608,27 +596,35 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					pOrQvalue = filterResultpValues[i].p;
 				}
 				
-				if(i <50 || filterResultpValues[i].mappedGeneSet.name().startsWith("MATURE B CELL") ){
-					System.err.println("For " + filterResultpValues[i].mappedGeneSet.name() + ", pValue = " + filterResultpValues[i].p);
-					System.err.println("For " + filterResultpValues[i].mappedGeneSet.name() + ", qValue = " + filterResultpValues[i].q);
-				}
+				// check whether it passes the p/q-value and z-score cut-offs				
+				/*if(optionsPanel.bidirectionalRadioButton.isSelected()){
 				
-				if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanZScore) > zScoreThreshold)){
+					if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanBidirectionalZScore) > zScoreThreshold)){
+						
+						filteredPValueArrayList.add(filterResultpValues[i]);						
+					}	
+				}	
+				else{
+				*/	
+					if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanZScore) > zScoreThreshold)){
 					
-					filteredPValueArrayList.add(filterResultpValues[i]);						
-				}
+						filteredPValueArrayList.add(filterResultpValues[i]);
+						//System.err.println("p-value = " + filterResultpValues[i].p);
+						//System.err.println("p-value = " + (String.format("%6.2e",filterResultpValues[i].p)));
+					}	
+				//}
 			}	
 			
+			// convert the ArrayList to MappedGeneSetTTestValue
 			filterResultpValues = filteredPValueArrayList.toArray(new MappedGeneSetTTestValue[0]);
 			
 			if(filterResultpValues.length == 0){
-				JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "No sets of genes were identified using the selected parameters, \ntry changing the gene sets or relaxing the p-value/z-score thresholds.", "No gene sets identified", JOptionPane.INFORMATION_MESSAGE);
-				
+				JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "No sets of genes were identified using the selected parameters, \ntry changing the gene sets or relaxing the p-value/z-score thresholds.", "No gene sets identified", JOptionPane.INFORMATION_MESSAGE);				
 			}
 			
 			else{
 				geneSetDisplay = new GeneSetDisplay(dataCollection, listDescription(), fromStore, toStore, probes, probeZScoreLookupTable, filterResultpValues, 
-						startingList, customRegressionValues, simpleRegression);
+						startingList, customRegressionValues, simpleRegression, false);//optionsPanel.bidirectionalRadioButton.isSelected());
 				geneSetDisplay.addWindowListener(this);				
 			}
 			// We don't want to save the probe list here, we're bringing up the intermediate display from which probe lists can be saved. 
@@ -747,6 +743,45 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		return "Gene Set Filter";
 	}
 
+	private MappedGeneSet[] deduplicateMappedGeneSets(MappedGeneSet[] mappedGS){
+		
+		ArrayList<MappedGeneSet> dedupMGSArrayList = new ArrayList<MappedGeneSet>(); 
+	
+		I_LOOP: for (int i=0; i<mappedGS.length-1; i++){
+			
+			// compare the lengths as a first pass 
+			int geneSetLength = mappedGS[i].getProbes().length;
+			
+			J_LOOP: for (int j=i+1; j<mappedGS.length; j++){
+				
+				if (mappedGS[j].getProbes().length == geneSetLength){
+					
+					// check whether all the genes are the same
+					String[] geneNames1 = mappedGS[i].getProbeNames();
+					String[] geneNames2 = mappedGS[j].getProbeNames();
+					
+					Arrays.sort(geneNames1);
+					Arrays.sort(geneNames2);
+										
+					for (int n=0; n<mappedGS.length-1; n++){
+						if(!(geneNames1[n].equals(geneNames2[n]))){
+							continue J_LOOP;
+						}						
+					}
+					// if we've got to here then all the probe names have matched so we want to get rid of the gene set
+					continue I_LOOP;
+				}
+				
+			}
+			// if no duplicates have been found, add to the deduplicated set
+			dedupMGSArrayList.add(mappedGS[i]);
+		}
+		// the last one is not a duplicate as we should have got rid of any duplicates of it
+		dedupMGSArrayList.add(mappedGS[mappedGS.length-1]);
+		
+		return dedupMGSArrayList.toArray(new MappedGeneSet[0]);
+	}
+	
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.Filters.ProbeFilter#listDescription()
 	 */
@@ -884,6 +919,9 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		// whether to calculate custom regression line
 		private JCheckBox calculateCustomRegressionBox;
 		
+		// whether to deduplicate the mapped gene sets
+		private JCheckBox deduplicateGeneSetBox;
+		
 		// number of probes to sample in each statistical test that is performed
 		private JTextField pointsToSampleField;		
 		
@@ -898,6 +936,9 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		
 		// or whether to test in both directions
 		private JRadioButton bidirectionalRadioButton;
+		
+		// which statistical test to perform
+		//private JComboBox statisticalTest;
 		
 		/**
 		 * Instantiates a new differences options panel.
@@ -997,8 +1038,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			gbc.weightx=0.1;
 			gbc.gridy++;			
 			
-			
-			choicePanel.add(new JLabel("Apply Multiple Testing Correction"),gbc);
+			choicePanel.add(new JLabel("Apply multiple testing correction"),gbc);
 			
 			gbc.gridx=2;
 			gbc.weightx=0.9;
@@ -1025,7 +1065,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			gbc.weightx=0.1;
 			gbc.gridy++;
 			
-			choicePanel.add(new JLabel("Calculate Custom distribution"),gbc);
+			choicePanel.add(new JLabel("Calculate custom distribution"),gbc);
 			
 			gbc.gridx=2;
 			gbc.weightx=0.9;
@@ -1034,6 +1074,20 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			calculateCustomRegressionBox.setSelected(false);
 			choicePanel.add(calculateCustomRegressionBox,gbc);
 						
+			gbc.gridx = 1;
+			gbc.weightx=0.1;
+			gbc.gridy++;
+			
+				
+			choicePanel.add(new JLabel("Deduplicate gene sets"),gbc);
+			
+			gbc.gridx=2;
+			gbc.weightx=0.9;		
+					
+			deduplicateGeneSetBox = new JCheckBox();
+			deduplicateGeneSetBox.setSelected(true);
+			choicePanel.add(deduplicateGeneSetBox, gbc);
+			
 			gbc.gridx = 1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
@@ -1060,8 +1114,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			geneSetsFileRadioButton.setSelected(true);
 
 			choicePanel.add(geneSetsFileRadioButton, gbc);
-			
-			//gbc.gridy++;
 					
 			gbc.gridx=1;
 			gbc.weightx=0.1;
@@ -1077,12 +1129,15 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			ButtonGroup group = new ButtonGroup();
 			group.add(geneSetsFileRadioButton);
 			group.add(probeListRadioButton);		
-			/*
+			
 			gbc.gridy++;
 			
 			gbc.gridx=1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
+			
+			//varianceMeasureBox = new JComboBox(new String [] {"STDEV","SEM","QuartDisp","CoefVar","Unmeasured"});
+			
 			choicePanel.add(new JLabel("Uni-directional test"),gbc);
 						
 			unidirectionalRadioButton = new JRadioButton();
@@ -1093,7 +1148,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			choicePanel.add(unidirectionalRadioButton, gbc);
 		
 			
-			gbc.gridx=1;
+		/*	gbc.gridx=1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
 			choicePanel.add(new JLabel("Bi-directional test"),gbc);
@@ -1233,10 +1288,8 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		public GeneSetFileOptionsPanel(){
 			
 			super(SeqMonkApplication.getInstance(),"Select gene set file");
-			
-			//setBorder(BorderFactory.createEmptyBorder(4,4,0,4));
+
 			setLayout(new BorderLayout());
-			//setLayout(
 			
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			
@@ -1317,8 +1370,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			selectFileButton.setActionCommand("run");
 			buttonPanel.add(selectFileButton, c2);	
 			
-			
-			
 			add(mainPanel, BorderLayout.CENTER);
 			add(buttonPanel, BorderLayout.PAGE_END);	
 			
@@ -1332,10 +1383,28 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			
 			if (action.equals("select_file")) {
 				
-				JFileChooser fc = new JFileChooser();				
-					
-				fc.setCurrentDirectory(SeqMonkPreferences.getInstance().getDataLocation());
+				JFileChooser fc = new JFileChooser(SeqMonkPreferences.getInstance().getDataLocation());				
 				
+				fc.setMultiSelectionEnabled(false);
+								
+				FileFilter ff = new FileFilter(){	
+					
+					public String getDescription() {
+						return "gmt or text files";
+					}
+				
+					public boolean accept(File f) {
+						if (f.isDirectory() || f.getName().toLowerCase().endsWith(".gmt")|| f.getName().toLowerCase().endsWith(".txt")) {
+							return true;
+						}
+						else {
+							return false;
+						}
+					}				
+				};
+								
+				fc.setFileFilter(ff);				
+				fc.setCurrentDirectory(SeqMonkPreferences.getInstance().getDataLocation());				
 				fc.showOpenDialog(this);	
 				
 				if(fc.getSelectedFile() == null){
@@ -1356,7 +1425,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					}
 					else{
 						validGeneSetFilepath = null;
-						//validGeneSetFile = false;
 					}
 				}			
 			}
@@ -1379,8 +1447,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			}
 			
 			else if(ae.getActionCommand().equals("close")) {
-				
-				//validGeneSetFile = false;
+
 				validGeneSetFilepath = null;
 				progressCancelled();
 				optionsChanged();
