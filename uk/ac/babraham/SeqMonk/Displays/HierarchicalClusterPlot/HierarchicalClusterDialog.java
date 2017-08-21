@@ -41,11 +41,13 @@ import javax.swing.event.ChangeListener;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterDataSource;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterPair;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.HierarchicalClusterSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
@@ -65,6 +67,7 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 	private boolean normalise;
 	private JComboBox gradients;
 	private JCheckBox invertGradient;
+	private JButton highlightRepSetsButton;
 	private ClusterDataSource clusterDataSource;
 	private boolean negativeScale;
 
@@ -196,7 +199,14 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 				updateGradients();
 			}
 		});
+		
+		
 		colourPanel.add(invertGradient);
+
+		highlightRepSetsButton = new JButton("Highlight Sets");
+		highlightRepSetsButton.setActionCommand("highlight");
+		highlightRepSetsButton.addActionListener(this);
+		colourPanel.add(highlightRepSetsButton);
 
 		
 		getContentPane().add(colourPanel,BorderLayout.NORTH);
@@ -309,6 +319,11 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 		else if (ae.getActionCommand().equals("save_image")) {
 			ImageSaver.saveImage(clusterPanelGroup);
 		}
+		else if (ae.getActionCommand().equals("highlight")) {
+			ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
+			clusterPanel.setRepSets(repSets);
+		}
+
 		else if (ae.getActionCommand().equals("save_clusters")) {
 			
 			// Get a limit for how many probes per cluster

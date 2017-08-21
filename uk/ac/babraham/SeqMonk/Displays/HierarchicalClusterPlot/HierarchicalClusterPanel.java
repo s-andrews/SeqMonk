@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterPair;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
@@ -42,6 +43,9 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 
 	private ProbeList probeList;
 	private DataStore [] stores;
+	
+	private ReplicateSet [] repSets = new ReplicateSet[0];
+	
 	private ClusterPair clusters;
 	private int [] clusterPostions;
 	private int [] clusterIntervals;
@@ -60,7 +64,7 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 	private double rValue = 0.7;
 
 	// Constants for borders around the plot
-	private static final int TOP_NAME_HEIGHT = 30;
+	private int TOP_NAME_HEIGHT = 30; // This varies by the number of replicate sets we have
 	private static final int BOTTOM_NAME_HEIGHT = 10;
 	private static final int LEFT_BORDER = 10;
 	private static final int RIGHT_BORDER = 10;
@@ -117,6 +121,17 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 		this.gradient = gradient;
 		repaint();
 	}
+	
+	public void setRepSets (ReplicateSet [] repSets) {
+		if (repSets == null) {
+			repSets = new ReplicateSet[0];
+		}
+		this.repSets = repSets;
+		TOP_NAME_HEIGHT = 30 + (10*repSets.length);
+		
+		repaint();
+	}
+	
 
 	private int getYForPosition (int indexPosition) {
 
