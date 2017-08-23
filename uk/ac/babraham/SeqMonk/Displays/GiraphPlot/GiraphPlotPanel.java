@@ -67,7 +67,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 	private boolean ProbeListClicked = false;
 	
 	/** Minimum correlation shown by lines */
-	float minCorrelation = (float) 0.3;
+	float minCorrelation = (float) 0.1;
 	
 	int minCircleSize = 15;
 	
@@ -86,7 +86,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 	protected boolean displayNames = false;
 	
 	/** whether to display the lines connecting the circles */
-	boolean lines = true;
+	boolean lines = false;
 	
 	/** whether the program is currently calculating i.e. whether calculateCoordinates is running - this is controlled by the stop or play buttons on the menu */
 	protected boolean calculating = false;
@@ -96,7 +96,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 	private float [] xCoordinates;
 	private float [] yCoordinates;
 	
-	private float shiftFactor = (float)0.3;
+	//private float shiftFactor = (float)0.3;
 	
 	/** A fixed log2 value to make log2 calculation quicker */
 	protected final float log2 = (float)Math.log(2);	
@@ -116,246 +116,167 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 			probeListColours[i] = Color.gray;
 		}
 		
-		gpCluster = new GiraphPlotCluster(xCoordinates, yCoordinates);
+		//gpCluster = new GiraphPlotCluster(xCoordinates, yCoordinates);
 		calculating = true;
 		Thread t = new Thread(this);
 		t.start();
 	}
 	
 	public void restart(){
+		lines = false;
 		calculating = true;
-		shiftFactor = (float)0.3;
+		//shiftFactor = (float)0.3;
 		
 		Thread t = new Thread(this);				
 		t.start();
 	}
 	
-	/** TODO: neaten up this old code. */
+	// create random starting coordinates
 	public float [][] getStartingGridCoordinates(int n){
+	
+		float [][] randomCoordinates = new float[2][n];
 		
-		float [][] gridCoordinates = new float[2][n];
-		
-		/** TODO: This might not be great if n is small */
-		//int dim = (int)(Math.ceil(Math.sqrt(n)));
-		
-		float increment = (float)(1/(Math.ceil(Math.sqrt(n))));
-
-		int i = 0;
-		float y = 0;
-		
-		while(i < n){
-			for (int j = 0; j <= Math.ceil(Math.sqrt(n)); j++){		
-				if(i >= n){
-					return gridCoordinates;
-				}									
-				gridCoordinates[0][i] = (float)(increment)*j;
-				gridCoordinates[1][i] = (float)(increment)*y;	
-				i++;
-			}
-			y++;	
+		for(int i=0; i<n; i++){
+			
+			randomCoordinates[0][i] = (float)Math.random();
+			randomCoordinates[1][i] = (float)Math.random(); 
 		}
-		return gridCoordinates;
-	}
+		
+		return randomCoordinates;
+	}	
+		
 	
 	/** This run method calculates the coordinates for the circles, should be between 0 and 1 ish. */
 	public void run(){
 		
-		System.err.println("calculating positions...");
+		float coolingOff = (float)0.8;
 		
-		/** The minimum correlation that we care about - if they're not remotely correlated we don't mind where they are in relation to each other,
-		 * they'll get pulled around enough by others that they are correlated with anyway. */
-		float minCorrelation = (float)0.3;
+		// compare the last 10 total deltas to check whether it's improving or not
+		float [] lastDeltas = new float[10];
 		
-		/** If two circles are at an optimum distance (within threshold of the diffFactor) then they won't be moved. 
-		 * Do not reduce this number or everything starts going around in circles if there aren't many gene lists. */
-		float diffThreshold = (float)0.2;
+		int x=0;
 		
-		/**  x is a count and is used to control how often coordinates are updated etc */
-		int x = 1;
-		
-		/** This is something to do with not wanting the circles to be too far away from each other - if they try and get too far then they mess up the screen. */
-		float minDistance = (float) 0.4;
-		
-		
-		
-		/** To work out when to stop calculating */
-		float [] previousTotalDifference = new float [20];
-		int totalDifferenceIndex = 0;
+		// the number of iterations TODO: stop this automatically
+		while(calculating){
+		//for(int x=0; x<1000; x++){
+			
+			float totalDelta = 0;
+			
+			for (int i = 0; i < probeLists.length; i++){												
 				
-		while (calculating == true){
-		
-			float thisTotalDifference = 0;			
-			/**
-			 * calculate overall trajectory for gene list i
-			 */
-			for (int i = 0; i < probeLists.length; i++){								
-				
-				/** value that is added to and subtracted from as we decide which way the x coordinate should move */
-				float sumDiffX = 0;
-				
-				/** value that is added to and subtracted from as we decide which way the y coordinate should move */
-				float sumDiffY = 0;
-				
-				/** loop through all the other gene lists to compare i to and work out where we want to move i to */
+				/** loop through all the other gene lists to compare i to and shift j each time */
 				for (int j = 0; j < probeLists.length; j++){
 															
-					if(calculating == false){
-						//break LOOP;
-						return;
-					}
-					
 					if(j != i){	
 																			
-						/** 
-						 * move closer or further away if the correlation is greater than minCorrelation. MinCorrelation is the minimum correlation that we care about.
-						 *   
-						 *  circles with no correlation only need to be minDistance away, not as far away as 1 as this distorts the view, but not too close 
-						 *  
-						 *  Is it right to say OR when the correlation is less than minCorrelation AND the difference is greater than minDistance?? Apparently so - it all goes wrong if that is removed.
-						 */	
-						
-						
 						/** The correlation between the 2 gene lists */
 						float correlation = getOverlapProportion(probeLists[i], probeLists[j]);
 						
 						/** The difference in the x coordinates between gene list i and j */ 
-						float distanceX = xCoordinates[i] - xCoordinates[j];
+						double distanceX = xCoordinates[i] - xCoordinates[j];
 						
 						/** The difference in the y coordinates between gene list i and j */
-						float distanceY =  yCoordinates[i] - yCoordinates[j];
+						double distanceY =  yCoordinates[i] - yCoordinates[j];
 						 
 						/** The distance between the 2 gene lists */
 						float actualDistance = (float)Math.sqrt((distanceX * distanceX) + (distanceY * distanceY)); 																	
 						
 						/** The difference between the actual distance and the ideal distance */
-						float difference = (1 - correlation) - actualDistance;
+						float delta = (1 - correlation) - actualDistance;
 						
-						/** can we bias this so that if there's a strong attraction, that gets prioritised? */
+						totalDelta += Math.abs(delta);
 						
-						thisTotalDifference = thisTotalDifference + Math.abs(difference);
-											
+						// we don't want the circles to keep trying to get as far away from each other as possible						
+						// if they're not correlated at all
+						if(correlation > 0.3 || Math.abs(delta) > 0.7){ 
 						
-						if((correlation > minCorrelation) || ((correlation <= minCorrelation)&& (Math.abs(difference)>minDistance))){														
-							
-							/** 
-							 * If difference between actual location and desired location is greater than a set value (diffThreshold) then we want to move.  
-							 * 
-							 */
-							//float movement = (1-correlation)/actualDistance;
-							float movement;
-							
-							if(correlation < 0.01){
-								movement = (float)0.01/actualDistance;
-							}
-							else{
-								movement = correlation/actualDistance;							
-							}								
-							
-						/*	if(probeLists[j].name().startsWith("Difference above 3")){ 
-								System.out.println("========================================");
-								System.out.println(probeLists[j].name());
-								System.out.println(probeLists[i].name());
-								System.out.println("difference = " + difference);
-								System.out.println("actual distance = " + actualDistance);
-								System.out.println("correlation = " + correlation);
-								System.out.println("movement = " + movement);
-								System.out.println("distanceX = " + distanceX);
-								System.out.println("distanceY = " + distanceY);
-							}
-						*/	if(difference < -diffThreshold){
-							/** move closer */
+							if(delta > 0){
+								/** move closer */
 								
-								sumDiffX = sumDiffX - (distanceX * movement);
-								sumDiffY = sumDiffY - (distanceY * movement);
-
+								xCoordinates[j] -= (float)distanceX * coolingOff; 
+								yCoordinates[j] -= (float)distanceY * coolingOff; 
 							}
-							else if (difference > diffThreshold){
-							/** move further away */
+							
+							else if (delta < 0){
+								/** move further away */
 								
-								sumDiffX = sumDiffX + (distanceX * movement); 
-								sumDiffY = sumDiffY + (distanceY * movement);
-
-			 				}
-						}			
-					}
+								xCoordinates[j] += (float)distanceX * coolingOff; 
+								yCoordinates[j] += (float)distanceY * coolingOff;
+				 			}
+						}	
+					}	
 				}
-				float meanDiffX = sumDiffX/(float)(probeLists.length-1);
-				float meanDiffY = sumDiffY/(float)(probeLists.length-1);	
-				
-				float xShift = (float) (meanDiffX*shiftFactor);
-				float yShift = (float) (meanDiffY*shiftFactor);				
-				xCoordinates[i] += xShift; 
-				yCoordinates[i] += yShift;	
-				
-			}	
-			
-			previousTotalDifference[totalDifferenceIndex] = thisTotalDifference;
-			
-			if(totalDifferenceIndex < 19){
-				totalDifferenceIndex = totalDifferenceIndex +1; 
-			}
-			else {
-				totalDifferenceIndex = 0;
 			}
 			
-			/** If it's the first iteration, notify the app that the first coordinates are ready. */
-			if (x == 1){
+			if(x < 10){
 				
-				/** notify that we're ready to draw */
+				lastDeltas[x] = totalDelta;
+			}
+			else{
+				
+				// check the differences - see if it's still improving
+				if(x%10 == 0){
+					int improvingCount = 0;
+
+					for(int d=0; d<9; d++){
+					
+						if(lastDeltas[d] - lastDeltas[d+1] > 0.1){
+							improvingCount++;
+						}	
+					}
+					if(improvingCount < 4){
+												
+						calculating = false;
+					}
+					System.err.println("x = " + x);
+					System.err.println("improving count = " + improvingCount);
+					
+				}
+				
+				lastDeltas[x%10] = totalDelta;
+				
+			}
+			x++;
+			
+		/*	if (x%200 == 0){
+				//System.err.println("x = " + x);	
+				System.err.println("total delta = " + totalDelta);	
+				
 				readyToDraw = true;
-				System.err.println("ready, let's draw...");
-			}
+				//System.err.println("ready, let's draw...");			
 			
-			/**  update min and max values */
-			minValueX = getMinValue(xCoordinates);
-			maxValueX = getMaxValue(xCoordinates);
-			minValueY = getMinValue(yCoordinates);
-			maxValueY = getMaxValue(yCoordinates);		
-			
-			revalidate();
-			repaint();
+				//  update min and max values 
+				// do this here rather than in the paint method as it's not going to change each time it's repainted
+				minValueX = getMinValue(xCoordinates);
+				maxValueX = getMaxValue(xCoordinates);
+				minValueY = getMinValue(yCoordinates);
+				maxValueY = getMaxValue(yCoordinates);		
+				
+				revalidate();
+				repaint();
 
-			/** We want to check whether we're still moving in the right direction, if not, stop if we're getting too few improving positions.
-			 * or stop if the percentage difference is so small that it's not worth carrying on. */
-			if (x%20 == 0){
-								
-				/** To check whether we're still moving in the right direction*/
-				int improvingPositions = 0;
-				float improvingMagnitude = 0;
-				
-				for (int i = 1; i < 20; i++){
-					
-					float diffDiff = previousTotalDifference[i-1] - previousTotalDifference[i];
-					
-					if(diffDiff > 0){
-						improvingPositions++;
-						improvingMagnitude = improvingMagnitude + diffDiff/previousTotalDifference[i];	
-						
-					}
-				}
-				
-				if((improvingPositions < xCoordinates.length/5) || (improvingMagnitude < 0.00001)){
-					
-					// stopCalculating
-					calculating = false;
-					
-					System.out.println("stopped calculating at x = " + x + " because...");
-					System.out.println("no of improvingPositions " + improvingPositions);	
-					System.out.println("improvingMagnitude " + improvingMagnitude);	
-					
-				}
-				System.out.println("no of improvingPositions " + improvingPositions);	
-				System.out.println("improvingMagnitude " + improvingMagnitude);	
-				gpCluster = new GiraphPlotCluster(xCoordinates, yCoordinates);
-								
-				shiftFactor = improvingMagnitude;
-				/** We're going to gradually reduce the shiftFactor */ 
-				//shiftFactor = shiftFactor/2;
 			}
-			x++;		
-		}		
-	}
+		*/	coolingOff *= 0.9;
+		}
 		
+		gpCluster = new GiraphPlotCluster(xCoordinates, yCoordinates);
+		readyToDraw = true;
+		//System.err.println("ready, let's draw...");			
+	
+		//  update min and max values 
+		// do this here rather than in the paint method as it's not going to change each time it's repainted
+		minValueX = getMinValue(xCoordinates);
+		maxValueX = getMaxValue(xCoordinates);
+		minValueY = getMinValue(yCoordinates);
+		maxValueY = getMaxValue(yCoordinates);		
+		
+		lines = true;
+		calculating = false;
+		revalidate();
+		repaint();
+	}
+
+	
 	protected float getOverlapProportion (ProbeList list1, ProbeList list2) {
 		
 		Probe [] firstListProbes = list1.getAllProbes();
@@ -426,7 +347,8 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 					
 		for (int i = 0; i < clusters.length; i++){
 			
-			Color colourForCluster = new Color((int)(255-(increment*i)), 0, (int)(increment*i));
+			//Color colourForCluster = new Color((int)(255-(increment*i)), 0, (int)(increment*i));
+			Color colourForCluster = new Color((int)(255-(increment*i)), (int)(increment*i), (int)(increment*i));
 			
 			for (int j = 0; j < clusters[i].length; j++){
 
@@ -436,21 +358,6 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 		return (colours);
 	}
 	
-
-	/**
-	 * Used when adding or removing the lines joining circles
-	 */	
-/*	public void updateLines(){
-		if (lines == false){
-			lines = true;
-		}
-		else{
-			lines = false;
-		}
-		revalidate();
-		repaint();
-	}
-*/	
 			
 	/** 
 	 * Can I just get rid of this now?
@@ -613,10 +520,11 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 		if(x0+diameter > xLimits[1]){
 			x0 = (int)(xLimits[1] - diameter);
 		}
+		
 		return x0;
 	}
 
-	// The scaled x0 value for the circle
+	// The scaled y0 value for the circle
 	private int getY0(float value, float diameter) {
 		
 		float proportion = (value-minValueY)/(maxValueY-minValueY);
@@ -633,6 +541,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 		if(y0+diameter > yLimits[1]){
 			y0 = (int)(yLimits[1] - diameter);
 		}
+
 		return y0;
 	}
 	
@@ -743,7 +652,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 	public void paint(Graphics g){
 		
 		super.paint(g);	
-						
+		
 		// if we're exporting the image we need to not be using Graphics2
 		if(exportImage == false){
 			Graphics2D g2 = (Graphics2D)g;
@@ -760,10 +669,15 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 			return;
 		}
 		
-		if (gpCluster.clustersReady){
-						
-			probeListColours = getColoursForClusters(gpCluster.clusterPair().getClusters((float)0.7), probeLists.length);			
+		
+		if(gpCluster != null){
+					
+			if (gpCluster.clustersReady){
+							
+				probeListColours = getColoursForClusters(gpCluster.clusterPair().getClusters((float)0.7), probeLists.length);			
+			}
 		}
+		
 		
 		/** draw each line joining the circles (though this can be turned off) 
 		 * This takes ages when there are lots of circles, it's not the calculations, it's just the redrawing of all of the lines

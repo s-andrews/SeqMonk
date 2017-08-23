@@ -1792,10 +1792,15 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				new ListOverlapsDialog(probeLists);
 			}
 			else if (action.equals("multiprobe_list_giraph_plot")) {
-				new GiraphPlot(probeLists);			
+				
+				if(probeLists.length > 50){
+					JOptionPane.showMessageDialog(application, "Please select fewer than 50 probe lists to display","Too many probe lists...",JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				else{
+					new GiraphPlot(probeLists);
+				}												
 			}
-
-
 		}
 		else if (action.equals("view_value_histogram")) {
 			if (application.dataCollection().getActiveDataStore() == null) {
