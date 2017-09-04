@@ -61,6 +61,10 @@ public class ImageSaver {
 		if (result == JFileChooser.CANCEL_OPTION) return;
 
 		File file = chooser.getSelectedFile();
+		if (file == null) {
+			// No idea what causes this, but we've seen this crash reported.
+			return;
+		}
 		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
 		
 		if (file.isDirectory()) return;
