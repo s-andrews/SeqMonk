@@ -35,7 +35,9 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
@@ -60,6 +62,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.math3.stat.inference.KolmogorovSmirnovTest;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 
@@ -345,12 +348,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				if (startingIndex < 0) startingIndex = 0;
 				if (startingIndex+(probesPerSet+1) >= dedupProbes.length) startingIndex = dedupProbes.length-(probesPerSet+1);
 
-				/*System.err.println("i = " + i);
-				System.err.println("deduplicatedIndices[i] = " + deduplicatedIndices[i]);
-				System.err.println("starting index = " + startingIndex);
-				System.err.println("starting index + probesPerSet = " + (startingIndex+probesPerSet));
-				//System.out.println("currentDiffsetLength = " + currentDiffSet.length);
-				*/
 				try {
 					for (int j=startingIndex;j<startingIndex+(probesPerSet+1);j++) {
 
@@ -506,7 +503,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			
 			System.err.println("total number of mapped gene sets = " + mappedGeneSets.length);
 			
-			//TODO: deduplicate our mappedGeneSets
+			// deduplicate our mappedGeneSets
 			if(optionsPanel.deduplicateGeneSetBox.isSelected()){
 			
 				mappedGeneSets = deduplicateMappedGeneSets(mappedGeneSets);
@@ -514,7 +511,10 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				
 			System.err.println("deduplicated mapped gene sets = " + mappedGeneSets.length);
 			
-			/* we need to go through the mapped gene set and get all the values for the matched probes */
+			/* 
+			 * we need to go through the mapped gene set and get all the values for the matched probes 
+			 * 
+			 */
 			for(int i=0; i<mappedGeneSets.length; i++){
 				
 				Probe [] geneSetProbes = mappedGeneSets[i].getProbes();
@@ -531,28 +531,42 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					}				
 				}	
 				
-				// this is just temporary to check the stats - there's some duplication with this.
+				// this is just temporary to check the stats - there's some duplication with this.... is there??
 				mappedGeneSets[i].zScores = geneSetZscores;
 								
-				if(geneSetZscores.length > 1){ // but the number of probes in the mappedGeneSet should always be > 1 anyway as the mappedGeneSet shouldn't be created if there are < 2 matched probes.					
+				if(geneSetZscores.length > 1){ // the number of probes in the mappedGeneSet should always be > 1 anyway as the mappedGeneSet shouldn't be created if there are < 2 matched probes.					
 					
 					double pVal;					
 					
-					// TODO: this p value calculation always comes up massively significant as it's comparing positive values to 0.
-					/*if(optionsPanel.bidirectionalRadioButton.isSelected()){
-						 pVal = TTest.calculatePValue(convertToAbsoluteValues(geneSetZscores), 0);
+					if(optionsPanel.statisticalTestBox.getSelectedItem().toString().equals("t-test")){
+							
+						pVal = TTest.calculatePValue(geneSetZscores, 0);
+					}
+					else if(optionsPanel.statisticalTestBox.getSelectedItem().toString().equals("Kolmorogov-Smirnov test")){
+						
+						double[] allZscores = getAllZScores(probeZScoreLookupTable);
+						
+						KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
+						
+						pVal = ksTest.kolmogorovSmirnovTest(geneSetZscores, allZscores);
+						
 					}
 					
-					else{
-					*/	 pVal = TTest.calculatePValue(geneSetZscores, 0);
-					//}
+					else if(optionsPanel.statisticalTestBox.getSelectedItem().toString().equals("Kolmorogov-Smirnov non-directional test")){
 					
+						double[] allZscores = getAllZScores(probeZScoreLookupTable);
+						
+						KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
+						
+						pVal = ksTest.kolmogorovSmirnovTest(convertToAbsoluteValues(geneSetZscores), convertToAbsoluteValues(allZscores));
+						
+					}
+					
+					else {
+						throw new IllegalArgumentException("Didn't recognise statistical test "+optionsPanel.statisticalTestBox.getSelectedItem().toString());
+					}
+
 					mappedGeneSets[i].meanZScore = SimpleStats.mean(geneSetZscores); 
-					
-					/*if(optionsPanel.bidirectionalRadioButton.isSelected()){	
-						mappedGeneSets[i].meanBidirectionalZScore = SimpleStats.mean(convertToAbsoluteValues(geneSetZscores)); 
-					}						 
-					*/
 					
 					// check the variance - we don't want variances of 0.
 					double stdev = SimpleStats.stdev(geneSetZscores);
@@ -583,6 +597,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				BenjHochFDR.calculateQValues(filterResultpValues);
 			}
 			System.err.println(filterResultpValues.length + " p-values calculated, multtest = " + applyMultipleTestingCorrection + ", pval limit = " + pValueLimit); 				
+			
 			for (int i = 0; i < filterResultpValues.length; i++){
 				
 				double pOrQvalue;
@@ -597,22 +612,11 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				}
 				
 				// check whether it passes the p/q-value and z-score cut-offs				
-				/*if(optionsPanel.bidirectionalRadioButton.isSelected()){
 				
-					if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanBidirectionalZScore) > zScoreThreshold)){
-						
-						filteredPValueArrayList.add(filterResultpValues[i]);						
-					}	
+				if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanZScore) > zScoreThreshold)){
+				
+					filteredPValueArrayList.add(filterResultpValues[i]);
 				}	
-				else{
-				*/	
-					if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanZScore) > zScoreThreshold)){
-					
-						filteredPValueArrayList.add(filterResultpValues[i]);
-						//System.err.println("p-value = " + filterResultpValues[i].p);
-						//System.err.println("p-value = " + (String.format("%6.2e",filterResultpValues[i].p)));
-					}	
-				//}
 			}	
 			
 			// convert the ArrayList to MappedGeneSetTTestValue
@@ -646,6 +650,21 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		return "Filters on the intensity corrected statistical difference between stores";
 	}
 
+	// to get all the zscores as double values to use in stats test
+	private double [] getAllZScores(Hashtable<Probe, Double>zScoreLookupTable){
+	
+		Double [] allZ = zScoreLookupTable.values().toArray(new Double[0]);
+		
+		double[] allZscores = new double[probeZScoreLookupTable.values().size()]; 
+		
+		for(int z=0; z<allZ.length; z++){
+			allZscores[z] = allZ[z].doubleValue();
+		}
+		
+		return(allZscores);
+	}
+	
+	// convert all values to absolute values
 	public double[] convertToAbsoluteValues(double[] values){
 		
 		double[] absValues = new double[values.length];
@@ -753,6 +772,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			int geneSetLength = mappedGS[i].getProbes().length;
 			
 			J_LOOP: for (int j=i+1; j<mappedGS.length; j++){
+								
 				
 				if (mappedGS[j].getProbes().length == geneSetLength){
 					
@@ -763,7 +783,8 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					Arrays.sort(geneNames1);
 					Arrays.sort(geneNames2);
 										
-					for (int n=0; n<mappedGS.length-1; n++){
+					for (int n=0; n<geneNames1.length; n++){
+						
 						if(!(geneNames1[n].equals(geneNames2[n]))){
 							continue J_LOOP;
 						}						
@@ -771,7 +792,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					// if we've got to here then all the probe names have matched so we want to get rid of the gene set
 					continue I_LOOP;
 				}
-				
 			}
 			// if no duplicates have been found, add to the deduplicated set
 			dedupMGSArrayList.add(mappedGS[i]);
@@ -803,6 +823,10 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		b.append(" was below ");
 
 		b.append(pValueLimit);
+		
+		b.append(" using a ");
+		
+		b.append(optionsPanel.statisticalTestBox.getSelectedItem().toString());
 		
 		if (applyMultipleTestingCorrection) {
 			b.append(" (multiple testing correction applied)");
@@ -932,13 +956,13 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		private JRadioButton probeListRadioButton;
 		
 		// whether to test the average shift for the probeset from the overall mean
-		private JRadioButton unidirectionalRadioButton;
+		//private JRadioButton unidirectionalRadioButton;
 		
 		// or whether to test in both directions
-		private JRadioButton bidirectionalRadioButton;
+		//private JRadioButton bidirectionalRadioButton;
 		
 		// which statistical test to perform
-		//private JComboBox statisticalTest;
+		private JComboBox statisticalTestBox;
 		
 		/**
 		 * Instantiates a new differences options panel.
@@ -1011,6 +1035,17 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			gbc.weighty=0.5;
 			
 			/** Add in z-score filter */
+			
+			choicePanel.add(new JLabel("Statistical test to use"), gbc);
+			gbc.gridx = 2;
+			gbc.weightx=0.9;
+			
+			statisticalTestBox = new JComboBox(new String [] {"Kolmorogov-Smirnov test","t-test","Kolmorogov-Smirnov non-directional test"});
+			choicePanel.add(statisticalTestBox, gbc);
+			
+			gbc.gridx = 1;
+			gbc.weightx=0.1;
+			gbc.gridy++;
 			
 			choicePanel.add(new JLabel("P-value must be below "),gbc);
 			pValueField = new JTextField(""+pValueLimit,5);
@@ -1138,7 +1173,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			
 			//varianceMeasureBox = new JComboBox(new String [] {"STDEV","SEM","QuartDisp","CoefVar","Unmeasured"});
 			
-			choicePanel.add(new JLabel("Uni-directional test"),gbc);
+		/*	choicePanel.add(new JLabel("Uni-directional test"),gbc);
 						
 			unidirectionalRadioButton = new JRadioButton();
 			unidirectionalRadioButton.setSelected(true);
@@ -1148,7 +1183,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			choicePanel.add(unidirectionalRadioButton, gbc);
 		
 			
-		/*	gbc.gridx=1;
+			gbc.gridx=1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
 			choicePanel.add(new JLabel("Bi-directional test"),gbc);

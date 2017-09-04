@@ -55,6 +55,9 @@ public class GiraphPlot extends JDialog implements ActionListener{
 		JPanel plotPanel = new JPanel();
 		plotPanel.setLayout(new BorderLayout());
 		
+		//GiraphCalculations gc = new GiraphCalculations(probeLists);
+		
+		
 		giraphPlotPanel = new GiraphPlotPanel(probeLists);  
 		plotPanel.add(giraphPlotPanel, BorderLayout.CENTER);
 				
