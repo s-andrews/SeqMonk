@@ -236,7 +236,6 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 		public Object getValueAt(int r, int c) {
 			
-			System.err.println("r="+r+" c="+c+" stores="+matrix.stores().length);
 			if (r==0) {
 				return matrix.stores()[c].name();
 			}
