@@ -107,7 +107,7 @@ public class HeatmapMatrix implements Runnable, Cancellable {
 		this.probeLists = probeLists;
 		this.correctLinkage = correctLinkage;
 
-		if (this.correctLinkage) System.err.println("Correcting linkage");
+//		if (this.correctLinkage) System.err.println("Correcting linkage");
 
 		Vector<ProbeWithIndex> indexedProbes = new Vector<HeatmapMatrix.ProbeWithIndex>();
 

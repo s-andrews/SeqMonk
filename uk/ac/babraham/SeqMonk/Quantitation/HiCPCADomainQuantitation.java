@@ -24,6 +24,7 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
+import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.PCA;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.HiCDataStore;
@@ -143,8 +144,11 @@ public class HiCPCADomainQuantitation extends Quantitation implements ProgressLi
 			currentChromosome = chromosomes[c];
 			
 			Probe [] probes = application.dataCollection().probeSet().getProbesForChromosome(chromosomes[c]);
-			
+
+//			System.err.println("Total probes before filtering "+probes.length);
+
 			if (probes.length < 5) {
+				progressWarningReceived(new SeqMonkException("Too few probes on chromosome "+currentChromosome.name()+" - assigning zero to everything"));
 				// It's not worth trying to find domains
 				for (int d=0;d<data.length;d++) {
 					for (int p=0;p<probes.length;p++) {
@@ -170,10 +174,10 @@ public class HiCPCADomainQuantitation extends Quantitation implements ProgressLi
 				}
 			
 				currentStore = data[d];
-				current = (d*c)+d;
+				current = (d*chromosomes.length)+c;
 				total = chromosomes.length*data.length;
 				
-				progressUpdated("Processing chromosome "+chromosomes[c].name()+" for "+data[d].name(), (d*c)+d, chromosomes.length*data.length);
+				progressUpdated("Processing chromosome "+chromosomes[c].name()+" for "+data[d].name(), current, total);
 				
 				HeatmapMatrix matrix = new HeatmapMatrix(data[d], new ProbeList[]{thisChrProbes}, application.dataCollection().genome(), optionsPanel.minDistance(), optionsPanel.maxDistance(), optionsPanel.minStrength(), optionsPanel.maxSignificance(), optionsPanel.minAbsolute(), optionsPanel.correctLinkage());
 
@@ -196,6 +200,23 @@ public class HiCPCADomainQuantitation extends Quantitation implements ProgressLi
 					return;
 				}
 
+//				System.err.println("Total interactions after filtering "+matrix.filteredInteractions().length);
+				
+				// We should check that we actually have enough remaining interactions after filtering to justify
+				// going on to do the correlation/PCA.
+				
+				if (matrix.filteredInteractions().length < 10) {
+					progressWarningReceived(new SeqMonkException("Too few interactions on chromosome "+currentChromosome.name()+" for "+data[d].name()+" - assigning zero to everything"));
+					// Give up and assign zero to all probes for this data store on this chromosome as we're
+					// not going to get a sensible answer anyway.
+					for (int p=0;p<probes.length;p++) {
+						((DataStore)data[d]).setValueForProbe(probes[p], 0f);
+					}
+
+					continue;
+				}
+				
+				
 				InteractionClusterMatrix clusterMatrix = new InteractionClusterMatrix(matrix.filteredInteractions(), probes.length);
 				
 				clusterMatrix.addListener(this);
