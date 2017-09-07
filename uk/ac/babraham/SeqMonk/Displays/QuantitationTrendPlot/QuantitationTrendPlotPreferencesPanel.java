@@ -26,7 +26,7 @@ import uk.ac.babraham.SeqMonk.Displays.FeaturePositionSelector.FeaturePositionSe
 public class QuantitationTrendPlotPreferencesPanel extends FeaturePositionSelectorPanel {
 	
 	public QuantitationTrendPlotPreferencesPanel(DataCollection collection) {
-		super(collection, true, true);
+		super(collection, true, true,false);
 	}	
 	
 	

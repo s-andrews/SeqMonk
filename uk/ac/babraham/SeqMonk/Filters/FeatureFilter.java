@@ -82,8 +82,12 @@ public class FeatureFilter extends ProbeFilter {
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("Filter on regions based on ");
-		sb.append(options.featurePositions.selectedFeatureType());
-		sb.append(" ");
+		String [] featureNames = options.featurePositions.selectedFeatureTypes();
+		for (int i=0;i<featureNames.length;i++) {
+			sb.append(featureNames[i]);
+			sb.append(" ");
+		}
+
 		if (options.featurePositions.useSubFeatures()) {
 			if (options.featurePositions.useExonSubfeatures()) {
 				sb.append("exons ");
@@ -312,7 +316,7 @@ public class FeatureFilter extends ProbeFilter {
 			
 			gbc.gridy++;
 
-			featurePositions = new FeaturePositionSelectorPanel(collection, false, false);
+			featurePositions = new FeaturePositionSelectorPanel(collection, false, false,true);
 			gbc.fill = GridBagConstraints.BOTH;
 			add(featurePositions,gbc);
 
@@ -419,7 +423,14 @@ public class FeatureFilter extends ProbeFilter {
 		}
 		
 		public String getListNameSuggestion () {
-			return ""+relationshipTypeBox.getSelectedItem()+" "+featurePositions.selectedFeatureType();
+			StringBuffer sb = new StringBuffer();
+			sb.append(relationshipTypeBox.getSelectedItem());
+			String [] featureNames = featurePositions.selectedFeatureTypes();
+			for (int i=0;i<featureNames.length;i++) {
+				sb.append(" ");
+				sb.append(featureNames[i]);
+			}
+			return sb.toString();
 		}
 
 		public void itemStateChanged(ItemEvent e) {

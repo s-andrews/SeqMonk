@@ -49,7 +49,7 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 	private boolean useExonSubfeatures = false;
 	private boolean removeDuplicates = true;
 	private boolean ignoreDirection = false;
-	private String featureType;
+	private String [] featureTypes;
 
 
 	/**
@@ -75,7 +75,7 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 		removeDuplicates = optionPanel.removeDuplicates();
 		useSubfeatures = optionPanel.useSubFeatures();
 		useExonSubfeatures = optionPanel.useExonSubfeatures();
-		featureType = optionPanel.selectedFeatureType();
+		featureTypes = optionPanel.selectedFeatureTypes();
 
 		startValue = optionPanel.startOffset();
 		endValue = optionPanel.endOffset();
@@ -95,7 +95,7 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 			return optionPanel;
 		}
 		
-		optionPanel = new FeaturePositionSelectorPanel(collection, true, true);
+		optionPanel = new FeaturePositionSelectorPanel(collection, true, true,true);
 		
 		optionPanel.setUseSubFeatures(useSubfeatures, useExonSubfeatures);
 		optionPanel.setRemoveDuplicates(removeDuplicates);
@@ -145,7 +145,10 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 		StringBuffer b = new StringBuffer();
 
 		b.append("Feature generator using ");
-		b.append(featureType);
+		for (int i=0;i<featureTypes.length;i++) {
+			b.append(featureTypes[i]);
+			b.append(" ");
+		}
 
 		if (useSubfeatures) {
 			if (useExonSubfeatures) {
