@@ -33,7 +33,14 @@ public class GFFFileFilter extends FileFilter {
 	 */
 	@Override
 	public boolean accept(File f) {
-		if (f.isDirectory() || f.getName().toLowerCase().endsWith(".gff") || f.isDirectory() || f.getName().toLowerCase().endsWith(".gff3") || f.getName().toLowerCase().endsWith(".gtf")) {
+		if (f.isDirectory() || 
+				f.getName().toLowerCase().endsWith(".gff") ||
+				f.getName().toLowerCase().endsWith(".gff3") || 
+				f.getName().toLowerCase().endsWith(".gtf") ||
+				f.getName().toLowerCase().endsWith(".gff.gz") ||
+				f.getName().toLowerCase().endsWith(".gff3.gz") || 
+				f.getName().toLowerCase().endsWith(".gtf.gz")
+				) {
 			return true;
 		}
 		else {

@@ -21,11 +21,14 @@ package uk.ac.babraham.SeqMonk.AnnotationParsers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.zip.GZIPInputStream;
 
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -118,7 +121,15 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		
 		Hashtable<String, FeatureGroup> groupedFeatures = new Hashtable<String, FeatureGroup>();
 		
-		BufferedReader br  = new BufferedReader(new FileReader(file));
+		BufferedReader br;
+
+		if (file.getName().toLowerCase().endsWith(".gz")) {
+			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));	
+		}
+		else {
+			br = new BufferedReader(new FileReader(file));
+		}
+
 		String line;
 
 		int count = 0;

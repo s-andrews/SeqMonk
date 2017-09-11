@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -303,17 +304,24 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 			// Copy over the gff files
 			try {
 				for (int f=0;f<gffFiles.size();f++) {
-					PrintWriter pr = new PrintWriter(new File(assemblyFolder.getAbsolutePath()+"/"+gffFiles.elementAt(f).getName()));
+					
+					FileOutputStream fos = new FileOutputStream(new File(assemblyFolder.getAbsolutePath()+"/"+gffFiles.elementAt(f).getName()));
+//					PrintWriter pr = new PrintWriter(new File(assemblyFolder.getAbsolutePath()+"/"+gffFiles.elementAt(f).getName()));
+
+					FileInputStream fis = new FileInputStream(gffFiles.elementAt(f));
+
+//					BufferedReader br = new BufferedReader(new FileReader(gffFiles.elementAt(f)));
 				
-					BufferedReader br = new BufferedReader(new FileReader(gffFiles.elementAt(f)));
-				
-					String line;
-					while ((line = br.readLine()) != null) {
-						pr.println(line);
+					
+					byte [] buffer = new byte[1024];
+					int noOfBytes = 0;
+					
+					while ((noOfBytes = fis.read(buffer)) != -1) {
+						fos.write(buffer,0,noOfBytes);
 					}
 				
-					br.close();
-					pr.close();
+					fis.close();
+					fos.close();
 				}
 
 				// Write out chromosome lengths along with aliases for pseudo chromosomes			

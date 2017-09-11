@@ -148,7 +148,15 @@ public class GenomeParser implements Runnable {
 				File [] files = baseLocations[g].listFiles(new FileFilter() {
 
 					public boolean accept(File f) {
-						if (f.getName().toLowerCase().endsWith(".dat")  || f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gff3") || f.getName().toLowerCase().endsWith(".gtf")) {
+						if (
+								f.getName().toLowerCase().endsWith(".dat")  || 
+								f.getName().toLowerCase().endsWith(".gff") || 
+								f.getName().toLowerCase().endsWith(".gff3") || 
+								f.getName().toLowerCase().endsWith(".gtf") ||
+								f.getName().toLowerCase().endsWith(".gff.gz") || 
+								f.getName().toLowerCase().endsWith(".gff3.gz") || 
+								f.getName().toLowerCase().endsWith(".gtf.gz")
+								) {
 							return true;
 						}
 						else {
@@ -373,7 +381,14 @@ public class GenomeParser implements Runnable {
 		files = baseLocation.listFiles(new FileFilter() {
 
 			public boolean accept(File f) {
-				if (f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gtf") || f.getName().toLowerCase().endsWith(".gff3")) {
+				if (
+						f.getName().toLowerCase().endsWith(".gff") || 
+						f.getName().toLowerCase().endsWith(".gtf") || 
+						f.getName().toLowerCase().endsWith(".gff3") ||
+						f.getName().toLowerCase().endsWith(".gff.gz") || 
+						f.getName().toLowerCase().endsWith(".gtf.gz") || 
+						f.getName().toLowerCase().endsWith(".gff3.gz")
+						) {
 					return true;
 				}
 				else {
