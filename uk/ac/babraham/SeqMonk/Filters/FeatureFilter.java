@@ -201,10 +201,10 @@ public class FeatureFilter extends ProbeFilter {
 							}
 							case OPPOSING_STRAND: {
 								if (!
-										(features[f].strand() == Location.FORWARD  && probes[p].strand() == Location.REVERSE) ||
-										(features[f].strand() == Location.REVERSE  && probes[p].strand() == Location.FORWARD)
-										)
-										continue;
+										((features[f].strand() == Location.FORWARD  && probes[p].strand() == Location.REVERSE) ||
+										(features[f].strand() == Location.REVERSE  && probes[p].strand() == Location.FORWARD))
+										) 
+									continue;
 								break;
 							}
 												
