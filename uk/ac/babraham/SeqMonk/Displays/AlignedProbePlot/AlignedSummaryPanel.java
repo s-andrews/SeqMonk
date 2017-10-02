@@ -89,7 +89,7 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 	Smoother smoother = new Smoother();
 
 	/** A set of colors to use for the plots */
-	private Color [] colors = new Color[256];
+	public Color [] colors = new Color[256];
 
 	/** A flag to say if we can abandon calculating the plot */
 	private boolean cancel = false;
@@ -357,7 +357,18 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 			throw new IllegalStateException(e);
 		}
 
+		// We need to wait for the smoother to actually finish the first
+		// time so we can correctly set the scaling values for the colour
+		// scale
 		smoother.smooth();
+		while (smoother.running) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		Enumeration<ProgressListener> en = listeners.elements();
 		while (en.hasMoreElements()) {
@@ -631,6 +642,10 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 
 
 		}
+		
+		public boolean running () {
+			return running;
+		}
 
 		/**
 		 * This smoothes the raw counts according to the currently
@@ -652,7 +667,7 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 				
 				//TODO: Why did we do this??  Can't see the point but I'm guessing
 				// it's here for a reason.
-				if (line % 1000 == 0) {
+				if (line % 10000 == 0) {
 					try {
 						Thread.sleep(2);
 					} catch (InterruptedException e) {}

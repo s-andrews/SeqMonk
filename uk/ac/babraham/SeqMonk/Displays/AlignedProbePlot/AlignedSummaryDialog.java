@@ -20,6 +20,7 @@
 package uk.ac.babraham.SeqMonk.Displays.AlignedProbePlot;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,6 +42,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
+import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 /**
@@ -58,8 +61,12 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 	private JSlider contrastSlider;
 
 	private int progressIndex = 0;
+	
+	private GradientScaleBar scaleBar;
 
 	private ProgressDialog pd = null;
+	
+	private boolean logTransform;
 
 
 	/**
@@ -72,6 +79,8 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 	public AlignedSummaryDialog (ProbeList [] lists, DataStore [] stores, AlignedSummaryPreferences prefs) {
 		super(SeqMonkApplication.getInstance(),"Aligned probes plot");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		
+		logTransform = prefs.useLogScale;
 
 		pd = new ProgressDialog(SeqMonkApplication.getInstance(),"Aligning...", this);
 		pd.progressUpdated("Setting up alignment...", 0, 1);
@@ -152,7 +161,21 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 		contrastSlider.setPaintTicks(true);
 		contrastSlider.addChangeListener(this);
 
-		getContentPane().add(contrastSlider,BorderLayout.EAST);
+		getContentPane().add(contrastSlider,BorderLayout.WEST);
+		
+		// We're going to add a scale bar to the left hand side
+		scaleBar = new GradientScaleBar(new ColourGradient() {
+			
+			public String name() {
+				return "";
+			}
+			
+			protected Color[] makeColors() {
+				return summaryPanels[0].colors;
+			}
+		}, 0,1);
+		
+		getContentPane().add(scaleBar, BorderLayout.EAST);
 
 		JPanel buttonPanel = new JPanel();
 		JButton cancelButton = new JButton("Close");
@@ -167,7 +190,7 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 		buttonPanel.add(saveImageButton);
 
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
-		setSize(Math.min(200*stores.length, 800),700);
+		setSize(Math.min(150+(200*stores.length), 800),700);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 
 		pd.progressUpdated("Aligning...", 0, 1);
@@ -200,7 +223,6 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 		
 		float percentile = (float)(Math.pow(contrastSlider.getValue(),4)/Math.pow(100,4))*100f;
 		
-		
 		if (summaryPanels != null) {
 
 			float maxValue = 1;
@@ -216,6 +238,13 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 			
 			maxValue /= 100;
 			maxValue *= percentile;
+			
+			if (logTransform) {
+				scaleBar.setLimits(0, Math.log(maxValue+1));
+			}
+			else {
+				scaleBar.setLimits(0, maxValue);
+			}
 			
 			for (int i=0;i<summaryPanels.length;i++) {
 				if (summaryPanels[i] != null) {
@@ -244,12 +273,14 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 
 	public void progressComplete(String command, Object result) {
 		++progressIndex;
+		
 		if (progressIndex<summaryPanels.length) {
 			Thread t = new Thread(summaryPanels[progressIndex]);
 			t.start();
 		}
 		else {
 			pd.progressComplete("aligned_probes", this);
+			stateChanged(null);
 			setVisible(true);
 		}
 	}
