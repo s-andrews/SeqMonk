@@ -170,6 +170,8 @@ public class FeatureFilter extends ProbeFilter {
 			// We can now step through the probes looking for the best feature match
 			for (int p=0;p<probes.length;p++) {
 				
+				boolean foundFirst = false;
+				
 				for (int f=lastFoundIndex;f<features.length;f++) {
 					
 					if (cancel) {
@@ -177,11 +179,14 @@ public class FeatureFilter extends ProbeFilter {
 						progressCancelled();
 						return;
 					}
-					
-					if (features[f].end()+annotationLimit < probes[p].start()) {
-						lastFoundIndex = f;
-						continue;
+
+					if (! foundFirst) {
+						if (features[f].end()+annotationLimit >= probes[p].start()) {
+							lastFoundIndex = f;
+							foundFirst = true;
+						}
 					}
+					
 					
 					// See if we're skipping this feature for this probe based on its strand
 					if (strand != ANY_STRAND) {
@@ -201,10 +206,10 @@ public class FeatureFilter extends ProbeFilter {
 							}
 							case OPPOSING_STRAND: {
 								if (!
-										(features[f].strand() == Location.FORWARD  && probes[p].strand() == Location.REVERSE) ||
-										(features[f].strand() == Location.REVERSE  && probes[p].strand() == Location.FORWARD)
-										)
-										continue;
+										((features[f].strand() == Location.FORWARD  && probes[p].strand() == Location.REVERSE) ||
+										(features[f].strand() == Location.REVERSE  && probes[p].strand() == Location.FORWARD))
+										) 
+									continue;
 								break;
 							}
 												
