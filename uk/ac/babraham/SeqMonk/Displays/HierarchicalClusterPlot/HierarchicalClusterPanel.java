@@ -37,6 +37,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterPair;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
+import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
+import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 
 public class HierarchicalClusterPanel extends JPanel implements MouseListener, MouseMotionListener {
@@ -64,7 +66,7 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 	private double rValue = 0.7;
 
 	// Constants for borders around the plot
-	private int TOP_NAME_HEIGHT = 30; // This varies by the number of replicate sets we have
+	private int TOP_NAME_HEIGHT = 35; // This varies by the number of replicate sets we have
 	private static final int BOTTOM_NAME_HEIGHT = 10;
 	private static final int LEFT_BORDER = 10;
 	private static final int RIGHT_BORDER = 10;
@@ -127,7 +129,7 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 			repSets = new ReplicateSet[0];
 		}
 		this.repSets = repSets;
-		TOP_NAME_HEIGHT = 30 + (10*repSets.length);
+		TOP_NAME_HEIGHT = 35 + (10*repSets.length);
 		
 		repaint();
 	}
@@ -364,6 +366,22 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 				g.drawString(thisName+"..", getXForPosition(d), TOP_NAME_HEIGHT-3);
 			}
 		}
+		
+		// Draw the replicate set groups if there are any
+		for (int r=0;r<repSets.length;r++) {
+			g.setColor(ColourIndexSet.getColour(r));
+			
+			g.drawString(repSets[r].name(), getXForPosition(stores.length), 30+(10*r));
+				
+			for (int s=0;s<stores.length;s++) {
+				if (repSets[r].containsDataStore(stores[s])) {
+					g.fillRect(getXForPosition(s), 30+(10*(r-1)), getXForPosition(s+1)-getXForPosition(s), 10);
+				}
+			}
+			
+			
+		}
+		
 
 		// Draw lines on the cluster boundaries for the current R-value limit
 		// Draw Cluster Lines on X axis

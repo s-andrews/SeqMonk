@@ -29,8 +29,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
@@ -42,7 +45,7 @@ import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 
 public class FeaturePositionSelectorPanel extends JPanel {
 
-	private JComboBox featureTypeBox;
+	private JList<String> featureTypeBox;
 	private JComboBox subFeatureTypeBox;
 	private JCheckBox removeDuplicatesCheckbox;
 	private JCheckBox ignoreDirectionCheckbox;
@@ -52,7 +55,7 @@ public class FeaturePositionSelectorPanel extends JPanel {
 	private DataCollection collection;
 
 
-	public FeaturePositionSelectorPanel (DataCollection collection, boolean showDirectionOptions, boolean showDuplicatesOptions) {
+	public FeaturePositionSelectorPanel (DataCollection collection, boolean showDirectionOptions, boolean showDuplicatesOptions, boolean allowMultiSelection) {
 		this.collection = collection;
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -66,9 +69,11 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		add(new JLabel("Features to design around"),gbc);
 		
 		gbc.gridx = 3;
-		featureTypeBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
-		featureTypeBox.setPrototypeDisplayValue("No longer than this please");
-		add(featureTypeBox,gbc);
+		featureTypeBox = new JList(collection.genome().annotationCollection().listAvailableFeatureTypes());
+		if (!allowMultiSelection) {
+			featureTypeBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		add(new JScrollPane(featureTypeBox),gbc);
 
 		gbc.gridy++;
 		gbc.gridx = 2;
@@ -131,8 +136,8 @@ public class FeaturePositionSelectorPanel extends JPanel {
 
 	}
 	
-	public String selectedFeatureType () {
-		return (String)featureTypeBox.getSelectedItem();
+	public String [] selectedFeatureTypes () {
+		return featureTypeBox.getSelectedValuesList().toArray(new String[0]);
 	}
 	
 	public boolean useSubFeatures() {
@@ -210,8 +215,20 @@ public class FeaturePositionSelectorPanel extends JPanel {
 
 		for (int c=0;c<chromosomes.length;c++) {
 
-			Feature [] features = collection.genome().annotationCollection().getFeaturesForType(chromosomes[c],selectedFeatureType());
+			Vector<Feature> allFeatures = new Vector<Feature>();
+			
+			String [] selectedFeatureTypes = selectedFeatureTypes();
+			
+			for (int f=0; f<selectedFeatureTypes.length;f++) {
+				Feature [] features = collection.genome().annotationCollection().getFeaturesForType(chromosomes[c],selectedFeatureTypes[f]);
+				
+				for (int i=0;i<features.length;i++) {
+					allFeatures.add(features[i]);
+				}
+			}
 
+			Feature [] features = allFeatures.toArray(new Feature[0]);
+						
 			for (int f=0;f<features.length;f++) {
 
 				
@@ -249,11 +266,11 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		}
 
 		Probe [] finalList = newProbes.toArray(new Probe[0]);
-
+		
 		if (removeDuplicates()) {
 			finalList = removeDuplicates(finalList);
 		}
-		
+
 		return finalList;
 
 	}
@@ -272,7 +289,19 @@ public class FeaturePositionSelectorPanel extends JPanel {
 
 		for (int c=0;c<chromosomes.length;c++) {
 
-			Feature [] features = collection.genome().annotationCollection().getFeaturesForType(chromosomes[c],selectedFeatureType());
+			Vector<Feature> allFeatures = new Vector<Feature>();
+			
+			String [] selectedFeatureTypes = selectedFeatureTypes();
+			
+			for (int f=0; f<selectedFeatureTypes.length;f++) {
+				Feature [] features = collection.genome().annotationCollection().getFeaturesForType(chromosomes[c],selectedFeatureTypes[f]);
+				
+				for (int i=0;i<features.length;i++) {
+					allFeatures.add(features[i]);
+				}
+			}
+
+			Feature [] features = allFeatures.toArray(new Feature[0]);
 
 			for (int f=0;f<features.length;f++) {
 

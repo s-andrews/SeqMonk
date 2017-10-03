@@ -82,8 +82,12 @@ public class FeatureFilter extends ProbeFilter {
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("Filter on regions based on ");
-		sb.append(options.featurePositions.selectedFeatureType());
-		sb.append(" ");
+		String [] featureNames = options.featurePositions.selectedFeatureTypes();
+		for (int i=0;i<featureNames.length;i++) {
+			sb.append(featureNames[i]);
+			sb.append(" ");
+		}
+
 		if (options.featurePositions.useSubFeatures()) {
 			if (options.featurePositions.useExonSubfeatures()) {
 				sb.append("exons ");
@@ -166,6 +170,8 @@ public class FeatureFilter extends ProbeFilter {
 			// We can now step through the probes looking for the best feature match
 			for (int p=0;p<probes.length;p++) {
 				
+				boolean foundFirst = false;
+				
 				for (int f=lastFoundIndex;f<features.length;f++) {
 					
 					if (cancel) {
@@ -173,11 +179,14 @@ public class FeatureFilter extends ProbeFilter {
 						progressCancelled();
 						return;
 					}
-					
-					if (features[f].end()+annotationLimit < probes[p].start()) {
-						lastFoundIndex = f;
-						continue;
+
+					if (! foundFirst) {
+						if (features[f].end()+annotationLimit >= probes[p].start()) {
+							lastFoundIndex = f;
+							foundFirst = true;
+						}
 					}
+					
 					
 					// See if we're skipping this feature for this probe based on its strand
 					if (strand != ANY_STRAND) {
@@ -197,10 +206,10 @@ public class FeatureFilter extends ProbeFilter {
 							}
 							case OPPOSING_STRAND: {
 								if (!
-										(features[f].strand() == Location.FORWARD  && probes[p].strand() == Location.REVERSE) ||
-										(features[f].strand() == Location.REVERSE  && probes[p].strand() == Location.FORWARD)
-										)
-										continue;
+										((features[f].strand() == Location.FORWARD  && probes[p].strand() == Location.REVERSE) ||
+										(features[f].strand() == Location.REVERSE  && probes[p].strand() == Location.FORWARD))
+										) 
+									continue;
 								break;
 							}
 												
@@ -312,7 +321,7 @@ public class FeatureFilter extends ProbeFilter {
 			
 			gbc.gridy++;
 
-			featurePositions = new FeaturePositionSelectorPanel(collection, false, false);
+			featurePositions = new FeaturePositionSelectorPanel(collection, false, false,true);
 			gbc.fill = GridBagConstraints.BOTH;
 			add(featurePositions,gbc);
 
@@ -415,11 +424,18 @@ public class FeatureFilter extends ProbeFilter {
 		}
 		
 		public Dimension getPreferredSize () {
-			return new Dimension(600,400);
+			return new Dimension(800,600);
 		}
 		
 		public String getListNameSuggestion () {
-			return ""+relationshipTypeBox.getSelectedItem()+" "+featurePositions.selectedFeatureType();
+			StringBuffer sb = new StringBuffer();
+			sb.append(relationshipTypeBox.getSelectedItem());
+			String [] featureNames = featurePositions.selectedFeatureTypes();
+			for (int i=0;i<featureNames.length;i++) {
+				sb.append(" ");
+				sb.append(featureNames[i]);
+			}
+			return sb.toString();
 		}
 
 		public void itemStateChanged(ItemEvent e) {

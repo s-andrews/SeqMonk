@@ -31,6 +31,8 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
+import uk.ac.babraham.SeqMonk.Analysis.Correlation.PearsonCorrelation;
+import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
@@ -87,7 +89,7 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 	Smoother smoother = new Smoother();
 
 	/** A set of colors to use for the plots */
-	private Color [] colors = new Color[256];
+	public Color [] colors = new Color[256];
 
 	/** A flag to say if we can abandon calculating the plot */
 	private boolean cancel = false;
@@ -205,8 +207,11 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 
 		int lastY = 30;
 
+		// If there are multiple lines with the same y value then we average across
+		// them.  This variable keeps the total of the counts and the running count
+		// keeps the number of samples merged so we can average out from that.
 		float [] runningFloats = new float[smoothedCounts[0].length];
-		int runningCount = 0;
+		Vector<float []> possibleLineData = new Vector<float[]>();
 
 		// Now go through the various probes
 		for (int p=0;p<smoothedCounts.length;p++) {
@@ -215,25 +220,54 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 
 			//			System.out.println("Looking at probe "+p+" out of "+smoothedCounts.length+" with y-value of "+thisY+" and last of "+lastY);				
 
-			if (thisY != lastY && runningCount > 0) {
+			if (thisY != lastY && possibleLineData.size() > 0) {
 				//				System.out.println("Drawing cache from "+lastY+" to "+thisY);
 
+				// We need to work out which data we're going to plot.  To keep the scaling looking right
+				// the way we do this is to correlate each of the possible datasets to the average trace we
+				// produced and take the most representative one.
+				
+				float [] dataToPlot;
+				
+				// Take the easy case first
+				if (possibleLineData.size() == 1) {
+					dataToPlot = possibleLineData.elementAt(0);
+				}
+				
+				else {
+					// We have to work out the best one to take.
+					dataToPlot = possibleLineData.elementAt(0);
+					float bestR = -2; // Start with a value we'll have to be better than!
+					for (int i=0;i<possibleLineData.size();i++) {
+						try {
+							float thisR = PearsonCorrelation.calculateCorrelation(runningFloats, possibleLineData.elementAt(i));
+							if (thisR > bestR) {
+								bestR = thisR;
+								dataToPlot = possibleLineData.elementAt(i);
+							}
+						}
+						catch (SeqMonkException sme) {}
+					}
+				
+				}
+				
+				
 				int lastX = 10;
 
-				for (int c=0;c<runningFloats.length;c++) {
+				for (int c=0;c<dataToPlot.length;c++) {
 
 					Color color;
-					if ((runningFloats[c]/runningCount) > maxIntensity) {
+					if ((dataToPlot[c]) > maxIntensity) {
 						color = colors[255];
 					}
 					else if (prefs.useLogScale) {
-						int index = (int)((255 * Math.log((runningFloats[c]/runningCount)+1))/Math.log(maxIntensity+1));
-						//						System.out.println("Log index of "+(runningFloats[c]/runningCount)+" vs "+maxCount+" is "+index);
+						int index = (int)((255 * Math.log((dataToPlot[c])+1))/Math.log(maxIntensity+1));
+						//						System.out.println("Log index of "+(dataToPlot[c]/runningCount)+" vs "+maxCount+" is "+index);
 						color = colors[index];					
 					}
 					else {
-						int index = (int)(255 * (runningFloats[c]/runningCount)/maxIntensity);
-						//						System.out.println("Index of "+(runningFloats[c]/runningCount)+" vs "+maxCount+" is "+index);					
+						int index = (int)(255 * (dataToPlot[c])/maxIntensity);
+						//						System.out.println("Index of "+(dataToPlot[c]/runningCount)+" vs "+maxCount+" is "+index);					
 						color = colors[index];
 					}
 					g.setColor(color);
@@ -256,18 +290,16 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 				lastY = thisY;
 				for (int i=0;i<runningFloats.length;i++) {
 					runningFloats[i] = 0;
-					runningCount = 0;
 				}
+				possibleLineData.clear();
 			}
 
-			// Add our values to the running counts
-			for (int i=0;i<runningFloats.length;i++) {
-				runningFloats[i] = smoothedCounts[p][i];
+			else {
+				for (int i=0;i<runningFloats.length;i++) {					
+					runningFloats[i] = smoothedCounts[p][i];
+				}
+				possibleLineData.add(smoothedCounts[p]);
 			}
-
-			runningCount++;
-			//			System.out.println("Adding to the cache with count "+runningCount);
-
 
 		}
 
@@ -325,7 +357,18 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 			throw new IllegalStateException(e);
 		}
 
+		// We need to wait for the smoother to actually finish the first
+		// time so we can correctly set the scaling values for the colour
+		// scale
 		smoother.smooth();
+		while (smoother.running) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		Enumeration<ProgressListener> en = listeners.elements();
 		while (en.hasMoreElements()) {
@@ -420,13 +463,15 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 					if (SequenceRead.start(reads[r]) == SequenceRead.start(reads[r-1]) && SequenceRead.end(reads[r]) == SequenceRead.end(reads[r-1])) {
 						continue;
 					}
+					System.err.println("Removed duplicate");
 				}
 
 				// Check if we're using reads in this direction
 				if (! prefs.quantitationType.useRead(probes[p], reads[r])) {
+					System.err.println("Remove rejected read type");
 					continue;
 				}			
-
+				
 				int startPos = Math.max(SequenceRead.start(reads[r])-probes[p].start(),0);
 				int endPos = Math.min(SequenceRead.end(reads[r])-probes[p].start(),fixedLength-1);
 
@@ -597,6 +642,10 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 
 
 		}
+		
+		public boolean running () {
+			return running;
+		}
 
 		/**
 		 * This smoothes the raw counts according to the currently
@@ -618,7 +667,7 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 				
 				//TODO: Why did we do this??  Can't see the point but I'm guessing
 				// it's here for a reason.
-				if (line % 1000 == 0) {
+				if (line % 10000 == 0) {
 					try {
 						Thread.sleep(2);
 					} catch (InterruptedException e) {}
@@ -639,7 +688,7 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 						total+=raw[pos+offset];
 						count++;
 					}
-					smoothed[pos] = total/count;
+					smoothed[pos] = (float)total/count;
 				}
 				newCounts[line] = smoothed;
 

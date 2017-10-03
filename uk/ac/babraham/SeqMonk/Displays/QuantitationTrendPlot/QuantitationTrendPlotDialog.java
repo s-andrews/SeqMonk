@@ -114,7 +114,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		Probe [] upstreamProbes = prefs.getUpstreamProbes();
 		if (upstreamProbes != null) {
 			waitingCounter.increment();
-			upstreamTrendPanel = new QuantitationTrendPlotPanel(upstreamProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureType());
+			upstreamTrendPanel = new QuantitationTrendPlotPanel(upstreamProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureTypes()[0]);
 			trendPanel.add(upstreamTrendPanel,gbc);
 			gbc.gridx++;
 		}
@@ -123,7 +123,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		Probe [] centralProbes = prefs.getCoreProbes();
 		if (centralProbes != null) {
 			waitingCounter.increment();
-			centralTrendPanel = new QuantitationTrendPlotPanel(centralProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureType());
+			centralTrendPanel = new QuantitationTrendPlotPanel(centralProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureTypes()[0]);
 			trendPanel.add(centralTrendPanel,gbc);
 			gbc.gridx++;
 		}
@@ -132,7 +132,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		Probe [] downstreamProbes = prefs.getDownstreamProbes();
 		if (downstreamProbes != null) {
 			waitingCounter.increment();
-			downstreamTrendPanel = new QuantitationTrendPlotPanel(downstreamProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureType());
+			downstreamTrendPanel = new QuantitationTrendPlotPanel(downstreamProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureTypes()[0]);
 			trendPanel.add(downstreamTrendPanel,gbc);
 			gbc.gridx++;
 		}

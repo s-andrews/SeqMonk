@@ -194,7 +194,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		PrintWriter pr = new PrintWriter(file);
 		
 		for (int line=0;line<model.getRowCount();line++) {
-			for (int col=0;col<model.getRowCount();col++) {
+			for (int col=0;col<model.getColumnCount();col++) {
 				if (col>0) pr.print("\t");
 				pr.print(model.getValueAt(line, col));
 			}
