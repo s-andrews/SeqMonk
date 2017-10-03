@@ -90,9 +90,6 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 	/** The df. */
 	private final DecimalFormat df = new DecimalFormat("#.###");
 
-	/** The pearsons r-value to display on the graph */
-//	private String rValue;
-
 	/**  Some points which say where the cursor is currently located */
 	private int cursorX = 0;
 	private int cursorY = 0;
@@ -290,7 +287,6 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 		// Go through every nonred assigning a suitable colour
 		ColourGradient gradient = new HotColdColourGradient();
 		for (int i=0;i<nonred.length;i++) {
-//			nonred[i].color = ColourGradient.getColor(nonred[i].count, minCount, maxCount);
 			
 			if (subLists == null) {
 				nonred[i].color = gradient.getColor(nonred[i].count, minCount, maxCount);
@@ -312,8 +308,6 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 		nonRedundantValues = nonred;
 		lastNonredWidth = getWidth();
 		lastNonredHeight = getHeight();
-
-		//		System.out.println("Nonred was "+nonRedundantValues.length+" from "+probes.length);
 
 	}
 
@@ -371,21 +365,8 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 		g.drawString("mean probe intensity",(getWidth()/2)-(metrics.stringWidth("mean probe intensity")/2),getHeight()-3);		
 
 		// Y label
-		//g.drawString("z-score",X_AXIS_SPACE+3,15);
-		
 		g.drawString("z-score",X_AXIS_SPACE-metrics.stringWidth("z-score")-3,15);
 		
-		// If we have sublists draw them below this in the right colours
-		if (subLists != null) {
-			for (int s=0;s<subLists.length;s++) {
-				g.setColor(ColourIndexSet.getColour(s));
-				//g.drawString(subLists[s].name(),X_AXIS_SPACE+3,15+(g.getFontMetrics().getHeight()*(s+1)));
-				// add the name in the top right
-				g.drawString(subLists[s].name(),getWidth()-metrics.stringWidth(subLists[s].name())-5,15+(g.getFontMetrics().getHeight()*(s+1)));
-			}
-			g.setColor(Color.BLACK);
-		}
-
 		g.setColor(Color.BLUE);
 
 		for (int p=0;p<nonRedundantValues.length;p++) {
@@ -394,9 +375,6 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 				g.setColor(Color.BLACK);
 			}
 			else {
-//				if (nonRedundantValues[p].color == null) {
-//					nonRedundantValues[p].color = Color.YELLOW;
-//				}
 
 				g.setColor(nonRedundantValues[p].color);
 			}
@@ -404,6 +382,16 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 			g.fillRect(nonRedundantValues[p].x - (dotSize/2), nonRedundantValues[p].y-(dotSize/2), dotSize, dotSize);
 		}
 
+		// If we have a highlighted list, add the name
+		if (subLists != null) {
+			for (int s=0;s<subLists.length;s++) {
+				g.setColor(ColourIndexSet.getColour(s));
+				g.drawString(subLists[s].name(),getWidth()-metrics.stringWidth(subLists[s].name())-5,30+(g.getFontMetrics().getHeight()*(s+1)));
+			}
+			g.setColor(Color.BLACK);
+		}
+		
+		
 		// 0 line
 		g.setColor(Color.GRAY);
 		g.drawLine(X_AXIS_SPACE,getY(0),getWidth()-10,getY(0));
@@ -489,42 +477,7 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 		return x;
 	}
 
-	/**
-	 * Gets the filtered probes.
-	 * 
-	 * @param probeset the probeset
-	 * @return the filtered probes
-	 */
-/*	public ProbeList getFilteredProbes (ProbeSet probeset) {
 
-		double minDiff = Math.min(diffStart, diffEnd);
-		double maxDiff = Math.max(diffStart, diffEnd);
-
-		ProbeList list = new ProbeList(probeList,"Difference between "+df.format(minDiff)+" and "+df.format(maxDiff),"Difference between "+xStore.name()+" and "+yStore.name()+" was between "+df.format(minDiff)+" and "+df.format(maxDiff),null);
-
-		if (madeSelection) {
-
-			Probe [] probes = probeList.getAllProbes();
-
-
-			for (int p=0;p<probes.length;p++) {
-				try {
-					double diff = xStore.getValueForProbe(probes[p])-yStore.getValueForProbe(probes[p]);
-					if (diff < minDiff) continue;
-					if (diff > maxDiff) continue;
-
-					list.addProbe(probes[p], null);
-				}
-				catch (SeqMonkException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return list;
-
-	}
-*/
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
