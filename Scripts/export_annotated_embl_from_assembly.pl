@@ -29,11 +29,14 @@ use Bio::SeqIO;
 use Bio::SeqFeature::Generic;
 use Bio::Location::Split;
 use Bio::Location::Simple;
+use Bio::EnsEMBL::ApiVersion;
 
 
 $|++;
 
 system("clear") == 0 or warn "Couldn't clear screen";
+
+my $version = software_version();
 
 my $registry = load_registry();
 
@@ -42,7 +45,6 @@ my $GO_adapter =   $registry->get_adaptor( 'Multi', 'Ontology', 'GOTerm' );
 die "Couldn't get GO adaptor" unless ($GO_adapter);
 
 my $slice_adapter = select_slice_adapter($registry);
-
 
 sub load_registry {
 
@@ -138,18 +140,22 @@ sub process_genome {
 
   my $db_adapter = shift;
 
-  die "Adapter is $db_adapter\n";
+#  die "Adapter is $db_adapter\n";
 
   warn "Processing genome ".$db_adapter->species()."\n";
 
   my $simple_feature_adapter = $db_adapter->get_SimpleFeatureAdaptor();
 
   my $assembly = $db_adapter->get_adaptor('coordsystem')->fetch_all->[0]->version();
+
+  $assembly .= "_v$version";
+
   my $species = $db_adapter->species();
 
   my $readable_species = $species;
   $readable_species =~ s/_/ /g;
   $readable_species =~ s/^(\w)/uc $1/e;
+
 
   # Find a suitable directory for this species
   if (! -e $readable_species) {
