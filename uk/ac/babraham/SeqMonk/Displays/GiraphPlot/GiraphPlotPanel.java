@@ -91,7 +91,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 	/** whether the program is currently calculating i.e. whether calculateCoordinates is running - this is controlled by the stop or play buttons on the menu */
 	protected boolean calculating = false;
 	
-	private static int BORDER = 20; 
+	private static int BORDER = 40; 
 	
 	private float [] xCoordinates;
 	private float [] yCoordinates;
@@ -565,7 +565,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 		int[] xlimits = new int[2];
 		if(getWidth() > getHeight()){
 			xlimits[0] = (getWidth() - getHeight())/2 + BORDER;
-			xlimits[1] = xlimits[0] + getHeight() - BORDER;
+			xlimits[1] = xlimits[0] + getHeight() - BORDER - BORDER;
 		}	
 		else{
 			xlimits[0] = BORDER;
@@ -580,7 +580,7 @@ public class GiraphPlotPanel extends JPanel implements Runnable {
 		int[] ylimits = new int[2];
 		if(getHeight() > getWidth()){
 			ylimits[0] = (getHeight() - getWidth())/2 + BORDER;
-			ylimits[1] = ylimits[0] + getWidth() - BORDER;
+			ylimits[1] = ylimits[0] + getWidth() - BORDER - BORDER;
 		}	
 		else{
 			ylimits[0] = BORDER;
