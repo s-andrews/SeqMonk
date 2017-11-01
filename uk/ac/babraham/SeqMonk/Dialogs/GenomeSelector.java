@@ -25,6 +25,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -40,6 +41,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
+import org.apache.commons.math3.stat.descriptive.moment.VectorialCovariance;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.Displays.ManualGenomeBuilder.ManualGenomeBuilderDialog;
@@ -113,16 +116,43 @@ public class GenomeSelector extends JDialog {
 
 				if (assemblies == null) continue;
 				
-				Arrays.sort(assemblies);
-
-				boolean foundAssembly = false;
+				Hashtable<String, Vector<File>> assemblySets = new Hashtable<String, Vector<File>>();
+				
 				for (int j=0;j<assemblies.length;j++) {
 					if (assemblies[j].isDirectory()) {
-						genomeNode.add(new AssemblyNode(assemblies[j]));
-						foundAssembly = true;
+						String name = assemblies[j].getName();
+						name = name.replaceAll("_v\\d+$", "");
+					
+						if (!assemblySets.containsKey(name)) {
+							assemblySets.put(name,new Vector<File>());
+						}
+					
+						assemblySets.get(name).add(assemblies[j]);
 					}
 				}
-				if (foundAssembly) {
+				
+				String [] assemblySetNames = assemblySets.keySet().toArray(new String [0]);
+				
+				Arrays.sort(assemblySetNames);
+
+				for (int j=0;j<assemblySetNames.length;j++) {
+
+					File [] localAssemblies = assemblySets.get(assemblySetNames[j]).toArray(new File[0]);
+
+					if (localAssemblies.length == 1) {
+						genomeNode.add(new AssemblyNode(localAssemblies[0]));
+					}
+					else {
+						AssemblySetNode setNode = new AssemblySetNode(assemblySetNames[j]);
+						genomeNode.add(setNode);
+					
+					
+						for (int k=0;k<localAssemblies.length;k++) {
+							setNode.add(new AssemblyNode(localAssemblies[k]));
+						}
+					}
+				}
+				if (assemblySetNames.length > 0) {
 					if (genomes[i].getName().equals("Controls")) {
 						controlsRoot.add(genomeNode);
 					}
@@ -295,6 +325,25 @@ public class GenomeSelector extends JDialog {
 
 	}
 
+	
+	/**
+	 * The Class AssemblyNode.
+	 */
+	private class AssemblySetNode extends DefaultMutableTreeNode {
+
+
+		/**
+		 * Instantiates a new assembly node.
+		 * 
+		 * @param f the f
+		 */
+		public AssemblySetNode (String name) {
+			super(name);
+		}
+
+	}
+	
+	
 	/**
 	 * The Class AssemblyNode.
 	 */
