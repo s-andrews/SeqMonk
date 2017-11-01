@@ -19,41 +19,38 @@
  */
 package uk.ac.babraham.SeqMonk.Network.DownloadableGenomes;
 
-import java.util.Date;
+import java.util.Vector;
 
-public class GenomeAssembly {
+public class GenomeAssemblySet {
 
-	private GenomeAssemblySet set;
+	private GenomeSpecies species;
 	private String assembly;
-	private int fileSize;
-	private Date date;
+	private Vector<GenomeAssembly> assemblies = new Vector<GenomeAssembly>();
 	
-	public GenomeAssembly (GenomeAssemblySet set, String assembly, int fileSize, Date date) {
-		this.set = set;
+	public GenomeAssemblySet (GenomeSpecies species, String assembly) {
+		this.species = species;
 		this.assembly = assembly;
-		this.fileSize = fileSize;
-		this.date = date;
-		set.addAssembly(this);
+		species.addAssemblySet(this);;
 	}
 	
-	public GenomeAssemblySet set () {
-		return set;
+	public GenomeSpecies species () {
+		return species;
 	}
 	
 	public String assembly () {
 		return assembly;
 	}
-	
-	public int fileSize () {
-		return fileSize;
-	}
-	
+		
 	public String toString () {
-		return ""+assembly()+" ("+date()+")";
+		return assembly();
 	}
 	
-	public Date date () {
-		return date;
+	public void addAssembly (GenomeAssembly assembly) {
+		assemblies.add(assembly);
+	}
+	
+	public GenomeAssembly [] assemblies () {
+		return assemblies.toArray(new GenomeAssembly[0]);
 	}
 	
 }

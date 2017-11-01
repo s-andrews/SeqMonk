@@ -67,7 +67,7 @@ public class GenomeUpgrader implements Runnable, ProgressListener {
 			GenomeDownloader downloader = new GenomeDownloader();
 			downloader.addProgressListener(this);
 			wait = true;
-			downloader.downloadGenome(genomes[i].species().name(), genomes[i].assembly(), genomes[i].fileSize(), false);
+			downloader.downloadGenome(genomes[i].set().species().name(), genomes[i].assembly(), genomes[i].fileSize(), false);
 			while (wait) {
 				try {
 					Thread.sleep(500);

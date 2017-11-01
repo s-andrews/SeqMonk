@@ -122,7 +122,7 @@ public class GenomeDownloadSelector extends JDialog {
 			if (ae.getActionCommand().equals("download")) {
 				setVisible(false);
 				GenomeAssembly selectedGenome = (GenomeAssembly)tree.getSelectionPath().getLastPathComponent();
-				application.downloadGenome(selectedGenome.species().name(),selectedGenome.assembly(),selectedGenome.fileSize());
+				application.downloadGenome(selectedGenome.set().species().name(),selectedGenome.assembly(),selectedGenome.fileSize());
 				dispose();
 			}
 			else if (ae.getActionCommand().equals("cancel")) {

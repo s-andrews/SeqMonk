@@ -59,7 +59,18 @@ public class DownloadableGenomeSet {
 			
 //			System.out.println("For assembly "+sections[1]+" epoch was "+epoch+" and date was "+date);
 			
-			new GenomeAssembly(seenSpecies.get(sections[0]),sections[1],Integer.parseInt(sections[2]),date);
+			GenomeSpecies species = seenSpecies.get(sections[0]);
+			String assemblyName = sections[1];
+			String assemblySetName = sections[1];
+			assemblySetName = assemblySetName.replaceAll("_v\\d+$", "");
+			
+			GenomeAssemblySet set = species.getAssemblySet(assemblySetName);
+			
+			if (assemblyName.startsWith("GRCm")) {
+				System.out.println("Set from "+assemblyName+" is "+assemblySetName);
+			}
+			
+			new GenomeAssembly(set,assemblyName,Integer.parseInt(sections[2]),date);
 
 //			System.out.println("Found organism "+sections[0]+" and assembly "+sections[1]);
 		}
@@ -163,7 +174,7 @@ public class DownloadableGenomeSet {
 			System.out.println ("There are "+updates.length+" genomes to update");
 			
 			for (int i=0;i<updates.length;i++) {
-				System.out.println(updates[i].species().name()+"\t"+updates[i].assembly()+" from "+updates[i].date());
+				System.out.println(updates[i].set().species().name()+"\t"+updates[i].assembly()+" from "+updates[i].date());
 			}
 			
 			

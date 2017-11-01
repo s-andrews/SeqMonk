@@ -53,7 +53,10 @@ public class DownloadableGenomeTreeModel implements TreeModel {
 	public Object getChild(Object parent, int index) {
 
 		if (parent instanceof GenomeSpecies) {
-			return ((GenomeSpecies)parent).assemblies()[index];
+			return ((GenomeSpecies)parent).assemblySets()[index];
+		}
+		else if (parent instanceof GenomeAssemblySet) {
+			return ((GenomeAssemblySet)parent).assemblies()[index];
 		}
 		else if (parent instanceof DownloadableGenomeSet) {
 			return charIndexes[index];
@@ -82,7 +85,10 @@ public class DownloadableGenomeTreeModel implements TreeModel {
 
 	public int getChildCount(Object parent) {
 		if (parent instanceof GenomeSpecies) {
-			return ((GenomeSpecies)parent).assemblies().length;
+			return ((GenomeSpecies)parent).assemblySets().length;
+		}
+		else if (parent instanceof GenomeAssemblySet) {
+			return ((GenomeAssemblySet)parent).assemblies().length;
 		}
 		else if (parent instanceof DownloadableGenomeSet) {
 			return charIndexes.length;
@@ -96,13 +102,22 @@ public class DownloadableGenomeTreeModel implements TreeModel {
 	public int getIndexOfChild(Object parent, Object child) {
 
 		if (parent instanceof GenomeSpecies) {
-			GenomeAssembly [] g = ((GenomeSpecies)parent).assemblies();
+			GenomeAssemblySet [] g = ((GenomeSpecies)parent).assemblySets();
 			for (int i=0;i<g.length;i++) {
 				if (g[i]==child){
 					return i;
 				}
 			}
 		}
+		else if (parent instanceof GenomeAssemblySet) {
+			GenomeAssembly [] g = ((GenomeAssemblySet)parent).assemblies();
+			for (int i=0;i<g.length;i++) {
+				if (g[i]==child){
+					return i;
+				}
+			}
+		}
+
 		else if (parent instanceof DownloadableGenomeSet) {
 			for (int i=0;i<charIndexes.length;i++) {
 				if (child == charIndexes[i]) {
