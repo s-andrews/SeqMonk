@@ -1,3 +1,43 @@
+RELEASE NOTES FOR SeqMonk v1.39.0
+---------------------------------
+This release is a mix of new features and bug and usability fixes for existing
+features.  Major changes are:
+
+- Added the ability to have multiple annotation versions for the same genome 
+  assembly release. We needed a way to update the annotations used for some of 
+  the major eukaryotic genomes, when the sequence level assembly hadn't actually 
+  changed.  All genomes can now have multiple versions distinguished by the Ensembl
+  release number from which they came.  The genome selection interface now shows
+  the different annotation versions for the same genome assembly grouped together.
+
+- Added a parser for the BEDPE file format
+
+- Added a better filtering for absolute change to the binomial, chi-square and
+  logistic regression filters.
+  
+- The hierarchical cluster plot now allows for the highlighting of replicate sets
+  at the top.
+
+- The gene set filter now provides the option to use the Kolmogorov-Smirnov test
+  as well as the t-test when finding changing gene sets
+  
+- Altered the feature filter to allow it to simultaneously use multiple feature tracks
+
+- Improved the scaling of the aligned probes plot so that the absolute numbers reported
+  are more meaningful
+
+- Added a scale bar to the aligned probes plot
+
+- Fixed a crash in the PCA plot when no data remained after removing null values
+
+- Fixed a crash when saving results from the correlation matrix
+
+- Fixed a bug which allowed replicate sets to be added to other replicate sets 
+  when auto-creating sets in the data store tree
+  
+
+
+
 RELEASE NOTES FOR SeqMonk v1.38.2
 ---------------------------------
 This is a bugfix release which mainly addresses a bug in the most recent 
