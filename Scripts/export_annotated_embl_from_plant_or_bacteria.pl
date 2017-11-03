@@ -31,11 +31,14 @@ use Bio::SeqFeature::Generic;
 use Bio::Location::Split;
 use Bio::Location::Simple;
 use Bio::EnsEMBL::DBSQL::OntologyDBAdaptor;
+use Bio::EnsEMBL::ApiVersion;
 
 
 $|++;
 
 system("clear") == 0 or warn "Couldn't clear screen";
+
+my $version = software_version();
 
 my $registry = load_registry();
 
@@ -177,6 +180,9 @@ sub process_genome {
   warn "Processing genome ".$db_adapter->species()."\n";
 
   my $assembly = $db_adapter->get_adaptor('coordsystem')->fetch_all->[0]->version();
+
+  $assembly .= "_v$version";
+
   my $species = $db_adapter->species();
 
   my $readable_species = $species;
