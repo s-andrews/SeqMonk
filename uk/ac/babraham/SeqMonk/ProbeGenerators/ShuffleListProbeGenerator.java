@@ -129,7 +129,7 @@ public class ShuffleListProbeGenerator extends ProbeGenerator implements Runnabl
 		gbc.gridy++;
 		gbc.weightx=0.1;
 				
-		optionPanel.add(new JLabel("Maintain Chromsomal Distribution"),gbc);
+		optionPanel.add(new JLabel("Maintain Chromosomal Distribution"),gbc);
 
 		gbc.gridx++;
 		gbc.weightx=0.9;
