@@ -27,6 +27,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -97,8 +98,10 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 	private double maxValueY = 1;
 
 	/** The ready to draw. */
-	//private boolean readyToDraw = false;
 	protected boolean readyToDraw = false;
+
+	private boolean noData = false;
+	
 	
 	/** The dot size. */
 	private int dotSize = 1;
@@ -218,7 +221,7 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 				for (int s=0;s<subLists.length;s++) {
 					Probe [] subListProbes = subLists[s].getAllProbes();
 					for (int p=0;p<subListProbes.length;p++) {
-						float xValue = repSet.getValueForProbe(subListProbes[p]);
+						float xValue = repSet.getValueForProbeExcludingUnmeasured(subListProbes[p]);
 												
 						float yValue = getYValue(subListProbes[p]);
 
@@ -321,6 +324,9 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 		if (! readyToDraw) {
 			g.setColor(Color.GRAY);
 			String message = "Calculating Plot";
+			if (noData) {
+				message = "No data to show";
+			}
 			g.drawString(message, (getWidth()/2)-(metrics.stringWidth(message)/2), (getHeight()/2-2));
 			return;
 		}
@@ -601,9 +607,31 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 		// We need to find the mix/max counts, and get a non-overlapping
 		// set of probes
 		Probe [] probes = probeList.getAllProbes();
+		
+		// We need to get rid of any probes which don't have a value associated with them (ie NaN values)
+		
+		Vector<Probe> validProbes = new Vector<Probe>();
+		
+		try {
+			for (int p=0;p<probes.length;p++) {
+				if (!Float.isNaN(repSet.getValueForProbeExcludingUnmeasured(probes[p]))) {
+					validProbes.add(probes[p]);
+				}
+			}
+		}
+		catch (SeqMonkException sme) {
+			return;
+		}
 
+		probes = validProbes.toArray(new Probe[0]);
+		
+		
 		// If there aren't any probes there's no point going any further
-		if (probes.length == 0) return;
+		if (probes.length == 0) {
+			noData = true;
+			repaint();
+			return;
+		}
 
 		boolean someXValueSet = false;
 		boolean someYValueSet = false;
@@ -641,6 +669,19 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 				}
 			}
 
+			// Do a sanity check that something has a non-NaN value in it
+			boolean someRealData = false;
+			for (int i=0;i<xData.length;i++) {
+				if (!Float.isNaN(xData[i])) {
+					someRealData = true;
+					break;
+				}
+			}
+			
+			if (!someRealData) {
+				// There's no point doing anything else
+				return;
+			}
 
 			// Calculate the smoothed values
 			smoothedTrend = new SmoothedVarianceDataset(repSet, probes, varianceMeasure,xData.length/100);

@@ -104,8 +104,14 @@ public class VariancePlotDialog extends JDialog implements ActionListener, Chang
 			}
 		}
 		
-		//Should we throw an error if there are no quantitated stores?
+		// We can't go on if there are no quantitated replicate sets.
+		if (quantitatedStores.size() == 0) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Can't draw a plot - no quanitated replicate sets exist", "Can't draw plot", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
 		DataStore [] repSets = quantitatedStores.toArray(new DataStore[0]);
+
 		
 		stores = new JComboBox(repSets);
 		stores.setPrototypeDisplayValue("No longer than this");

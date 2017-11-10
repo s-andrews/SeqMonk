@@ -38,11 +38,16 @@ public class SimpleStats {
 		if (values.length == 0) return 0;
 		
 		double mean = 0;
+		int validCount = 0;
 		for (int i=0;i<values.length;i++) {
+			if (Double.isInfinite(values[i]) || Double.isNaN(values[i])) continue;
+
 			mean += values[i];
+			validCount++;
 		}
 		
-		mean /= values.length;
+		if (validCount == 0) return Float.NaN;
+		mean /= validCount;
 		
 		return mean;
 		
@@ -164,13 +169,18 @@ public class SimpleStats {
 		
 		// We don't want infinite values so we provide silly answers
 		// to silly questions.
-		if (values.length < 2) return 0;
+		int validCount = 0;
 		
 		double stdev = 0;
 		
 		for (int i=0;i<values.length;i++) {
+			if (Double.isInfinite(values[i]) || Double.isNaN(values[i])) continue;
+
 			stdev += Math.pow(values[i]-mean, 2);
+			++validCount;
 		}
+		
+		if (validCount < 2) return 0;
 		
 		stdev /= values.length-1;
 
@@ -202,13 +212,17 @@ public class SimpleStats {
 		
 		// We don't want infinite values so we provide silly answers
 		// to silly questions.
-		if (values.length < 2) return 0;
+		int validCount = 0;
 		
 		float stdev = 0;
 		
 		for (int i=0;i<values.length;i++) {
+			if (Float.isInfinite(values[i]) || Float.isNaN(values[i])) continue;
 			stdev += Math.pow(values[i]-mean, 2);
+			++validCount;
 		}
+		
+		if (validCount < 2) return 0;
 		
 		stdev /= values.length-1;
 
@@ -230,7 +244,6 @@ public class SimpleStats {
 	
 	
 	public static double max (double [] values) {
-		if (values.length == 0) return 0;
 		double max = values[0];
 		for (int i=1;i<values.length;i++) {
 			if (values[i]>max) max=values[i];

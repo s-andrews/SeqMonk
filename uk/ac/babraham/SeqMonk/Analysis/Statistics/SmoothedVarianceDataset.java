@@ -34,7 +34,11 @@ public class SmoothedVarianceDataset {
 		for (int p=0;p<probes.length;p++) {
 			indices[p] = p;
 			try {
-				values[p] = r.getValueForProbe(probes[p]);
+				values[p] = r.getValueForProbeExcludingUnmeasured(probes[p]);
+				
+				if (Float.isNaN(values[p])) {
+					throw new IllegalStateException("Can't calculate variances from NaN values");
+				}
 				
 				try {
 					switch (varianceMeasure) {
