@@ -66,6 +66,9 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	/** The R location */
 	private JTextField rLocation;
 	
+	/** Whether we're in debug mode for R **/
+	private JCheckBox suspendRCleanup;
+	
 	/** The save location. */
 	private JTextField saveLocation;
 	
@@ -190,7 +193,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		c.weightx=0.1;
 		c.weighty=0.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		programsPanel.add(new JLabel("R Exectable Location"),c);
+		programsPanel.add(new JLabel("R Executable Location"),c);
 		c.gridx=1;
 		c.weightx=0.5;
 		rLocation = new JTextField();
@@ -204,7 +207,15 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		rButton.setActionCommand("rLocation");
 		rButton.addActionListener(this);
 		programsPanel.add(rButton,c);
-
+		
+		c.gridx=0;
+		c.gridy=1;
+		programsPanel.add(new JLabel("Debug mode for R scripts"),c);
+		c.gridx=1;
+		c.weightx=0.5;
+		suspendRCleanup = new JCheckBox("",p.suspendRCleanup());
+		programsPanel.add(suspendRCleanup, c);
+		
 		tabs.addTab("Programs",programsPanel);
 
 		
@@ -532,6 +543,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			p.setDataLocation(dataLocationFile);
 			p.setSaveLocation(saveLocationFile);
 			p.setRLocation(rLocationString);
+			p.setSuspendRCleanup(suspendRCleanup.isSelected());
 			p.setGenomeBase(genomeBaseFile);
 			p.setProxy(proxyHostValue,proxyPortValue);
 			p.setGenomeDownloadLocation(downloadLocation.getText());

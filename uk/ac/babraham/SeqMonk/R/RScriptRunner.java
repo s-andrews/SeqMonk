@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
+import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
@@ -201,6 +204,15 @@ public class RScriptRunner implements Runnable, Cancellable {
 		
 		// We simply list everything under the directory and delete it,
 		// then delete the directory itself.
+		
+		// We need to check if we're running in R debug mode.  If we are then
+		// we'll not do the cleanup and will give them a warning about this.
+		
+		if (SeqMonkPreferences.getInstance().suspendRCleanup()) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "R Script directory was not removed as we are in R debug mode", "R Debug Mode", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
 		
 		File [] files = directory.listFiles();
 		

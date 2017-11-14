@@ -52,6 +52,9 @@ public class SeqMonkPreferences {
 	/** The location of the R executable **/
 	private String rExecutableLocation = new String("R");
 	
+	/** A flag to suspend cleanup of R scripts for debugging purposes **/
+	private boolean suspendRCleanup = false;
+	
 	/** The last used data location. */
 	private File lastUsedDataLocation = null;
 	
@@ -163,6 +166,9 @@ public class SeqMonkPreferences {
 				else if (sections[0].equals("RLocation")) {
 					rExecutableLocation = sections[1];
 				}				
+				else if (sections[0].equals("SuspendRCleanup")) {
+					suspendRCleanup = sections[1].equals("1");
+				}
 				else if (sections[0].equals("TempDirectory")) {
 					tempDirectory = new File(sections[1]);
 				}
@@ -259,6 +265,13 @@ public class SeqMonkPreferences {
 		// Then the R Location
 		p.println("RLocation\t"+rExecutableLocation);
 		
+		// Whether we're debugging R
+		if (suspendRCleanup) {
+			p.println("SuspendRCleanup\t1");
+		}
+		else {
+			p.println("SuspendRCleanup\t0");
+		}
 		// Then the proxy information
 		p.println("Proxy\t"+proxyHost+"\t"+proxyPort);
 		
@@ -478,6 +491,14 @@ public class SeqMonkPreferences {
 	
 	public void setRLocation (String rExecutableLocation) {
 		this.rExecutableLocation = rExecutableLocation;
+	}
+	
+	public boolean suspendRCleanup () {
+		return suspendRCleanup;
+	}
+	
+	public void setSuspendRCleanup (boolean suspendRCleanup) {
+		this.suspendRCleanup = suspendRCleanup;
 	}
 	
 		
