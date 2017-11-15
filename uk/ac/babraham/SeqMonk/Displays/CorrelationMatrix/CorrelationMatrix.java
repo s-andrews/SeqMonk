@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -50,6 +52,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
+import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
+import uk.ac.babraham.SeqMonk.Gradients.InvertedGradient;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
@@ -60,6 +64,15 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 	private DistanceTableModel model;
 	private JPanel tablePanel = null;
 	
+	private JComboBox gradients;
+	private JCheckBox invertGradient;
+	private JCheckBox scaleBox;
+	
+	private GradientScaleBar scaleBar;
+	
+	private ColourGradient gradient;
+	
+	
 	public CorrelationMatrix (DataStore [] stores, ProbeList probes) {
 		super(SeqMonkApplication.getInstance(),"Correlation table ["+probes.name()+"]");
 		matrix = new DistanceMatrix(stores,probes.getAllProbes());
@@ -67,6 +80,44 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		matrix.addProgressListener(new ProgressDialog(SeqMonkApplication.getInstance(), "Correlation Calculation",matrix));
 				
 		getContentPane().setLayout(new BorderLayout());
+		
+		JPanel optionPanel = new JPanel();
+		scaleBox = new JCheckBox("Scale from -1 to 1");
+		scaleBox.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				updateGradients();
+			}
+		});
+		optionPanel.add(scaleBox);
+		
+		gradients = new JComboBox(GradientFactory.getGradients());
+		// Set the default gradient
+		gradient = GradientFactory.getGradients()[0];
+		gradients.setSelectedIndex(0);
+		gradients.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				updateGradients();
+			}
+		});
+		
+		optionPanel.add(new JLabel("Colour Gradient"));
+		optionPanel.add(gradients);
+		
+		optionPanel.add(new JLabel(" Invert"));
+		invertGradient = new JCheckBox();
+		invertGradient.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				updateGradients();
+			}
+		});
+		
+		
+		optionPanel.add(invertGradient);
+
+		getContentPane().add(optionPanel, BorderLayout.NORTH);
 		
 		JPanel buttonPanel = new JPanel();
 		
@@ -95,6 +146,29 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		t.start();		
 		
 	}
+	
+	private void updateGradients () {
+
+		ColourGradient gradient = (ColourGradient)gradients.getSelectedItem();
+		
+		if (invertGradient.isSelected()) {
+			gradient = new InvertedGradient(gradient);
+		}
+		
+		this.gradient = gradient;
+		if (scaleBar != null) {
+			scaleBar.setGradient(gradient);
+			
+			if (scaleBox.isSelected()) {
+				scaleBar.setLimits(-1, 1);
+			}
+			else {
+				scaleBar.setLimits(model.getMinCorrelation(), model.getMaxCorrelation());
+			}
+		}			
+		repaint();	
+		
+	}
 
 	public void progressCancelled() {
 		dispose();
@@ -107,7 +181,13 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		tablePanel.setLayout(new BorderLayout());
 		
 		tablePanel.add(new CorrelationPanel(),BorderLayout.CENTER);
-		tablePanel.add(new GradientScaleBar(DisplayPreferences.getInstance().getGradient(), model.getMinCorrelation(), model.getMaxCorrelation()), BorderLayout.EAST);
+		if (scaleBox.isSelected()) {
+			scaleBar = new GradientScaleBar(gradient, -1, 1);
+		}
+		else {
+			scaleBar = new GradientScaleBar(gradient, model.getMinCorrelation(), model.getMaxCorrelation());
+		}
+		tablePanel.add(scaleBar, BorderLayout.EAST);
 		
 		tablePanel.add(new CorrelationNamePanel(), BorderLayout.WEST);
 		
@@ -283,7 +363,6 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 	
 	private class CorrelationPanel extends JPanel implements MouseMotionListener {
 		
-		private ColourGradient gradient = DisplayPreferences.getInstance().getGradient();
 		private float minCorrelation = model.getMinCorrelation();
 		private float maxCorrelation = model.getMaxCorrelation();
 				
@@ -293,6 +372,15 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		
 		public void paintComponent (Graphics g) {
 			
+			if (scaleBox.isSelected()) {
+				minCorrelation = -1;
+				maxCorrelation = 1;
+			}
+			else {
+				minCorrelation = model.getMinCorrelation();
+				maxCorrelation = model.getMaxCorrelation();				
+			}
+					
 			int lastEndX = 0;
 			int lastEndY = 0;
 			
