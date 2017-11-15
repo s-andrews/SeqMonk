@@ -88,6 +88,10 @@ public class DeduplicationFilter extends ProbeFilter {
 		// For overlap filtering we need to keep track of the last valid 
 		// probe to test against when looking for overlaps.
 		Probe lastValidProbe = null;
+		// For the discard option we'll also need to keep track of whether
+		// the last valid probe was overlapped so we can throw it away when
+		// we get to it.
+		boolean lastValidWasOverlapped = false;
 		
 		if (useNames) {
 			probePrefixes = new HashMap<String, Probe>();
@@ -160,6 +164,7 @@ public class DeduplicationFilter extends ProbeFilter {
 				// TODO: Work out the discard logic
 				if (lastValidProbe == null) {
 					lastValidProbe = probes[p];
+					lastValidWasOverlapped = false;
 				}
 				else {
 					// Look for an overlap between this probe and 
@@ -176,6 +181,7 @@ public class DeduplicationFilter extends ProbeFilter {
 							double percentOverlap = (overlap*100d)/(Math.min(lastValidProbe.length(), probes[p].length()));
 							if (percentOverlap > optionsPanel.percentOverlap()) {
 								// This is a valid overlap
+								lastValidWasOverlapped = true;
 								
 								if (useLength) {
 									if (useHighest) {
@@ -207,9 +213,15 @@ public class DeduplicationFilter extends ProbeFilter {
 						}
 						
 					}
-						
-					newList.addProbe(lastValidProbe, startingList.getValueForProbe(lastValidProbe));
+					
+					// We'd normally keep the last overlap, unless we're discarding duplicates and the
+					// last probe was overlapped.
+					if (!(discardDuplicates & lastValidWasOverlapped)) {
+						newList.addProbe(lastValidProbe, startingList.getValueForProbe(lastValidProbe));
+					}
+
 					lastValidProbe = probes[p];
+					lastValidWasOverlapped = false;
 						
 				}
 				
