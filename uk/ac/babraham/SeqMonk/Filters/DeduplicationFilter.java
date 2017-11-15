@@ -161,7 +161,6 @@ public class DeduplicationFilter extends ProbeFilter {
 			
 			else {
 				
-				// TODO: Work out the discard logic
 				if (lastValidProbe == null) {
 					lastValidProbe = probes[p];
 					lastValidWasOverlapped = false;

@@ -65,11 +65,7 @@ public class DownloadableGenomeSet {
 			assemblySetName = assemblySetName.replaceAll("_v\\d+$", "");
 			
 			GenomeAssemblySet set = species.getAssemblySet(assemblySetName);
-			
-			if (assemblyName.startsWith("GRCm")) {
-				System.out.println("Set from "+assemblyName+" is "+assemblySetName);
-			}
-			
+						
 			new GenomeAssembly(set,assemblyName,Integer.parseInt(sections[2]),date);
 
 //			System.out.println("Found organism "+sections[0]+" and assembly "+sections[1]);
