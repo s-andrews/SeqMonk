@@ -89,7 +89,7 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
 		
-		setSize(600,300);
+		setSize(800,400);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		setVisible(true);
 			
@@ -106,6 +106,9 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 			dispose();
 		}
 		else if (e.getActionCommand().equals("plot")) {
+			if (prefPanel.selectedFeatureTypes().length == 0) {
+				return;
+			}
 			new QuantitationTrendPlotDialog(probes,stores,prefPanel);
 			setVisible(false);
 			//dispose(); // Can we do this?
