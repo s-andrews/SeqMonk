@@ -137,7 +137,13 @@ public class FeaturePositionSelectorPanel extends JPanel {
 	}
 	
 	public String [] selectedFeatureTypes () {
-		return featureTypeBox.getSelectedValuesList().toArray(new String[0]);
+		Object [] values = featureTypeBox.getSelectedValues();
+		String [] returnValues = new String[values.length];
+		for (int i=0;i<values.length;i++) {
+			returnValues[i] = (String)values[i];
+		}
+		
+		return returnValues;
 	}
 	
 	public boolean useSubFeatures() {

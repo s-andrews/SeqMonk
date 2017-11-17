@@ -51,7 +51,12 @@ public class ReplicateSetSelector extends JDialog {
 	
 	private ReplicateSet [] getRepSets() {
 		if (madeASelection) {
-			return repSetList.getSelectedValuesList().toArray(new ReplicateSet[0]);
+			Object [] values = repSetList.getSelectedValues();
+			ReplicateSet [] returnValues = new ReplicateSet [values.length];
+			for (int i=0;i<values.length;i++) {
+				returnValues[i] = (ReplicateSet)values[i];
+			}
+			return returnValues;
 		}
 		else {
 			return new ReplicateSet[0];
