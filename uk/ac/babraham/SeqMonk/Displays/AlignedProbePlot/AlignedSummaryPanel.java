@@ -32,7 +32,6 @@ import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Correlation.PearsonCorrelation;
-import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
@@ -120,7 +119,9 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 		this.prefs = prefs;
 		this.sortOrder = sortOrder;
 
-		Color baseColour = ColourIndexSet.getColour(index);
+		// We used to make all of the plots different colours, but it really didn't
+		// add anything useful so we're going back to monochrome (red in this case)
+		Color baseColour = ColourIndexSet.getColour(1);
 		int baseR = baseColour.getRed();
 		int baseG = baseColour.getGreen();
 		int baseB = baseColour.getBlue();
