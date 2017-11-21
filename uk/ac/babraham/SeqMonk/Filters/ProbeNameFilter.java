@@ -192,7 +192,7 @@ public class ProbeNameFilter extends ProbeFilter {
 	 */
 	@Override
 	public String name() {
-		return "Feature Name Filter";
+		return "Probe Name Filter";
 	}
 
 
