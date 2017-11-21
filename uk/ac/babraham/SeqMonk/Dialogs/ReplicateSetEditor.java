@@ -30,7 +30,6 @@ import java.awt.event.ActionListener;
 import java.util.HashSet;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -123,7 +122,7 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 		gc.weighty=0;
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		gc.insets = new Insets(2,2,2,2);
-		replicateSetPanel.add(new JLabel("Groups",JLabel.CENTER),gc);
+		replicateSetPanel.add(new JLabel("Rep Sets",JLabel.CENTER),gc);
 		
 		gc.gridy++;
 		gc.weighty=1;
