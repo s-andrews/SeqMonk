@@ -290,14 +290,14 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 			}
 			
 			Object [] o = usedModel.toArray();
-			DataStore [] s = new DataStore [o.length];
+			DataSet [] s = new DataSet [o.length];
 			
 			for (int i=0;i<s.length;i++) {
-				s[i] = (DataStore)o[i];
+				s[i] = (DataSet)o[i];
 			}
 			
-			ReplicateSet r = (ReplicateSet)groupList.getSelectedValue();
-			r.setDataStores(s);
+			DataGroup r = (DataGroup)groupList.getSelectedValue();
+			r.setDataSets(s);
 
 		}
 
