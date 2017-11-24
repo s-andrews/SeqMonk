@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
@@ -96,6 +98,12 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 		}
 		
 		optionPanel = new FeaturePositionSelectorPanel(collection, true, true,true);
+		optionPanel.addChangeListener(new ChangeListener() {
+			
+			public void stateChanged(ChangeEvent e) {
+				isReady();
+			}
+		});
 		
 		optionPanel.setUseSubFeatures(useSubfeatures, useExonSubfeatures);
 		optionPanel.setRemoveDuplicates(removeDuplicates);
@@ -108,8 +116,15 @@ public class FeatureProbeGenerator extends ProbeGenerator implements Runnable, K
 	 * @see uk.ac.babraham.SeqMonk.ProbeGenerators.ProbeGenerator#isReady()
 	 */
 	public boolean isReady() {
-		optionsReady();
-		return true;
+		
+		if (optionPanel.selectedFeatureTypes().length>0) {
+			optionsReady();
+			return true;	
+		}
+		else {
+			optionsNotReady();
+			return false;
+		}
 	}
 
 	
