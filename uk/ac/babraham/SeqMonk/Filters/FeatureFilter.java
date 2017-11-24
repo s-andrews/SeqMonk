@@ -35,6 +35,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
@@ -271,11 +273,11 @@ public class FeatureFilter extends ProbeFilter {
 		
 		filterFinished(passedProbes);
 		
-		
 	}
 
 	public boolean isReady() {
-		return true;
+		// We need to check whether they have any features selected
+		return options.featurePositions.selectedFeatureTypes().length > 0;
 	}
 
 	public boolean hasOptionsPanel() {
@@ -322,6 +324,11 @@ public class FeatureFilter extends ProbeFilter {
 			gbc.gridy++;
 
 			featurePositions = new FeaturePositionSelectorPanel(collection, false, false,true);
+			featurePositions.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					optionsChanged();
+				}
+			});
 			gbc.fill = GridBagConstraints.BOTH;
 			add(featurePositions,gbc);
 

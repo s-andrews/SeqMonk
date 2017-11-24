@@ -23,6 +23,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -34,6 +35,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
@@ -53,6 +58,7 @@ public class FeaturePositionSelectorPanel extends JPanel {
 	private JTextField lowValueField;
 	private JTextField endField;
 	private DataCollection collection;
+	private Vector<ChangeListener> listeners = new Vector<ChangeListener>();
 
 
 	public FeaturePositionSelectorPanel (DataCollection collection, boolean showDirectionOptions, boolean showDuplicatesOptions, boolean allowMultiSelection) {
@@ -62,22 +68,30 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		gbc.gridx=2;
 		gbc.gridy=1;
 		gbc.weightx=0.5;
-		gbc.weighty=0.5;
+		gbc.weighty=0.1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(2, 2, 2, 2);
 
 		add(new JLabel("Features to design around"),gbc);
 		
 		gbc.gridx = 3;
+		gbc.weighty = 0.9;
 		featureTypeBox = new JList(collection.genome().annotationCollection().listAvailableFeatureTypes());
 		if (!allowMultiSelection) {
 			featureTypeBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
+		featureTypeBox.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				fireChanged();
+			}
+		});
 		add(new JScrollPane(featureTypeBox),gbc);
 
 		gbc.gridy++;
 		gbc.gridx = 2;
 		gbc.weightx = 0.1;
+		gbc.weighty = 0.1;
+
 		add(new JLabel ("Split into subfeatures"),gbc);
 
 		gbc.gridx = 3;
@@ -134,6 +148,25 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		positionPanel.add(new JLabel(" bp"));
 		add(positionPanel,gbc);
 
+	}
+	
+	public void addChangeListener (ChangeListener l) {
+		if (!listeners.contains(l)) {
+			listeners.addElement(l);
+		}
+	}
+
+	public void removeChangeListener (ChangeListener l) {
+		if (listeners.contains(l)) {
+			listeners.remove(l);
+		}
+	}
+
+	private void fireChanged() {
+		Iterator<ChangeListener>it = listeners.iterator();
+		while (it.hasNext()) {
+			it.next().stateChanged(new ChangeEvent(this));
+		}
 	}
 	
 	public String [] selectedFeatureTypes () {
