@@ -27,6 +27,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
@@ -50,6 +52,8 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 	/** The data collection the features will come from **/
 	private DataCollection collection;
 	
+	private JButton plotButton;
+	
 	/**
 	 * Instantiates a new trend over probe preferences dialog.
 	 * 
@@ -72,6 +76,14 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 		getContentPane().setLayout(new BorderLayout());
 		
 		prefPanel = new QuantitationTrendPlotPreferencesPanel(collection);
+		prefPanel.addChangeListener(new ChangeListener() {
+			
+			public void stateChanged(ChangeEvent e) {
+				if (plotButton != null) {
+					plotButton.setEnabled(prefPanel.selectedFeatureTypes().length>0);
+				}
+			}
+		});
 			
 		getContentPane().add(prefPanel,BorderLayout.CENTER);
 		
@@ -82,7 +94,8 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 		cancelButton.setActionCommand("cancel");
 		buttonPanel.add(cancelButton);
 		
-		JButton plotButton = new JButton("Create Plot");
+		plotButton = new JButton("Create Plot");
+		plotButton.setEnabled(false);
 		plotButton.addActionListener(this);
 		plotButton.setActionCommand("plot");
 		buttonPanel.add(plotButton);
