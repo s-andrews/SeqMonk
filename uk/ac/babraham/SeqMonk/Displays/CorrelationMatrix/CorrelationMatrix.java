@@ -417,6 +417,8 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 				// See if we need to draw this row at all
 				int thisEndY = getY(r+1);
 				if (thisEndY <= lastEndY) continue; // We can't even see this row
+
+				System.err.println("Drawing row "+r);
 				
 				for (int c=0;c<model.getColumnCount();c++) {
 					
@@ -469,7 +471,7 @@ public class CorrelationMatrix extends JDialog implements ProgressListener, Acti
 		}
 		
 		public int getY(int index) {
-			return((int)((getHeight()/(double)model.getColumnCount())*index));
+			return((int)((getHeight()/(double)model.getRowCount())*index));
 		}
 
 		public void mouseDragged(MouseEvent arg0) {}

@@ -39,7 +39,7 @@ public class GradientScaleAxis extends JPanel {
 	}
 	
 	public void setLimits (double min,double max) {
-		if (max <= min) throw new IllegalArgumentException("Max cannot be <= min max="+max+" min="+min);
+		if (max < min) throw new IllegalArgumentException("Max cannot be <= min max="+max+" min="+min);
 		axisScale = new AxisScale(min, max);
 		maxX = getMaxWidth();
 		repaint();
