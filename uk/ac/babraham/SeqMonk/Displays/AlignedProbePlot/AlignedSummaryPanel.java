@@ -690,6 +690,11 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 						count++;
 					}
 					smoothed[pos] = (float)total/count;
+					
+					// If we're gloablly correcting then this is the place to do that
+					if (prefs.globallyCorrect) {
+						smoothed[pos] /= store.getTotalReadCount()/1000000f;
+					}
 				}
 				newCounts[line] = smoothed;
 

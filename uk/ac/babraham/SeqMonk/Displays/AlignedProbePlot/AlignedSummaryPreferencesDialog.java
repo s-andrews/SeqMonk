@@ -52,6 +52,9 @@ public class AlignedSummaryPreferencesDialog extends JDialog implements ActionLi
 	
 	private JComboBox orderBox;
 		
+	/** The globally correct box **/
+	private JCheckBox globallyCorrectBox;
+	
 	/** The remove duplicates box. */
 	private JCheckBox removeDuplicatesBox;
 	
@@ -116,7 +119,17 @@ public class AlignedSummaryPreferencesDialog extends JDialog implements ActionLi
 		orderBox.addActionListener(this);
 		orderBox.setActionCommand("change_order");
 		prefPanel.add(orderBox,gbc);
-				
+
+		gbc.gridy++;
+		gbc.gridx=1;
+		
+		
+		prefPanel.add(new JLabel("Correct for total read count"),gbc);
+		gbc.gridx = 2;
+		globallyCorrectBox = new JCheckBox();
+		globallyCorrectBox.setSelected(prefs.globallyCorrect);
+		prefPanel.add(globallyCorrectBox,gbc);
+		
 		gbc.gridy++;
 		gbc.gridx=1;
 		
@@ -192,6 +205,7 @@ public class AlignedSummaryPreferencesDialog extends JDialog implements ActionLi
 		else if (e.getActionCommand().equals("plot")) {
 			prefs.forceRelative = forceRelativeBox.isSelected();
 			prefs.removeDuplicates = removeDuplicatesBox.isSelected();
+			prefs.globallyCorrect = globallyCorrectBox.isSelected();
 			prefs.useLogScale = logTransformBox.isSelected();
 			setVisible(false);
 			new AlignedSummaryDialog(lists,stores,prefs);

@@ -31,6 +31,9 @@ public class AlignedSummaryPreferences {
 	/** Which reads to use in the plot */
 	public QuantitationStrandType quantitationType = QuantitationStrandType.getTypeOptions()[0];
 	
+	/** Whether to correct for total library size **/
+	public boolean globallyCorrect = true;
+	
 	/** Whether to remove duplicates. */
 	public boolean removeDuplicates = false;
 			
