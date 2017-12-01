@@ -54,7 +54,7 @@ import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 public class AlignedSummaryDialog extends JDialog implements ActionListener, ChangeListener, ProgressListener, Cancellable {
 
 	/** The trend panel. */
-	private JPanel allSummaryPanels;
+	private JPanel summaryPanelsPlusScaleBar;
 	private AlignedSummaryPanel [] summaryPanels;
 
 	/** The slider to adjust the contrast on the plot */
@@ -144,7 +144,9 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 
 		getContentPane().setLayout(new BorderLayout());
 
-		allSummaryPanels = new JPanel();
+		summaryPanelsPlusScaleBar = new JPanel();
+		summaryPanelsPlusScaleBar.setLayout(new BorderLayout());
+		JPanel allSummaryPanels = new JPanel();
 		allSummaryPanels.setLayout(new GridLayout(lists.length, stores.length));
 
 		for (int i=0;i<summaryPanels.length;i++) {
@@ -152,7 +154,7 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 		}
 
 
-		getContentPane().add(allSummaryPanels,BorderLayout.CENTER);		
+		summaryPanelsPlusScaleBar.add(allSummaryPanels,BorderLayout.CENTER);	
 
 		contrastSlider = new JSlider(JSlider.VERTICAL,1,100,100);
 
@@ -175,8 +177,10 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 			}
 		}, 0,1);
 		
-		getContentPane().add(scaleBar, BorderLayout.EAST);
+		summaryPanelsPlusScaleBar.add(scaleBar, BorderLayout.EAST);
 
+		getContentPane().add(summaryPanelsPlusScaleBar, BorderLayout.CENTER);
+		
 		JPanel buttonPanel = new JPanel();
 		JButton cancelButton = new JButton("Close");
 		cancelButton.setActionCommand("close");
@@ -210,7 +214,7 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 			dispose();
 		}
 		else if (ae.getActionCommand().equals("save_image")){
-			ImageSaver.saveImage(allSummaryPanels);
+			ImageSaver.saveImage(summaryPanelsPlusScaleBar);
 		}
 	}
 
