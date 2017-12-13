@@ -41,6 +41,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationTagValue;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Displays.FeatureListViewer.FeatureListViewer;
 
 

@@ -38,7 +38,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Genome;
 import uk.ac.babraham.SeqMonk.DataTypes.Interaction.HeatmapMatrix;
 import uk.ac.babraham.SeqMonk.DataTypes.Interaction.InteractionClusterMatrix;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Displays.Report.InteractionReport.InteractionReportOptions;
 import uk.ac.babraham.SeqMonk.Reports.Interaction.AnnotatedInteractionReport;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;

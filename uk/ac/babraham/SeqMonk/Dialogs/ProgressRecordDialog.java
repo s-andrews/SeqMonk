@@ -37,6 +37,7 @@ import javax.swing.text.DefaultCaret;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter.CrashReporter;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.WarningDisplayDialog;
 
 /**
  * The Class ProgressDialog is a generic progress dialog showing a progress

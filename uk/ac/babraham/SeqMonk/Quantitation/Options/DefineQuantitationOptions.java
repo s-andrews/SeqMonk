@@ -45,7 +45,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.HiCDataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
-import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.QuantitationTypeRenderer;
 import uk.ac.babraham.SeqMonk.Filters.OptionsListener;
 import uk.ac.babraham.SeqMonk.Quantitation.BasePairQuantitation;

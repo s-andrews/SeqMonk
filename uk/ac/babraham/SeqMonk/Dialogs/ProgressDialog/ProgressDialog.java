@@ -17,7 +17,7 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.SeqMonk.Dialogs;
+package uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -35,6 +36,7 @@ import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
+import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Dialogs.CrashReporter.CrashReporter;
 
 
@@ -68,7 +70,7 @@ public class ProgressDialog extends JDialog implements Runnable, ProgressListene
 	private boolean ignoreExceptions = false;
 	
 	/** The warnings. */
-	private Vector<Exception>warnings = new Vector<Exception>();
+	private Hashtable<String,CountedException>warnings = new Hashtable<String, CountedException>();
 	
 	/** A record of any exception we've recevied */
 	private Exception reportedException = null;
@@ -224,7 +226,7 @@ public class ProgressDialog extends JDialog implements Runnable, ProgressListene
 
 		if (warningCount > 0) {
 			// We need to display a list of the warnings
-			new WarningDisplayDialog(this,warningCount,warnings.toArray(new Exception [0]));
+			new WarningDisplayDialog(this,warningCount,warnings.values().toArray(new CountedException [0]));
 		}
 		dispose();
 	}
@@ -234,12 +236,20 @@ public class ProgressDialog extends JDialog implements Runnable, ProgressListene
 	 */
 	public void progressWarningReceived(Exception e) {
 		warningCount++;
-		// We just store this warning so we can display all
-		// of them at the end.  We only keep the first 5000
-		// so that things don't get too out of hand
-		if (warningCount<=5000){
-			warnings.add(e);
-		}		
+		
+		// If this warning already exists we'll just count it
+		if (warnings.containsKey(e.getMessage())) {
+			warnings.get(e.getMessage()).increment();
+		}
+
+		else {
+			// As long as we're not already storing over 5000 messages
+			// we'll keep hold of this one as well.
+			if (warnings.size()<=5000){
+			
+				warnings.put(e.getMessage(),new CountedException(e));
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -279,4 +289,5 @@ public class ProgressDialog extends JDialog implements Runnable, ProgressListene
 		
 	}
 
+	
 }

@@ -48,7 +48,7 @@ import javax.swing.SwingUtilities;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
-import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.FastaFileFilter;

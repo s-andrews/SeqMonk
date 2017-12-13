@@ -32,7 +32,7 @@ import javax.swing.table.TableModel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
-import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Filters.OptionsListener;
 import uk.ac.babraham.SeqMonk.Reports.Report;
 

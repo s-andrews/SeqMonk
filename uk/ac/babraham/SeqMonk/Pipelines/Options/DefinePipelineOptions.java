@@ -44,7 +44,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataGroup;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
-import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Filters.OptionsListener;
 import uk.ac.babraham.SeqMonk.Pipelines.AntisenseTranscriptionPipeline;
 import uk.ac.babraham.SeqMonk.Pipelines.BisulphiteFeaturePipeline;
