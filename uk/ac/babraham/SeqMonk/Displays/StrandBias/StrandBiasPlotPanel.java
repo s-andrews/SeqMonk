@@ -27,6 +27,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -63,6 +65,7 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 
 	/** The set of sublists to highlight */
 	private ProbeList [] subLists;
+	private Hashtable<Probe,Integer> subListProbes = new Hashtable<Probe, Integer>();
 		
 	/** The difference value at which we started the current selection */
 	private double diffStart = 0;
@@ -170,63 +173,32 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 
 		ProbePairValue [][] grid = new ProbePairValue [getWidth()][getHeight()];
 
-			for (int p=0;p<allValues.length;p++) {
+		for (int p=0;p<allValues.length;p++) {
 				
-				if (allValues[p].count == 0) continue;
+			if (allValues[p].count == 0) continue;
 				
-				int x = getX(allValues[p].count);
-				int y = getY(allValues[p].proportion);
-				if (grid[x][y] == null) {
-					grid[x][y] = new ProbePairValue(allValues[p].count, allValues[p].proportion,x,y);
-					grid[x][y].setProbe(allValues[p].probe);
-				}
-				else {
-					// We don't increment the count if we're plotting sublists
-					// as we use the count field to indicate which sublist we
-					// belong to
-					if (subLists == null) grid[x][y].count++;
+			int x = getX(allValues[p].count);
+			int y = getY(allValues[p].proportion);
+			if (grid[x][y] == null) {
+				grid[x][y] = new ProbePairValue(allValues[p].count, allValues[p].proportion,x,y);
+				grid[x][y].setProbe(allValues[p].probe);
 					
-					// As we have multiple probes at this point we remove the 
-					// specific probe annotation.
-					grid[x][y].setProbe(null);
+				// See if we're assigning a sublist
+				if (subListProbes.containsKey(allValues[p].probe)) {
+					grid[x][y].count = subListProbes.get(allValues[p].probe);
 				}
 			}
-
-
-			// If we have subLists then we need to re-use the count values
-			// in the grid to assign a value to indicate which sublist it
-			// came from.
-
-			//  We could improve this by doing something clever where values
-			// from two lists share the same pixel, but for now we just let
-			// the last one we see win.
-
-			
-			//TODO: Work out an efficient way to assign sublists.
-			
-//			if (subLists != null) {
-//				for (int s=0;s<subLists.length;s++) {
-//					Probe [] subListProbes = subLists[s].getAllProbes();
-//					for (int p=0;p<subListProbes.length;p++) {
-//						float xValue = store.getValueForProbeExcludingUnmeasured(subListProbes[p]);
-//												
-//						float yValue = getYValue(subListProbes[p]);
-//
-//						int x = getX(xValue);
-//						int y = getY(yValue);
-//
-//						if (grid[x][y] == null) {
-//							// This messes up where we catch it in the middle of a redraw
-//							continue;
-////							throw new IllegalArgumentException("Found subList position not in main list");
-//						}
-//
-//						grid[x][y].count = s+2; // 1 = no list so 2 is the lowest sublist index
-//
-//					}
-//				}
-//
-//			}
+			else {
+				// We don't increment the count if we're plotting sublists
+				// as we use the count field to indicate which sublist we
+				// belong to
+				if (subLists == null) grid[x][y].count++;
+				
+				// As we have multiple probes at this point we remove the 
+				// specific probe annotation.
+				grid[x][y].setProbe(null);
+			}
+		}
 
 		// Now we need to put all of the ProbePairValues into
 		// a single array;
@@ -550,13 +522,27 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 			else {
 				allValues[p] = new DirectionPoint(probes[p], totalCount, (totalCount - antiCount)/(float)totalCount);
 			}
+						
 			
-//			if (allValues[p].proportion >= 1) {
-//				System.err.println("For probe "+allValues[p].probe.name()+" total="+totalCount+" anti="+antiCount+" ratio="+allValues[p].proportion);
-//			}
+		}
+		
+		// We need to put the sublists into a hash so we can easily look them up when we're drawing
+		if (subLists != null) {
+			
+			for (int s=0;s<subLists.length;s++) {
+				Probe [] subProbes = subLists[s].getAllProbes();
+				
+				for (int p=0;p<subProbes.length;p++) {
+					subListProbes.put(subProbes[p], s+2);
+				}
+				
+			}
+			
 			
 			
 		}
+		
+		
 
 		readyToDraw = true;
 		repaint();
