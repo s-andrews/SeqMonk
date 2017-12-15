@@ -90,6 +90,7 @@ import uk.ac.babraham.SeqMonk.Displays.BeanPlot.MultiBeanPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.BoxWhisker.MultiBoxWhiskerDialog;
 import uk.ac.babraham.SeqMonk.Displays.SmallRNAQCPlot.SmallRNAQCPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.StarWars.MultiStarWarsDialog;
+import uk.ac.babraham.SeqMonk.Displays.StrandBias.StrandBiasPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.TsneDataStorePlot.TsneOptionsDialog;
 import uk.ac.babraham.SeqMonk.Displays.VariancePlot.VariancePlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.CisTransScatterplot.CisTransScatterPlotDialog;
@@ -752,7 +753,13 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewVariancePlot.addActionListener(this);
 		plotsMenu.add(viewVariancePlot);
 
-
+		JMenuItem viewStrandBiasPlot = new JMenuItem("Strand Bias Plot...");
+		viewStrandBiasPlot.setActionCommand("view_strand_bias_plot");
+		viewStrandBiasPlot.setMnemonic(KeyEvent.VK_B);
+		viewStrandBiasPlot.addActionListener(this);
+		plotsMenu.add(viewStrandBiasPlot);
+		
+		
 		JMenu viewLineGraph = new JMenu("Line Graph...");
 		viewLineGraph.setMnemonic(KeyEvent.VK_L);
 
@@ -2016,6 +2023,17 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		}
 
 
+		else if (action.equals("view_strand_bias_plot")) {
+			if (! application.dataCollection().isQuantitated()) {
+				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				new StrandBiasPlotDialog(application.dataCollection());
+			}
+		}
+
+		
+		
 		else if (action.equals("view_scatterplot")) {
 			if (! application.dataCollection().isQuantitated()) {
 				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
