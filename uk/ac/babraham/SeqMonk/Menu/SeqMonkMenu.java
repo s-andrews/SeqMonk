@@ -845,132 +845,167 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		JMenu filterStatsMenu = new JMenu("Filter by Statistical Test");
 		filterStatsMenu.setMnemonic(KeyEvent.VK_S);
 
+		// Continuous Statistics
+		JMenu continuousStatsMenu = new JMenu("Continuous value statistics");
+		continuousStatsMenu.setMnemonic(KeyEvent.VK_C);
+		filterStatsMenu.add(continuousStatsMenu);
+		
+		JMenu continuousStatsReplicatedMenu = new JMenu("Replicated data");
+		continuousStatsReplicatedMenu.setMnemonic(KeyEvent.VK_R);
+		continuousStatsMenu.add(continuousStatsReplicatedMenu);
+		
+		JMenu continuousStatsUnreplicatedMenu = new JMenu("Unreplicated data");
+		continuousStatsUnreplicatedMenu.setMnemonic(KeyEvent.VK_U);
+		continuousStatsMenu.add(continuousStatsUnreplicatedMenu);
 
-		JMenu rStatsMenu = new JMenu("R filters");
-		rStatsMenu.setMnemonic(KeyEvent.VK_R);
 
-		JMenuItem deseqFilter = new JMenuItem("DESeq2 stats...");
+		// Count Based Statistics
+		JMenu countStatsMenu = new JMenu("Count based statistics");
+		countStatsMenu.setMnemonic(KeyEvent.VK_O);
+		filterStatsMenu.add(countStatsMenu);
+		
+		JMenu countStatsReplicatedMenu = new JMenu("Replicated data");
+		countStatsReplicatedMenu.setMnemonic(KeyEvent.VK_R);
+		countStatsMenu.add(countStatsReplicatedMenu);
+		
+		JMenu countStatsUnreplicatedMenu = new JMenu("Unreplicated data");
+		countStatsUnreplicatedMenu.setMnemonic(KeyEvent.VK_U);
+		countStatsMenu.add(countStatsUnreplicatedMenu);
+
+		
+		// Proportion Based Statistics
+		JMenu proportionStatsMenu = new JMenu("Proportion based statistics");
+		proportionStatsMenu.setMnemonic(KeyEvent.VK_P);
+		filterStatsMenu.add(proportionStatsMenu);
+		
+		JMenu proportionStatsReplicatedMenu = new JMenu("Replicated data");
+		proportionStatsReplicatedMenu.setMnemonic(KeyEvent.VK_R);
+		proportionStatsMenu.add(proportionStatsReplicatedMenu);
+		
+		JMenu proportionStatsUnreplicatedMenu = new JMenu("Unreplicated data");
+		proportionStatsUnreplicatedMenu.setMnemonic(KeyEvent.VK_U);
+		proportionStatsMenu.add(proportionStatsUnreplicatedMenu);
+		
+
+		// Variance Statistics
+		JMenu varianceStatsMenu = new JMenu("Variance statistics");
+		varianceStatsMenu.setMnemonic(KeyEvent.VK_V);
+		filterStatsMenu.add(varianceStatsMenu);
+
+		// Subgroup Statistics
+		JMenu subgroupStatsMenu = new JMenu("Subgroup statistics");
+		subgroupStatsMenu.setMnemonic(KeyEvent.VK_S);
+		filterStatsMenu.add(subgroupStatsMenu);
+
+		// Outlier Statistics
+		JMenu outlierStatsMenu = new JMenu("Outlier statistics");
+		outlierStatsMenu.setMnemonic(KeyEvent.VK_O);
+		filterStatsMenu.add(outlierStatsMenu);
+
+		
+		JMenuItem deseqFilter = new JMenuItem("[R] DESeq2...");
 		deseqFilter.setActionCommand("filter_r_deseq2");
 		deseqFilter.addActionListener(this);
 		deseqFilter.setMnemonic(KeyEvent.VK_D);
-		rStatsMenu.add(deseqFilter);
+		countStatsReplicatedMenu.add(deseqFilter);
 
-		JMenuItem edgeRFilter = new JMenuItem("EdgeR stats...");
+		JMenuItem edgeRFilter = new JMenuItem("[R] EdgeR...");
 		edgeRFilter.setActionCommand("filter_r_edger");
 		edgeRFilter.addActionListener(this);
 		edgeRFilter.setMnemonic(KeyEvent.VK_E);
-		rStatsMenu.add(edgeRFilter);		
+		countStatsReplicatedMenu.add(edgeRFilter);		
 
-		JMenuItem logisticRegressionFilter = new JMenuItem("Logisitic Regression (for/rev)...");
+		JMenuItem logisticRegressionFilter = new JMenuItem("[R] Logisitic Regression (for/rev)...");
 		logisticRegressionFilter.setActionCommand("filter_r_logistic_regression");
 		logisticRegressionFilter.addActionListener(this);
 		logisticRegressionFilter.setMnemonic(KeyEvent.VK_L);
-		rStatsMenu.add(logisticRegressionFilter);		
+		proportionStatsReplicatedMenu.add(logisticRegressionFilter);		
 
-		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("Logisitic Regression Splicing...");
+		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("[R] Logisitic Regression Splicing...");
 		logisticRegressionSplicingFilter.setActionCommand("filter_r_logistic_regression_splicing");
 		logisticRegressionSplicingFilter.addActionListener(this);
 		logisticRegressionSplicingFilter.setMnemonic(KeyEvent.VK_S);
-		rStatsMenu.add(logisticRegressionSplicingFilter);
+		proportionStatsReplicatedMenu.add(logisticRegressionSplicingFilter);
 
-		filterStatsMenu.add(rStatsMenu);
-
-		JMenu intensityDiffMenu = new JMenu("Intensity Difference");
-		intensityDiffMenu.setMnemonic(KeyEvent.VK_I);
-
-		JMenuItem filterIntensityStats = new JMenuItem("Individual Probes...");
+		
+		JMenuItem filterIntensityStats = new JMenuItem("Intensity Difference...");
 		filterIntensityStats.setActionCommand("filter_intensity_stats");
 		filterIntensityStats.addActionListener(this);
 		filterIntensityStats.setMnemonic(KeyEvent.VK_I);
-		intensityDiffMenu.add(filterIntensityStats);
+		continuousStatsUnreplicatedMenu.add(filterIntensityStats);
 
 
-		JMenuItem filterIntensityVarStats = new JMenuItem("Variance...");
+		JMenuItem filterIntensityVarStats = new JMenuItem("Variance intensity difference...");
 		filterIntensityVarStats.setActionCommand("filter_intensity_var_stats");
 		filterIntensityVarStats.addActionListener(this);
 		filterIntensityVarStats.setMnemonic(KeyEvent.VK_V);
-		intensityDiffMenu.add(filterIntensityVarStats);
+		varianceStatsMenu.add(filterIntensityVarStats);
 
 
-		JMenuItem filterGeneSets = new JMenuItem("Gene Sets...");
+		JMenuItem filterGeneSets = new JMenuItem("Gene Set Enrichment...");
 		filterGeneSets.setActionCommand("filter_genesets");
 		filterGeneSets.addActionListener(this);
-		intensityDiffMenu.add(filterGeneSets);
-
-		filterStatsMenu.add(intensityDiffMenu);
+		subgroupStatsMenu.add(filterGeneSets);
 
 
+		
 		JMenuItem proportionOfLibraryStats = new JMenuItem("Proportion of library...");
 		proportionOfLibraryStats.setActionCommand("filter_proportion_library");
 		proportionOfLibraryStats.addActionListener(this);
 		proportionOfLibraryStats.setMnemonic(KeyEvent.VK_P);
-		filterStatsMenu.add(proportionOfLibraryStats);
+		countStatsUnreplicatedMenu.add(proportionOfLibraryStats);
 
 
-		//		JMenuItem filterIntensityReplicateStats = new JMenuItem("Intensity Replicates...");
-		//		filterIntensityReplicateStats.setActionCommand("filter_intensity_replicate_stats");
-		//		filterIntensityReplicateStats.addActionListener(this);
-		//		filterIntensityReplicateStats.setMnemonic(KeyEvent.VK_R);
-		//		filterStatsMenu.add(filterIntensityReplicateStats);
+		JMenuItem windowedReplicate = new JMenuItem("Windowed Replicate...");
+		windowedReplicate.setActionCommand("filter_statsr");
+		windowedReplicate.addActionListener(this);
+		windowedReplicate.setMnemonic(KeyEvent.VK_R);
+		continuousStatsUnreplicatedMenu.add(windowedReplicate);
 
-		JMenuItem filterStatsR = new JMenuItem("Windowed Replicate...");
-		filterStatsR.setActionCommand("filter_statsr");
-		filterStatsR.addActionListener(this);
-		filterStatsR.setMnemonic(KeyEvent.VK_R);
-		filterStatsMenu.add(filterStatsR);
-
-		JMenuItem filterStats = new JMenuItem("Replicate Set Stats...");
-		filterStats.setActionCommand("filter_stats");
-		filterStats.addActionListener(this);
-		filterStats.setMnemonic(KeyEvent.VK_S);
-		filterStatsMenu.add(filterStats);
+		JMenuItem repSetStats = new JMenuItem("Replicate Set Stats (t-test/ANOVA)...");
+		repSetStats.setActionCommand("filter_stats");
+		repSetStats.addActionListener(this);
+		repSetStats.setMnemonic(KeyEvent.VK_S);
+		continuousStatsReplicatedMenu.add(repSetStats);
 
 		JMenuItem filterMonteCarlo = new JMenuItem("Monte Carlo Stats...");
 		filterMonteCarlo.setActionCommand("filter_monte_carlo");
 		filterMonteCarlo.addActionListener(this);
 		filterMonteCarlo.setMnemonic(KeyEvent.VK_M);
-		filterStatsMenu.add(filterMonteCarlo);
+		subgroupStatsMenu.add(filterMonteCarlo);
 
-		JMenuItem filterBoxWhisker = new JMenuItem("BoxWhisker...");
+		JMenuItem filterBoxWhisker = new JMenuItem("BoxWhisker Outlier Detection...");
 		filterBoxWhisker.setActionCommand("filter_boxwhisker");
 		filterBoxWhisker.addActionListener(this);
 		filterBoxWhisker.setMnemonic(KeyEvent.VK_B);
-		filterStatsMenu.add(filterBoxWhisker);
+		outlierStatsMenu.add(filterBoxWhisker);
 
-		JMenu filterChiSquareMenu = new JMenu("ChiSquare");
-		filterChiSquareMenu.setMnemonic(KeyEvent.VK_C);
 
-		JMenuItem filterChiSquareStores = new JMenuItem("Multiple Stores...");
-		filterChiSquareStores.setActionCommand("filter_chisquare_stores");
-		filterChiSquareStores.addActionListener(this);
-		filterChiSquareStores.setMnemonic(KeyEvent.VK_S);
-		filterChiSquareMenu.add(filterChiSquareStores);
-
-		JMenuItem filterChiSquareFrontBack = new JMenuItem("Front/Back...");
-		filterChiSquareFrontBack.setActionCommand("filter_chisquare_frontback");
-		filterChiSquareFrontBack.addActionListener(this);
-		filterChiSquareFrontBack.setMnemonic(KeyEvent.VK_B);
-		filterChiSquareMenu.add(filterChiSquareFrontBack);
-
-		
-		JMenuItem filterChiSquareForRev = new JMenuItem("For/Rev...");
+		JMenuItem filterChiSquareForRev = new JMenuItem("Chi-Square (for/rev)...");
 		filterChiSquareForRev.setActionCommand("filter_chisquare_forrev");
 		filterChiSquareForRev.addActionListener(this);
 		filterChiSquareForRev.setMnemonic(KeyEvent.VK_F);
-		filterChiSquareMenu.add(filterChiSquareForRev);
+		proportionStatsUnreplicatedMenu.add(filterChiSquareForRev);
 
-		filterStatsMenu.add(filterChiSquareMenu);
+		JMenuItem filterChiSquareStores = new JMenuItem("Chi-Square (multiple stores)...");
+		filterChiSquareStores.setActionCommand("filter_chisquare_stores");
+		filterChiSquareStores.addActionListener(this);
+		filterChiSquareStores.setMnemonic(KeyEvent.VK_S);
+		proportionStatsUnreplicatedMenu.add(filterChiSquareStores);
 
-		JMenu filterBinomialMenu = new JMenu("Binomial");
-		filterChiSquareMenu.setMnemonic(KeyEvent.VK_B);
+		JMenuItem filterChiSquareFrontBack = new JMenuItem("Chi-Square (Front/Back)...");
+		filterChiSquareFrontBack.setActionCommand("filter_chisquare_frontback");
+		filterChiSquareFrontBack.addActionListener(this);
+		filterChiSquareFrontBack.setMnemonic(KeyEvent.VK_B);
+		proportionStatsUnreplicatedMenu.add(filterChiSquareFrontBack);
 
-		JMenuItem filterBinomialForRev = new JMenuItem("For/Rev...");
+		
+
+		JMenuItem filterBinomialForRev = new JMenuItem("Binomial (for/rev)...");
 		filterBinomialForRev.setActionCommand("filter_binomial_forrev");
 		filterBinomialForRev.addActionListener(this);
 		filterBinomialForRev.setMnemonic(KeyEvent.VK_F);
-		filterBinomialMenu.add(filterBinomialForRev);
-
-		filterStatsMenu.add(filterBinomialMenu);
+		proportionStatsUnreplicatedMenu.add(filterBinomialForRev);
 
 
 		filterMenu.add(filterStatsMenu);
