@@ -70,6 +70,7 @@ public class RNASeqPipeline extends Pipeline {
 	private static boolean lastTranscriptLengthCorrection = false;
 	private static boolean lastNoValueForZero = false;
 	private static boolean lastCorrectDNAContamination = false;
+	private static boolean lastCorrectDNADuplication = false;
 
 
 	protected RNASeqOptionsPanel optionsPanel;
@@ -281,6 +282,7 @@ public class RNASeqPipeline extends Pipeline {
 		boolean rawCounts = optionsPanel.rawCounts();
 		boolean noValueForZeroCounts = optionsPanel.noValueForZeroCounts();
 		boolean correctDNAContamination = optionsPanel.correctForDNAContamination();
+		boolean correctDuplication = optionsPanel.correctForDNADuplication();
 
 		if (rawCounts) {
 			logTransform = false;
@@ -435,8 +437,86 @@ public class RNASeqPipeline extends Pipeline {
 			}
 
 		}
+		
+		for (int i=0;i<dnaDensityPerKb.length;i++) {
+			System.err.println("For "+data[i].name()+" dna/kb was "+dnaDensityPerKb[i]);
+		}
+		
+		
+		// If we're correcting for duplication we need to work out the modal count depth in 
+		// intergenic regions
+		int [] modalDuplicationLevels = new int[data.length];
 
+		if (correctDuplication) {
+			// We're counting within the probes we already have
 
+			for (int d=0;d<data.length;d++) {
+
+				progressUpdated("Quantitating DNA duplication", 1, 2);
+
+				// We're not going to look at depths which are > 200.  If it's that duplicated
+				// then there's no point continuing anyway.
+				int [] depthCount = new int[200];
+
+				for (int p=0;p<allProbes.length;p++) {
+					long [] reads = data[d].getReadsForProbe(allProbes[p]); 
+
+					int currentCount = 0;
+					for (int r=1;r<reads.length;r++) {
+						if (reads[r] == reads[r-1]) {
+							++currentCount;
+						}
+						else {
+							if (currentCount > 0 && currentCount<200) {
+								++depthCount[currentCount];
+							}
+							currentCount = 1;
+						}
+					}
+				
+				}
+
+				// Find the modal depth in intergenic regions. This is the best estimate
+				// of duplication
+				
+				// Since unique reads turn up all over the place even in duplicated 
+				// data we say that if unique reads are higher than the sum of 2-10 there
+				// is no duplication
+				int twoTenSum = 0;
+				for (int i=2;i<=10;i++) {
+					twoTenSum += depthCount[i];
+				}
+				
+				if (depthCount[1] > twoTenSum) {
+					modalDuplicationLevels[d] = 1;
+				}
+				
+				else {
+				
+					int highestDepth = 0;
+					int	bestDupGuess = 1;
+					for (int i=2;i<depthCount.length;i++) {
+//						System.err.println("For depth "+i+" count was "+depthCount[i]);
+						if (depthCount[i] > highestDepth) {
+							bestDupGuess = i;
+							highestDepth = depthCount[i];
+						}
+					}
+
+				
+					modalDuplicationLevels[d] = bestDupGuess;
+				}
+
+			}
+
+		}
+		
+	
+		for (int i=0;i<modalDuplicationLevels.length;i++) {
+			System.err.println("For "+data[i].name()+" duplication was "+modalDuplicationLevels[i]);
+		}
+		
+	
 
 
 		// Having made probes we now need to quantitate them.  We'll fetch the
@@ -521,6 +601,10 @@ public class RNASeqPipeline extends Pipeline {
 
 					}
 
+					// ..and we can divide by the duplication level if we know it.
+					if (correctDuplication) {
+						totalCount /= modalDuplicationLevels[d];
+					}
 
 
 					//					System.err.println("Total read count for "+mergedTranscripts[f].name+" is "+totalCount);
@@ -552,24 +636,36 @@ public class RNASeqPipeline extends Pipeline {
 						// If these libraries are paired end then the total number of
 						// reads is also effectively halved.
 						
+						float totalReadCount;
+						
+						// We start by getting the original total.  For DNA contamination correction we'll have
+						// calculated this already, but otherwise we'll take the total count (total length/read length)
 						if (correctDNAContamination) {
-							// We need to estimate total counts minus contamination							
-							
-							if (pairedEnd) {
-								value /= (correctedTotalCounts[d] /2000000f);
-							}
-							else {
-								value /= (correctedTotalCounts[d] /1000000f);
-							}
+							totalReadCount = correctedTotalCounts[d];
 						}
 						else {
-							if (pairedEnd) {
-								value /= (data[d].getTotalReadCount()/2000000f);
-							}
-							else {
-								value /= (data[d].getTotalReadCount()/1000000f);
-							}
+							totalReadCount = data[d].getTotalReadLength()/readLengths[d];
 						}
+						
+						
+						// If we're correcting for duplication we divide by the duplication level.
+						if (correctDuplication) {
+							totalReadCount /= modalDuplicationLevels[d];
+						}
+						
+						
+						// Finally we work out millions of reads (single end) or fragments (paired end)
+						if (pairedEnd) {
+							totalReadCount /= 2000000f;
+						}
+						else {
+							totalReadCount /= 1000000f;
+						}
+						
+						
+						// Lastly we divide the value by the total millions of reads to get the globally corrected count.
+						value /= totalReadCount;
+												
 					}
 
 					//	System.err.println("Total corrected read count for "+mergedTranscripts[f].name+" is "+totalCount);
@@ -645,6 +741,7 @@ public class RNASeqPipeline extends Pipeline {
 		JCheckBox applyTranscriptLengthCorrectionBox;
 		JCheckBox noValueForZeroBox;
 		JCheckBox correctForDNAContaminationBox;
+		JCheckBox correctForDNADuplicationBox;
 
 		public RNASeqOptionsPanel (String [] featureTypes) {
 
@@ -805,6 +902,19 @@ public class RNASeqPipeline extends Pipeline {
 
 			add(correctForDNAContaminationBox,gbc);
 
+			gbc.gridy++;
+			gbc.gridx=1;
+
+			add(new JLabel("Correct for DNA Duplication"),gbc);
+
+			gbc.gridx=2;
+
+			correctForDNADuplicationBox = new JCheckBox();
+			correctForDNADuplicationBox.setSelected(lastCorrectDNADuplication);
+
+			add(correctForDNADuplicationBox,gbc);
+
+			
 		}
 
 		public boolean mergeTranscripts () {
@@ -877,6 +987,12 @@ public class RNASeqPipeline extends Pipeline {
 		public boolean correctForDNAContamination () {
 			lastCorrectDNAContamination = correctForDNAContaminationBox.isSelected();
 			return lastCorrectDNAContamination;
+		}
+
+		
+		public boolean correctForDNADuplication () {
+			lastCorrectDNADuplication = correctForDNADuplicationBox.isSelected();
+			return lastCorrectDNADuplication;
 		}
 
 
