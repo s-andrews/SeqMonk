@@ -146,6 +146,7 @@ import uk.ac.babraham.SeqMonk.Filters.WindowedValuesFilter;
 import uk.ac.babraham.SeqMonk.Filters.CorrelationCluster.CorrelationClusterFilter;
 import uk.ac.babraham.SeqMonk.Filters.DESeqFilter.DESeqFilter;
 import uk.ac.babraham.SeqMonk.Filters.EdgeRFilter.EdgeRFilter;
+import uk.ac.babraham.SeqMonk.Filters.EdgeRFilter.EdgeRForRevFilter;
 import uk.ac.babraham.SeqMonk.Filters.GeneSetFilter.GeneSetIntensityDifferenceFilter;
 import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionFilter;
 import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionSplicingFilter;
@@ -926,7 +927,14 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		logisticRegressionFilter.setActionCommand("filter_r_logistic_regression");
 		logisticRegressionFilter.addActionListener(this);
 		logisticRegressionFilter.setMnemonic(KeyEvent.VK_L);
-		proportionStatsReplicatedMenu.add(logisticRegressionFilter);		
+		proportionStatsReplicatedMenu.add(logisticRegressionFilter);
+		
+		JMenuItem edgeRForRevFilter = new JMenuItem("[R] EdgeR (for/rev)...");
+		edgeRForRevFilter.setActionCommand("filter_r_edger_forrev");
+		edgeRForRevFilter.addActionListener(this);
+		edgeRForRevFilter.setMnemonic(KeyEvent.VK_E);
+		proportionStatsReplicatedMenu.add(edgeRForRevFilter);		
+
 
 		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("[R] Logisitic Regression Splicing...");
 		logisticRegressionSplicingFilter.setActionCommand("filter_r_logistic_regression_splicing");
@@ -2199,6 +2207,10 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					else if (action.equals("filter_r_edger")) {
 						new FilterOptionsDialog(application.dataCollection(),new EdgeRFilter(application.dataCollection()));
 					}
+					else if (action.equals("filter_r_edger_forrev")) {
+						new FilterOptionsDialog(application.dataCollection(),new EdgeRForRevFilter(application.dataCollection()));
+					}
+
 					else if (action.equals("filter_r_logistic_regression")) {
 						new FilterOptionsDialog(application.dataCollection(),new LogisticRegressionFilter(application.dataCollection()));
 					}
