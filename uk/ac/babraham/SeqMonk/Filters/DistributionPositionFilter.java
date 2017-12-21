@@ -284,18 +284,18 @@ public class DistributionPositionFilter extends ProbeFilter {
 		
 		if (lowerLimit != null && upperLimit != null) {
 			b.append("between ");
-			b.append(lowerLimit);
+			b.append(lowerLimit.toString().replaceAll("\\.0+$", ""));
 			b.append(" and ");
-			b.append(upperLimit);
+			b.append(upperLimit.toString().replaceAll("\\.0+$", ""));
 		}
 		
 		else if (lowerLimit != null) {
 			b.append("above ");
-			b.append(lowerLimit);
+			b.append(lowerLimit.toString().replaceAll("\\.0+$", ""));
 		}
 		else if (upperLimit != null) {
 			b.append("below ");
-			b.append(upperLimit);
+			b.append(upperLimit.toString().replaceAll("\\.0+$", ""));
 		}
 		
 		return b.toString();
