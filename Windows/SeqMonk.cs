@@ -31,6 +31,13 @@ namespace SeqMonkLauncher
             if (javaVersion.Contains("64-Bit"))
             {
                 memoryCeiling = 10240;
+                int manualMemoryCeiling = getManualMemoryCeiling();
+
+                if (manualMemoryCeiling > memoryCeiling)
+                {
+                    memoryCeiling = manualMemoryCeiling;
+                }
+
                 Console.WriteLine("Found 64-bit JVM, setting memory ceiling to 8192m");
             }
             else
@@ -228,6 +235,98 @@ namespace SeqMonkLauncher
             return 0;
         }
 
+
+        static int getManualMemoryCeiling()
+        {
+            // We need to start by getting the location of the seqmonk preferences file.  We do this
+            // with a call to a specical class in seqmonk which prints this.
+            try
+            {
+                string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
+                if (path.StartsWith("file:\\"))
+                {
+                    path = path.Substring(6);
+                }
+
+                // UNC paths won't have a drive letter so we need to prepend these with
+                // a pair of slashes
+
+                if (!path.Substring(1, 1).Equals(":"))
+                {
+                    path = "\\\\" + path;
+                }
+
+
+                string finalCommand = "java -cp \"" + path + "\" uk.ac.babraham.Utilities.PrefsPrinter";
+
+                Console.WriteLine("Prefs check command is " + finalCommand);
+                string parms = "-cp \"" + path + "\" uk.ac.babraham.SeqMonk.Utilities.PrefsPrinter";
+                string prefsFile = "";
+                string error = string.Empty;
+
+                ProcessStartInfo psi = new ProcessStartInfo("java.exe", parms);
+
+                psi.RedirectStandardOutput = true;
+                psi.RedirectStandardError = true;
+                psi.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                psi.UseShellExecute = false;
+                System.Diagnostics.Process reg;
+                reg = System.Diagnostics.Process.Start(psi);
+                using (System.IO.StreamReader myOutput = reg.StandardOutput)
+                {
+                    prefsFile = myOutput.ReadToEnd();
+                }
+                using (System.IO.StreamReader myError = reg.StandardError)
+                {
+                    error = myError.ReadToEnd();
+                }
+
+                if (error.Length > 0)
+                {
+                    Console.WriteLine("Prefs file check failed :" + error);
+                    return (0);
+                }
+
+                prefsFile = prefsFile.Replace("\n", "");
+                prefsFile = prefsFile.Replace("\r", "");
+
+                Console.WriteLine("Prefs file location was '" + prefsFile + "'");
+
+                // Now we need to check whether this path exists
+                if (! File.Exists(prefsFile))
+                {
+                    Console.WriteLine("WARNING: Couldn't find prefs file at '" + prefsFile + "'");
+                    return (0);
+                }
+
+                // As it exists we now need to read it
+                string[] lines = System.IO.File.ReadAllLines(prefsFile);
+
+                foreach (string line in lines)
+                {
+                    string [] values = line.Split('\t');
+                    if (values[0].Equals("Memory"))
+                    {
+                        int memoryFromFile = Int32.Parse(values[1]);
+                        Console.WriteLine("Memory value from prefs was '" + values[1] + "'");
+                        return (memoryFromFile);
+                    }
+                }
+
+                Console.WriteLine("WARNING: No memory value found in prefs file");
+                return (0);
+
+
+            }
+            catch (Exception objException)
+            {
+                Console.WriteLine(objException.ToString());
+                return 0;
+            }
+
+
+         }
 
         static string getJavaVersion()
         {
