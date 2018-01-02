@@ -21,6 +21,15 @@ else {
 	$ENV{CLASSPATH} = "$RealBin:$RealBin/sam-1.32.jar:$RealBin/Jama-1.0.2.jar:$RealBin/commons-math3-3.5.jar";
 }
 
+
+# If people are using this launcher under windows then their classpath needs to be separated by semicolons
+# instead of colons.
+	
+if ($^O =~ /Win/) {
+	$ENV{CLASSPATH} =~ s/.jar:/\.jar;/g;
+	$ENV{CLASSPATH} =~ s/\Q$RealBin:/$RealBin;/g;
+}
+
 warn "CLASSPATH is : $ENV{CLASSPATH}\n";
 
 # We need to make sure the language is English so we can parse the output of some
@@ -125,14 +134,13 @@ sub correct_memory {
 sub determine_optimal_memory {
 	
 	# We'll set a ceiling for the memory allocation.  On a 32-bit OS this is going
-	# to be 1536m (the max it can safely handle), on a 64-bit OS we won't take more
-	# than 6GB
+	# to be 1536m (the max it can safely handle)
 	my $max_memory = 1331;
+	
 	
 	# We need not only a 64 bit OS but 64 bit java as well. It's easiest to just test
 	# java since the OS support must be there if you have a 64 bit JRE.
 	
-	my $is_java_7 = 0;
 	
 	my ($in,$out);
 	open3(\*IN,\*OUT,\*OUT,"java -version") or print_error("Can't find java");
@@ -140,9 +148,15 @@ sub determine_optimal_memory {
 	while (<OUT>) {
 		if (/64-Bit/) {
 			$max_memory = 10240;
-		}
-		if (/build 1\.7/) {
-			$is_java_7 = 1;
+			
+			# If they have a 64 bit OS then they might have overridden the max memory
+			# limit in their preferences and we'll honour this if they have.
+			
+			my $prefs_max = get_prefs_max();
+			if ($prefs_max and $prefs_max > $max_memory) {
+				$max_memory = $prefs_max;
+			}
+			
 		}
 	}
 	close OUT;
@@ -165,17 +179,6 @@ sub determine_optimal_memory {
 		push @java_args, '-Xdock:name=SeqMonk';
 		push @java_args, "-Xdock:icon=$RealBin/../Resources/seqmonk.icns";
 
-		# Java7 on OSX has a bug in the apple screen bar which prevents the
-		# menu items from being updated correctly resulting in them staying
-		# disabled when they should be enabled.  We'll only enable this view
-		# when the JRE is an older version.
-		
-		# Update - this seems to be fixed in newer versions of java 1.7 so 
-		# we'll revert this
-		
-#		unless ($is_java_7) {		
-			push @java_args, '-Dapple.laf.useScreenMenuBar=true';
-#		}
 	}
 	elsif ($os =~ /bsd/) {
 		$physical = get_osx_memory($max_memory);	
@@ -198,6 +201,39 @@ sub determine_optimal_memory {
 	return $physical;
 	
 }
+
+sub get_prefs_max () {
+
+	# We need to get the location of the seqmonk prefs file and see if it contains
+	# a memory setting.
+	
+	my $prefs_file = `java uk.ac.babraham.SeqMonk.Utilities.PrefsPrinter`;
+	
+	$prefs_file =~ s/[\r\n]+//g;
+	$prefs_file =~ s/\\/\//g;
+	
+	warn "Prefs file is at: $prefs_file\n";
+	
+	unless (-e $prefs_file) {
+		return 0;
+	}
+	
+	open (IN,$prefs_file) or do {
+		warn "ERROR: Can't open prefs file $prefs_file: $!";
+		return(0);
+	};
+	
+	while (<IN>) {
+		if (/Memory\t(\d+)/) {
+			warn "Set memory to $1 from prefs file\n";
+			return ($1);
+		}	
+	}
+	
+	warn "WARNING: No memory setting found in prefs file\n";
+
+}
+
 
 sub get_linux_memory {
 	# We get the amount of physical memory on linux by parsing the output of free

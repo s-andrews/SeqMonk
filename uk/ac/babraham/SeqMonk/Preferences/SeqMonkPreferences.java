@@ -91,6 +91,10 @@ public class SeqMonkPreferences {
 	/** The email address we should attach to crash reports */
 	private String crashEmail = null;
 	
+	/** The amount of memory in MB to use **/
+	private int memory = 0;
+	
+	
 	/** The recently opened files list */
 	private LinkedList<String> recentlyOpenedFiles = new LinkedList<String>();
 		
@@ -174,9 +178,12 @@ public class SeqMonkPreferences {
 				}
 				else if (sections[0].equals("UseTempDir")) {
 					// Old option, no longer required
-				}				
+				}
 				else if (sections[0].equals("CompressOutput")) {
 					compressOutput = sections[1].equals("1");
+				}
+				else if (sections[0].equals("Memory")) {
+					memory = Integer.parseInt(sections[1]);
 				}
 				else if (sections[0].equals("CrashEmail")) {
 					crashEmail = sections[1];
@@ -296,6 +303,8 @@ public class SeqMonkPreferences {
 			p.println("CompressOutput\t0");
 		}
 
+		// The initial memory setting to use
+		p.println("Memory\t"+memory);
 		
 		// Whether we want to check for updates
 		if (checkForUpdates) {
@@ -711,6 +720,29 @@ public class SeqMonkPreferences {
 	 * 
 	 * @return The stored email address, or an empty string
 	 */
+	public int memory () {
+		return memory;
+	}
+	
+	/**
+	 * Stores the amount of memory to allow the program to
+	 * use on startup.  Set this to 0 to get the automatic
+	 * memory setup.  If this value is higher than 80% of 
+	 * total system memory then this will be ignored.
+	 * 
+	 * @param email The email address to store
+	 */
+	public void setMemory (int memory) {
+		this.memory = memory;
+	}
+	
+
+	/**
+	 * Gets the stored email address which should be attached
+	 * to crash reports.
+	 * 
+	 * @return The stored email address, or an empty string
+	 */
 	public String getCrashEmail () {
 		if (crashEmail != null) return crashEmail;
 		return "";
@@ -727,8 +759,9 @@ public class SeqMonkPreferences {
 		// We're not even going to try to validate this
 		crashEmail = email;
 	}
+
 	
-			
+	
 	/**
 	 * Applies the stored proxy information to the environment of the
 	 * current session so it is picked up automatically by any network

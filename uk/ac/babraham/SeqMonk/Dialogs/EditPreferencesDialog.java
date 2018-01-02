@@ -51,6 +51,7 @@ import javax.swing.event.ListSelectionListener;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 
 /**
  * A Dialog to allow the viewing and editing of all SeqMonk preferences.
@@ -95,6 +96,9 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	
 	/** The temp directory. */
 	private JTextField tempDirectory;
+	
+	/** The initial memory setting */
+	private JTextField memory;
 	
 	/** The ignored features model. */
 	private DefaultListModel ignoredFeaturesModel;
@@ -294,12 +298,12 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		
 		c.gridx=0;
 		c.gridy++;
-		c.gridwidth=2;
-		JTextArea startUpMemory = new JTextArea("See also the help section on memory usage.");
-		startUpMemory.setWrapStyleWord(true);
-		startUpMemory.setLineWrap(true);
-		memoryPanel.add(startUpMemory,c);
-		startUpMemory.setBackground(memoryPanel.getBackground());
+		memoryPanel.add(new JLabel("Initial Memory (0 for auto - RECOMMENDED)"),c);
+		c.gridx=1;
+		memory = new JTextField(""+p.memory());
+		memory.addKeyListener(new NumberKeyListener(false, false));
+		memoryPanel.add(memory,c);
+		
 		tabs.addTab("Memory", memoryPanel);
 		
 		
@@ -531,6 +535,13 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			
 			if (crashEmailString.length() == 0) crashEmailString = null;
 			
+			
+			int memoryValue = 0;
+			if (memory.getText().length()>0) {
+				memoryValue = Integer.parseInt(memory.getText());
+			}
+			
+			
 			// Should we try to validate the email?
 			
 			// OK that's everything which could have gone wrong.  Let's save it
@@ -549,6 +560,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			p.setGenomeDownloadLocation(downloadLocation.getText());
 			p.setTempDirectory(tempDirFile);
 			p.setCompressOutput(compressOutput.isSelected());
+			p.setMemory(memoryValue);
 			Object [] o = ignoredFeaturesModel.toArray();
 			String [] s = new String[o.length];
 			for (int i=0;i<s.length;i++) {
