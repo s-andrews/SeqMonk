@@ -25,17 +25,32 @@ SeqMonk is a java application. This means that in order to run SeqMonk you need 
 a java runtime environment (JRE). If you do not have a JRE installed then SeqMonk will not start.
 </p>
 <p>
-There are a number of free available JREs. SeqMonk has been tested to work with Sun JRE v1.5 and v1.6
+There are a number of free available JREs. SeqMonk has been tested to work with Oracle JREs v1.6 to v1.8
 running under windows, linux and MacOSX. If you don't have this JRE already you can get it from 
 http://java.sun.com. Other java environments/versions may also work, but we haven't tested them.
 </p>
+
+<p>
+If you are on a Mac then rather than just the standard Java Runtime Environment (JRE) you need to 
+have installed the Java Development Kit (JDK).  Instructions for finding and installing this 
+are in the INSTALL.txt document which you can view on the downloads page of the SeqMonk project
+website.
+</p>
+
+<p>
+If SeqMonk starts to launch but the interface never appears then you should copy all of the debugging
+text which appears in your console and email it to the SeqMonk developers (or report it through
+out bug tracking system) and we will help you get things running.
+</p>
+
+
 
 <h2>SeqMonk runs slowly or dies whilst loading data</h2>
 
 <p>
 The nature of the data SeqMonk has to deal with is that it is very large. Both genome annotations and 
-sequence data take up huge amounts of memory. SeqMonk requires at least 1GB of RAM for small experiments,
-and large experiments may require more. If you're having problems with memory usage then look at the 
+sequence data take up huge amounts of memory. SeqMonk requires at least 2GB of RAM for small experiments,
+and large experiments will require more. If you're having problems with memory usage then look at the 
 <a href="../8%20Configuration/8.2%20Memory%20Settings.html">memory settings</a> and 
 <a href="../8%20Configuration/8.1%20SeqMonk%20Preferences.html">preferences</a>
 documentation to see how you can enable more memory or reduce the amount of memory SeqMonk requires.

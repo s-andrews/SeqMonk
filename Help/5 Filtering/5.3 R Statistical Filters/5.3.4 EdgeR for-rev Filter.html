@@ -1,0 +1,48 @@
+<html>
+
+<head>
+<title>EdgeR Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>EdgeR for/rev Filter</h1>
+
+<p>This is an R based filter so will only be available if you have configured
+R in the SeqMonk preferences and installed the pre-requisite packages</p>
+
+<p>
+This version of the Edge R filter uses the methods described in https://f1000research.com/articles/6-2055/
+to set up a version of the EdgeR filter which can be used to detect differences
+in the ratio of for to rev reads over a probe.  It is most commonly used to 
+analyse methlyation data.
+</p>
+
+<p>The filter allows you to select two replicate sets with at least two data stores
+in each and will identify probes whose for to rev ratio in the two sets differs
+significantly.</p>
+
+<p>
+Unlike the normal EdgeR filter this one does not require that you quantitate your
+data with raw counts as it will re-do the quantitation internally during the running
+of the filter.
+</p>
+
+<h2>Options</h2>
+<ul>
+<li>You need to two Replicate Sets to compare from the list on the left.</li>
+<li>You need to select a p-value cutoff for the filter</li>
+<li>You can select whether multiple testing correction should be applied to 
+your results.  For your p-values to be valid you must leave this box checked</li>
+<li>You can opt to re-sample the raw counts based on the current quantitation.  This option
+allows you to apply post-quantitation correction to your probes and then use the normalised
+values to re-divide the raw ratio counts so that the statistics use the normalised values.</li>
+</ul>
+</body>
+</html>

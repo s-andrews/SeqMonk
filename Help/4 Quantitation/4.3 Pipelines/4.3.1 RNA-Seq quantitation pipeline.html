@@ -73,6 +73,14 @@ intergenic regions to estimate DNA levels and then applies this as a correction 
 transcript to try to give a more accurate overall count coming specifically from 
 transcription.</li>
 
+<li>Whether to correct for duplication. This method is only really relevant when you are 
+generating raw counts, but can be useful when using count based statistics on duplicated
+data.  It calculates the most likely global duplication level for the data and divides the
+per read counts by this value when collating the initial counts.  The value is decided in
+two steps.  To get a value >1 the total of reads with counts of 1 must be less than the 
+combined counts of reads with duplication levels of 2 to 10.  The actual duplication level
+is then taken to be the modal duplication level (above 1) seen across all reads)</li>
+
 <li>Whether to generate raw counts.  If you are using this option to generate data to put
 forward for statistical analysis by a count based method (eg DESeq, EdgeR etc), then you 
 will need completely raw uncorrected counts.  Selecting this option disables all correction
