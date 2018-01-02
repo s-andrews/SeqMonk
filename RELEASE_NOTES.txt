@@ -1,3 +1,41 @@
+RELEASE NOTES FOR SeqMonk v1.40.0
+---------------------------------
+This release does some major reorganisation of the filtering menu as well as 
+adding new functionality.  Major changes are:
+
+- Completely restructured the statistics filter menus so that they are
+  now arranged by the type of data they apply to.
+  
+- Added an option to detect and remove duplication in the RNA-Seq 
+  quantitation pipeline.
+  
+- Added a new variant of the EdgeR filter which can work on for/rev
+  ratio data such as methylation data.
+  
+- Added an option to change the startup memory settings from the usual
+  preferences dialog.
+
+- Added an R debug mode to make it easier to track down problems with R 
+  based functionality.
+  
+- Fixed a bug in the variation plot for data containing NaN values
+
+- Fixed a regression which meant some functionality didn't work on systems
+  running java 1.6
+  
+- Added an option to create data groups or replicate sets from pre-prepared
+  lists of data store names.
+  
+- Added a global correction to the aligned probes plot to make the plots 
+  more directly comparable.
+  
+- Fixed a bug in the exporting of images from the aligned probes plot.
+
+- Collated error messages to help interpreting large numbers of errors.
+
+- Added a strand bias plot
+
+
 RELEASE NOTES FOR SeqMonk v1.39.0
 ---------------------------------
 This release is a mix of new features and bug and usability fixes for existing
