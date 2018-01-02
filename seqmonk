@@ -178,6 +178,7 @@ sub determine_optimal_memory {
 				
 		push @java_args, '-Xdock:name=SeqMonk';
 		push @java_args, "-Xdock:icon=$RealBin/../Resources/seqmonk.icns";
+		push @java_args, "-Dapple.laf.useScreenMenuBar=true";
 
 	}
 	elsif ($os =~ /bsd/) {
