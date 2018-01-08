@@ -44,6 +44,14 @@ public class IntVector implements Serializable {
 		trimmed = false;
 	}
 	
+	public void increaseLastBy (int value) {
+		if (length == 0) {
+			throw new IllegalArgumentException("Attempt to increase last value in Int Vector when no values had been added");
+		}
+		
+		array[length-1] += value;
+	}
+	
 	public int length () {
 		return length;
 	}

@@ -37,6 +37,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeIntCounter;
 import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeLongCounter;
@@ -51,7 +52,7 @@ import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeMinMax;
  * this data.
  */
 public class DataSet extends DataStore implements Runnable {
-	
+
 
 	// These are a set of flags which say how we need to treat duplicates
 	public static final int DUPLICATES_REMOVE_NO = 5715;
@@ -59,28 +60,28 @@ public class DataSet extends DataStore implements Runnable {
 	public static final int DUPLICATES_REMOVE_END = 5717;
 	public static final int DUPLICATES_REMOVE_START_END = 5718;
 
-	
+
 	// I've tried using a HashMap and a linked list instead of 
 	// a hashtable and a vector but they proved to be slower and
 	// use more memory.
 
 	private Hashtable<Chromosome, ChromosomeDataStore> readData = new Hashtable<Chromosome, ChromosomeDataStore>();
-	
+
 	/** The original file name - can't be changed by the user */
 	private String fileName;
-	
+
 	/** A flag to say if we've optimised this dataset */
 	private boolean isFinalised = false;
-	
+
 	/** A flag which is set as soon as any unsorted data is added to the data set */
 	private boolean needsSorting = false;
-	
+
 	/** This count allows us to keep track of the progress of finalisation for the individual chromosomes */
 	private ThreadSafeIntCounter chromosomesStillToFinalise;
-	
+
 	/** A flag to say if we should remove duplicates when finalising */
 	private int removeDuplicates = DUPLICATES_REMOVE_NO;
-	
+
 	/** We cache the total read count to save having to reload
 	 * every chromosome just to get the read count
 	 */
@@ -97,31 +98,34 @@ public class DataSet extends DataStore implements Runnable {
 	 * get them
 	 */
 	protected ThreadSafeMinMax minMaxLength = new ThreadSafeMinMax();
-	
-	
+
+
 	/** We cache the reverse read count to save having to reload
 	 * every chromosome just to get the read count
 	 */
 	protected ThreadSafeIntCounter reverseReadCount = new ThreadSafeIntCounter();
 
-	
+
 	/** We cache the unknown read count to save having to reload
 	 * every chromosome just to get the read count
 	 */
 	protected ThreadSafeIntCounter unknownReadCount = new ThreadSafeIntCounter();
 
-	
+
 	/** The total read length. */
 	protected ThreadSafeLongCounter totalReadLength = new ThreadSafeLongCounter();
-	
+
 	// These are cached values used when we're saving excess data to temp files
 	/** The last cached chromosome. */
 	private Chromosome lastCachedChromosome = null;
-	
+
 	/** The reads last loaded from the cache */
 	private long [] lastCachedReads = null;
-	
-		
+
+	/** The counts last loaded from the cache */
+	private int [] lastCachedCounts = null;
+
+
 	/** 
 	 * This variable controls how many thread we allow to finalise at the same time.
 	 * 
@@ -130,13 +134,13 @@ public class DataSet extends DataStore implements Runnable {
 	 * 
 	 * */
 	private static final int MAX_CONCURRENT_FINALISE = Math.min(Runtime.getRuntime().availableProcessors(), 6);
-	
-	
+
+
 	/** The last index at which a read was found */
 	private int lastIndex = 0;
-	
+
 	private long lastProbeLocation = 0;
-	
+
 	/**
 	 * Instantiates a new data set.
 	 * 
@@ -147,11 +151,11 @@ public class DataSet extends DataStore implements Runnable {
 		super(name);
 		this.fileName = fileName;
 		this.removeDuplicates = removeDuplicates;
-		
+
 		// We need to set a shutdown hook to delete any cache files we hold
 		Runtime.getRuntime().addShutdownHook(new Thread(this));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#setName(java.lang.String)
 	 */
@@ -161,11 +165,11 @@ public class DataSet extends DataStore implements Runnable {
 			collection().dataSetRenamed(this);
 		}
 	}
-	
+
 	protected int removeDuplicates () {
 		return removeDuplicates;
 	}
-	
+
 	/**
 	 * This call optimises the data structure from a flexible structure
 	 * which can accept more data, to a fixed structure optimised for
@@ -176,18 +180,18 @@ public class DataSet extends DataStore implements Runnable {
 	 * more data will be added.
 	 */	
 	public synchronized void finalise () {
-				
+
 		if (isFinalised) return;
-		
+
 		// To make querying the data more efficient we're going to convert
 		// all of the vectors in our data structure into SequenceRead arrays
 		// which are sorted by start position.  This means that subsequent
 		// access will be a lot more efficient.
-		
+
 		Enumeration<Chromosome> e = readData.keys();
 
 		chromosomesStillToFinalise = new ThreadSafeIntCounter();
-		
+
 		while (e.hasMoreElements()) {
 
 			while (chromosomesStillToFinalise.value() >= MAX_CONCURRENT_FINALISE) {
@@ -200,23 +204,29 @@ public class DataSet extends DataStore implements Runnable {
 			chromosomesStillToFinalise.increment();
 			readData.get(c).finalise();
 		}
-		
+
 		// Now we need to wait around for the last chromosome to finish
 		// processing
-		
+
 		while (chromosomesStillToFinalise.value() > 0) {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException ex) {}
 		}
-		
+
 		isFinalised = true;
 	}
-			
-	
+
+
 	public void addData (Chromosome chr, long read) throws SeqMonkException {
 		addData(chr, read, false);
 	}
+	
+	public void addData (Chromosome chr, long read, int count) throws SeqMonkException {
+		addData(chr, read, count, false);
+	}
+
+
 	
 	/**
 	 * Adds more data to this set.
@@ -225,25 +235,28 @@ public class DataSet extends DataStore implements Runnable {
 	 * @param read The data to add
 	 * @throws SeqMonkException if this DataSet has been finalised.
 	 */
-	public void addData (Chromosome chr, long read, boolean skipSorting) throws SeqMonkException {
-		
+	public void addData (Chromosome chr, long read, int count, boolean skipSorting) throws SeqMonkException {
+
 		if (isFinalised) {
 			throw new SeqMonkException("This data set is finalised.  No more data can be added");
 		}		
-		
+
 		if (readData.containsKey(chr)) {
-			readData.get(chr).vector.add(read);
+			readData.get(chr).addRead(read,count);
 		}
 		else {
 			ChromosomeDataStore cds = new ChromosomeDataStore();
-			cds.vector = new LongVector();
-			cds.vector.add(read);
+			cds.addRead(read,count);
 			readData.put(chr,cds);
 		}
-		
+
 		if (!skipSorting) needsSorting = true;
 	}
-	
+
+	public void addData (Chromosome chr, long read, boolean skipSorting) throws SeqMonkException {
+		addData(chr,read,1,skipSorting);
+	}
+
 	/**
 	 * Gets the original data source name for this DataSet - usually
 	 * the name of the file from which it was parsed.
@@ -253,7 +266,7 @@ public class DataSet extends DataStore implements Runnable {
 	public String fileName () {
 		return fileName;
 	}
-		
+
 	/**
 	 * A quick check to see if any data overlaps with a probe
 	 * 
@@ -261,64 +274,64 @@ public class DataSet extends DataStore implements Runnable {
 	 * @return true, if at leas one read overlaps with this probe
 	 */
 	public boolean containsReadForProbe(Probe p) {
-		
+
 		if (! isFinalised) finalise();
-		
+
 		long [] allReads = getReadsForChromosome(p.chromosome());
-		
+
 		if (allReads.length == 0) return false;
-						
+
 		int startPos;
 
 		// Use the cached position if we're on the same chromosome
 		// and this probe position is higher than the last one we
 		// fetched.
-		
+
 		if (lastCachedChromosome != null && p.chromosome() == lastCachedChromosome && (lastProbeLocation == 0 || SequenceRead.compare(p.packedPosition(), lastProbeLocation)>=0)) {
 			startPos = lastIndex;
-//			System.out.println("Using cached start pos "+lastIndex);
+			//			System.out.println("Using cached start pos "+lastIndex);
 		}
-		
+
 		// If we're on the same chromosome then we'll simply backtrack until we're far
 		// enough back that we can't have missed even the longest read in the set.
 		else if (lastCachedChromosome != null && p.chromosome() == lastCachedChromosome) {
 
-//			System.out.println("Last chr="+lastCachedChromosome+" this chr="+p.chromosome()+" lastProbeLocation="+lastProbeLocation+" diff="+SequenceRead.compare(p.packedPosition(), lastProbeLocation));
+			//			System.out.println("Last chr="+lastCachedChromosome+" this chr="+p.chromosome()+" lastProbeLocation="+lastProbeLocation+" diff="+SequenceRead.compare(p.packedPosition(), lastProbeLocation));
 
 			int longestRead = getMaxReadLength();
-			
+
 			for (;lastIndex >0;lastIndex--) {
 				if (p.start()-SequenceRead.start(allReads[lastIndex]) > longestRead) {
 					break;
 				}
 			}
-			
-//			System.out.println("Starting from index "+lastIndex+" which starts at "+SequenceRead.start(allReads[lastIndex])+" for "+p.start()+" when max length is "+longestRead);
-			
+
+			//			System.out.println("Starting from index "+lastIndex+" which starts at "+SequenceRead.start(allReads[lastIndex])+" for "+p.start()+" when max length is "+longestRead);
+
 			startPos = lastIndex;
-			
+
 		}
 
-		
+
 		// If we can't cache then start from the beginning.  It's not worth
 		// the hassle of trying to guess starting positions
 		else {
 			startPos = 0;
 			lastIndex = 0;
-//			System.out.println("Starting from the beginning");
-//			System.out.println("Last chr="+lastCachedChromosome+" this chr="+p.chromosome()+" lastProbeLocation="+lastProbeLocation+" diff="+SequenceRead.compare(p.packedPosition(), lastProbeLocation));
+			//			System.out.println("Starting from the beginning");
+			//			System.out.println("Last chr="+lastCachedChromosome+" this chr="+p.chromosome()+" lastProbeLocation="+lastProbeLocation+" diff="+SequenceRead.compare(p.packedPosition(), lastProbeLocation));
 		}
 
 		lastProbeLocation = p.packedPosition();
-				
+
 		// We now go forward to see what we can find
-		
+
 		for (int i=startPos;i<allReads.length;i++) {
 			// Reads come in order, so we can stop when we've seen enough.
 			if (SequenceRead.start(allReads[i]) > p.end()) {
 				return false;
 			}
-			
+
 			if (SequenceRead.overlaps(allReads[i], p.packedPosition())) {
 				// They overlap.
 				lastIndex = i;
@@ -328,74 +341,75 @@ public class DataSet extends DataStore implements Runnable {
 
 		return false;
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForProbe(uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe)
 	 */
 	public long [] getReadsForProbe(Probe p) {
-		
+
 		if (! isFinalised) finalise();
-				
+
 		long [] allReads;
+		int [] allCounts;
+
+		loadCacheForChromosome(p.chromosome());
 		
-		if (p.chromosome() == lastCachedChromosome) {
-			allReads = lastCachedReads;
-		}
-		
-		else {
-			allReads = getReadsForChromosome(p.chromosome());
-		}
-		
+		// We take a copy of the arrays now so that we don't get a problem if something
+		// else updates them whilst we're still working otherwise we get index errors.
+		allReads = lastCachedReads;
+		allCounts = lastCachedCounts;
+
 		if (allReads.length == 0) return new long[0];
-		
+
 		LongVector reads = new LongVector();		
-				
+		IntVector counts = new IntVector();
+
 		int startPos;
 
 		// Use the cached position if we're on the same chromosome
 		// and this probe position is higher than the last one we
 		// fetched.
-		
+
 		if (lastCachedChromosome != null && p.chromosome() == lastCachedChromosome && (lastProbeLocation == 0 || SequenceRead.compare(p.packedPosition(), lastProbeLocation)>=0)) {
 			startPos = lastIndex;
-//			System.out.println("Using cached start pos "+lastIndex);
+			//			System.out.println("Using cached start pos "+lastIndex);
 		}
-		
+
 
 		// If we're on the same chromosome then we'll simply backtrack until we're far
 		// enough back that we can't have missed even the longest read in the set.
 		else if (lastCachedChromosome != null && p.chromosome() == lastCachedChromosome) {
 
-//			System.out.println("Last chr="+lastCachedChromosome+" this chr="+p.chromosome()+" lastProbeLocation="+lastProbeLocation+" diff="+SequenceRead.compare(p.packedPosition(), lastProbeLocation));
+			//			System.out.println("Last chr="+lastCachedChromosome+" this chr="+p.chromosome()+" lastProbeLocation="+lastProbeLocation+" diff="+SequenceRead.compare(p.packedPosition(), lastProbeLocation));
 
 			int longestRead = getMaxReadLength();
-			
+
 			for (;lastIndex >0;lastIndex--) {
 				if (p.start()-SequenceRead.start(allReads[lastIndex]) > longestRead) {
 					break;
 				}
 			}
-			
-//			System.out.println("Starting from index "+lastIndex+" which starts at "+SequenceRead.start(allReads[lastIndex])+" for "+p.start()+" when max length is "+longestRead);
-			
+
+			//			System.out.println("Starting from index "+lastIndex+" which starts at "+SequenceRead.start(allReads[lastIndex])+" for "+p.start()+" when max length is "+longestRead);
+
 			startPos = lastIndex;
-			
+
 		}
-		
+
 		// If we're on a different chromosome then start from the very beginning
 		else {
 			startPos = 0;
 			lastIndex = 0;
-//			System.out.println("Starting from the beginning");
+			//			System.out.println("Starting from the beginning");
 		}
-		
+
 		if (startPos <0) startPos = 0; // Can't see how this would happen, but we had a report showing this.
 
 		lastProbeLocation = p.packedPosition();
-				
+
 		// We now go forward to see what we can find
-		
+
 		boolean cacheSet = false;
 
 		for (int i=startPos;i<allReads.length;i++) {
@@ -403,7 +417,7 @@ public class DataSet extends DataStore implements Runnable {
 			if (SequenceRead.start(allReads[i]) > p.end()) {
 				break;
 			}
-			
+
 			if (SequenceRead.overlaps(allReads[i], p.packedPosition())) {
 				// They overlap.
 
@@ -414,86 +428,131 @@ public class DataSet extends DataStore implements Runnable {
 					cacheSet = true;
 				}
 				reads.add(allReads[i]);
+				counts.add(allCounts[i]);
 			}
 		}
-		
-		
-		long [] returnReads  = reads.toArray();
+
+
+		long [] returnReads  = expandReadsAndCounts(reads.toArray(), counts.toArray());
 
 		// With the new way of tracking we shouldn't ever need to sort these.
 		//		SequenceRead.sort(returnReads);
 		return returnReads;
 	}
 
+	
+	private void loadCacheForChromosome (Chromosome c) {
+
+		// Check if we need to reset which chromosome was loaded last.
+		
+		boolean needToUpdate = lastCachedChromosome == null || lastCachedChromosome != c;
+
+		if (needToUpdate) {
+//			System.err.println("Cache miss for "+this.name()+" requested "+c+" but last cached was "+lastCachedChromosome);
+			lastCachedChromosome = c;
+			lastProbeLocation = 0;
+			lastIndex = 0;
+			
+			if (SeqMonkApplication.getInstance() != null) {
+				SeqMonkApplication.getInstance().cacheUsed();
+			}
+
+			// Check to see if we even have any data for this chromosome
+			if (!readData.containsKey(c)) {
+				lastCachedReads = new long[0];
+				lastCachedCounts = new int[0];
+			}
+
+			else {
+				// We need to reload the data from the temp files.  We have two files - one for the reads
+				// and one for the counts.
+				try {
+					ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(readData.get(c).readsTempFile)));
+					lastCachedReads = (long [])ois.readObject();
+					ois.close();
+					ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(readData.get(c).countsTempFile)));
+					lastCachedCounts = (int [])ois.readObject();
+					ois.close();
+
+				}
+				catch (Exception e) {
+					throw new IllegalStateException(e);
+				}
+			}
+		}		
+	}
+	
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForChromsome(uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome)
 	 */
 	public synchronized long [] getReadsForChromosome(Chromosome c) {
 
 		if (! isFinalised) finalise();
-		
-		// Check if we need to reset which chromosome was loaded last.
-		// We need to do this even if we're not caching since we use
-		// this to determine whether the cached index we're holding
-		// is valid.
-		boolean needToUpdate = lastCachedChromosome == null || lastCachedChromosome != c;
-		if (needToUpdate) {
-//			System.err.println("Cache miss for "+this.name()+" requested "+c+" but last cached was "+lastCachedChromosome);
-			lastCachedChromosome = c;
-			lastProbeLocation = 0;
-			lastIndex = 0;
-		}
 
+		loadCacheForChromosome(c);
+		
 		if (readData.containsKey(c)) {
+
 			
-			if (readData.get(c).reads != null) {
-				// We're not caching, so just give them back the reads
-				return readData.get(c).reads;
-			}
-			else {
-				// This is a serialised dataset.
-				
-				// Check if we've cached this data
-				if (!needToUpdate) {
-					return lastCachedReads;
-				}
-				
-				if (SeqMonkApplication.getInstance() != null) {
-					SeqMonkApplication.getInstance().cacheUsed();
-				}
-				
-				
-				// If not then we need to reload the data from the
-				// temp file
-				try {
-					ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(readData.get(c).tempFile)));
-					lastCachedReads = (long [])ois.readObject();
-					ois.close();
-					return lastCachedReads;
-				}
-				catch (Exception e) {
-					throw new IllegalStateException(e);
-				}
-			}
-			
+			// We used to have a check for whether we were caching, but that's gone
+			// now because they don't have the option to not cache any more.
+
+			return expandReadsAndCounts(lastCachedReads,lastCachedCounts);
+
+
 		}
 		else {
 			lastCachedReads = new long[0];
+			lastCachedCounts = new int[0];
 			return lastCachedReads;
 		}
 	}
 	
+	
+	/** 
+	 * This method turns two arrays (reads and counts) into a single expanded read
+	 * array with the counts expanded out into a single linear stream.
+	 * @param reads
+	 * @param counts
+	 * @return
+	 */
+	private static long [] expandReadsAndCounts (long [] reads, int [] counts) {
+		// Get the total size of the array to return
+		
+		int totalSize = 0;
+		
+		for (int i=0;i<counts.length;i++) {
+			totalSize += counts[i];
+		}
+		
+		// Make the array to return
+		long [] returnArray = new long[totalSize];
+		
+		// Expand the set.
+		int currentPosition = 0;
+		for (int i=0;i<counts.length;i++) {
+			for (int j=0;j<counts[i];j++) {
+				returnArray[currentPosition] = reads[i];
+				j++;
+				currentPosition++;
+			}
+		}
+		
+		return(returnArray);
+		
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run () {
 		// We need to delete any cache files we're still holding
-		
+
 		Enumeration<Chromosome> e = readData.keys();
 		while (e.hasMoreElements()) {
 			Chromosome c = e.nextElement();
-			
-			File f = readData.get(c).tempFile;
+
+			File f = readData.get(c).readsTempFile;
 			if (f != null) {
 				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
 			}
@@ -524,7 +583,7 @@ public class DataSet extends DataStore implements Runnable {
 
 		return totalReadCount.value();
 	}
-	
+
 	public int getMaxReadLength() {
 		return minMaxLength.max();
 	}
@@ -550,71 +609,99 @@ public class DataSet extends DataStore implements Runnable {
 			return unknownReadCount.value();
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getTotalReadLength()
 	 */
 	public long getTotalReadLength () {
-		
+
 		if (! isFinalised) finalise();
 
 		return totalReadLength.value();
 	}
-	
+
 	/**
 	 * The Class ChromosomeDataStore.
 	 */
 	private class ChromosomeDataStore implements Runnable {
-		
-		/** The vector. */
-		public LongVector vector = null;
-		
-		/** The reads. */
-		public long [] reads;
-		
-		/** The temp file. */
-		public File tempFile = null;
 
+		/** A vector to hold the read positions whilst we load them. */
+		private LongVector readVector = new LongVector();
+
+		/** A vector to hold the read counts whilst we load them. */
+		private IntVector countVector = new IntVector();
+
+		/** The temp file in which this data will be saved in the cache folder */
+		public File readsTempFile = null;
+		public File countsTempFile = null;
+
+		
+		/** A cache of the last read position added so we know if we can just
+		 * increment the count instead of adding a new entry
+		 */
+		private long lastReadAdded = Long.MIN_VALUE;
+		
+		public void addRead (long read, int count) {
+			if (read == lastReadAdded) {
+				countVector.increaseLastBy(count);
+			}
+			else {
+				readVector.add(read);
+				countVector.add(count);
+				lastReadAdded = read;
+			}
+		}
+		
 		
 		public void finalise () {
 			Thread t = new Thread(this);
 			t.start();
 		}
-		
+
 		public void run() {
 			// This method is only run when the store is being finalised.  It allows
 			// us to process all of the chromosomes for a data store in parallel
 			// which is quicker given that the processing is constrained by CPU
-						
-			LongVector originalReads = vector;
+
+			LongVector originalReads = readVector;
+			IntVector originalCounts = countVector;
+
 			long [] reads = originalReads.toArray();
+			int [] counts = originalCounts.toArray();
+
+			if (reads.length != counts.length) {
+				throw new IllegalStateException("Reads and counts vectors weren't the same length");
+			}
+
 			if (needsSorting) {
-//				System.err.println("Sorting unsorted reads");
-				SequenceRead.sort(reads);
+				//				System.err.println("Sorting unsorted reads");
+				SequenceRead.sort(reads,counts);
 			}
 			originalReads.clear();
-						
-			//TODO: Work out how we're going to remove duplicates from this data
-			
+			originalCounts.clear();
+
 			if (removeDuplicates == DUPLICATES_REMOVE_NO) {}
-			
+
 			else if (removeDuplicates == DUPLICATES_REMOVE_START_END) {
 				long lastRead = 0;
 				for (int i=0;i<reads.length;i++) {
 					if (lastRead == 0 || SequenceRead.compare(lastRead, reads[i]) != 0) {
 						originalReads.add(reads[i]);
+						originalCounts.add(counts[i]);
 						lastRead = reads[i];
 					}
 				}
-				
+
 				reads = originalReads.toArray();
+				counts = originalCounts.toArray();
 				originalReads.clear();
+				originalCounts.clear();
 			}
-			
+
 			else  {
 				// We're going to have to deduplicate based on position.  For this we're going 
 				// to need to set up 3 boolean arrays so we know if we've seen this position before.
-				
+
 				// We're also going to need to know the position of the last position in any read.
 
 				boolean [] forwardPositions = null;
@@ -626,10 +713,10 @@ public class DataSet extends DataStore implements Runnable {
 					if (SequenceRead.end(reads[r]) > maxPosition) maxPosition = SequenceRead.end(reads[r]);
 				}
 				maxPosition++;
-				
+
 				// Now we can go through and do the deduplication
 				for (int i=0;i<reads.length;i++) {
-					
+
 					// Make up an array if we need to
 					if (SequenceRead.strand(reads[i]) == Location.FORWARD) {
 						if (forwardPositions == null) forwardPositions = new boolean[maxPosition];
@@ -646,6 +733,7 @@ public class DataSet extends DataStore implements Runnable {
 						if (forwardPositions[keyPosition]) continue; // We've already used this
 						else {
 							originalReads.add(reads[i]);
+							originalCounts.add(counts[i]);
 							forwardPositions[keyPosition] = true;
 						}
 					}
@@ -664,9 +752,10 @@ public class DataSet extends DataStore implements Runnable {
 						if (reversePositions[keyPosition]) continue; // We've already used this
 						else {
 							originalReads.add(reads[i]);
+							originalCounts.add(counts[i]);
 							reversePositions[keyPosition] = true;	
 						}
-						
+
 					}
 					if (SequenceRead.strand(reads[i]) == Location.UNKNOWN) {
 						if (unknownPositions == null) unknownPositions = new boolean[maxPosition];
@@ -683,89 +772,98 @@ public class DataSet extends DataStore implements Runnable {
 						if (unknownPositions[keyPosition]) continue; // We've already used this
 						else {
 							originalReads.add(reads[i]);
+							originalCounts.add(counts[i]);
 							unknownPositions[keyPosition] = true;
 						}
 
 					}
-					
+
 				}
-				
+
 				reads = originalReads.toArray();
+				counts = originalCounts.toArray();
 				originalReads.clear();
-				
-				
+				originalCounts.clear();
+
+
 			}
-			
-						
-			vector = null;
+
+
+			readVector = null;
+			countVector = null;
 
 			// Work out the cached values for total length,count and for/rev/unknown counts
-			
+
 			// We keep local counts here so we only have to do one update of the
 			// synchronised counters
-			
+
 			int totalReads = 0;
 			int forwardReads = 0;
 			int reverseReads = 0;
 			int unknownReads = 0;
-			
+
 			long readLengths = 0;
-			
+
 			int localMinLength = 0;
 			int localMaxLength = 0;
-			
+
 			for (int i=0;i<reads.length;i++) {
-				
+
 				// This is really slow when lots of datasets are doing this
 				// at the same time.  Instead we can keep a local cache of
 				// min max values and just send the extreme values to the 
 				// main set at the end.
 				//
 				// minMaxLength.addValue(SequenceRead.length(reads[i]));
-				
+
 				if (i==0 || SequenceRead.length(reads[i]) < localMinLength) localMinLength = SequenceRead.length(reads[i]);
 				if (i==0 || SequenceRead.length(reads[i]) > localMaxLength) localMaxLength = SequenceRead.length(reads[i]);
-				
+
 				// Add this length to the total
-				readLengths += SequenceRead.length(reads[i]);
-				
+				readLengths += SequenceRead.length(reads[i])*counts[i];
+
 				// Increment the appropriate counts
-				totalReads++;;
+				totalReads += counts[i];;
 				if (SequenceRead.strand(reads[i])==Location.FORWARD) {
-					forwardReads++;
+					forwardReads += counts[i];
 				}
 				else if (SequenceRead.strand(reads[i])==Location.REVERSE) {
-					reverseReads++;
+					reverseReads += counts[i];
 				}
 				else {
-					unknownReads++;
+					unknownReads += counts[i];
 				}
 			}
-			
+
 			// Now update the min/max synchronized lengths
 			minMaxLength.addValue(localMinLength);
 			minMaxLength.addValue(localMaxLength);
-			
+
 			// Now update the syncrhonized counters
 			totalReadCount.incrementBy(totalReads);
 			forwardReadCount.incrementBy(forwardReads);
 			reverseReadCount.incrementBy(reverseReads);
 			unknownReadCount.incrementBy(unknownReads);
-			
+
 			totalReadLength.incrementBy(readLengths);
-			
+
 			try {
-				tempFile = File.createTempFile("seqmonk_data_set", ".temp", SeqMonkPreferences.getInstance().tempDirectory());
-				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
+				readsTempFile = File.createTempFile("seqmonk_read_set", ".temp", SeqMonkPreferences.getInstance().tempDirectory());
+				countsTempFile = File.createTempFile("seqmonk_count_set", ".temp", SeqMonkPreferences.getInstance().tempDirectory());
+				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(readsTempFile)));
 				oos.writeObject(reads);
 				oos.close();
+				oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(countsTempFile)));
+				oos.writeObject(counts);
+				oos.close();
+
 			}
 			catch (IOException ioe) {
 				throw new IllegalStateException(ioe);
 			}
-			
+
 			chromosomesStillToFinalise.decrement();
-			
+
 		}
 	}
 
