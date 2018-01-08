@@ -239,7 +239,9 @@ public class DataSet extends DataStore implements Runnable {
 
 		if (isFinalised) {
 			throw new SeqMonkException("This data set is finalised.  No more data can be added");
-		}		
+		}
+		
+		if (count == 0) return;
 
 		if (readData.containsKey(chr)) {
 			readData.get(chr).addRead(read,count);
@@ -530,14 +532,13 @@ public class DataSet extends DataStore implements Runnable {
 		
 		// Expand the set.
 		int currentPosition = 0;
-		for (int i=0;i<counts.length;i++) {
+		for (int i=0;i<reads.length;i++) {
 			for (int j=0;j<counts[i];j++) {
 				returnArray[currentPosition] = reads[i];
-				j++;
 				currentPosition++;
 			}
 		}
-		
+				
 		return(returnArray);
 		
 	}
@@ -675,6 +676,7 @@ public class DataSet extends DataStore implements Runnable {
 
 			if (needsSorting) {
 				//				System.err.println("Sorting unsorted reads");
+				
 				SequenceRead.sort(reads,counts);
 			}
 			originalReads.clear();

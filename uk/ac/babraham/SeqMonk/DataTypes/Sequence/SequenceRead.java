@@ -179,11 +179,11 @@ public class SequenceRead {
 		quicksort(values, 0, values.length-1);
 	}
 	
-	public static void sort (long [] values, int [] counts) {
+	public static void sort (long [] reads, int [] counts) {
 
-		if (values == null || values.length == 0) return;
+		if (reads == null || reads.length == 0) return;
 
-		pairedQuicksort(values, counts, 0, values.length-1);
+		pairedQuicksort(reads, counts, 0, reads.length-1);
 	}
 
 	
@@ -247,8 +247,8 @@ public class SequenceRead {
 		} while (i<=j);
 
 		//  recursion
-		if (lo<j) quicksort(reads, lo, j);
-		if (i<hi) quicksort(reads, i, hi);
+		if (lo<j) pairedQuicksort(reads, counts, lo, j);
+		if (i<hi) pairedQuicksort(reads, counts, i, hi);
 	}
 	
 	

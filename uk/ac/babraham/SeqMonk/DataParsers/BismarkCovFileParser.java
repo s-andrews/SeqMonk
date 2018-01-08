@@ -154,12 +154,8 @@ public class BismarkCovFileParser extends DataParser {
 						// We can now make the new reads
 						long methRead = SequenceRead.packPosition(start,end,Location.FORWARD);
 						long unmethRead = SequenceRead.packPosition(start,end,Location.REVERSE);
-						for (int i=0;i<methCount;i++) {
-							newData[f].addData(c.chromosome(),methRead);
-						}
-						for (int i=0;i<unmethCount;i++) {
-							newData[f].addData(c.chromosome(),unmethRead);
-						}
+						newData[f].addData(c.chromosome(),methRead,methCount);
+						newData[f].addData(c.chromosome(),unmethRead,unmethCount);
 					}
 					catch (IllegalArgumentException iae) {
 						progressWarningReceived(iae);
