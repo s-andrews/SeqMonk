@@ -178,6 +178,15 @@ public class SequenceRead {
 
 		quicksort(values, 0, values.length-1);
 	}
+	
+	public static void sort (long [] values, int [] counts) {
+
+		if (values == null || values.length == 0) return;
+
+		pairedQuicksort(values, counts, 0, values.length-1);
+	}
+
+	
 
 	/*
 	 * Quicksort implementation adapted from http://www.inf.fh-flensburg.de/lang/algorithmen/sortieren/quick/quicken.htm
@@ -209,6 +218,40 @@ public class SequenceRead {
 		if (lo<j) quicksort(a, lo, j);
 		if (i<hi) quicksort(a, i, hi);
 	}
+	
+	
+	private static void pairedQuicksort (long [] reads, int [] counts, int lo, int hi) {
+		//  lo is the lower index, hi is the upper index
+		//  of the region of array a that is to be sorted
+		int i=lo, j=hi;
+		long temp;
+		int temp2;
+
+		// comparison element x
+		long x=reads[(lo+hi)/2];
+
+		//  partition
+		do  {    
+			while (compare(reads[i],x)<0) i++; 
+			while (compare(reads[j],x)>0) j--;
+			if (i<=j) {
+				temp=reads[i];
+				temp2=counts[i];
+				reads[i]=reads[j]; 
+				counts[i]=counts[j];
+				reads[j]=temp;
+				counts[j]=temp2;
+				i++; 
+				j--;
+			}
+		} while (i<=j);
+
+		//  recursion
+		if (lo<j) quicksort(reads, lo, j);
+		if (i<hi) quicksort(reads, i, hi);
+	}
+	
+	
 
 	/**
 	 * Provides an EMBL formatted version of the location
