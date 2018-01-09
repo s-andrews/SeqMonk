@@ -148,6 +148,7 @@ import uk.ac.babraham.SeqMonk.Filters.DESeqFilter.DESeqFilter;
 import uk.ac.babraham.SeqMonk.Filters.EdgeRFilter.EdgeRFilter;
 import uk.ac.babraham.SeqMonk.Filters.EdgeRFilter.EdgeRForRevFilter;
 import uk.ac.babraham.SeqMonk.Filters.GeneSetFilter.GeneSetIntensityDifferenceFilter;
+import uk.ac.babraham.SeqMonk.Filters.LimmaFilter.LimmaFilter;
 import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionFilter;
 import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionSplicingFilter;
 import uk.ac.babraham.SeqMonk.Filters.ManualCorrelation.ManualCorrelationFilter;
@@ -983,6 +984,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		repSetStats.setMnemonic(KeyEvent.VK_S);
 		continuousStatsReplicatedMenu.add(repSetStats);
 
+		JMenuItem limmaStats = new JMenuItem("[R] LIMMA Stats...");
+		limmaStats.setActionCommand("filter_r_limma");
+		limmaStats.addActionListener(this);
+		limmaStats.setMnemonic(KeyEvent.VK_L);
+		continuousStatsReplicatedMenu.add(limmaStats);
+		
 		JMenuItem filterMonteCarlo = new JMenuItem("Monte Carlo Stats...");
 		filterMonteCarlo.setActionCommand("filter_monte_carlo");
 		filterMonteCarlo.addActionListener(this);
@@ -2203,6 +2210,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					}
 					if (action.equals("filter_r_deseq2")) {
 						new FilterOptionsDialog(application.dataCollection(),new DESeqFilter(application.dataCollection()));
+					}
+					if (action.equals("filter_r_limma")) {
+						new FilterOptionsDialog(application.dataCollection(),new LimmaFilter(application.dataCollection()));
 					}
 					else if (action.equals("filter_r_edger")) {
 						new FilterOptionsDialog(application.dataCollection(),new EdgeRFilter(application.dataCollection()));
