@@ -557,6 +557,13 @@ public class DataSet extends DataStore implements Runnable {
 			if (f != null) {
 				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
 			}
+			
+			f = readData.get(c).countsTempFile;
+			if (f != null) {
+				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
+			}
+			
+			
 		}
 	}
 
