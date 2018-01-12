@@ -221,13 +221,13 @@ public class DataSet extends DataStore implements Runnable {
 	public void addData (Chromosome chr, long read) throws SeqMonkException {
 		addData(chr, read, false);
 	}
-	
+
 	public void addData (Chromosome chr, long read, int count) throws SeqMonkException {
 		addData(chr, read, count, false);
 	}
 
 
-	
+
 	/**
 	 * Adds more data to this set.
 	 * 
@@ -240,7 +240,7 @@ public class DataSet extends DataStore implements Runnable {
 		if (isFinalised) {
 			throw new SeqMonkException("This data set is finalised.  No more data can be added");
 		}
-		
+
 		if (count == 0) return;
 
 		if (readData.containsKey(chr)) {
@@ -356,7 +356,7 @@ public class DataSet extends DataStore implements Runnable {
 		int [] allCounts;
 
 		loadCacheForChromosome(p.chromosome());
-		
+
 		// We take a copy of the arrays now so that we don't get a problem if something
 		// else updates them whilst we're still working otherwise we get index errors.
 		allReads = lastCachedReads;
@@ -442,19 +442,19 @@ public class DataSet extends DataStore implements Runnable {
 		return returnReads;
 	}
 
-	
+
 	private void loadCacheForChromosome (Chromosome c) {
 
 		// Check if we need to reset which chromosome was loaded last.
-		
+
 		boolean needToUpdate = lastCachedChromosome == null || lastCachedChromosome != c;
 
 		if (needToUpdate) {
-//			System.err.println("Cache miss for "+this.name()+" requested "+c+" but last cached was "+lastCachedChromosome);
+			//			System.err.println("Cache miss for "+this.name()+" requested "+c+" but last cached was "+lastCachedChromosome);
 			lastCachedChromosome = c;
 			lastProbeLocation = 0;
 			lastIndex = 0;
-			
+
 			if (SeqMonkApplication.getInstance() != null) {
 				SeqMonkApplication.getInstance().cacheUsed();
 			}
@@ -483,7 +483,7 @@ public class DataSet extends DataStore implements Runnable {
 			}
 		}		
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForChromsome(uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome)
 	 */
@@ -492,10 +492,10 @@ public class DataSet extends DataStore implements Runnable {
 		if (! isFinalised) finalise();
 
 		loadCacheForChromosome(c);
-		
+
 		if (readData.containsKey(c)) {
 
-			
+
 			// We used to have a check for whether we were caching, but that's gone
 			// now because they don't have the option to not cache any more.
 
@@ -509,8 +509,8 @@ public class DataSet extends DataStore implements Runnable {
 			return lastCachedReads;
 		}
 	}
-	
-	
+
+
 	/** 
 	 * This method turns two arrays (reads and counts) into a single expanded read
 	 * array with the counts expanded out into a single linear stream.
@@ -520,16 +520,16 @@ public class DataSet extends DataStore implements Runnable {
 	 */
 	private static long [] expandReadsAndCounts (long [] reads, int [] counts) {
 		// Get the total size of the array to return
-		
+
 		int totalSize = 0;
-		
+
 		for (int i=0;i<counts.length;i++) {
 			totalSize += counts[i];
 		}
-		
+
 		// Make the array to return
 		long [] returnArray = new long[totalSize];
-		
+
 		// Expand the set.
 		int currentPosition = 0;
 		for (int i=0;i<reads.length;i++) {
@@ -538,9 +538,9 @@ public class DataSet extends DataStore implements Runnable {
 				currentPosition++;
 			}
 		}
-				
+
 		return(returnArray);
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -557,13 +557,13 @@ public class DataSet extends DataStore implements Runnable {
 			if (f != null) {
 				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
 			}
-			
+
 			f = readData.get(c).countsTempFile;
 			if (f != null) {
 				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
 			}
-			
-			
+
+
 		}
 	}
 
@@ -643,12 +643,12 @@ public class DataSet extends DataStore implements Runnable {
 		public File readsTempFile = null;
 		public File countsTempFile = null;
 
-		
+
 		/** A cache of the last read position added so we know if we can just
 		 * increment the count instead of adding a new entry
 		 */
 		private long lastReadAdded = Long.MIN_VALUE;
-		
+
 		public void addRead (long read, int count) {
 			if (read == lastReadAdded) {
 				countVector.increaseLastBy(count);
@@ -659,8 +659,8 @@ public class DataSet extends DataStore implements Runnable {
 				lastReadAdded = read;
 			}
 		}
-		
-		
+
+
 		public void finalise () {
 			Thread t = new Thread(this);
 			t.start();
@@ -671,6 +671,9 @@ public class DataSet extends DataStore implements Runnable {
 			// us to process all of the chromosomes for a data store in parallel
 			// which is quicker given that the processing is constrained by CPU
 
+			
+			// We take a local copy of these vectors so that nothing else can touch 
+			// them
 			LongVector originalReads = readVector;
 			IntVector originalCounts = countVector;
 
@@ -683,7 +686,7 @@ public class DataSet extends DataStore implements Runnable {
 
 			if (needsSorting) {
 				//				System.err.println("Sorting unsorted reads");
-				
+
 				SequenceRead.sort(reads,counts);
 			}
 			originalReads.clear();
@@ -784,16 +787,56 @@ public class DataSet extends DataStore implements Runnable {
 							originalCounts.add(counts[i]);
 							unknownPositions[keyPosition] = true;
 						}
-
 					}
-
 				}
 
 				reads = originalReads.toArray();
-				counts = originalCounts.toArray();
 				originalReads.clear();
+
+				counts = originalCounts.toArray();
 				originalCounts.clear();
 
+			} // End of deduplication section.
+
+
+			// Now that we have sorted data we should find out if we can compress this
+			// any further by collapsing identical reads which were non-adjacent in the
+			// original data.  This will only happen during an initial import but it 
+			// will save us some memory.
+
+			boolean foundDuplicates = false;
+
+			for (int i=1;i<reads.length;i++) {
+				if (reads[i] == reads[i-1]) {
+					foundDuplicates = true;
+					break;
+				}
+			}
+
+			if (foundDuplicates) {
+
+				System.err.println("Compressing duplicate reads");
+
+				// Go back through the data reconstructing the original reads and original counts
+
+				long lastRead = Long.MIN_VALUE;
+
+				for (int r=0;r<reads.length;r++) {
+					if (reads[r] == lastRead) {
+						originalCounts.increaseLastBy(1);
+					}
+					else {
+						originalReads.add(reads[r]);
+						originalCounts.add(1);
+						lastRead = reads[r];
+					}
+				}
+
+				reads = originalReads.toArray();
+				originalReads.clear();
+
+				counts = originalCounts.toArray();
+				originalCounts.clear();
 
 			}
 
