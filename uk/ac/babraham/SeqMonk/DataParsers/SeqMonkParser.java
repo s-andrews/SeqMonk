@@ -810,10 +810,8 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 						}
 //						System.out.println("From line "+line+" got packed="+packedPosition+" count="+count);
 
-						for (int x=1;x<=count;x++) {
-							dataSets[i].addData(c,packedPosition,true);
-							readsRead++;
-						}
+						dataSets[i].addData(c,packedPosition,count,true);
+						readsRead += count;
 
 					}
 
