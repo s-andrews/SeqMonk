@@ -131,7 +131,6 @@ public class PercentileNormalisationQuantitation extends Quantitation {
 			}
 		}
 
-
 		for (int d=0;d<data.length;d++) {
 
 			// See if we need to quit
@@ -233,23 +232,6 @@ public class PercentileNormalisationQuantitation extends Quantitation {
 		correctionActions = new JComboBox(new String [] {"Add","Multiply"});
 		optionPanel.add(correctionActions,gbc);
 
-		Vector<DataStore>quantitatedStores = new Vector<DataStore>();
-
-		DataSet [] sets = application.dataCollection().getAllDataSets();
-		for (int s=0;s<sets.length;s++) {
-			if (sets[s].isQuantitated()) {
-				quantitatedStores.add(sets[s]);
-			}
-		}
-		DataGroup [] groups = application.dataCollection().getAllDataGroups();
-		for (int g=0;g<groups.length;g++) {
-			if (groups[g].isQuantitated()) {
-				quantitatedStores.add(groups[g]);
-			}
-		}
-
-		data = quantitatedStores.toArray(new DataStore[0]);
-
 		gbc.gridx=1;
 		gbc.gridy++;
 		optionPanel.add(new JLabel("Percentile"),gbc);
@@ -339,6 +321,8 @@ public class PercentileNormalisationQuantitation extends Quantitation {
 	 */
 	public void quantitate(DataStore[] data) {
 
+		this.data = data;
+		
 		// We need to set the correction action
 		if (correctionActions.getSelectedItem().equals("Add")) {
 			correctionAction = ADD;

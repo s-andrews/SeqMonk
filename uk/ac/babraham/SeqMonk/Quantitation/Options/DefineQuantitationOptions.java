@@ -33,6 +33,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -337,15 +338,19 @@ public class DefineQuantitationOptions extends JDialog implements ActionListener
 			
 			if (quantitations[quantitationList.getSelectedIndex()].requiresExistingQuantitation()) {
 				for (int i=0;i<storesToQuantitate.length;i++) {
-					if (! storesToQuantitate[i].isQuantitated()) {
-						filteredStores.remove(storesToQuantitate[i]);
+					if (storesToQuantitate[i].isQuantitated()) {
+						filteredStores.add(storesToQuantitate[i]);
 					}
 				}
 				
 				storesToQuantitate = filteredStores.toArray(new DataStore[0]);
-				
 			}
 			
+			// Check we've got something left
+			if (storesToQuantitate.length == 0) {
+				JOptionPane.showMessageDialog(this,"Can't proceeed. No stores would be quantitated.","Not going to quantitate",JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
 			
 			quantitations[quantitationList.getSelectedIndex()].quantitate(storesToQuantitate);
 		}

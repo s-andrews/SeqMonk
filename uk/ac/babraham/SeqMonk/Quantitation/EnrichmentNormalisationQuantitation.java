@@ -22,7 +22,6 @@ package uk.ac.babraham.SeqMonk.Quantitation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Arrays;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
@@ -33,8 +32,6 @@ import javax.swing.JTextField;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
-import uk.ac.babraham.SeqMonk.DataTypes.DataGroup;
-import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
@@ -64,11 +61,11 @@ public class EnrichmentNormalisationQuantitation extends Quantitation {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-
+		
 		if (! isReady()) {
 			progressExceptionReceived(new SeqMonkException("Options weren't set correctly"));
 		}
-
+		
 		Probe [] allProbes = application.dataCollection().probeSet().getAllProbes();
 
 		Probe [] calculateProbes = ((ProbeList)calculateFromProbeList.getSelectedItem()).getAllProbes();
@@ -203,25 +200,7 @@ public class EnrichmentNormalisationQuantitation extends Quantitation {
 		gbc.weightx=0.5;
 		gbc.weighty=0.1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-
-		Vector<DataStore>quantitatedStores = new Vector<DataStore>();
-
-		DataSet [] sets = application.dataCollection().getAllDataSets();
-		for (int s=0;s<sets.length;s++) {
-			if (sets[s].isQuantitated()) {
-				quantitatedStores.add(sets[s]);
-			}
-		}
-		DataGroup [] groups = application.dataCollection().getAllDataGroups();
-		for (int g=0;g<groups.length;g++) {
-			if (groups[g].isQuantitated()) {
-				quantitatedStores.add(groups[g]);
-			}
-		}
-
-		data = quantitatedStores.toArray(new DataStore[0]);
-
-
+		
 		optionPanel.add(new JLabel("Lower Percentile"),gbc);
 
 
@@ -313,6 +292,11 @@ public class EnrichmentNormalisationQuantitation extends Quantitation {
 	 * @see uk.ac.babraham.SeqMonk.Quantitation.Quantitation#quantitate(uk.ac.babraham.SeqMonk.DataTypes.DataStore[])
 	 */
 	public void quantitate(DataStore[] data) {
+		
+		// We don't need to check for quantitation as this is all handled by the
+		// upstream code which calls us.
+
+		this.data = data;
 
 		Thread t = new Thread(this);
 		cancel = false;
