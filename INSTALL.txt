@@ -33,6 +33,14 @@ At the command prompt type 'java -version' and press enter.  You should see some
 If you get an error then you don't have java installed.  If the version listed on the first
 line is less than 1.8 then you won't be able to run SeqMonk without updating your JRE.
 
+If you are running Fedora then although you see something like this SeqMonk still won't run 
+because the version of java which is installed by default doesn't include any of the graphical 
+libraries.  You will need to install the full version of openjdk which will be something like:
+
+sudo yum -y install java-1.8.0-openjdk
+
+(that's for Fedora 27 - the exact name might change on different versions, but it's the same idea)
+
 Actually installing SeqMonk is as simple as unzipping the zip file it comes in into a
 suitable location.  That's it.  Once unzipped it's ready to go.
 
