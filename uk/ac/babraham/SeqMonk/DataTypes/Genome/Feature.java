@@ -299,6 +299,12 @@ public class Feature implements Comparable<Feature>, Serializable {
 			thisSource = NAME;
 			thisValue = value;
 		}
+
+		// Ensembl GTFs use this weird way of identifying gene names
+		else if (key.equals("dbxref") && value.indexOf("Gene_name")>=0) {
+			thisValue = new String((value.split(":"))[1]);
+			thisSource = NAME;
+		}
 		
 		else if (key.equals("db_xref") && value.indexOf("MarkerSymbol")>=0) {
 			thisValue = new String((value.split(":"))[1]);
