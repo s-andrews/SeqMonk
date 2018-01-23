@@ -370,7 +370,7 @@ __DATA__
 
 SYNOPSIS
 
-	seqmonk [--(un)spliced] [--mapq=20] --genome "Mus musculus/GRCm38" --outfile out.smk *.bam
+	seqmonk_import [--(un)spliced] [--mapq=20] --genome "Mus musculus/GRCm38" --outfile out.smk *.bam
 
 
 DESCRIPTION
