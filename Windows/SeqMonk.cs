@@ -169,7 +169,7 @@ namespace SeqMonkLauncher
             {
 
 
-                string finalCommand = "java -cp \"" + path + "\" -Xmx" + currentRequestAmount + "m uk.ac.babraham.Utilities.ReportMemoryUsage";
+                string finalCommand = "java -cp \"" + path + "\" -Xmx" + currentRequestAmount + "m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage";
 
                 Console.WriteLine("Memcheck command is " + finalCommand);
                 string parms = "-cp \"" + path + "\" -Xmx" + currentRequestAmount + "m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage";
@@ -193,11 +193,20 @@ namespace SeqMonkLauncher
                     error = myError.ReadToEnd();
                 }
 
+
+                // We used to give up if we saw anything on stderr, but sometimes java
+                // puts out diagnostic stuff there so this is too harsh.
                 if (error.Length > 0)
                 {
-                    Console.WriteLine("Failed check with " + currentRequestAmount + ":" + error);
-                    currentRequestAmount -= requestedMemory / 10;
-                    continue;
+                    Console.WriteLine("Saw error:" + currentRequestAmount + ":" + error);
+                }
+
+                // We can check the exit code to see if it died or not.
+                if (reg.ExitCode != 0)
+                {
+                    Console.WriteLine("Check failed - trying again");
+                     currentRequestAmount -= requestedMemory / 10;
+                     continue;
                 }
 
                 output = output.Replace("\n", "");
@@ -212,7 +221,6 @@ namespace SeqMonkLauncher
                 {
                     return currentRequestAmount;
                 }
-
 
                 // We need to force the double parser to parse numbers with decimal points
                 // even if their locale setting says something else.
@@ -282,7 +290,15 @@ namespace SeqMonkLauncher
                     error = myError.ReadToEnd();
                 }
 
+                // We used to give up if we saw anything on stderr, but sometimes java
+                // puts out diagnostic stuff there so this is too harsh.
                 if (error.Length > 0)
+                {
+                    Console.WriteLine("Saw error:" + error);
+                }
+
+                // We can check the exit code to see if it died or not.
+                if (reg.ExitCode != 0)
                 {
                     Console.WriteLine("Prefs file check failed :" + error);
                     return (0);
