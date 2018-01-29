@@ -22,6 +22,12 @@ else {
 }
 
 
+# If we have been passed a filename to open then we need to make sure we capture this so we can
+# pass it on to the final java command.
+my $file = $ARGV[0];
+$file = "" unless ($file);
+
+
 # If people are using this launcher under windows then their classpath needs to be separated by semicolons
 # instead of colons.
 	
@@ -45,7 +51,7 @@ if (exists $ENV{LANG}) {
 $ENV{LANG}='C';
 
 my @java_args;
-my @files;
+
 
 # We now need to scan the command line for switches which we're going
 # to pass on to the main java program.
@@ -94,9 +100,9 @@ else {
 	delete $ENV{LANG};
 }
 
-warn "Command is: java @java_args uk.ac.babraham.SeqMonk.SeqMonkApplication\n";
+warn "Command is: java @java_args uk.ac.babraham.SeqMonk.SeqMonkApplication $file\n";
 
-exec "java",@java_args, "uk.ac.babraham.SeqMonk.SeqMonkApplication", @files;
+exec "java",@java_args, "uk.ac.babraham.SeqMonk.SeqMonkApplication", $file;
 
 sub print_error {
 	
