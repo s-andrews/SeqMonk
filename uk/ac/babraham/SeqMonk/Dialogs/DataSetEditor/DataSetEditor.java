@@ -24,6 +24,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.regex.PatternSyntaxException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -211,10 +212,18 @@ public class DataSetEditor extends JDialog implements ActionListener, ListSelect
 			String replaceWith = (String)JOptionPane.showInputDialog(this,"Replace with","Replace text",JOptionPane.QUESTION_MESSAGE,null,null,"");
 			if (replaceWith == null) return; // They cancelled
 			
-			for (int s=0;s<ds.length;s++) {
-				String oldName = ds[s].name();
-				String newName = oldName.replaceAll(replaceWhat, replaceWith);
-				ds[s].setName(newName);
+			// If they used a regex in their search term then they could have
+			// introduced a syntax error which will trigger an exception.  We'll
+			// catch this so as to produce a nicer error message
+			try {
+				for (int s=0;s<ds.length;s++) {
+					String oldName = ds[s].name();
+					String newName = oldName.replaceAll(replaceWhat, replaceWith);
+					ds[s].setName(newName);
+				}
+			}
+			catch (PatternSyntaxException pse) {
+				JOptionPane.showMessageDialog(this, "<html>You used a regex in your search, but it contained a syntax error<br><br>"+pse.getLocalizedMessage(), "Pattern error", JOptionPane.ERROR_MESSAGE);
 			}
 			
 		}
