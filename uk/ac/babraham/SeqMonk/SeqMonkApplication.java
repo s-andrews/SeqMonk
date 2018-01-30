@@ -161,7 +161,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			}
 
 			
-			if (args.length > 0) {
+			if (args.length > 0 && args[0].length() > 0) {
 				File f = new File(args[0]);
 				application.loadProject(f);
 			}
