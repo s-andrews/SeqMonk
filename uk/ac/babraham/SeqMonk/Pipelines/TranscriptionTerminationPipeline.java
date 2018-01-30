@@ -95,7 +95,7 @@ public class TranscriptionTerminationPipeline extends Pipeline {
 
 			progressUpdated("Creating Probes"+chrs[c].name(), c, chrs.length*2);
 
-			Feature [] features = getValidFeatures(chrs[c]);
+			Feature [] features = getValidFeatures(chrs[c],measurementLength);
 			
 			for (int f=0;f<features.length;f++) {
 				if (cancel) {
@@ -131,7 +131,7 @@ public class TranscriptionTerminationPipeline extends Pipeline {
 			progressUpdated("Quantitating features on chr"+chrs[c].name(), chrs.length+c, chrs.length*2);
 			
 
-			Feature [] features = getValidFeatures(chrs[c]);
+			Feature [] features = getValidFeatures(chrs[c],measurementLength);
 			
 			for (int f=0;f<features.length;f++) {
 				if (cancel) {
@@ -228,13 +228,34 @@ public class TranscriptionTerminationPipeline extends Pipeline {
 
 	}
 	
-	private Feature [] getValidFeatures (Chromosome c) {
+	private Feature [] getValidFeatures (Chromosome c, int measurementLength) {
 		
 		Feature [] features = collection().genome().annotationCollection().getFeaturesForType(c, optionsPanel.getSelectedFeatureType());
-
+		
 		Arrays.sort(features);
 		
-		return features;
+		// Features are only valid if they're not too close to the end of a chromosome
+		// (closer than the measurement length)
+		
+		Vector<Feature> validFeatures = new Vector<Feature>();
+		
+		for (int f=0;f<features.length;f++) {
+			if (features[f].location().strand() == Location.REVERSE) {
+				if(features[f].location().start()-measurementLength < 1 || features[f].location().start()+measurementLength > SeqMonkApplication.getInstance().dataCollection().genome().getChromosome(features[f].chromosomeName()).chromosome().length()) {
+					continue;
+				}
+			}
+			else {
+				if(features[f].location().end()-measurementLength < 1 || features[f].location().end()+measurementLength > SeqMonkApplication.getInstance().dataCollection().genome().getChromosome(features[f].chromosomeName()).chromosome().length()) {
+					continue;	
+				}
+			}
+			
+			validFeatures.add(features[f]);
+		}
+		
+		
+		return validFeatures.toArray(new Feature[0]);
 	}
 
 	public String name() {
