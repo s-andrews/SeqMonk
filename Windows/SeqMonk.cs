@@ -13,7 +13,7 @@ namespace SeqMonkLauncher
 {
     class SeqMonk
     {
-        static void Main()
+        static void Main(string [] args)
         {
             string javaVersion = getJavaVersion();
 
@@ -108,10 +108,18 @@ namespace SeqMonkLauncher
                     path = "\\\\" + path;
                 }
 
-                string finalCommand = "java -cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xss4m -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication";
+
+				string filename = "";
+				
+				if (args.Length > 0)
+				{
+					filename = args[0];
+				}
+
+                string finalCommand = "java -cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xss4m -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"";
 
                 Console.WriteLine("Final command is " + finalCommand);
-                System.Diagnostics.ProcessStartInfo procStartInfo = new System.Diagnostics.ProcessStartInfo("java", "-cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication");
+                System.Diagnostics.ProcessStartInfo procStartInfo = new System.Diagnostics.ProcessStartInfo("java", "-cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"");
 
                 procStartInfo.RedirectStandardOutput = true;
                 procStartInfo.UseShellExecute = false;
