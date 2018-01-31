@@ -107,10 +107,10 @@ public class RNASeqPipeline extends Pipeline {
 					goodNames = false;
 					break;
 				}
-				if (!features[f].hasTag("gene_id")) {
+				if (!features[i].hasTag("gene_id")) {
 					geneIDs = false;
 				}
-				if (!features[f].hasTag("gene_name")) {
+				if (!features[i].hasTag("gene_name")) {
 					geneNames = false;
 				}
 
