@@ -815,7 +815,7 @@ public class DataSet extends DataStore implements Runnable {
 
 			if (foundDuplicates) {
 
-				System.err.println("Compressing duplicate reads");
+//				System.err.println("Compressing duplicate reads");
 
 				// Go back through the data reconstructing the original reads and original counts
 
