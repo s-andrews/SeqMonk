@@ -129,6 +129,23 @@ public class Feature implements Comparable<Feature>, Serializable {
 		return annotation;
 	}
 	
+	public boolean hasTag (String tagName) {
+		for (int i=0;i<annotation.length;i++) {
+			if (annotation[i].tag().equals(tagName)) return(true);
+		}
+		
+		return false;
+	}
+
+	public String getValueForTag (String tagName) {
+		for (int i=0;i<annotation.length;i++) {
+			if (annotation[i].tag().equals(tagName)) return(annotation[i].value());
+		}
+		
+		return null;
+	}
+
+	
 	/**
 	 * Gets the all annotation.
 	 * 

@@ -97,20 +97,46 @@ public class RNASeqPipeline extends Pipeline {
 		if (merge) {
 
 			// Test to see if these features have names which suggest that we can merge
-			// based on their names along
+			// based on their names along.  We can also test to see if there is a gene_name
+			// or gene_id tag which we can use
 			boolean goodNames = true;
+			boolean geneNames = true;
+			boolean geneIDs = true;
 			for (int i=0;i<features.length;i++) {
 				if (!features[i].name().matches(".*-\\d{3}")){
 					goodNames = false;
 					break;
 				}
+				if (!features[f].hasTag("gene_id")) {
+					geneIDs = false;
+				}
+				if (!features[f].hasTag("gene_name")) {
+					geneNames = false;
+				}
+
 			}
 
-			if (goodNames) {
+			if (goodNames || geneNames || geneIDs) {
 				Hashtable<String, FeatureGroup> groupedNames = new Hashtable<String, FeatureGroup>();
 
 				for (int i=0;i<features.length;i++) {
-					String name = features[i].name().replaceFirst("-\\d{3}$", "");
+					String name;
+					
+					if (goodNames) {
+						name = features[i].name().replaceFirst("-\\d{3}$", "");
+					}
+					else if (geneNames) {
+						name = features[i].getValueForTag("gene_name");
+					}
+					else if (geneIDs) {
+						name = features[i].getValueForTag("gene_id");
+					}
+					else {
+						throw new IllegalStateException("One of the previous name mappings should have worked.");
+					}
+					
+					
+					
 					if (!groupedNames.containsKey(name)) {
 						groupedNames.put(name,new FeatureGroup(name));
 					}
