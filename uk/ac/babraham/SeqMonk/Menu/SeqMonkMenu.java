@@ -2211,7 +2211,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					if (action.equals("filter_r_deseq2")) {
 						new FilterOptionsDialog(application.dataCollection(),new DESeqFilter(application.dataCollection()));
 					}
-					if (action.equals("filter_r_limma")) {
+					else if (action.equals("filter_r_limma")) {
 						new FilterOptionsDialog(application.dataCollection(),new LimmaFilter(application.dataCollection()));
 					}
 					else if (action.equals("filter_r_edger")) {
