@@ -374,7 +374,8 @@ sub process_gene {
 
   while (@xrefs) {
     my $xref = shift @xrefs;
-    next if ($xref->dbname() eq $gene->external_db());
+
+    next if (defined($xref->dbname()) and defined($gene->external_db()) and $xref->dbname() eq $gene->external_db());
 
     $feature -> add_tag_value(db_xref => $xref->dbname().":".$xref->display_id());
 #    warn "Xref of ".$xref->display_id()." in ".$xref->dbname()."\n";
@@ -458,6 +459,8 @@ sub process_transcript {
 					      -location => $location,
 					      -tag => {
 						       id => $transcript->stable_id(),
+						       gene_id => $gene->stable_id(),
+						       gene_name => $gene->external_name(),
 						       name => $transcript->external_name(),
 						       source => $transcript->external_db(),
 						       biotype => $transcript->biotype(),
