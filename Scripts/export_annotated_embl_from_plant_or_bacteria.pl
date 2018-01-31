@@ -430,6 +430,8 @@ sub process_transcript {
 					      -location => $location,
 					      -tag => {
 						       id => $transcript->stable_id(),
+						       gene_id => $gene->stable_id(),
+						       gene_name => $gene->external_name(),
 						       name => $transcript->external_name(),
 						       source => $transcript->external_db(),
 						      }
