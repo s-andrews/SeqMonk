@@ -131,7 +131,10 @@ public class Feature implements Comparable<Feature>, Serializable {
 	
 	public boolean hasTag (String tagName) {
 		for (int i=0;i<annotation.length;i++) {
-			if (annotation[i].tag().equals(tagName)) return(true);
+			if (annotation[i].tag().equals(tagName)) {
+//				System.err.println("Found tag "+annotation[i].tag()+" with value "+annotation[i].value());
+				return(true);
+			}
 		}
 		
 		return false;

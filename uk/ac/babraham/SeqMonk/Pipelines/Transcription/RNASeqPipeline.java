@@ -103,17 +103,25 @@ public class RNASeqPipeline extends Pipeline {
 			boolean geneNames = true;
 			boolean geneIDs = true;
 			for (int i=0;i<features.length;i++) {
-				if (!features[i].name().matches(".*-\\d{3}")){
+				if (goodNames && !features[i].name().matches(".*-\\d{3}")){
 					goodNames = false;
-					break;
 				}
-				if (!features[i].hasTag("gene_id")) {
+				if (geneIDs && !features[i].hasTag("gene_id")) {
 					geneIDs = false;
 				}
-				if (!features[i].hasTag("gene_name")) {
+				if (geneNames && !features[i].hasTag("gene_name")) {
 					geneNames = false;
 				}
-
+			}
+			
+			if (goodNames) {
+				System.err.println("Names are good");
+			}
+			if (geneNames) {
+				System.err.println("Gene names present");
+			}
+			if (geneIDs) {
+				System.err.println("Gene IDs present");
 			}
 
 			if (goodNames || geneNames || geneIDs) {
