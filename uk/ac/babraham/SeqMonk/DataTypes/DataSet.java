@@ -443,7 +443,7 @@ public class DataSet extends DataStore implements Runnable {
 	}
 
 
-	private void loadCacheForChromosome (Chromosome c) {
+	private synchronized void loadCacheForChromosome (Chromosome c) {
 
 		// Check if we need to reset which chromosome was loaded last.
 
