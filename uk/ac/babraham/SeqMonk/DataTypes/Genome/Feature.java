@@ -325,6 +325,13 @@ public class Feature implements Comparable<Feature>, Serializable {
 			thisValue = new String((value.split(":"))[1]);
 			thisSource = NAME;
 		}
+
+		// Except for the Ensembl GTFs which use this way of identifying gene names
+		else if (key.equals("gene_name")) {
+			thisValue = value;
+			thisSource = NAME;
+		}
+
 		
 		else if (key.equals("db_xref") && value.indexOf("MarkerSymbol")>=0) {
 			thisValue = new String((value.split(":"))[1]);
