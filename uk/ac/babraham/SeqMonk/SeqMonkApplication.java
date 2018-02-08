@@ -877,7 +877,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 	/**
 	 * Adds new dataSets to the existing dataCollection and adds them
-	 * to the main chromsome view
+	 * to the main chromosome view
 	 * 
 	 * @param newData The new dataSets to add
 	 */
