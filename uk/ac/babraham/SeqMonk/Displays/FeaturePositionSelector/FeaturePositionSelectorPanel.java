@@ -76,6 +76,7 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		
 		gbc.gridx = 3;
 		gbc.weighty = 0.9;
+		gbc.fill = GridBagConstraints.BOTH;
 		featureTypeBox = new JList(collection.genome().annotationCollection().listAvailableFeatureTypes());
 		if (!allowMultiSelection) {
 			featureTypeBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -91,6 +92,7 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		gbc.gridx = 2;
 		gbc.weightx = 0.1;
 		gbc.weighty = 0.1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 
 		add(new JLabel ("Split into subfeatures"),gbc);
 
