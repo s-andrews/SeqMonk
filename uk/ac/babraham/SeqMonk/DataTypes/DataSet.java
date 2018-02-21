@@ -691,114 +691,8 @@ public class DataSet extends DataStore implements Runnable {
 			}
 			originalReads.clear();
 			originalCounts.clear();
-
-			if (removeDuplicates == DUPLICATES_REMOVE_NO) {}
-
-			else if (removeDuplicates == DUPLICATES_REMOVE_START_END) {
-				long lastRead = 0;
-				for (int i=0;i<reads.length;i++) {
-					if (lastRead == 0 || SequenceRead.compare(lastRead, reads[i]) != 0) {
-						originalReads.add(reads[i]);
-						originalCounts.add(counts[i]);
-						lastRead = reads[i];
-					}
-				}
-
-				reads = originalReads.toArray();
-				counts = originalCounts.toArray();
-				originalReads.clear();
-				originalCounts.clear();
-			}
-
-			else  {
-				// We're going to have to deduplicate based on position.  For this we're going 
-				// to need to set up 3 boolean arrays so we know if we've seen this position before.
-
-				// We're also going to need to know the position of the last position in any read.
-
-				boolean [] forwardPositions = null;
-				boolean [] reversePositions = null;
-				boolean [] unknownPositions = null;
-
-				int maxPosition = 0;
-				for (int r=0;r<reads.length;r++) {
-					if (SequenceRead.end(reads[r]) > maxPosition) maxPosition = SequenceRead.end(reads[r]);
-				}
-				maxPosition++;
-
-				// Now we can go through and do the deduplication
-				for (int i=0;i<reads.length;i++) {
-
-					// Make up an array if we need to
-					if (SequenceRead.strand(reads[i]) == Location.FORWARD) {
-						if (forwardPositions == null) forwardPositions = new boolean[maxPosition];
-						int keyPosition;
-						if (removeDuplicates == DUPLICATES_REMOVE_START) {
-							keyPosition = SequenceRead.start(reads[i]);
-						}
-						else if (removeDuplicates == DUPLICATES_REMOVE_END) {
-							keyPosition = SequenceRead.end(reads[i]);
-						}
-						else {
-							throw new IllegalStateException("Unknown duplicate removal value "+removeDuplicates);
-						}
-						if (forwardPositions[keyPosition]) continue; // We've already used this
-						else {
-							originalReads.add(reads[i]);
-							originalCounts.add(counts[i]);
-							forwardPositions[keyPosition] = true;
-						}
-					}
-					if (SequenceRead.strand(reads[i]) == Location.REVERSE) {
-						if (reversePositions == null) reversePositions = new boolean[maxPosition];
-						int keyPosition;
-						if (removeDuplicates == DUPLICATES_REMOVE_START) {
-							keyPosition = SequenceRead.end(reads[i]);
-						}
-						else if (removeDuplicates == DUPLICATES_REMOVE_END) {
-							keyPosition = SequenceRead.start(reads[i]);
-						}
-						else {
-							throw new IllegalStateException("Unknown duplicate removal value "+removeDuplicates);
-						}
-						if (reversePositions[keyPosition]) continue; // We've already used this
-						else {
-							originalReads.add(reads[i]);
-							originalCounts.add(counts[i]);
-							reversePositions[keyPosition] = true;	
-						}
-
-					}
-					if (SequenceRead.strand(reads[i]) == Location.UNKNOWN) {
-						if (unknownPositions == null) unknownPositions = new boolean[maxPosition];
-						int keyPosition;
-						if (removeDuplicates == DUPLICATES_REMOVE_START) {
-							keyPosition = SequenceRead.start(reads[i]);
-						}
-						else if (removeDuplicates == DUPLICATES_REMOVE_END) {
-							keyPosition = SequenceRead.end(reads[i]);
-						}
-						else {
-							throw new IllegalStateException("Unknown duplicate removal value "+removeDuplicates);
-						}
-						if (unknownPositions[keyPosition]) continue; // We've already used this
-						else {
-							originalReads.add(reads[i]);
-							originalCounts.add(counts[i]);
-							unknownPositions[keyPosition] = true;
-						}
-					}
-				}
-
-				reads = originalReads.toArray();
-				originalReads.clear();
-
-				counts = originalCounts.toArray();
-				originalCounts.clear();
-
-			} // End of deduplication section.
-
-
+			
+			
 			// Now that we have sorted data we should find out if we can compress this
 			// any further by collapsing identical reads which were non-adjacent in the
 			// original data.  This will only happen during an initial import but it 
@@ -843,6 +737,109 @@ public class DataSet extends DataStore implements Runnable {
 
 			readVector = null;
 			countVector = null;
+
+			
+			// Now we can perform deduplication if we need to.
+			
+
+			if (removeDuplicates == DUPLICATES_REMOVE_NO) {}
+
+			else if (removeDuplicates == DUPLICATES_REMOVE_START_END) {
+				
+				// Deduplicating on start+end is easy since we just set all of the counts to be one
+				counts = new int[reads.length];
+				for (int i=0;i<counts.length;i++) counts[i] = 1;
+			}
+
+			else  {
+				// We're going to have to deduplicate based on position.  For this we're going 
+				// to need to set up 3 boolean arrays so we know if we've seen this position before.
+
+				// We're also going to need to know the position of the last position in any read.
+
+				boolean [] forwardPositions = null;
+				boolean [] reversePositions = null;
+				boolean [] unknownPositions = null;
+
+				int maxPosition = 0;
+				for (int r=0;r<reads.length;r++) {
+					if (SequenceRead.end(reads[r]) > maxPosition) maxPosition = SequenceRead.end(reads[r]);
+				}
+				maxPosition++;
+
+				// Now we can go through and do the deduplication
+				for (int i=0;i<reads.length;i++) {
+
+					// Make up an array if we need to
+					if (SequenceRead.strand(reads[i]) == Location.FORWARD) {
+						if (forwardPositions == null) forwardPositions = new boolean[maxPosition];
+						int keyPosition;
+						if (removeDuplicates == DUPLICATES_REMOVE_START) {
+							keyPosition = SequenceRead.start(reads[i]);
+						}
+						else if (removeDuplicates == DUPLICATES_REMOVE_END) {
+							keyPosition = SequenceRead.end(reads[i]);
+						}
+						else {
+							throw new IllegalStateException("Unknown duplicate removal value "+removeDuplicates);
+						}
+						if (forwardPositions[keyPosition]) continue; // We've already used this
+						else {
+							originalReads.add(reads[i]);
+							originalCounts.add(1);
+							forwardPositions[keyPosition] = true;
+						}
+					}
+					if (SequenceRead.strand(reads[i]) == Location.REVERSE) {
+						if (reversePositions == null) reversePositions = new boolean[maxPosition];
+						int keyPosition;
+						if (removeDuplicates == DUPLICATES_REMOVE_START) {
+							keyPosition = SequenceRead.end(reads[i]);
+						}
+						else if (removeDuplicates == DUPLICATES_REMOVE_END) {
+							keyPosition = SequenceRead.start(reads[i]);
+						}
+						else {
+							throw new IllegalStateException("Unknown duplicate removal value "+removeDuplicates);
+						}
+						if (reversePositions[keyPosition]) continue; // We've already used this
+						else {
+							originalReads.add(reads[i]);
+							originalCounts.add(1);
+							reversePositions[keyPosition] = true;	
+						}
+
+					}
+					if (SequenceRead.strand(reads[i]) == Location.UNKNOWN) {
+						if (unknownPositions == null) unknownPositions = new boolean[maxPosition];
+						int keyPosition;
+						if (removeDuplicates == DUPLICATES_REMOVE_START) {
+							keyPosition = SequenceRead.start(reads[i]);
+						}
+						else if (removeDuplicates == DUPLICATES_REMOVE_END) {
+							keyPosition = SequenceRead.end(reads[i]);
+						}
+						else {
+							throw new IllegalStateException("Unknown duplicate removal value "+removeDuplicates);
+						}
+						if (unknownPositions[keyPosition]) continue; // We've already used this
+						else {
+							originalReads.add(reads[i]);
+							originalCounts.add(1);
+							unknownPositions[keyPosition] = true;
+						}
+					}
+				}
+
+				reads = originalReads.toArray();
+				originalReads.clear();
+
+				counts = originalCounts.toArray();
+				originalCounts.clear();
+
+			} // End of deduplication section.
+
+
 
 			// Work out the cached values for total length,count and for/rev/unknown counts
 
