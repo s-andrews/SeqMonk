@@ -1,3 +1,38 @@
+RELEASE NOTES FOR SeqMonk v1.40.1
+---------------------------------
+This is a bugfix release of seqmonk which adds some optimisations to the 
+background data model and fixes a number of bugs.
+
+- Changed the internal data model to store positions and counts separately
+  to make the storage of heavily duplicated data much more efficient
+  
+- Added a LIMMA statistical filter
+
+- Modified the GTF parser to better deal with the structure of Ensembl
+  GTF files.
+  
+- Changed all of the launchers so you can pass a file name to open. Allows
+  file extensions to be associated with seqmonk so you can open projects
+  by double clicking on them.
+  
+- Improve the merging of transcripts in the RNA-Seq pipeline to use 
+  gene ids where they are present in the annotation so we don't get 
+  spurious merging of overlapping transcripts on the same strand which
+  are annotated as belonging to different genes.
+  
+- Updated the genome processing scripts so that gene_ids are added to
+  all transcripts
+  
+- Fixed a crash in the aligned probes plot when no data stores are visible
+
+- Fixed a display bug for the list of features in the feature filter and
+  quantitation trend plot.
+  
+- Fixed an inefficient packing algorithm when the number of reads was too
+  great to be displayed within the available height of the chromosome view.
+
+
+
 RELEASE NOTES FOR SeqMonk v1.40.0
 ---------------------------------
 This release does some major reorganisation of the filtering menu as well as 
