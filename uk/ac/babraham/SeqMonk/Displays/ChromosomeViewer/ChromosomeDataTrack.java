@@ -396,7 +396,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				// Now set the nextPossibleSlot value so we can 
 				// skip stuff quickly in future
 				for (int s=0;s<slotCount;s++) {
-					if (lastBase[s] > nextPossibleSlot) nextPossibleSlot = lastBase[s];
+					if (lastBase[s] < nextPossibleSlot) nextPossibleSlot = lastBase[s];
 				}
 			}
 		}
