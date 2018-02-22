@@ -27,11 +27,6 @@ if ($ARGV[0] and $ARGV[0] =~ /^-psn/) {
 	shift @ARGV;
 }
 
-# If we have been passed a filename to open then we need to make sure we capture this so we can
-# pass it on to the final java command.
-my $file = $ARGV[0];
-$file = "" unless ($file);
-
 
 # If people are using this launcher under windows then their classpath needs to be separated by semicolons
 # instead of colons.
@@ -67,6 +62,13 @@ my $memory;
 my $result = GetOptions('help' => \$help,
 						'memory=i' => \$memory,
 						 );
+
+
+# If we have been passed a filename to open then we need to make sure we capture this so we can
+# pass it on to the final java command.
+my $file = $ARGV[0];
+$file = "" unless ($file);
+
 
 # Check the simple stuff first
 
