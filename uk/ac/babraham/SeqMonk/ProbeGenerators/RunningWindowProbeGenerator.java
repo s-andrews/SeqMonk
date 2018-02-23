@@ -69,20 +69,22 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 	 * @see uk.ac.babraham.SeqMonk.ProbeGenerators.ProbeGenerator#generateProbes(boolean)
 	 */
 	public void generateProbes() {
-		
+
 		if (designWithinExistingBox == null || !designWithinExistingBox.isSelected()) {
 			designWithinExisting = false;
 		}
 		else {
 			designWithinExisting = true;
-			existingListName = collection.probeSet().getActiveList().name();
+			if (limitRegionBox.getSelectedItem().equals("Active Probe List")) {
+				existingListName = collection.probeSet().getActiveList().name();
+			}
 		}
-		
+
 		Thread t = new Thread(this);
 		cancel = false;
 		t.start();
 	}
-	
+
 	public boolean requiresExistingProbeSet () {
 		return false;
 	}
@@ -91,14 +93,14 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 	 * @see uk.ac.babraham.SeqMonk.ProbeGenerators.ProbeGenerator#getOptionsPanel(uk.ac.babraham.SeqMonk.SeqMonkApplication)
 	 */
 	public JPanel getOptionsPanel() {
-		
+
 		if (optionPanel != null) {
 			// We've done this already
 			return optionPanel;
 		}
-		
+
 		int suggestedSize = ProbeGeneratorUtilities.suggestWindowSize(collection);
-		
+
 		optionPanel = new JPanel();
 		optionPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -107,55 +109,57 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 		gbc.weightx=0.5;
 		gbc.weighty=0.5;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		optionPanel.add(new JLabel("Probe Size (bp)"),gbc);
-		
+
 		gbc.gridx = 2;
 		probeSizeField = new JTextField(""+suggestedSize);
 		probeSizeField.addKeyListener(this);
 		optionPanel.add(probeSizeField,gbc);
-		
+
 		gbc.gridy++;
 		gbc.gridx = 1;
 		optionPanel.add(new JLabel("Step Size (bp)"),gbc);
-		
+
 		gbc.gridx = 2;
 		stepSizeField = new JTextField(""+suggestedSize);
 		stepSizeField.addKeyListener(this);
 		optionPanel.add(stepSizeField,gbc);
 
-		if (collection.probeSet() != null) {
-			gbc.gridy++;
-			gbc.gridx = 1;
-			optionPanel.add(new JLabel("Limit by region"),gbc);
-		
-			gbc.gridx = 2;
-			
-			JPanel limitPanel = new JPanel();
-			limitPanel.setLayout(new BorderLayout());
-			
-			designWithinExistingBox = new JCheckBox();
-			limitPanel.add(designWithinExistingBox,BorderLayout.WEST);
-			
-			limitRegionBox = new JComboBox(new String [] {"Active Probe List","Currently Visible Region"});
+		gbc.gridy++;
+		gbc.gridx = 1;
+		optionPanel.add(new JLabel("Limit by region"),gbc);
 
-			limitRegionBox.setEnabled(false);
-			designWithinExistingBox.addActionListener(new ActionListener() {
-				
-				public void actionPerformed(ActionEvent arg0) {
-					limitRegionBox.setEnabled(designWithinExistingBox.isSelected());
-				}
-			});
-			
-			limitPanel.add(limitRegionBox,BorderLayout.CENTER);
-			
-			optionPanel.add(limitPanel,gbc);
+		gbc.gridx = 2;
+
+		JPanel limitPanel = new JPanel();
+		limitPanel.setLayout(new BorderLayout());
+
+		designWithinExistingBox = new JCheckBox();
+		limitPanel.add(designWithinExistingBox,BorderLayout.WEST);
+
+		limitRegionBox = new JComboBox(new String [] {"Active Probe List","Currently Visible Region"});
+
+		if (collection.probeSet() == null) {
+			limitRegionBox = new JComboBox(new String [] {"Currently Visible Region"});
+
 		}
-		
-		
+		limitRegionBox.setEnabled(false);
+		designWithinExistingBox.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				limitRegionBox.setEnabled(designWithinExistingBox.isSelected());
+			}
+		});
+
+		limitPanel.add(limitRegionBox,BorderLayout.CENTER);
+
+		optionPanel.add(limitPanel,gbc);
+
+
 		return optionPanel;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.ProbeGenerators.ProbeGenerator#isReady()
 	 */
@@ -178,14 +182,14 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 			}
 			optionsReady();
 			return true;
-			
+
 		}
 		else {
 			optionsNotReady();
 			return false;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
@@ -198,54 +202,54 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 		else {
 			finalSet = designPerChromosome();
 		}
-		
+
 		generationComplete(finalSet);
 	}
-	
+
 	private ProbeSet designPerChromosome () {
 		Chromosome [] chromosomes = collection.genome().getAllChromosomes();
-		
+
 		Vector<Probe> newProbes = new Vector<Probe>();
-		
+
 		for (int c=0;c<chromosomes.length;c++) {
 			// Time for an update
 			updateGenerationProgress("Processed "+c+" chromosomes", c, chromosomes.length);
-			
+
 			int pos=1;
 			while (pos < chromosomes[c].length()) {
-				
+
 				// See if we need to quit
 				if (cancel) {
 					generationCancelled();
 				}
-				
+
 				int end = pos+(probeSize-1);
 				if (end > chromosomes[c].length()) end = chromosomes[c].length();
-				
+
 				Probe p = new Probe(chromosomes[c],pos,end);
-				
+
 				newProbes.add(p);
-				
+
 
 				pos += stepSize;
 			}
 		}
-		
+
 		Probe [] finalList = newProbes.toArray(new Probe[0]);
 		ProbeSet finalSet = new ProbeSet(getDescription(),finalList);
-		
+
 		return finalSet;
 
 	}
-	
+
 	private ProbeSet designPerProbe () {
-		
+
 		Chromosome [] chromosomes = collection.genome().getAllChromosomes();
 		ProbeList activeList;
 		if (limitRegionBox.getSelectedItem().equals("Active Probe List")) {
 			activeList = collection.probeSet().getActiveList();
 		}
-		
+
 		else {
 			// We're just analysing a single probe over the current region
 			existingListName = "Currently visible region";
@@ -253,44 +257,44 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 			activeList = new ProbeSet("Current Region", 1);
 			activeList.addProbe(p, 0f);
 		}
-		
+
 		Vector<Probe> newProbes = new Vector<Probe>();
-		
+
 		for (int c=0;c<chromosomes.length;c++) {
 			// Time for an update
 			updateGenerationProgress("Processed "+c+" chromosomes", c, chromosomes.length);
-			
+
 			Probe [] probes = activeList.getProbesForChromosome(chromosomes[c]);
-			
+
 			for (int p=0;p<probes.length;p++) {
-			
+
 				int pos=probes[p].start();
 				while (pos < probes[p].end()-(probeSize-1)) {
-				
+
 					// See if we need to quit
 					if (cancel) {
 						generationCancelled();
 					}
-				
+
 					int end = pos+(probeSize-1);
 					if (end > chromosomes[c].length()) end = chromosomes[c].length();
-				
+
 					Probe pr = new Probe(chromosomes[c],pos,end,probes[p].strand());
-				
+
 					newProbes.add(pr);
 
 					pos += stepSize;
 				}
 			}
 		}
-		
+
 		Probe [] finalList = newProbes.toArray(new Probe[0]);
 		ProbeSet finalSet = new ProbeSet(getDescription(),finalList);
-		
+
 		return finalSet;
 	}
-	
-	
+
+
 	/**
 	 * Gets a text description of the current set of options.
 	 * 
@@ -315,27 +319,27 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 	public void cancel () {
 		cancel = true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString () {
 		return "Running Window Generator";
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
 	 */
 	public void keyPressed(KeyEvent k) {
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
 	 */
 	public void keyReleased(KeyEvent k) {
 		isReady();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
 	 */
