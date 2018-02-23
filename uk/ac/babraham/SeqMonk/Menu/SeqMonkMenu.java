@@ -113,6 +113,7 @@ import uk.ac.babraham.SeqMonk.Displays.MAPlot.MAPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.PCAPlot.PCADataCalculator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeTrendPlot.TrendOverProbePreferencesDialog;
+import uk.ac.babraham.SeqMonk.Displays.QQDistributionPlot.QQDistributionDialog;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantiationTrendPlotPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.RNASeqQCPlot.RNAQCPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.Report.ReportOptions;
@@ -549,7 +550,24 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewCumDist.add(viewCumDistProbes);		
 
 		plotsMenu.add(viewCumDist);
-		
+
+		JMenu viewQQDist = new JMenu("QQ Distribution Plot");
+		viewQQDist.setMnemonic(KeyEvent.VK_Q);
+
+		JMenuItem viewQQDistStores = new JMenuItem("Visible Data Stores...");
+		viewQQDistStores.setActionCommand("view_qqdist");
+		viewQQDistStores.setMnemonic(KeyEvent.VK_S);
+		viewQQDistStores.addActionListener(this);
+		viewQQDist.add(viewQQDistStores);
+
+		JMenuItem viewQQDistProbes = new JMenuItem("Multiple Probe Lists...");
+		viewQQDistProbes.setActionCommand("multiprobe_view_qqdist");
+		viewQQDistProbes.setMnemonic(KeyEvent.VK_M);
+		viewQQDistProbes.addActionListener(this);
+		viewQQDist.add(viewQQDistProbes);		
+
+		plotsMenu.add(viewQQDist);
+
 		
 		JMenu viewBeanPlot = new JMenu("Bean Plot");
 		viewBeanPlot.setMnemonic(KeyEvent.VK_B);
@@ -1746,6 +1764,21 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			}
 		}
 
+		else if (action.equals("view_qqdist")) {
+			if (! application.dataCollection().isQuantitated()) {
+				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				try {
+					new QQDistributionDialog(application.drawnDataSets(),application.dataCollection().probeSet().getActiveList());
+				} 
+				catch (SeqMonkException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+		}
+
+		
 		else if (action.equals("plot_rna_qc")) {
 			new RNAQCPreferencesDialog(application.dataCollection());
 		}
@@ -1825,6 +1858,19 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					throw new IllegalStateException(e);
 				}
 			}
+			else if (action.equals("multiprobe_view_qqdist")) {
+				if (application.dataCollection().getActiveDataStore() == null) {
+					JOptionPane.showMessageDialog(application, "You need to select a data store from the data panel to use this view","No active data store",JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				try {
+					new QQDistributionDialog(application.dataCollection().getActiveDataStore(),probeLists);
+				} 
+				catch (SeqMonkException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+
 			else if (action.equals("multiprobe_view_line_graph")){
 				try {
 					new LineGraphDialog(application.drawnDataSets(), probeLists);
