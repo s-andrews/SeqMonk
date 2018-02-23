@@ -279,7 +279,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		if (upstreamTrendPanel != null) {
 			upstreamTrendPanel.addProgressListener(this);
 			if (!addedProgress) {
-				upstreamTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot"));
+				upstreamTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot",upstreamTrendPanel));
 				addedProgress = true;
 			}
 			upstreamTrendPanel.startCalculating();
@@ -288,7 +288,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		if (centralTrendPanel != null) {
 			centralTrendPanel.addProgressListener(this);
 			if (!addedProgress) {
-				centralTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot"));
+				centralTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot",centralTrendPanel));
 				addedProgress = true;
 			}
 			centralTrendPanel.startCalculating();
@@ -297,7 +297,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		if (downstreamTrendPanel != null) {
 			downstreamTrendPanel.addProgressListener(this);
 			if (!addedProgress) {
-				downstreamTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot"));
+				downstreamTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot",downstreamTrendPanel));
 				addedProgress = true;
 			}
 
