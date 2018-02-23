@@ -42,10 +42,10 @@ public class CumulativeDistributionPanel extends JPanel {
 	// These set the limits, either globally, or if we're zoomed in
 	// along with a flag to say when they've been calculated
 	
-	private double absoluteMin;
-	private double absoluteMax;
-	private double usedMin;
-	private double usedMax;	
+	protected double absoluteMin;
+	protected double absoluteMax;
+	protected double usedMin;
+	protected double usedMax;	
 	
 	
 	// Spacing for the drawn panel
@@ -157,7 +157,7 @@ public class CumulativeDistributionPanel extends JPanel {
 	
 
 	
-	private float [] shortenDistribution (float [] distribution) {
+	protected float [] shortenDistribution (float [] distribution) {
 	
 		// Firstly we need to remove any point which aren't valid.
 		int nanCount = 0;
