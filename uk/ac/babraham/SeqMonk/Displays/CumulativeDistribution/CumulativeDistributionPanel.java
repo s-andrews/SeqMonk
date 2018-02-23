@@ -181,8 +181,8 @@ public class CumulativeDistributionPanel extends JPanel {
 		
 		Arrays.sort(distribution);
 	
-		// We need to return a 500 element array
-		float [] shortDistribution = new float[500];
+		// We need to return a 1000 element array
+		float [] shortDistribution = new float[1000];
 		
 		if (distribution.length == 0) {
 			// There's no valid data here so make everything zero
@@ -194,7 +194,7 @@ public class CumulativeDistributionPanel extends JPanel {
 		
 		else {
 			for (int i=0;i<shortDistribution.length;i++) {
-				int index = (int)((distribution.length-1)*(i/500d));
+				int index = (int)((distribution.length-1)*(i/1000d));
 				shortDistribution[i] = distribution[index];
 			}
 		}
