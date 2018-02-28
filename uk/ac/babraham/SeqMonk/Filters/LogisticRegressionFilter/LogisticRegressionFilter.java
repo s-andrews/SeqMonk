@@ -156,33 +156,20 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			// Get the template script
 			Template template = new Template(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Filters/LogisticRegressionFilter/logistic_regression_template.r"));
 
-			// Substitute in the variables we need to change
-			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
-
-			template.setValue("DIFFERENCE", ""+absDiffCutoff);
-
-			template.setValue("PVALUE", ""+pValueCutoff);
-
-			if (multiTest) {
-				template.setValue("MULTITEST", "TRUE");
-			}
-			else {
-				template.setValue("MULTITEST", "FALSE");
-			}
-
-
-			// Write the script file
-			File scriptFile = new File(tempDir.getAbsoluteFile()+"/script.r");
-			PrintWriter pr = new PrintWriter(scriptFile);
-			pr.print(template.toString());
-			pr.close();
 
 			// Write the count data
 
 			// Sort these so we can get probes from the same chromosome together
 			Arrays.sort(probes);
-			pr = null;
+			PrintWriter pr = null;
 			String lastChr = "";
+			
+			// Rather than not testing probes based on their absolute difference
+			// we should just post-filter them.  The easiest way to do this will
+			// be to not test (as we do now) but explicity pass in the number of
+			// tests we should have performed to the multiple testing correction.
+			
+			int numberOfTestsToCorrectBy = 0;
 			
 			PROBE: for (int p=0;p<probes.length;p++) {
 
@@ -297,6 +284,11 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					continue;
 				}
 
+				// At this point we have to count this probe as valid for the 
+				// purposes of multiple testing correction
+				++numberOfTestsToCorrectBy;
+				
+				
 				// Now check the differences.  We do this two ways - by adding the 
 				// total counts together, and by averaging the individual percentages
 				// Both of these have to pass if we're going to do the testing.
@@ -341,6 +333,32 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			}				
 
 			pr.close();
+			
+			// Now we can complete the template 
+			
+			// Substitute in the variables we need to change
+			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
+
+			template.setValue("DIFFERENCE", ""+absDiffCutoff);
+			
+			template.setValue("CORRECTCOUNT",""+numberOfTestsToCorrectBy);
+
+			template.setValue("PVALUE", ""+pValueCutoff);
+
+			if (multiTest) {
+				template.setValue("MULTITEST", "TRUE");
+			}
+			else {
+				template.setValue("MULTITEST", "FALSE");
+			}
+
+
+			// Write the script file
+			File scriptFile = new File(tempDir.getAbsoluteFile()+"/script.r");
+			pr = new PrintWriter(scriptFile);
+			pr.print(template.toString());
+			pr.close();
+
 
 			progressUpdated("Running R Script",0,1);
 

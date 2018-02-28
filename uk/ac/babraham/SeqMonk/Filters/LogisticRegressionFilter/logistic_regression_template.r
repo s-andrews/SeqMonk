@@ -35,7 +35,7 @@ if (any(is.null(names(regression.results)))) {
 } 
 
 if (%%MULTITEST%%) {
-	p.adjust(regression.results,method = "fdr") -> regression.results
+	p.adjust(regression.results,method = "fdr", n=%%CORRECTCOUNT%%) -> regression.results
 }
 
 names(regression.results)[regression.results < %%PVALUE%%] -> hit.ids
