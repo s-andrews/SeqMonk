@@ -6,7 +6,7 @@ process.file <- function(x) {
   
   print (paste("Processing ",x))
   
-  read.delim(x) -> data
+  read.delim(x,colClasses = c("character", "factor", "factor", "factor", "numeric")) -> data
   
   return(unlist(as.list(by(data,data$id,logistic.regression))))
   
@@ -35,7 +35,7 @@ if (any(is.null(names(regression.results)))) {
 } 
 
 if (%%MULTITEST%%) {
-	p.adjust(regression.results,method = "hochberg") -> regression.results
+	p.adjust(regression.results,method = "fdr") -> regression.results
 }
 
 names(regression.results)[regression.results < %%PVALUE%%] -> hit.ids

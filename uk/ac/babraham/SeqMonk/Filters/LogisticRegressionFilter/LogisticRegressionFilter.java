@@ -179,11 +179,11 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 			// Write the count data
 
-			// Sort these so we can get probes from the same chromsome together
+			// Sort these so we can get probes from the same chromosome together
 			Arrays.sort(probes);
 			pr = null;
 			String lastChr = "";
-
+			
 			PROBE: for (int p=0;p<probes.length;p++) {
 
 				if (!probes[p].chromosome().name().equals(lastChr)) {
