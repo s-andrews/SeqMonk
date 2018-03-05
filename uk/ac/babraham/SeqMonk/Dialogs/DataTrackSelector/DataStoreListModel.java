@@ -19,6 +19,11 @@ public class DataStoreListModel extends AbstractListModel {
 		return stores.elementAt(index);
 	}
 	
+	public void removeAllElements () {
+		stores.removeAllElements();
+		fireContentsChanged(this, 0, 0);
+	}
+	
 	public void setElementAt (Object o, int index) {
 		stores.setElementAt((DataStore)o, index);
 		fireContentsChanged(this, 0, stores.size()-1);
