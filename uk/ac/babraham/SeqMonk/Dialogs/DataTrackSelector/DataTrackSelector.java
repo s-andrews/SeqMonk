@@ -17,7 +17,7 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.SeqMonk.Dialogs;
+package uk.ac.babraham.SeqMonk.Dialogs.DataTrackSelector;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -27,6 +27,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -55,13 +56,13 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 	private SeqMonkApplication application;
 	
 	/** The available group model. */
-	private DefaultListModel availableGroupModel = new DefaultListModel();
+	private DataStoreListModel availableGroupModel = new DataStoreListModel();
 	
 	/** The available set model. */
-	private DefaultListModel availableSetModel = new DefaultListModel();
+	private DataStoreListModel availableSetModel = new DataStoreListModel();
 	
 	/** The available replicate model */
-	private DefaultListModel availableReplicatesModel = new DefaultListModel();
+	private DataStoreListModel availableReplicatesModel = new DataStoreListModel();
 	
 	/** The available group list. */
 	private JList availableGroupList;
@@ -73,7 +74,7 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 	private JList availableReplicateList;
 	
 	/** The used model. */
-	private DefaultListModel usedModel = new DefaultListModel();
+	private DataStoreListModel usedModel = new DataStoreListModel();
 	
 	/** The used list. */
 	private JList usedList;
@@ -233,47 +234,51 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 		getContentPane().add(bottomPanel,c);
 		
 		DataSet [] availableSets = application.dataCollection().getAllDataSets();
-		for (int i=0;i<availableSets.length;i++) {
-			availableSetModel.addElement(availableSets[i]);
-		}
+		availableSetModel.addElements(availableSets);
 		
 		DataGroup [] availableGroups = application.dataCollection().getAllDataGroups();
-		for (int i=0;i<availableGroups.length;i++) {
-			availableGroupModel.addElement(availableGroups[i]);
-		}
+		availableGroupModel.addElements(availableGroups);
 		
 		ReplicateSet [] availableReplicates = application.dataCollection().getAllReplicateSets();
-		for (int i=0;i<availableReplicates.length;i++) {
-			availableReplicatesModel.addElement(availableReplicates[i]);
-		}
+		availableReplicatesModel.addElements(availableReplicates);
 		
 		DataStore [] drawnStores = application.drawnDataStores();
+		Vector<DataStore> drawnSets = new Vector<DataStore>();
+		Vector<DataStore> drawnGroups = new Vector<DataStore>();
+		Vector<DataStore> drawnReplicates = new Vector<DataStore>();
+		
+		
 		for (int i=0;i<drawnStores.length;i++) {
 			if (drawnStores[i] instanceof DataSet) {
-				availableSetModel.removeElement(drawnStores[i]);
+				drawnSets.add(drawnStores[i]);
 			}
 			if (drawnStores[i] instanceof ReplicateSet) {
-				availableReplicatesModel.removeElement(drawnStores[i]);
+				drawnReplicates.add(drawnStores[i]);
 			}
 			else {
-				availableGroupModel.removeElement(drawnStores[i]);				
+				drawnGroups.add(drawnStores[i]);				
 			}
-			usedModel.addElement(drawnStores[i]);
 		}
+		
+		availableGroupModel.removeElements(drawnGroups.toArray(new DataStore[0]));
+		availableSetModel.removeElements(drawnSets.toArray(new DataStore[0]));
+		availableReplicatesModel.removeElements(drawnReplicates.toArray(new DataStore[0]));
+		
+		usedModel.addElements(drawnStores);
 		
 		setVisible(true);
 		
 		// A bit of a hack to make sure all lists
 		// resize as they should...
-		availableSetModel.addElement("temp");
-		availableGroupModel.addElement("temp");
-		usedModel.addElement("temp");
-		availableReplicatesModel.addElement("temp");
-		validate();
-		availableSetModel.removeElement("temp");
-		availableGroupModel.removeElement("temp");
-		usedModel.removeElement("temp");
-		availableReplicatesModel.removeElement("temp");
+//		availableSetModel.addElement("temp");
+//		availableGroupModel.addElement("temp");
+//		usedModel.addElement("temp");
+//		availableReplicatesModel.addElement("temp");
+//		validate();
+//		availableSetModel.removeElement("temp");
+//		availableGroupModel.removeElement("temp");
+//		usedModel.removeElement("temp");
+//		availableReplicatesModel.removeElement("temp");
 	}
 
 	/* (non-Javadoc)
@@ -283,48 +288,69 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 		String c = ae.getActionCommand();
 
 		if (c.equals("add")) {
-			//TODO: Do this by index so it's not horrifically slow.
-			Object [] adds = availableGroupList.getSelectedValues();
+			Object [] addObj = availableGroupList.getSelectedValues();
+			DataStore [] adds = new DataStore[addObj.length];
+			
 			for (int i=0;i<adds.length;i++) {
-				usedModel.addElement(adds[i]);
-				availableGroupModel.removeElement(adds[i]);
+				adds[i] = (DataStore)addObj[i];
 			}
-			adds = availableSetList.getSelectedValues();
+			
+			usedModel.addElements(adds);
+			availableGroupModel.removeElements(adds);
+
+			addObj = availableSetList.getSelectedValues();
+			adds = new DataStore[addObj.length];
+
 			for (int i=0;i<adds.length;i++) {
-				usedModel.addElement(adds[i]);
-				availableSetModel.removeElement(adds[i]);
+				adds[i] = (DataStore)addObj[i];
 			}
-			adds = availableReplicateList.getSelectedValues();
+
+			usedModel.addElements(adds);
+			availableSetModel.removeElements(adds);
+
+			addObj = availableReplicateList.getSelectedValues();
+			adds = new DataStore[addObj.length];
+
 			for (int i=0;i<adds.length;i++) {
-				usedModel.addElement(adds[i]);
-				availableReplicatesModel.removeElement(adds[i]);
+				adds[i] = (DataStore)addObj[i];
 			}
+			usedModel.addElements(adds);
+			availableReplicatesModel.removeElements(adds);
+			
 		}
 		else if (c.equals("remove")) {
 			
-			int [] removeIndices = usedList.getSelectedIndices();
-			Object [] removes = usedList.getSelectedValues();
+			Object [] removeObj = usedList.getSelectedValues();
+			DataStore [] removes = new DataStore[removeObj.length];
 
-			Arrays.sort(removeIndices);
-			
-			for (int i=removeIndices.length-1;i>=0;i--) {
-				usedModel.removeElementAt(removeIndices[i]);
+			for (int i=0;i<removes.length;i++) {
+				removes[i] = (DataStore)removeObj[i];
 			}
+			
+			usedModel.removeElements(removes);
+
+			Vector<DataStore> removeSets = new Vector<DataStore>();
+			Vector<DataStore> removeGroups = new Vector<DataStore>();
+			Vector<DataStore> removeReps = new Vector<DataStore>();
+			
 			
 			for (int i=0;i<removes.length;i++) {
 				if (removes[i] instanceof DataSet) {
-					availableSetModel.addElement(removes[i]);
+					removeSets.add(removes[i]);
 				}
 				else if (removes[i] instanceof ReplicateSet) {
-					availableReplicatesModel.addElement(removes[i]);
+					removeReps.add(removes[i]);
 				}
 				else if (removes[i] instanceof DataGroup){
-					availableGroupModel.addElement(removes[i]);
+					removeGroups.add(removes[i]);
 				}
 				else {
 					throw new IllegalStateException("Unknown type of removed store "+removes[i]);
 				}
-			}			
+			}
+			availableSetModel.addElements(removeSets.toArray(new DataStore[0]));
+			availableGroupModel.addElements(removeGroups.toArray(new DataStore[0]));
+			availableReplicatesModel.addElements(removeReps.toArray(new DataStore[0]));
 		}
 		else if (c.equals("up")) {
 			
@@ -333,14 +359,14 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			Arrays.sort(s);
 			
 			// Get the set of objects associated with the selected indices
-			Object [] current = new Object [s.length];
+			DataStore [] current = new DataStore [s.length];
 			
 			for (int i=0;i<s.length;i++) {
 				current[i] = usedModel.elementAt(s[i]);
 			}
 			
 			// Get the object above, which is going to move below
-			Object above = usedModel.elementAt(s[0]-1);
+			DataStore above = usedModel.elementAt(s[0]-1);
 			
 			// Move all the selected indices up one
 			for (int i=0;i<s.length;i++) {
@@ -362,14 +388,14 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			Arrays.sort(s);
 			
 			// Get the set of objects associated with the selected indices
-			Object [] current = new Object [s.length];
+			DataStore [] current = new DataStore [s.length];
 			
 			for (int i=0;i<s.length;i++) {
 				current[i] = usedModel.elementAt(s[i]);
 			}
 			
 			// Get the object below, which is going to move below
-			Object below = usedModel.elementAt(s[s.length-1]+1);
+			DataStore below = usedModel.elementAt(s[s.length-1]+1);
 			
 			// Move all the selected indices down one
 			for (int i=0;i<s.length;i++) {
@@ -390,11 +416,7 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			dispose();
 		}
 		else if (c.equals("ok")) {
-			Object [] o = usedModel.toArray();
-			DataStore [] s = new DataStore [o.length];
-			for (int i=0;i<s.length;i++) {
-				s[i] = (DataStore)o[i];
-			}
+			DataStore [] s = usedModel.getStores();
 			application.setDrawnDataStores(s);
 			setVisible(false);
 			dispose();
