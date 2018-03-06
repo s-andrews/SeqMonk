@@ -297,7 +297,11 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			
 			usedModel.addElements(adds);
 			availableGroupModel.removeElements(adds);
+			
+			usedList.setSelectedIndices(new int[0]);
+			availableGroupList.setSelectedIndices(new int[0]);
 
+			
 			addObj = availableSetList.getSelectedValues();
 			adds = new DataStore[addObj.length];
 
@@ -307,6 +311,7 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 
 			usedModel.addElements(adds);
 			availableSetModel.removeElements(adds);
+			availableSetList.setSelectedIndices(new int[0]);
 
 			addObj = availableReplicateList.getSelectedValues();
 			adds = new DataStore[addObj.length];
@@ -316,7 +321,8 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			}
 			usedModel.addElements(adds);
 			availableReplicatesModel.removeElements(adds);
-			
+			availableReplicateList.setSelectedIndices(new int[0]);
+
 		}
 		else if (c.equals("remove")) {
 			
@@ -328,6 +334,8 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			}
 			
 			usedModel.removeElements(removes);
+			usedList.setSelectedIndices(new int[0]);
+
 
 			Vector<DataStore> removeSets = new Vector<DataStore>();
 			Vector<DataStore> removeGroups = new Vector<DataStore>();
@@ -351,6 +359,10 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			availableSetModel.addElements(removeSets.toArray(new DataStore[0]));
 			availableGroupModel.addElements(removeGroups.toArray(new DataStore[0]));
 			availableReplicatesModel.addElements(removeReps.toArray(new DataStore[0]));
+			availableSetList.setSelectedIndices(new int[0]);
+			availableGroupList.setSelectedIndices(new int[0]);
+			availableReplicateList.setSelectedIndices(new int[0]);
+
 		}
 		else if (c.equals("up")) {
 			

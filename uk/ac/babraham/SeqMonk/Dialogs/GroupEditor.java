@@ -266,6 +266,8 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 			}
 			usedModel.addElements(adds);
 			availableModel.removeElements(adds);
+			availableList.setSelectedIndices(new int[0]);
+			usedList.setSelectedIndices(new int[0]);
 			
 			Object [] o = usedModel.getStores();
 			DataSet [] s = new DataSet [o.length];
@@ -289,6 +291,10 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 			}
 			usedModel.removeElements(adds);
 			availableModel.addElements(adds);
+			
+			availableList.setSelectedIndices(new int[0]);
+			usedList.setSelectedIndices(new int[0]);
+
 			
 			Object [] o = usedModel.getStores();
 			DataSet [] s = new DataSet [o.length];

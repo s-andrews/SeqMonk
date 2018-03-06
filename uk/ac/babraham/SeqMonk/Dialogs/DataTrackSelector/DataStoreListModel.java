@@ -20,13 +20,14 @@ public class DataStoreListModel extends AbstractListModel {
 	}
 	
 	public void removeAllElements () {
+		int length = stores.size();
 		stores.removeAllElements();
-		fireContentsChanged(this, 0, 0);
+		fireContentsChanged(this, 0, length-1);
 	}
 	
 	public void setElementAt (Object o, int index) {
 		stores.setElementAt((DataStore)o, index);
-		fireContentsChanged(this, 0, stores.size()-1);
+		fireContentsChanged(this, index, index);
 	}
 	
 	public DataStore [] getStores () {
@@ -42,10 +43,11 @@ public class DataStoreListModel extends AbstractListModel {
 	
 	
 	public void removeElements (DataStore [] newStores) {
+		int length = stores.size();
 		for (int i=0;i<newStores.length;i++) {
 			stores.removeElement(newStores[i]);
 		}
-		fireContentsChanged(this, 0, stores.size()-1);
+		fireContentsChanged(this, 0, length-1);
 	}
 
 	@Override
