@@ -942,7 +942,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		edgeRFilter.setMnemonic(KeyEvent.VK_E);
 		countStatsReplicatedMenu.add(edgeRFilter);		
 
-		JMenuItem logisticRegressionFilter = new JMenuItem("[R] Logisitic Regression (for/rev)...");
+		JMenuItem logisticRegressionFilter = new JMenuItem("[R] Logistic Regression (for/rev)...");
 		logisticRegressionFilter.setActionCommand("filter_r_logistic_regression");
 		logisticRegressionFilter.addActionListener(this);
 		logisticRegressionFilter.setMnemonic(KeyEvent.VK_L);
@@ -955,7 +955,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		proportionStatsReplicatedMenu.add(edgeRForRevFilter);		
 
 
-		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("[R] Logisitic Regression Splicing...");
+		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("[R] Logistic Regression Splicing...");
 		logisticRegressionSplicingFilter.setActionCommand("filter_r_logistic_regression_splicing");
 		logisticRegressionSplicingFilter.addActionListener(this);
 		logisticRegressionSplicingFilter.setMnemonic(KeyEvent.VK_S);
