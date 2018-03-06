@@ -28,6 +28,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -46,6 +47,7 @@ import javax.swing.event.ListSelectionListener;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
+import uk.ac.babraham.SeqMonk.Dialogs.DataTrackSelector.DataStoreListModel;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 
@@ -58,19 +60,19 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 	private SeqMonkApplication application;
 	
 	/** The available model. */
-	private DefaultListModel availableModel = new DefaultListModel();
+	private DataStoreListModel availableModel = new DataStoreListModel();
 	
 	/** The available list. */
 	private JList availableList;
 	
 	/** The used model. */
-	private DefaultListModel usedModel = new DefaultListModel();
+	private DataStoreListModel usedModel = new DataStoreListModel();
 	
 	/** The used list. */
 	private JList usedList;
 	
 	/** The replicate set model. */
-	private DefaultListModel replicateSetModel = new DefaultListModel();
+	private DataStoreListModel replicateSetModel = new DataStoreListModel();
 	
 	/** The replicate set list. */
 	private JList replicateSetList;
@@ -230,28 +232,27 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 		
 		// Fill the lists with the data we know about
 		DataStore [] dataStores = application.dataCollection().getAllDataStores();
+		Vector<DataStore> validStores = new Vector<DataStore>();
 		for (int i=0;i<dataStores.length;i++) {
 			if (dataStores[i] instanceof ReplicateSet) continue; // We can't add a replicate set to another replicate set
-			availableModel.addElement(dataStores[i]);
+			validStores.add(dataStores[i]);
 		}
-		
-		ReplicateSet [] replicateSets = application.dataCollection().getAllReplicateSets();
-		for (int i=0;i<replicateSets.length;i++) {
-			replicateSetModel.addElement(replicateSets[i]);
-		}
+		availableModel.addElements(validStores.toArray(new DataStore[0]));
 
+		ReplicateSet [] replicateSets = application.dataCollection().getAllReplicateSets();
+		replicateSetModel.addElements(replicateSets);
 		
 		setVisible(true);
 		
 		// A bif of a hack to make sure all lists
 		// resize as they should...
-		availableModel.addElement("temp");
-		usedModel.addElement("temp");
-		replicateSetModel.addElement("temp");
-		validate();
-		availableModel.removeElement("temp");
-		usedModel.removeElement("temp");
-		replicateSetModel.removeElement("temp");
+//		availableModel.addElement("temp");
+//		usedModel.addElement("temp");
+//		replicateSetModel.addElement("temp");
+//		validate();
+//		availableModel.removeElement("temp");
+//		usedModel.removeElement("temp");
+//		replicateSetModel.removeElement("temp");
 	}
 
 	/* (non-Javadoc)
@@ -261,19 +262,18 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 		String c = ae.getActionCommand();
 
 		if (c.equals("add")) {
-			Object [] adds = availableList.getSelectedValues();
+			Object [] addObjs = availableList.getSelectedValues();
+			DataStore [] adds = new DataStore[addObjs.length];
 			for (int i=0;i<adds.length;i++) {
-				usedModel.addElement(adds[i]);
-				availableModel.removeElement(adds[i]);
+				adds[i] = (DataStore)addObjs[i];
 			}
+			usedModel.addElements(adds);
+			availableModel.removeElements(adds);
+			usedList.setSelectedIndices(new int[0]);
+			availableList.setSelectedIndices(new int[0]);
 			
-			Object [] o = usedModel.toArray();
-			DataStore [] s = new DataStore [o.length];
-			
-			for (int i=0;i<s.length;i++) {
-				s[i] = (DataStore)o[i];
-			}
-			
+			DataStore [] s = usedModel.getStores();
+						
 			ReplicateSet r = (ReplicateSet)replicateSetList.getSelectedValue();
 			r.setDataStores(s);
 			
@@ -282,19 +282,18 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 			new NameGatherer();			
 		}
 		else if (c.equals("remove")) {
-			Object [] adds = usedList.getSelectedValues();
+			Object [] addObjs = usedList.getSelectedValues();
+			DataStore [] adds = new DataStore[addObjs.length];
 			for (int i=0;i<adds.length;i++) {
-				usedModel.removeElement(adds[i]);
-				availableModel.addElement(adds[i]);
+				adds[i] = (DataStore)addObjs[i];
 			}
+			usedModel.removeElements(adds);
+			availableModel.addElements(adds);
+			usedList.setSelectedIndices(new int[0]);
+			availableList.setSelectedIndices(new int[0]);
 			
-			Object [] o = usedModel.toArray();
-			DataStore [] s = new DataStore [o.length];
-			
-			for (int i=0;i<s.length;i++) {
-				s[i] = (DataStore)o[i];
-			}
-			
+			DataStore [] s = usedModel.getStores();
+						
 			ReplicateSet r = (ReplicateSet)replicateSetList.getSelectedValue();
 			r.setDataStores(s);
 
@@ -317,7 +316,7 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 
 			ReplicateSet s = new ReplicateSet(setName,new DataStore[0]);
 			application.dataCollection().addReplicateSet(s);
-			replicateSetModel.addElement(s);
+			replicateSetModel.addElements(new DataStore[]{s});
 		}
 		
 		else if (c.equals("rename_set")) {
@@ -338,8 +337,8 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 			ReplicateSet [] repSets = new ReplicateSet [o.length];
 			for (int i=0;i<o.length;i++) {
 				repSets[i]=(ReplicateSet)o[i];
-				replicateSetModel.removeElement(o[i]);
 			}
+			replicateSetModel.removeElements(repSets);
 
 			application.dataCollection().removeReplicateSets(repSets);
 
@@ -359,10 +358,12 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 		if (ae.getSource() == replicateSetList) {
 
 			// Move all samples back to the available list
-			Object [] o = usedModel.toArray();
-			for (int i=0;i<o.length;i++) {
-				availableModel.addElement(o[i]);
-			}
+			DataStore [] o = usedModel.getStores();
+			availableModel.addElements(o);
+
+			usedList.setSelectedIndices(new int[0]);
+			availableList.setSelectedIndices(new int[0]);
+			
 			usedModel.removeAllElements();
 
 			if(replicateSetList.getSelectedValues().length == 1) {
@@ -370,10 +371,10 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 				deleteButton.setEnabled(true);
 				ReplicateSet s = (ReplicateSet)replicateSetList.getSelectedValue();
 				DataStore [] st = s.dataStores();
-				for (int i=0;i<st.length;i++) {
-					usedModel.addElement(st[i]);
-					availableModel.removeElement(st[i]);
-				}
+				usedModel.addElements(st);
+				availableModel.removeElements(st);
+				usedList.setSelectedIndices(new int[0]);
+				availableList.setSelectedIndices(new int[0]);
 			}
 			else if (replicateSetList.getSelectedValues().length > 1) {
 				deleteButton.setEnabled(true);
@@ -384,8 +385,7 @@ public class ReplicateSetEditor extends JDialog implements ActionListener, ListS
 			
 			
 		}
-		 
-		
+		 		
 		// Check to see if we can add anything...
 		if (availableList.getSelectedIndices().length>0 && replicateSetList.getSelectedIndices().length == 1) {
 			addButton.setEnabled(true);
