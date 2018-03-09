@@ -80,6 +80,13 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	private boolean genomeLoaded = false;
 	private Exception exceptionReceived = null;
 	
+	// This value is an option the parser can set which allows a project to be
+	// loaded with a different genome than is specified in the file.  This can
+	// be used to allow switching between different compatible versions of 
+	// the same assmebly (ie moving between differnet annotation sets)
+	
+	private String forcedAssembly;
+	
 	
 	// These variables are used when a genome is required to be installed
 	// from a remote location.  The pause boolean is an easy way to wait
@@ -116,7 +123,14 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	 * 
 	 * @param file The file to parse
 	 */
+	
 	public void parseFile (File file) {
+		parseFile(file,null);
+	}
+	
+	public void parseFile (File file, String forcedAssembly) {
+		
+		this.forcedAssembly = forcedAssembly;
 
 		/*
 		 * The attempt to open the file as a GZIP input stream can on some systems
@@ -379,6 +393,10 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 		
 		String [] speciesStrings = sections[1].split("\\|");
 		String [] assemblyStrings = sections[2].split("\\|");
+		
+		if (forcedAssembly != null) {
+			assemblyStrings = forcedAssembly.split("\\|");
+		}
 				
 		if (speciesStrings.length != assemblyStrings.length) {
 			throw new SeqMonkException("Got different number of species and assembly names from '"+sections[1]+"' and '"+sections[2]+"'");
