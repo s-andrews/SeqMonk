@@ -1234,6 +1234,13 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		fileOpen.setMnemonic(KeyEvent.VK_O);
 		fileMenu.add(fileOpen);		
 
+		JMenuItem fileOpenSwitch = new JMenuItem ("Open project and switch assembly...");
+		fileOpenSwitch.setActionCommand("open_switch");
+		fileOpenSwitch.addActionListener(this);
+		fileOpenSwitch.setMnemonic(KeyEvent.VK_W);
+		fileMenu.add(fileOpenSwitch);		
+
+		
 		fileMenu.addSeparator();
 
 		if (fileImportData == null) {
@@ -2242,6 +2249,10 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		else if (action.equals("open")) {
 			application.loadProject();
 		}
+		else if (action.equals("open_switch")) {
+			application.loadProjectAndSwitchAssembly();
+		}
+
 		else if (action.startsWith("filter")) {
 			try {
 

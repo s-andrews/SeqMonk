@@ -479,6 +479,46 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		loadProject(file);
 	}
 	
+	
+	/**
+	 * Launches a FileChooser to select a project file to open
+	 */
+	public void loadProjectAndSwitchAssembly () {
+		new GenomeSelector(application);
+		
+		JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+		chooser.setMultiSelectionEnabled(false);
+		SeqMonkPreviewPanel previewPanel = new SeqMonkPreviewPanel();
+		chooser.setAccessory(previewPanel);
+		chooser.addPropertyChangeListener(previewPanel);
+		chooser.setFileFilter(new FileFilter() {
+		
+			public String getDescription() {
+				return "SeqMonk files";
+			}
+		
+			public boolean accept(File f) {
+				if (f.isDirectory() || f.getName().toLowerCase().endsWith(".smk")) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+		
+		});
+		
+		int result = chooser.showOpenDialog(this);
+		if (result == JFileChooser.CANCEL_OPTION) return;
+
+		File file = chooser.getSelectedFile();
+		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+	
+		//TODO: Check that the project they selected is actually compatible with the genome they loaded.
+		
+		loadProject(file,true);
+	}
+	
 	public String projectName () {
 		if (currentFile != null) {
 			return currentFile.getName();
@@ -489,13 +529,20 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	}
 	
 
+	
+	
 	/**
 	 * Loads an existing project from a file.  Will wipe all existing data and prompt to
 	 * save if the currently loaded project has changed.
 	 * 
 	 * @param file The file to load
 	 */
+	
 	public void loadProject (File file) {
+		loadProject(file,false);
+	}
+	
+	public void loadProject (File file, boolean forceAssembly) {
 
 		if (file == null) return;
 		
@@ -521,7 +568,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		
 		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
 		
-		wipeAllData();
+//		wipeAllData();
 		
 		currentFile = file;
 		
@@ -531,7 +578,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		
 		ProgressDialog dppd = new ProgressDialog(this,"Loading data...");
 		parser.addProgressListener(dppd);
-		parser.parseFile(file);
+		parser.parseFile(file,forceAssembly);
 		dppd.requestFocus();
 		setTitle("SeqMonk ["+file.getName()+"]");
 		

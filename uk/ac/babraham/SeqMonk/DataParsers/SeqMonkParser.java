@@ -85,7 +85,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	// be used to allow switching between different compatible versions of 
 	// the same assmebly (ie moving between differnet annotation sets)
 	
-	private String forcedAssembly;
+	private boolean forcedAssembly = false;
 	
 	
 	// These variables are used when a genome is required to be installed
@@ -123,12 +123,8 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	 * 
 	 * @param file The file to parse
 	 */
-	
-	public void parseFile (File file) {
-		parseFile(file,null);
-	}
-	
-	public void parseFile (File file, String forcedAssembly) {
+		
+	public void parseFile (File file, boolean forcedAssembly) {
 		
 		this.forcedAssembly = forcedAssembly;
 
@@ -269,6 +265,15 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 					parseLists(sections);
 				}
 				else if (sections[0].equals("Genome")) {
+					// If we're forcing an assembly then the genome will already
+					// be loaded by this point, so we just skip this.
+					
+					if (forcedAssembly) {
+						genomeLoaded = true;
+						continue;
+					}
+					
+					
 					parseGenome(sections);
 					// If we had a problem getting hold of the genome we will have put
 					// up a nice error for this, but we'll also have stored an exception
@@ -393,10 +398,6 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 		
 		String [] speciesStrings = sections[1].split("\\|");
 		String [] assemblyStrings = sections[2].split("\\|");
-		
-		if (forcedAssembly != null) {
-			assemblyStrings = forcedAssembly.split("\\|");
-		}
 				
 		if (speciesStrings.length != assemblyStrings.length) {
 			throw new SeqMonkException("Got different number of species and assembly names from '"+sections[1]+"' and '"+sections[2]+"'");
