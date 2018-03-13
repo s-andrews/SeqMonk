@@ -17,7 +17,7 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.SeqMonk.Dialogs;
+package uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreview;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

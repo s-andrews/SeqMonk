@@ -22,6 +22,7 @@ package uk.ac.babraham.SeqMonk;
 
 import java.awt.BorderLayout;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -57,10 +58,11 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSetChangeListener;
 import uk.ac.babraham.SeqMonk.DataWriters.SeqMonkDataWriter;
 import uk.ac.babraham.SeqMonk.Dialogs.GenomeSelector;
-import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreviewPanel;
 import uk.ac.babraham.SeqMonk.Dialogs.DataParser.DataParserOptionsDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.GotoDialog.GotoDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreview.SeqMonkPreview;
+import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreview.SeqMonkPreviewPanel;
 import uk.ac.babraham.SeqMonk.Displays.StatusPanel;
 import uk.ac.babraham.SeqMonk.Displays.ChromosomeViewer.ChromosomePositionScrollBar;
 import uk.ac.babraham.SeqMonk.Displays.ChromosomeViewer.ChromosomeViewer;
@@ -109,9 +111,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	private StatusPanel statusPanel;
 	
 	/** The data collection is the main data model */
-	private DataCollection dataCollection = null;
-	
-	/** A list of feature names which are currently displayed in the chromosome view */
+	private DataCollection dataCollection = null;	/** A list of feature names which are currently displayed in the chromosome view */
 	private Vector<String> drawnFeatureTypes = new Vector<String>();
 	
 	/** A list of data stores which are currently displayed in the chromosome view */
@@ -513,8 +513,55 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 		File file = chooser.getSelectedFile();
 		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+		
+		SeqMonkPreview preview;
+		
+		try {
+			preview = new SeqMonkPreview(file);
+		}
+		catch (IOException ioe) {
+			JOptionPane.showMessageDialog(this,"Couldn't read the file: "+ioe.getMessage(),"Can't read file",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		//Check that the project they selected is actually compatible with the genome they loaded.
 	
-		//TODO: Check that the project they selected is actually compatible with the genome they loaded.
+		// Start with the species.  These should match exactly.
+		if (!preview.species().equals(dataCollection.genome().species().toString())) {
+			JOptionPane.showMessageDialog(this,"Species didn't match ("+preview.species()+" vs "+ dataCollection.genome().species().toString()+")","Incompatible file",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		// Now the assemblies.  These should match if we remove the _vXX (where X is a number).  This can occur at the end
+		// of the string or at a | symbol (for multi-genome projects).
+		
+		String assemblyString = dataCollection.genome().assembly().toString();
+		String fileAssembly = preview.assembly();
+		
+		String [] assemblyStringSections = assemblyString.split("\\|");
+		String [] fileAssemblySections = fileAssembly.split("\\|");
+		
+		boolean assemblyFail = false;
+		
+		if (assemblyStringSections.length != fileAssemblySections.length) {
+			System.err.println("Assembly sections didn't match "+assemblyStringSections.length+" vs "+fileAssemblySections.length);
+			assemblyFail = true;
+		}
+		
+		else {
+			for (int i=0;i<assemblyStringSections.length;i++) {
+				if (!assemblyStringSections[i].replaceAll("_v\\d+$", "").equals(fileAssemblySections[i].replaceAll("_v\\d+$", ""))) {
+					System.err.println(assemblyStringSections[i].replaceAll("_v\\d+$", "")+" didn't match "+fileAssemblySections[i].replaceAll("_v\\d+$", ""));
+					assemblyFail = true;
+				}
+			}
+		}
+		
+		
+		if (assemblyFail) {
+			JOptionPane.showMessageDialog(this,"Assemblies didn't match ("+preview.assembly()+" vs "+ dataCollection.genome().assembly().toString()+")","Incompatible file",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		
 		loadProject(file,true);
 	}
