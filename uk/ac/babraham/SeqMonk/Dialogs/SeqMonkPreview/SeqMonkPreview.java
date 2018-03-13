@@ -100,5 +100,23 @@ public class SeqMonkPreview {
 		return samples;
 	}
 	
+	public String toString () {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html>");
+		sb.append(species());
+		sb.append(" ");
+		sb.append(assembly());
+		sb.append("<br><br>");
+		
+		for (int i=0;i<samples.length;i++) {
+			sb.append(samples[i]);
+			sb.append("<br>");
+		}
+		
+		sb.append("</html>");
+		return(sb.toString());
+		
+	}
+	
 	
 }
