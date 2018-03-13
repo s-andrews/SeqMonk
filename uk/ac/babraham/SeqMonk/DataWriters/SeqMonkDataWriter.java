@@ -306,10 +306,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 	private void printAssembly (PrintStream p) {
 		// The next thing we need to do is to output the details of the genome
 		// we're using
-		
-		String species;
-		String assembly;
-				
+						
 		p.println("Genome\t"+genome.species()+"\t"+genome.assembly());
 		
 		// Now we print out the list of default feature tracks to show
