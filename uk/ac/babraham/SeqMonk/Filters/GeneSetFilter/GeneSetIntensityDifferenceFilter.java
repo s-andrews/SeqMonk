@@ -20,6 +20,7 @@
 package uk.ac.babraham.SeqMonk.Filters.GeneSetFilter;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -90,6 +91,12 @@ import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 /**
  * Filters probes based on the the probability of their difference being
  * part of the local noise level for their average intensity.
+ * 
+ * TODO: Add option in GeneSetFileOptionsPanel to use all categories in file or filter by category name or ID
+ * TODO: filtering code in parser
+ * TODO: when ok is pressed more than once, errors are generated.
+ * 
+ * TODO: maybe remove option to use existing probe lists...?
  * 
  * TODO: sort out no of matched probes when existing probe lists are used - when they don't have a quantitated value, the code is a bit messy - kick out unquantitated probes.
  * 
@@ -612,6 +619,9 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				}
 				
 				// check whether it passes the p/q-value and z-score cut-offs				
+				if(optionsPanel.reportAllResults.isSelected()) {
+					filteredPValueArrayList.add(filterResultpValues[i]);
+				}
 				
 				if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanZScore) > zScoreThreshold)){
 				
@@ -938,6 +948,9 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		// whether to apply multiple testing correction
 		private JCheckBox multipleTestingBox;
 		
+		// whether to report all results without statistical filtering
+		private JCheckBox reportAllResults;
+		
 //		private JCheckBox calculateLinearRegressionBox;
 		
 		// whether to calculate custom regression line
@@ -1081,6 +1094,20 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			multipleTestingBox = new JCheckBox();
 			multipleTestingBox.setSelected(true);
 			choicePanel.add(multipleTestingBox,gbc);
+			
+			gbc.gridx = 1;
+			gbc.weightx=0.1;
+			gbc.gridy++;			
+			
+			choicePanel.add(new JLabel("Report all results"),gbc);
+			
+			gbc.gridx=2;
+			gbc.weightx=0.9;
+			
+			reportAllResults = new JCheckBox();
+			reportAllResults.setSelected(false);
+			reportAllResults.addItemListener(this);
+			choicePanel.add(reportAllResults,gbc);
 			
 			// removing the linear regression option for now, don't delete the code though.
 		/**	gbc.gridx = 1;
@@ -1280,6 +1307,17 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
 		 */
 		public void itemStateChanged(ItemEvent ie) {
+			System.err.println("itemStateChanged ");
+			
+			if(reportAllResults.isSelected()) {
+				pValueField.setBackground(Color.gray);
+				zScoreField.setBackground(Color.gray);
+			}
+			else if(reportAllResults.isSelected() == false) {
+				pValueField.setBackground(Color.white);
+				zScoreField.setBackground(Color.white);
+			}
+			
 		}
 
 		/* (non-Javadoc)
