@@ -94,9 +94,6 @@ import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
  * 
  * TODO: Add option in GeneSetFileOptionsPanel to use all categories in file or filter by category name or ID
  * TODO: filtering code in parser
- * TODO: when ok is pressed more than once, errors are generated.
- * 
- * TODO: maybe remove option to use existing probe lists...?
  * 
  * TODO: sort out no of matched probes when existing probe lists are used - when they don't have a quantitated value, the code is a bit messy - kick out unquantitated probes.
  * 
@@ -622,10 +619,11 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				if(optionsPanel.reportAllResults.isSelected()) {
 					filteredPValueArrayList.add(filterResultpValues[i]);
 				}
-				
-				if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanZScore) > zScoreThreshold)){
-				
-					filteredPValueArrayList.add(filterResultpValues[i]);
+				else{
+					if((pOrQvalue < pValueLimit) &&(Math.abs(filterResultpValues[i].mappedGeneSet.meanZScore) > zScoreThreshold)){
+					
+						filteredPValueArrayList.add(filterResultpValues[i]);
+					}
 				}	
 			}	
 			
@@ -711,18 +709,13 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				}			
 				selectedProbeLists = probeLists;
 				startRunningFilter();
-				//runFilter();
+				
 			}
 			
 			else if(optionsPanel.geneSetsFileRadioButton.isSelected()){
 				
-				GeneSetFileOptionsPanel geneSetFileOptionsPanel = new GeneSetFileOptionsPanel();
-				geneSetFileOptionsPanel.addWindowListener(this);
-						
+				startRunningFilter();
 			}
-		//}	
-		//Thread t = new Thread(this);
-		//t.start();
 	}
 	
 	public void startRunningFilter (){
@@ -752,16 +745,40 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 	 */
 	@Override
 	public boolean isReady() {
-
+		
 		if (fromStores.length == 1 && toStores.length == 1 && pValueLimit != null && fromStores[0]!=toStores[0]) {
-			return true;
+						
+			if(optionsPanel.geneSetsFileRadioButton.isSelected()){ 
+					
+				if(validGeneSetFilepath == null){
+					return false;
+				}
+				else{
+			
+					if(fileValid(validGeneSetFilepath)){
+						
+						if(minGenesInSet < maxGenesInSet){						
+							System.err.println("validGeneSetFilepath " + validGeneSetFilepath);
+							return true;
+						}
+						else{
+							JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Minimum number of genes cannot be less than maximum.", "Adjust min/max genes", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}						
+					}
+					else{
+						JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "A valid gene set file needs to be selected.", "Gene set file required", JOptionPane.ERROR_MESSAGE);
+						return false;
+					}
+				}	
+			}			
+			else{ 			
+				return true;
+			}			
 		}
-
-		// Check for the special case of comparing just to ourselves
-//		if (fromStores.length == 1 && toStores.length == 1 && pValueLimit != null && (validGeneSetFile == true || optionsPanel.probeListRadioButton.isSelected()) && fromStores[0]!=toStores[0]) {
-	//		return true;
-	//	}
-		return false;
+		else{
+			return false;
+		}	
 	}
 
 	/* (non-Javadoc)
@@ -931,7 +948,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 	 * 
 	 * Panel where the user can edit the options 
 	 */
-	private class DifferencesOptionsPanel extends JPanel implements ListSelectionListener, KeyListener, ItemListener {
+	private class DifferencesOptionsPanel extends JPanel implements ListSelectionListener, KeyListener, ItemListener, ActionListener {
 
 		// The first data store
 		private JList fromDataList;
@@ -967,15 +984,28 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		
 		// or whether to use existing probe lists as the gene sets
 		private JRadioButton probeListRadioButton;
-		
-		// whether to test the average shift for the probeset from the overall mean
-		//private JRadioButton unidirectionalRadioButton;
-		
-		// or whether to test in both directions
-		//private JRadioButton bidirectionalRadioButton;
-		
+				
 		// which statistical test to perform
 		private JComboBox statisticalTestBox;
+		
+		// select gene set file
+		private JButton selectFileButton;
+		
+		// location of gene set file
+		private JTextField geneSetFileLocation;
+		
+		// panel for selecting gene set file
+		private JPanel fileSelectPanel;
+		
+		// panel to contain min and max
+		private JPanel minMaxPanel;
+		
+		// set min number of genes required in category
+		private JTextField minGenesInCategory;
+		
+		// set max number of genes required in category
+		private JTextField maxGenesInCategory;
+		
 		
 		/**
 		 * Instantiates a new differences options panel.
@@ -1139,8 +1169,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			gbc.gridx = 1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
-			
-				
+							
 			choicePanel.add(new JLabel("Deduplicate gene sets"),gbc);
 			
 			gbc.gridx=2;
@@ -1161,28 +1190,80 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			
 			pointsToSampleField = new JTextField(""+probesPerSet,5);
 			pointsToSampleField.addKeyListener(new NumberKeyListener(false, false,startingList.getAllProbes().length/2));
+			pointsToSampleField.addKeyListener(this);
 			choicePanel.add(pointsToSampleField,gbc);
 			
 			gbc.gridx = 1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
-				
-			
+							
 			choicePanel.add(new JLabel("Use gene sets from file"),gbc);
 			
 			gbc.gridx=2;	
 			gbc.weightx=0.9;
 			geneSetsFileRadioButton = new JRadioButton();
 			geneSetsFileRadioButton.setSelected(true);
-
+			geneSetsFileRadioButton.addItemListener(this);
+			
 			choicePanel.add(geneSetsFileRadioButton, gbc);
-					
+			
+			gbc.gridy++;
+			
+			// panel for selecting gene set file
+			fileSelectPanel = new JPanel();
+			fileSelectPanel.setLayout(new BoxLayout(fileSelectPanel, BoxLayout.X_AXIS));
+			
+			geneSetFileLocation = new JTextField("            ");
+			if(validGeneSetFilepath != null){
+				geneSetFileLocation.setText(validGeneSetFilepath);
+			}			
+			geneSetFileLocation.setEditable(false);
+			fileSelectPanel.add(geneSetFileLocation);						
+			
+			fileSelectPanel.add(Box.createRigidArea(new Dimension(5,0)));
+			
+			selectFileButton = new JButton("Select file");
+			selectFileButton.addActionListener(this);
+			selectFileButton.setActionCommand("select_file");
+			
+			fileSelectPanel.add(selectFileButton);	
+			
+			choicePanel.add(fileSelectPanel, gbc);
+			
+			gbc.gridx = 1;
+			gbc.weightx=0.1;
+			gbc.gridy++;
+			
+			choicePanel.add(new JLabel("Number of genes in category"), gbc);		
+						
+			gbc.gridx=2;	
+			gbc.weightx=0.9;
+			minMaxPanel = new JPanel();
+			minMaxPanel.setLayout(new BoxLayout(minMaxPanel, BoxLayout.X_AXIS));
+			
+			minMaxPanel.add(new JLabel("Minimum "));
+			
+			minGenesInCategory = new JTextField(""+minGenesInSet);			
+			minGenesInCategory.addKeyListener(new NumberKeyListener(false, false));
+			minGenesInCategory.addKeyListener(this);
+			minMaxPanel.add(minGenesInCategory);
+			
+			minMaxPanel.add(new JLabel("  Maximum "));
+			
+			maxGenesInCategory = new JTextField(""+maxGenesInSet);
+			maxGenesInCategory.addKeyListener(new NumberKeyListener(false, false));
+			maxGenesInCategory.addKeyListener(this);
+			minMaxPanel.add(maxGenesInCategory);	
+			
+			choicePanel.add(minMaxPanel, gbc);
+							
 			gbc.gridx=1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
 			choicePanel.add(new JLabel("Use existing probe lists"),gbc);
 						
 			probeListRadioButton = new JRadioButton();
+			probeListRadioButton.addItemListener(this);
 			
 			gbc.gridx=2;
 			gbc.weightx=0.9;
@@ -1197,44 +1278,16 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			gbc.gridx=1;
 			gbc.weightx=0.1;
 			gbc.gridy++;
-			
-			//varianceMeasureBox = new JComboBox(new String [] {"STDEV","SEM","QuartDisp","CoefVar","Unmeasured"});
-			
-		/*	choicePanel.add(new JLabel("Uni-directional test"),gbc);
 						
-			unidirectionalRadioButton = new JRadioButton();
-			unidirectionalRadioButton.setSelected(true);
-			
-			gbc.gridx=2;
-			gbc.weightx=0.9;
-			choicePanel.add(unidirectionalRadioButton, gbc);
-		
-			
-			gbc.gridx=1;
-			gbc.weightx=0.1;
-			gbc.gridy++;
-			choicePanel.add(new JLabel("Bi-directional test"),gbc);
-						
-			bidirectionalRadioButton = new JRadioButton();
-			
-			gbc.gridx=2;
-			gbc.weightx=0.9;
-			choicePanel.add(bidirectionalRadioButton, gbc);
-				
-			ButtonGroup group2 = new ButtonGroup();
-			group2.add(unidirectionalRadioButton);
-			group2.add(bidirectionalRadioButton);	
-			*/
-			
 			add(new JScrollPane(choicePanel),BorderLayout.CENTER);
 
 		}	
 												
 		public Integer probesPerSet () {
+			
 			if (pointsToSampleField.getText().trim().length() == 0) {
 				return null;
 			}
-			
 			return Integer.parseInt(pointsToSampleField.getText());
 		}
 		
@@ -1295,7 +1348,24 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				}
 				System.err.println("adjusting the z-score threshold to " + zScoreThreshold);
 			}
-					
+			
+			if(f == minGenesInCategory){
+				// bit messy
+				if(d == null || (d<1)){
+					minGenesInSet = 1;
+				}	
+				else{
+					minGenesInSet = d.intValue();
+				}
+			}
+			else if(f == maxGenesInCategory){
+				if(d == null  || (d<1)){
+					maxGenesInSet = 100000;
+				}	 						
+				else{
+					maxGenesInSet = d.intValue();
+				}
+			}											
 			else {
 				System.err.println("Unexpected text field "+f+" sending data to keylistener in differences filter");
 			}
@@ -1307,7 +1377,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
 		 */
 		public void itemStateChanged(ItemEvent ie) {
-			System.err.println("itemStateChanged ");
 			
 			if(reportAllResults.isSelected()) {
 				pValueField.setBackground(Color.gray);
@@ -1317,7 +1386,20 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				pValueField.setBackground(Color.white);
 				zScoreField.setBackground(Color.white);
 			}
-			
+
+			if(probeListRadioButton.isSelected()) {
+				minGenesInCategory.setBackground(Color.gray);
+				maxGenesInCategory.setBackground(Color.gray);
+				geneSetFileLocation.setBackground(Color.gray);
+				selectFileButton.setEnabled(false);								
+			}
+			else if(geneSetsFileRadioButton.isSelected() == false) {
+				minGenesInCategory.setBackground(Color.white);
+				maxGenesInCategory.setBackground(Color.white);
+				geneSetFileLocation.setBackground(Color.white);
+				selectFileButton.setEnabled(true);
+			}
+			optionsChanged();
 		}
 
 		/* (non-Javadoc)
@@ -1346,111 +1428,8 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			
 			optionsChanged();
 		}
-				
-	}
-	
-	private class GeneSetFileOptionsPanel extends JDialog implements KeyListener, ActionListener {
 		
-		// select gene set file
-		private JButton selectFileButton; 
-		private JButton closeButton; 
-		private JTextField minGenesInCategory;
-		private JTextField maxGenesInCategory;
-		private JTextField geneSetFileLocation;
 		
-		public GeneSetFileOptionsPanel(){
-			
-			super(SeqMonkApplication.getInstance(),"Select gene set file");
-
-			setLayout(new BorderLayout());
-			
-			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			
-			JPanel mainPanel = new JPanel();
-			mainPanel.setBorder(BorderFactory.createEmptyBorder(4,4,0,4));
-			mainPanel.setLayout(new GridBagLayout());
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.gridx=0;
-			gbc.gridy=0;
-			gbc.weightx=0.5;
-			gbc.weighty=0.5;
-			gbc.fill=GridBagConstraints.HORIZONTAL;
-			
-						
-			JPanel fileSelectPanel = new JPanel();
-			fileSelectPanel.setLayout(new BoxLayout(fileSelectPanel, BoxLayout.X_AXIS));
-			
-			geneSetFileLocation = new JTextField("            ");
-			if(validGeneSetFilepath != null){
-				geneSetFileLocation.setText(validGeneSetFilepath);
-			}			
-			geneSetFileLocation.setEditable(false);
-			fileSelectPanel.add(geneSetFileLocation);						
-			
-			fileSelectPanel.add(Box.createRigidArea(new Dimension(5,0)));
-			
-			selectFileButton = new JButton("Select file");
-			selectFileButton.addActionListener(this);
-			selectFileButton.setActionCommand("select_file");
-			
-			fileSelectPanel.add(selectFileButton);	
-			
-			mainPanel.add(fileSelectPanel, gbc);
-			
-			gbc.gridy++;
-			gbc.gridy++;
-			
-			mainPanel.add(new JLabel("Number of genes in category"), gbc);		
-			
-			gbc.gridy++;
-			
-			JPanel minMaxPanel = new JPanel();
-			minMaxPanel.setLayout(new BoxLayout(minMaxPanel, BoxLayout.X_AXIS));
-			
-			minMaxPanel.add(new JLabel("Minimum "));
-			
-			minGenesInCategory = new JTextField(""+minGenesInSet);			
-			minGenesInCategory.addKeyListener(new NumberKeyListener(false, false));
-			minGenesInCategory.addKeyListener(this);
-			minMaxPanel.add(minGenesInCategory);
-			
-			minMaxPanel.add(new JLabel("  Maximum "));
-			
-			maxGenesInCategory = new JTextField(""+maxGenesInSet);
-			maxGenesInCategory.addKeyListener(new NumberKeyListener(false, false));
-			maxGenesInCategory.addKeyListener(this);
-			minMaxPanel.add(maxGenesInCategory);	
-			
-			mainPanel.add(minMaxPanel, gbc);
-						
-			/* button panel at the bottom */
-			JPanel buttonPanel =  new JPanel();
-			buttonPanel.setLayout(new GridBagLayout());
-			GridBagConstraints c2 = new GridBagConstraints();
-			c2.insets = new Insets(2,2,2,2);
-			c2.gridx=0;
-			c2.gridy=0;
-	
-			closeButton = new JButton("Close");
-			closeButton.addActionListener(this);
-			closeButton.setActionCommand("close");
-			buttonPanel.add(closeButton, c2);
-			
-			c2.gridx++;
-			
-			selectFileButton = new JButton("OK");
-			selectFileButton.addActionListener(this);
-			selectFileButton.setActionCommand("run");
-			buttonPanel.add(selectFileButton, c2);	
-			
-			add(mainPanel, BorderLayout.CENTER);
-			add(buttonPanel, BorderLayout.PAGE_END);	
-			
-			setSize(300, 150);
-			setLocationRelativeTo(optionsPanel);
-			setVisible(true);
-		}
-	
 		public void actionPerformed(ActionEvent ae) {
 			String action = ae.getActionCommand();
 			
@@ -1482,24 +1461,21 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				
 				if(fc.getSelectedFile() == null){
 					validGeneSetFilepath = null;
-					//validGeneSetFile = false;
 					return; // they cancelled
 				}
 				else{				
 					File selectedFile = fc.getSelectedFile();		
 					String filepath = selectedFile.toString();	
 					if ((filepath != null) && (fileValid(filepath))){
-						//validGeneSetFile = true;
+
 						validGeneSetFilepath = filepath;
-						geneSetFileLocation.setText(validGeneSetFilepath);
-						//this.dispose();
-							//runFilter();
-						//	startRunningFilter();						
+						geneSetFileLocation.setText(validGeneSetFilepath);						
 					}
 					else{
 						validGeneSetFilepath = null;
 					}
-				}			
+				}
+				optionsChanged();
 			}
 			else if(ae.getActionCommand().equals("run")){
 				
@@ -1507,96 +1483,36 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 					JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Minimum number of genes in set cannot be greater than maximum.", "Number of genes needs adjusting", JOptionPane.ERROR_MESSAGE);
 					return;
 				}		
-				//else if(validGeneSetFile == false){
 				else if(validGeneSetFilepath == null){
 					JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "A valid gene set file needs to be selected.", "Gene set file required", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				else{
-					this.dispose();
-					//runFilter();
 					startRunningFilter();	
 				}				
 			}
-			
-			else if(ae.getActionCommand().equals("close")) {
-
-				validGeneSetFilepath = null;
-				progressCancelled();
-				optionsChanged();
-				this.dispose();
-				
-			}
-			
 		}
-			// check whether the gene set info file can be found
-		private boolean fileValid(String filepath){
-			
-			File f = new File(filepath);
-			if(f.exists() && !f.isDirectory()) {
-				return true;
-			}
-			else{
-				JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "The gene set information file couldn't be found, please find a valid file to load.", "Couldn't load gene set file", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-		}	
-			
-		public void keyPressed(KeyEvent arg0) {
-			// TODO Auto-generated method stub
-			
+	}
+	
+	private boolean fileValid(String filepath){
+		
+		File f = new File(filepath);
+		if(f.exists() && !f.isDirectory()) {
+			return true;
 		}
-
-		public void keyReleased(KeyEvent kr) {
-			
-			JTextField f = (JTextField)kr.getSource();
-
-			Integer i = null;			
-			
-			if (f.getText().length()>0) {
-
-				if (f.getText().equals("-")) {
-					System.err.println("we've got " + f.getText());
-				}
-				else {
-					try {
-						i = Integer.parseInt(f.getText());
-					}
-					catch (NumberFormatException e) {
-						f.setText(f.getText().substring(0,f.getText().length()-1));
-						return;
-					}
-				}
-			}
-			if(f == minGenesInCategory){
-				// bit messy
-				if(i == null || (i==0)){
-					minGenesInSet = 1;
-				}	
-			/*	if(i > maxGenesInSet){
-					JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Minimum number cannot be greater than maximum", "Number of genes needs adjusting", JOptionPane.ERROR_MESSAGE);
-				}
-			*/	else{
-					minGenesInSet = i;
-				}
-			}
-			else if(f == maxGenesInCategory){
-				if(i == null  || (i==0)){
-					maxGenesInSet = 100000;
-				}	 						
-			/*	if(x < minGenesInSet){
-					JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Maximum number cannot be less than minimum", "Number of genes needs adjusting", JOptionPane.ERROR_MESSAGE);
-				}
-			*/	else{
-					maxGenesInSet = i;
-				}
-			}			
+		else{
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "The gene set information file couldn't be found, please find a valid file to load.", "Couldn't load gene set file", JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
-
-		public void keyTyped(KeyEvent arg0) {
-			// TODO Auto-generated method stub
+	}	
+	
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
 			
-		}
+	}
+
+	public void keyReleased(KeyEvent kr) {
+			
 	}
 
 	public void windowActivated(WindowEvent e) {
