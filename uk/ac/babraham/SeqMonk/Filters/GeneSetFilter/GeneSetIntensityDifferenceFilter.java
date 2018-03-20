@@ -835,11 +835,44 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 	@Override
 	protected String listDescription() {
 		StringBuffer b = new StringBuffer();
-
+		
 		b.append("Filter on probes in ");
 		b.append(collection.probeSet().getActiveList().name());
 
-		b.append(" where p-value when comparing ");
+		b.append(" ");
+		
+		b.append(fromStore.name());
+
+		b.append(" compared to ");
+
+		b.append(toStore.name());
+				
+		b.append(" using a ");
+		
+		b.append(optionsPanel.statisticalTestBox.getSelectedItem().toString());
+		
+		b.append(" with a sample size of ");
+		b.append(probesPerSet);
+		b.append(" when constructing the control distributions");
+		
+		if(optionsPanel.reportAllResults.isSelected()){
+			b.append("No p-value or z-score thresholds were set");
+		}
+		
+		else{
+			b.append(" . Filtered by maximum p-value of ");
+			b.append(pValueLimit);
+			
+			if (applyMultipleTestingCorrection) {
+				b.append(" (multiple testing correction applied)");
+			}
+			
+			b.append(". Minimum absolute z-score was ");
+			b.append(zScoreThreshold);						
+		}
+		
+		
+	/*	b.append(" where p-value when comparing ");
 
 		b.append(fromStore.name());
 
@@ -862,7 +895,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		b.append(" with a sample size of ");
 		b.append(probesPerSet);
 		b.append(" when constructing the control distributions");
-
+*/
 		if(calculateCustomRegression){
 			b.append(". A custom regression was calculated");
 		}
@@ -870,11 +903,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		else if(calculateLinearRegression){
 			b.append(". Linear regression was calculated");
 		}
-		
-		
-		b.append(". Minimum absolute z-score was ");
-		b.append(zScoreThreshold);
-		
+				
 		b.append(". Quantitation was ");
 		if (collection.probeSet().currentQuantitation() == null) {
 			b.append("not known.");
