@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -120,6 +121,10 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 		}
 		else if (e.getActionCommand().equals("plot")) {
 			if (prefPanel.selectedFeatureTypes().length == 0) {
+				return;
+			}
+			if (prefPanel.getProbes().length == 0) {
+				JOptionPane.showMessageDialog(this, "These feature options don't generate any probes","No Probes made",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			new QuantitationTrendPlotDialog(probes,stores,prefPanel);

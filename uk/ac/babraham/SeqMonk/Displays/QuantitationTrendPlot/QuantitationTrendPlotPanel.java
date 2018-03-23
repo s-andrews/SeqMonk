@@ -121,7 +121,7 @@ public class QuantitationTrendPlotPanel extends JPanel implements Runnable, Mous
 		this.stores = stores;
 		this.featureName = featureName;
 		this.quantitatedProbes = quantitatedProbes;
-
+				
 		Arrays.sort(this.probes);
 		Arrays.sort(this.quantitatedProbes);
 		addMouseListener(this);
