@@ -475,7 +475,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 		File file = chooser.getSelectedFile();
 		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
-	
+			
 		loadProject(file);
 	}
 	
@@ -615,7 +615,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		
 		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
 		
-//		wipeAllData();
+		if (!forceAssembly) {
+			wipeAllData();
+		}
 		
 		currentFile = file;
 		
