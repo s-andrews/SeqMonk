@@ -48,37 +48,23 @@ import uk.ac.babraham.SeqMonk.Utilities.ListDefaultSelector;
 
 public class RNAQCPreferencesDialog extends JDialog implements ActionListener, ProgressListener {
 
-	private JList dataList;
+	private DataStore [] stores;
 	private JComboBox geneFeaturesBox;
 	private JComboBox transcriptFeaturesBox;
 	private JComboBox rRNAFeaturesBox;
 	private JList chromosomeList;
 	private DataCollection collection;
 	
-	public RNAQCPreferencesDialog(DataCollection collection)  {
+	public RNAQCPreferencesDialog(DataCollection collection, DataStore [] stores)  {
 		super(SeqMonkApplication.getInstance(),"RNA-Seq QC Plot");
+		
+		if (stores.length == 0) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "There are no visible data stores", "Can't draw plot", JOptionPane.INFORMATION_MESSAGE);
+		}
+		
+		this.stores = stores;
 		this.collection = collection;
 		getContentPane().setLayout(new BorderLayout());
-		JPanel dataPanel = new JPanel();
-		dataPanel.setBorder(BorderFactory.createEmptyBorder(4,4,0,4));
-		dataPanel.setLayout(new BorderLayout());
-		dataPanel.add(new JLabel("Data Sets/Groups",JLabel.CENTER),BorderLayout.NORTH);
-
-		DefaultListModel dataModel = new DefaultListModel();
-
-		DataStore [] stores = collection.getAllDataStores();
-		
-		for (int i=0;i<stores.length;i++) {
-			dataModel.addElement(stores[i]);
-		}
-
-		dataList = new JList(dataModel);
-		dataList.setPrototypeCellValue("No longer than this please");
-		ListDefaultSelector.selectDefaultStores(dataList);
-		dataList.setCellRenderer(new TypeColourRenderer());
-		dataPanel.add(new JScrollPane(dataList),BorderLayout.CENTER);
-
-		getContentPane().add(dataPanel,BorderLayout.WEST);
 
 		JPanel choicePanel = new JPanel();
 		
@@ -195,20 +181,7 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 				chromosomes[c] = (Chromosome)selectedChromosomes[c];
 			}
 			
-			Object [] selectedObjects = dataList.getSelectedValues();
-			
-			if (selectedObjects.length == 0) {
-				JOptionPane.showMessageDialog(this, "No data stores were selected", "Oops", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			DataStore [] selectedStores = new DataStore[selectedObjects.length];
-			for (int i=0;i<selectedObjects.length;i++) {
-				selectedStores[i] = (DataStore)selectedObjects[i];
-			}
-			
-			
-			RNAQCCalcualtor calc = new RNAQCCalcualtor(collection, geneFeatures, transcriptFeatures, rRNAFeatures, chromosomes, selectedStores);
+			RNAQCCalcualtor calc = new RNAQCCalcualtor(collection, geneFeatures, transcriptFeatures, rRNAFeatures, chromosomes, stores);
 			calc.addListener(this);
 			calc.addListener(new ProgressDialog("RNA-Seq QC Plot", calc));
 			calc.startCalculating();

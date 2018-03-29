@@ -1787,7 +1787,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 
 		
 		else if (action.equals("plot_rna_qc")) {
-			new RNAQCPreferencesDialog(application.dataCollection());
+			new RNAQCPreferencesDialog(application.dataCollection(), application.drawnDataSets());
 		}
 
 		else if (action.equals("plot_small_rna_qc")) {
