@@ -394,6 +394,26 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 	}
 
 	/**
+	 * Moves the view a small amount left
+	 */
+	public void pageLeft() {
+		int currentWidth = (currentEnd-currentStart)+1;
+		int interval = currentWidth;
+		if (currentStart < interval+1) interval = currentStart-1;
+		DisplayPreferences.getInstance().setLocation(SequenceRead.packPosition(currentStart-interval,currentEnd-interval,Location.UNKNOWN));
+	}
+
+	/**
+	 * Moves the view a small amount right.
+	 */
+	public void pageRight() {
+		int currentWidth = (currentEnd-currentStart)+1;
+		int interval = currentWidth;
+		if (currentEnd+interval > chromosome.length()) interval = chromosome.length()-currentEnd;
+		DisplayPreferences.getInstance().setLocation(SequenceRead.packPosition(currentStart+interval,currentEnd+interval,Location.UNKNOWN));
+	}
+
+	/**
 	 * Says that we're starting to make a selction
 	 * 
 	 * @param b

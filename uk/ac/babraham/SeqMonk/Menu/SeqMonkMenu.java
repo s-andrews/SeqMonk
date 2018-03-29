@@ -378,6 +378,19 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewMoveRight.addActionListener(this);
 		viewMenu.add(viewMoveRight);
 
+		JMenuItem viewPageLeft = new JMenuItem("Page left");
+		viewPageLeft.setActionCommand("page_left");
+		viewPageLeft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK));
+		viewPageLeft.addActionListener(this);
+		viewMenu.add(viewPageLeft);
+
+		JMenuItem viewPageRight = new JMenuItem("Page Right");
+		viewPageRight.setActionCommand("page_right");
+		viewPageRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK));
+		viewPageRight.addActionListener(this);
+		viewMenu.add(viewPageRight);
+
+		
 
 		add(viewMenu);
 
@@ -1677,6 +1690,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		}
 		else if (action.equals("move_right")) {
 			application.chromosomeViewer().moveRight();
+		}
+		else if (action.equals("page_left")) {
+			application.chromosomeViewer().pageLeft();
+		}
+		else if (action.equals("page_right")) {
+			application.chromosomeViewer().pageRight();
 		}
 		else if (action.equals("view_display_options")) {
 			new DisplayPreferencesEditorDialog();
