@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-17 Simon Andrews
+ * Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -86,7 +86,7 @@ public class SeqMonkTitlePanel extends JPanel {
 		c.add(website,constraints);
 		constraints.gridy++;
 
-		JLabel copyright = new JLabel("\u00a9 Simon Andrews,Laura Biggins Babraham Bioinformatics, 2006-17", JLabel.CENTER);
+		JLabel copyright = new JLabel("\u00a9 Simon Andrews,Laura Biggins Babraham Bioinformatics, 2006-18", JLabel.CENTER);
 		copyright.setFont(new Font("Dialog",Font.PLAIN,12));
 		c.add(copyright,constraints);
 		constraints.gridy++;
