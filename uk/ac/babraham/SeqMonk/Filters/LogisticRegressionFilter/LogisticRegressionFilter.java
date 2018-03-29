@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -69,7 +70,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 	private ReplicateSet [] replicateSets = new ReplicateSet[0];
 	private static Double pValueCutoff = 0.05;
-	private static Double absDiffCutoff = 5d;
+	private static Integer minObservations = 10;
 
 	private static boolean multiTest = true;
 	private static boolean resample = false;
@@ -108,6 +109,10 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		// Make up the list of DataStores in each replicate set		
 		DataStore [] fromStores = replicateSets[0].dataStores();
 		DataStore [] toStores = replicateSets[1].dataStores();
+		
+		// Check the value for the min observations.  We won't use a value lower than 3.
+		
+		if (minObservations < 3) minObservations = 3;
 
 		File tempDir;
 		try {
@@ -279,7 +284,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					}
 				}
 
-				if (validFrom < 3 || validTo < 3) {
+				if (validFrom < minObservations || validTo < minObservations) {
 					// We don't have enough data to measure this one
 					continue;
 				}
@@ -288,14 +293,6 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				// purposes of multiple testing correction
 				++numberOfTestsToCorrectBy;
 				
-				
-				// Now check the differences.  We do this two ways - by adding the 
-				// total counts together, and by averaging the individual percentages
-				// Both of these have to pass if we're going to do the testing.
-
-				if (Math.abs((totalFromMeth*100f/totalFrom) - (totalToMeth*100f/totalTo)) < absDiffCutoff) {
-					continue;
-				}
 
 				float [] fromPercentages = new float[validFrom];
 				float [] toPercentages = new float[validTo];
@@ -315,9 +312,6 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					++lastToIndex;
 				}
 
-				if (Math.abs(SimpleStats.mean(fromPercentages)-SimpleStats.mean(toPercentages)) < absDiffCutoff) {
-					continue;
-				}
 
 				// If we get here then we're OK to use this probe
 
@@ -338,8 +332,6 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			
 			// Substitute in the variables we need to change
 			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
-
-			template.setValue("DIFFERENCE", ""+absDiffCutoff);
 			
 			template.setValue("CORRECTCOUNT",""+numberOfTestsToCorrectBy);
 
@@ -496,8 +488,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			b.append(" with ratios recalculated from normalised quantitation");
 		}
 
-		b.append(" with a minimum difference of ");
-		b.append(absDiffCutoff);
+		b.append(" with a minimum number of observations of ");
+		b.append(minObservations);
 
 		return b.toString();
 	}
@@ -517,8 +509,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			b.append(" after correction");
 		}
 
-		b.append(". Min diff ");
-		b.append(absDiffCutoff);
+		b.append(". Min obs ");
+		b.append(minObservations);
 
 		return b.toString();	
 	}
@@ -530,7 +522,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 		private JList dataList;
 		private JTextField pValueCutoffField;
-		private JTextField absDiffCutoffField;
+		private JTextField minObsField;
 		private JCheckBox multiTestBox;
 		private JCheckBox resampleBox;
 
@@ -576,6 +568,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.weightx=0.2;
 			gbc.weighty=0.5;
 			gbc.fill=GridBagConstraints.HORIZONTAL;
+			gbc.insets = new Insets(5, 5, 5, 5);
 
 
 			gbc.gridwidth=1;
@@ -594,14 +587,14 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.gridwidth=1;
 			gbc.gridy++;
 
-			choicePanel.add(new JLabel("Absolute diff cutoff",JLabel.RIGHT),gbc);
+			choicePanel.add(new JLabel("Minimum Observations",JLabel.RIGHT),gbc);
 
 			gbc.gridx++;
 			gbc.weightx=0.6;
 
-			absDiffCutoffField = new JTextField(absDiffCutoff.toString(),5);
-			absDiffCutoffField.addKeyListener(this);
-			choicePanel.add(absDiffCutoffField,gbc);
+			minObsField = new JTextField(minObservations.toString(),5);
+			minObsField.addKeyListener(this);
+			choicePanel.add(minObsField,gbc);
 
 			gbc.gridx=0;
 			gbc.gridy++;
@@ -622,7 +615,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.gridy++;
 			gbc.weightx=0.2;
 
-			choicePanel.add(new JLabel("Resample counts from current quantitation"),gbc);
+			choicePanel.add(new JLabel("Resample counts from current quantitation",JLabel.RIGHT),gbc);
 
 			gbc.gridx++;
 			gbc.weightx=0.6;
@@ -675,14 +668,14 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				}
 			}
 
-			else if (f.equals(absDiffCutoffField)) {
-				if (f.getText().length() == 0) absDiffCutoff = 0d;
+			else if (f.equals(minObsField)) {
+				if (f.getText().length() == 0) minObservations = 0;
 				else {
 					try {
-						absDiffCutoff = Double.parseDouble(absDiffCutoffField.getText());
+						minObservations = Integer.parseInt(minObsField.getText());
 					}
 					catch (NumberFormatException e) {
-						absDiffCutoffField.setText(absDiffCutoffField.getText().substring(0,absDiffCutoffField.getText().length()-1));
+						minObsField.setText(minObsField.getText().substring(0,minObsField.getText().length()-1));
 					}
 				}
 			}
