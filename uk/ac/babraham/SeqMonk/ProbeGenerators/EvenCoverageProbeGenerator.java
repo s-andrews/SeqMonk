@@ -43,6 +43,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadStrandType;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
@@ -222,26 +223,16 @@ public class EvenCoverageProbeGenerator extends ProbeGenerator implements Runnab
 			// We'll merge together the reads for all of the selected DataStores and
 			// compute a single set of probes which covers all of them.
 
-			long [][] v = new long[selectedStores.length][];
+			ReadsWithCounts [] v = new ReadsWithCounts[selectedStores.length];
 			for (int s=0;s<selectedStores.length;s++) {
 				v[s] = selectedStores[s].getReadsForChromosome(chromosomes[c]);
 			}
 
-			long [] rawReads = LongSetSorter.sortLongSets(v);
-
+			ReadsWithCounts reads = new ReadsWithCounts(v);
 
 			v = null;
 
-			// We now want to convert this list into a non-redundant set of
-			// read positions with counts.  If we don't do this then we get
-			// appalling performance where we have many reads mapped at the
-			// same position
-
-			SequenceReadWithCount [] reads = getNonRedundantReads(rawReads);
-
-			//				System.err.println("Found "+reads.length+" reads on chr "+chromosomes[c]+" with strand "+strandsToTry[strand]);
-
-			if (reads.length == 0) {
+			if (reads.totalCount() == 0) {
 				//					System.err.println("Skipping strand "+strandsToTry[strand]+" on chr "+chromosomes[c]);
 				continue;
 			}
@@ -249,14 +240,14 @@ public class EvenCoverageProbeGenerator extends ProbeGenerator implements Runnab
 			int strandForNewProbes = Location.UNKNOWN;
 
 
-			int start = SequenceRead.start(reads[0].read);
-			int end = SequenceRead.end(reads[0].read);
-			int count = reads[0].count;
+			int start = SequenceRead.start(reads.reads[0]);
+			int end = SequenceRead.end(reads.reads[0]);
+			int count = reads.counts[0];
 
 			// We now start a process where we work out at what point we cross the
 			// threshold of having enough reads to finish off the current probe
 
-			for (int r=1;r<reads.length;r++) {
+			for (int r=1;r<reads.reads.length;r++) {
 
 				// See if we need to quit
 				if (cancel) {
@@ -266,7 +257,7 @@ public class EvenCoverageProbeGenerator extends ProbeGenerator implements Runnab
 				
 				// See if adding the next read would put us over the size threshold
 				
-				if (count > 0 && ((maxSize>0 &&(SequenceRead.end(reads[r].read) - start)+1 > maxSize)) || (count + reads[r].count > targetReadCount)) {
+				if (count > 0 && ((maxSize>0 &&(SequenceRead.end(reads.reads[r]) - start)+1 > maxSize)) || (count + reads.counts[r] > targetReadCount)) {
 					
 					// Make a probe out of what we have and start a new one with the 
 					// read we're currently looking at
@@ -274,14 +265,14 @@ public class EvenCoverageProbeGenerator extends ProbeGenerator implements Runnab
 					newProbes.add(p);
 					
 					start = end+1;
-					end = Math.max(end+2, SequenceRead.end(reads[r].read));
-					count = SequenceRead.end(reads[r].count);
+					end = Math.max(end+2, SequenceRead.end(reads.reads[r]));
+					count = SequenceRead.end(reads.counts[r]);
 					
 				}
 				else {
-					count += reads[r].count;
-					if (SequenceRead.end(reads[r].read) > end) {
-						end = SequenceRead.end(reads[r].read);
+					count += reads.counts[r];
+					if (SequenceRead.end(reads.reads[r]) > end) {
+						end = SequenceRead.end(reads.reads[r]);
 					}
 				}
 				
@@ -291,9 +282,6 @@ public class EvenCoverageProbeGenerator extends ProbeGenerator implements Runnab
 				Probe p = new Probe(chromosomes[c], start,end,strandForNewProbes);
 				newProbes.add(p);
 			}
-
-
-
 		}
 
 

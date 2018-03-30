@@ -23,6 +23,7 @@ package uk.ac.babraham.SeqMonk.DataTypes;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 /**
@@ -138,9 +139,9 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForChromsome(uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome)
 	 */
-	public long [] getReadsForChromosome(Chromosome c) {
+	public ReadsWithCounts getReadsForChromosome(Chromosome c) {
 		
-		long [][] readsFromAllChrs = new long[dataSets.length][];
+		ReadsWithCounts [] readsFromAllChrs = new ReadsWithCounts[dataSets.length];
 
 //		int totalCount = 0;
 		
@@ -148,30 +149,8 @@ public class DataGroup extends DataStore implements HiCDataStore {
 			readsFromAllChrs[i] = dataSets[i].getReadsForChromosome(c);
 		}
 		
-		return LongSetSorter.sortLongSets(readsFromAllChrs);
+		return new ReadsWithCounts(readsFromAllChrs);
 		
-//		int [] currentIndices = new int[dataSets.length];
-//		
-//		long [] returnedReads = new long[totalCount];
-//		
-//		for (int i=0;i<returnedReads.length;i++) {	
-//			// Add the lowest read to the full set
-//			int lowestIndex = -1;
-//			long lowestValue = 0;
-//			for (int j=0;j<currentIndices.length;j++) {
-//				if (currentIndices[j] == readsFromAllChrs[j].length) continue; // Skip datasets we've already emptied
-//				if (lowestValue == 0 || SequenceRead.compare(readsFromAllChrs[j][currentIndices[j]],lowestValue) < 0) {
-//					lowestIndex = j;
-//					lowestValue = readsFromAllChrs[j][currentIndices[j]];
-//				}
-//			}
-//			
-//			returnedReads[i] = lowestValue;
-//			currentIndices[lowestIndex]++;
-//			
-//		}
-//		
-//		return returnedReads;
 	}
 
 	/* (non-Javadoc)

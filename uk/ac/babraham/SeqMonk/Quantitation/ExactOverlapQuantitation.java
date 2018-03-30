@@ -35,6 +35,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.QuantitationStrandType;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;
@@ -289,41 +290,8 @@ public class ExactOverlapQuantitation extends Quantitation {
 				
 				// We'll fetch all reads for this chr and then do a count per position
 				
-				long [] reads = data[d].getReadsForChromosome(chrs[c]);
-				
-				LongVector uniquePositions = new LongVector();
-				IntVector positionCounts = new IntVector();
-				
-				long currentRead = 0;
-				int currentCount = 0;
-				
-				for (int r=0;r<reads.length;r++) {
-					if (reads[r] == currentRead) currentCount++;
-					
-					else {
-						if (currentCount >  0) {
-							uniquePositions.add(currentRead);
-							positionCounts.add(currentCount);
-						}
-						currentRead = reads[r];
-						currentCount = 1;
-					}
-				}
-				
-				if (currentCount > 0) {
-					uniquePositions.add(currentRead);
-					positionCounts.add(currentCount);
-				}					
-				
-				reads = null;
-				
-				long [] positions = uniquePositions.toArray();
-				uniquePositions = null;
-				int [] counts = positionCounts.toArray();
-				positionCounts = null;
-				
-//				System.err.println("Found "+positions.length+" positions in "+data[d].name()+" on chr "+chrs[c].name());
-				
+				ReadsWithCounts reads = data[d].getReadsForChromosome(chrs[c]);
+								
 				quantitationType.resetLastRead();
 				
 				int startIndex = 0;
@@ -332,16 +300,16 @@ public class ExactOverlapQuantitation extends Quantitation {
 					
 					int rawCount = 0;
 					
-					for (int r=startIndex;r<positions.length;r++) {
-						if (SequenceRead.start(positions[r]) < thisChrProbes[p].start()) {
+					for (int r=startIndex;r<reads.reads.length;r++) {
+						if (SequenceRead.start(reads.reads[r]) < thisChrProbes[p].start()) {
 							startIndex = r;
 						}
 						
-						if (SequenceRead.start(positions[r]) > thisChrProbes[p].start()) break;
+						if (SequenceRead.start(reads.reads[r]) > thisChrProbes[p].start()) break;
 						
-						if (quantitationType.useRead(thisChrProbes[p], positions[r])) {
-							if (SequenceRead.start(positions[r])==thisChrProbes[p].start() && SequenceRead.end(positions[r])==thisChrProbes[p].end()) {
-								rawCount += counts[r];
+						if (quantitationType.useRead(thisChrProbes[p], reads.reads[r])) {
+							if (SequenceRead.start(reads.reads[r])==thisChrProbes[p].start() && SequenceRead.end(reads.reads[r])==thisChrProbes[p].end()) {
+								rawCount += reads.counts[r];
 							}
 						}
 					}

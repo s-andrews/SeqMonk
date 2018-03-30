@@ -28,6 +28,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Utilities.Features.FeatureMerging;
@@ -284,9 +285,9 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 			for (int c=0;c<chromosomes.length;c++) {
 				updateProgress("Quantitating "+stores[s].name()+" over "+chromosomes[c].name(), s+(stores.length*3), stores.length*4);
 
-				long [] reads = stores[s].getReadsForChromosome(chromosomes[c]);
-				for (int r=0;r<reads.length;r++) {
-					chromosomeBaseCounts[c][s] += SequenceRead.length(reads[r]);
+				ReadsWithCounts reads = stores[s].getReadsForChromosome(chromosomes[c]);
+				for (int r=0;r<reads.reads.length;r++) {
+					chromosomeBaseCounts[c][s] += SequenceRead.length(reads.reads[r])*reads.counts[r];
 				}
 			}
 

@@ -36,6 +36,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.NonThreadSafeIntCounter;
@@ -493,13 +494,13 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 		}
 	}
 
-	public long [] getReadsForChromosome(Chromosome c) {
+	public ReadsWithCounts getReadsForChromosome(Chromosome c) {
 		// This is sorted by the Hit Collection
-		return getHiCReadsForChromosome(c).getAllSourcePositions();
+		return new ReadsWithCounts(getHiCReadsForChromosome(c).getAllSourcePositions());
 	}
 	
 	public int getReadCountForChromosome (Chromosome c) {
-		return getReadsForChromosome(c).length;
+		return getReadsForChromosome(c).totalCount();
 	}
 
 

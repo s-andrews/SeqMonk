@@ -47,6 +47,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
@@ -465,20 +466,17 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 		// Go through one chromosome at a time.
 		Chromosome [] chrs = data.genome().getAllChromosomes();
 		for (int c=0;c<chrs.length;c++) {
-			long [] reads = set.getReadsForChromosome(chrs[c]);
-			p.println(chrs[c].name()+"\t"+reads.length);
-
-			long lastRead = 0;
-			int lastReadCount = 0;
+			ReadsWithCounts reads = set.getReadsForChromosome(chrs[c]);
+			p.println(chrs[c].name()+"\t"+reads.totalCount());
 			
-			for (int j=0;j<reads.length;j++) {
+			for (int j=0;j<reads.reads.length;j++) {
 
 				if (cancel) {
 					cancelled(p);
 					return false;
 				}
 
-				if ((j % (1+(reads.length/10))) == 0) {
+				if ((j % (1+(reads.reads.length/10))) == 0) {
 					Enumeration<ProgressListener> e2 = listeners.elements();
 					while (e2.hasMoreElements()) {
 						e2.nextElement().progressUpdated("Writing data for "+set.name(),index*chrs.length+c,indexTotal*chrs.length);
@@ -486,34 +484,8 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 
 				}
 
-				if (lastReadCount == 0 || reads[j] == lastRead) {
-					lastRead = reads[j];
-					++lastReadCount;
-				}
-				
-				else {
-					if (lastReadCount > 1) {
-						p.println(lastRead+"\t"+lastReadCount);
-					}
-					else if (lastReadCount == 1) {
-						p.println(lastRead);
-					}
-					else {
-						throw new IllegalStateException("Shouldn't have zero count ever, read is "+reads[j]+" last read is "+lastRead+" count is "+lastReadCount);
-					}
-					lastRead = reads[j];
-					lastReadCount = 1;
-				}
-			}
-			if (lastReadCount > 1) {
-				p.println(lastRead+"\t"+lastReadCount);
-			}
-			
-			// If there are no reads on a chromosome then this value could be zero
-			else if (lastReadCount == 1){
-				p.println(lastRead);
-			}
-			
+				p.println(reads.reads[j]+"\t"+reads.counts[j]);
+			}			
 		}
 		// Print a blank line after the last chromosome
 		p.println("");
