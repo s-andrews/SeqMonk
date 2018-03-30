@@ -35,6 +35,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
@@ -279,7 +280,7 @@ public class DataSet extends DataStore implements Runnable {
 
 		if (! isFinalised) finalise();
 
-		long [] allReads = getReadsForChromosome(p.chromosome());
+		long [] allReads = getReadsForChromosome(p.chromosome()).reads;
 
 		if (allReads.length == 0) return false;
 
@@ -487,7 +488,7 @@ public class DataSet extends DataStore implements Runnable {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForChromsome(uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome)
 	 */
-	public synchronized long [] getReadsForChromosome(Chromosome c) {
+	public synchronized ReadsWithCounts getReadsForChromosome(Chromosome c) {
 
 		if (! isFinalised) finalise();
 
@@ -499,14 +500,14 @@ public class DataSet extends DataStore implements Runnable {
 			// We used to have a check for whether we were caching, but that's gone
 			// now because they don't have the option to not cache any more.
 
-			return expandReadsAndCounts(lastCachedReads,lastCachedCounts);
+			return new ReadsWithCounts(lastCachedReads,lastCachedCounts);
 
 
 		}
 		else {
 			lastCachedReads = new long[0];
 			lastCachedCounts = new int[0];
-			return lastCachedReads;
+			return new ReadsWithCounts(lastCachedReads,lastCachedCounts);
 		}
 	}
 
@@ -575,7 +576,7 @@ public class DataSet extends DataStore implements Runnable {
 		if (! isFinalised) finalise();
 
 		if (readData.containsKey(c)) {
-			return getReadsForChromosome(c).length;
+			return getReadsForChromosome(c).totalCount();
 		}
 		else {
 			return 0;

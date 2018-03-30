@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
@@ -98,17 +99,19 @@ public class ReadLengthHistogramPlot extends JDialog implements ActionListener {
 	private float [] getReadLengths (DataStore d) {
 		float [] data = new float[d.getTotalReadCount()];
 		
-		int offset = 0;
+		int index = 0;
 		
 		Chromosome [] chrs = d.collection().genome().getAllChromosomes();
 
 		for (int c=0;c<chrs.length;c++) {
-			long [] reads = d.getReadsForChromosome(chrs[c]);
+			ReadsWithCounts reads = d.getReadsForChromosome(chrs[c]);
 
-			for (int r=0;r<reads.length;r++) {
-				data[offset+r] = SequenceRead.length(reads[r]);
+			for (int r=0;r<reads.reads.length;r++) {
+				for (int ct=0;ct<reads.counts[r];ct++) {
+					data[index] = SequenceRead.length(reads.reads[r]);
+					++index;
+				}
 			}
-			offset += reads.length;
 		}
 		
 		return data;

@@ -47,6 +47,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;
@@ -779,34 +780,43 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 
 	}
 
+	
+	// TODO: Report back ReadsWithCounts rather than flattening to a huge array.
 	private long [] getReadsFromDataStoreCollection (Chromosome c, DataStore [] stores, int strandOffset) {
 
-		long [][] allChrReads = new long[stores.length][];
+		ReadsWithCounts [] allChrReads = new ReadsWithCounts[stores.length];
 		for (int d=0;d<stores.length;d++) {
 			allChrReads[d] = stores[d].getReadsForChromosome(c);
 		}
+		
+		ReadsWithCounts mergedReadsCounts = new ReadsWithCounts(allChrReads);
 
-		int totalProbeReadCount = 0;
-		for (int i=0;i<allChrReads.length;i++) {
-			totalProbeReadCount += allChrReads[i].length;
-		}
+		int totalProbeReadCount = mergedReadsCounts.totalCount();
+
 		long [] mergedChrReads = new long[totalProbeReadCount];
 
 		int index = 0;
-		for (int i=0;i<allChrReads.length;i++) {
-			for (int j=0;j<allChrReads[i].length;j++) {
-				if (strandOffset == 0 || SequenceRead.strand(allChrReads[i][j]) == Location.UNKNOWN) {
-					mergedChrReads[index] = allChrReads[i][j];
+		for (int i=0;i<mergedReadsCounts.reads.length;i++) {
+			if (strandOffset == 0 || SequenceRead.strand(mergedReadsCounts.reads[i]) == Location.UNKNOWN) {
+				for (int j=0;j<mergedReadsCounts.counts[i];j++) {
+					mergedChrReads[index] = mergedReadsCounts.reads[i];
+					++index;
 				}
-				else if (SequenceRead.strand(allChrReads[i][j]) == Location.FORWARD) {
-					mergedChrReads[index] = SequenceRead.packPosition(Math.min(SequenceRead.start(allChrReads[i][j])+strandOffset,c.length()), Math.min(SequenceRead.end(allChrReads[i][j])+strandOffset,c.length()), SequenceRead.strand(allChrReads[i][j]));
-				}
-				else if (SequenceRead.strand(allChrReads[i][j]) == Location.REVERSE) {
-					mergedChrReads[index] = SequenceRead.packPosition(Math.max(SequenceRead.start(allChrReads[i][j])-strandOffset,1), Math.max(SequenceRead.end(allChrReads[i][j])-strandOffset,1), SequenceRead.strand(allChrReads[i][j]));
-				}
-				index++;
 			}
-			allChrReads[i] = null;
+			else if (SequenceRead.strand(mergedReadsCounts.reads[i]) == Location.FORWARD) {
+				long newValue = SequenceRead.packPosition(Math.min(SequenceRead.start(mergedReadsCounts.reads[i])+strandOffset,c.length()), Math.min(SequenceRead.end(mergedReadsCounts.reads[i])+strandOffset,c.length()), SequenceRead.strand(mergedReadsCounts.reads[i]));
+				for (int j=0;j<mergedReadsCounts.counts[i];j++) {
+					mergedChrReads[index] = newValue;
+					index++;
+				}
+			}
+			else if (SequenceRead.strand(mergedReadsCounts.reads[i]) == Location.REVERSE) {
+				long newValue = SequenceRead.packPosition(Math.max(SequenceRead.start(mergedReadsCounts.reads[i])-strandOffset,1), Math.max(SequenceRead.end(mergedReadsCounts.reads[i])-strandOffset,1), SequenceRead.strand(mergedReadsCounts.reads[i]));
+				for (int j=0;j<mergedReadsCounts.counts[i];j++) {
+					mergedChrReads[index] = newValue;
+					++index;
+				}
+			}
 		}
 
 		return mergedChrReads;
