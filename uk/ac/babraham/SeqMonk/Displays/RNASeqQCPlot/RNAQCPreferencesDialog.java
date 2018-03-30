@@ -207,7 +207,7 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 			}
 			
 			String rRNAFeatures = null;
-			if (measureTranscriptsBox.isSelected()) {
+			if (measureRRNABox.isSelected()) {
 				rRNAFeatures = (String)rRNAFeaturesBox.getSelectedItem();
 			}
 			

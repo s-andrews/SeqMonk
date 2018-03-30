@@ -107,8 +107,12 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 
 		updateProgress("Getting features", 0, 1);
 		this.geneFeatures = collection.genome().annotationCollection().getFeaturesForType(geneFeatureName);
-		this.transcriptFeatures = collection.genome().annotationCollection().getFeaturesForType(transcriptFeatureName);
-		this.rRNAFeatures = collection.genome().annotationCollection().getFeaturesForType(rRNAFeatureName);
+		if (transcriptFeatureName != null) {
+			this.transcriptFeatures = collection.genome().annotationCollection().getFeaturesForType(transcriptFeatureName);
+		}
+		if (rRNAFeatureName != null) {
+			this.rRNAFeatures = collection.genome().annotationCollection().getFeaturesForType(rRNAFeatureName);
+		}
 
 		updateProgress("Getting merged genes", 0, 1);
 		// Get the merged set of gene locations
@@ -122,7 +126,11 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 
 		updateProgress("Getting merged transcripts", 0, 1);
 		// Get the merged set of transcript features
-		Feature [] mergedTranscripts = FeatureMerging.getNonOverlappingLocationsForFeatures(transcriptFeatures, true);
+		Feature [] mergedTranscripts = null;
+
+		if (transcriptFeatureName != null) {
+			mergedTranscripts = FeatureMerging.getNonOverlappingLocationsForFeatures(transcriptFeatures, true);
+		}
 
 		if (cancel) {
 			progressCancelled();
@@ -132,7 +140,7 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 
 		// Quantitate the genes.
 		long [] geneBaseCounts = new long[stores.length];
-		
+
 		int [] measuredGenesCounts = new int [stores.length];
 
 		for (int s=0;s<stores.length;s++) {
@@ -158,7 +166,7 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 				if (reads.length > 0) {
 					++measuredGenesCounts[s];
 				}
-				
+
 				for (int r=0;r<reads.length;r++) {
 
 					if (cancel) {
@@ -176,90 +184,98 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 		}
 
 		// Quantitate the transcripts
-		long [] transcriptBaseCounts = new long[stores.length];
-		long [] transcriptSameStrandBaseCounts = new long[stores.length];
-		long [] transcriptOpposingStrandBaseCounts = new long[stores.length];
+		long [] transcriptBaseCounts = null;
+		long [] transcriptSameStrandBaseCounts = null;
+		long [] transcriptOpposingStrandBaseCounts = null;
+		
+		if (transcriptFeatureName != null) {
+			transcriptBaseCounts = new long[stores.length];
+			transcriptSameStrandBaseCounts = new long[stores.length];
+			transcriptOpposingStrandBaseCounts = new long[stores.length];
 
-		for (int s=0;s<stores.length;s++) {
-			updateProgress("Quantitating "+stores[s].name()+" over transcripts", s+stores.length, stores.length*4);
+			for (int s=0;s<stores.length;s++) {
+				updateProgress("Quantitating "+stores[s].name()+" over transcripts", s+stores.length, stores.length*4);
 
-			String lastChr = "";
-			Chromosome lastChrObject = null;
+				String lastChr = "";
+				Chromosome lastChrObject = null;
 
 
-			for (int f=0;f<mergedTranscripts.length;f++) {
+				for (int f=0;f<mergedTranscripts.length;f++) {
 
-				//				if (f%1000 == 0) {
-				//					updateProgress("Quantitating "+stores[s].name()+" over "+mergedTranscripts.length+" genes", f, mergedTranscripts.length);
-				//				}
+					//				if (f%1000 == 0) {
+					//					updateProgress("Quantitating "+stores[s].name()+" over "+mergedTranscripts.length+" genes", f, mergedTranscripts.length);
+					//				}
 
-				if (mergedTranscripts[f].chromosomeName() != lastChr) {
-					lastChr = mergedTranscripts[f].chromosomeName();
-					lastChrObject = collection.genome().getExactChromsomeNameMatch(lastChr);
+					if (mergedTranscripts[f].chromosomeName() != lastChr) {
+						lastChr = mergedTranscripts[f].chromosomeName();
+						lastChrObject = collection.genome().getExactChromsomeNameMatch(lastChr);
+					}
+
+
+					long [] reads = stores[s].getReadsForProbe(new Probe(lastChrObject, mergedTranscripts[f].location().packedPosition()));
+
+					for (int r=0;r<reads.length;r++) {
+
+						if (cancel) {
+							progressCancelled();
+							return;
+						}
+
+						// Get the length of the overlap
+						int overlap = 1 + (Math.min(SequenceRead.end(reads[r]),mergedTranscripts[f].location().end()) - Math.max(SequenceRead.start(reads[r]),mergedTranscripts[f].location().start()));
+						transcriptBaseCounts[s] += overlap;
+						if (SequenceRead.strand(reads[r]) == mergedTranscripts[f].location().strand()) {
+							transcriptSameStrandBaseCounts[s] += overlap;
+						}
+						else {
+							transcriptOpposingStrandBaseCounts[s] += overlap;
+						}
+					}
+
 				}
-
-
-				long [] reads = stores[s].getReadsForProbe(new Probe(lastChrObject, mergedTranscripts[f].location().packedPosition()));
-
-				for (int r=0;r<reads.length;r++) {
-
-					if (cancel) {
-						progressCancelled();
-						return;
-					}
-
-					// Get the length of the overlap
-					int overlap = 1 + (Math.min(SequenceRead.end(reads[r]),mergedTranscripts[f].location().end()) - Math.max(SequenceRead.start(reads[r]),mergedTranscripts[f].location().start()));
-					transcriptBaseCounts[s] += overlap;
-					if (SequenceRead.strand(reads[r]) == mergedTranscripts[f].location().strand()) {
-						transcriptSameStrandBaseCounts[s] += overlap;
-					}
-					else {
-						transcriptOpposingStrandBaseCounts[s] += overlap;
-					}
-				}
-
 			}
 		}
 
 		// Quantitate the rRNA
-		long [] rRNABaseCounts = new long[stores.length];
+		long [] rRNABaseCounts = null;
+		if (rRNAFeatureName != null) {
+			rRNABaseCounts = new long[stores.length];
 
-		for (int s=0;s<stores.length;s++) {
-			updateProgress("Quantitating "+stores[s].name()+" over rRNAs", s+(stores.length*2), stores.length*4);
+			for (int s=0;s<stores.length;s++) {
+				updateProgress("Quantitating "+stores[s].name()+" over rRNAs", s+(stores.length*2), stores.length*4);
 
-			String lastChr = "";
-			Chromosome lastChrObject = null;
-
-
-			for (int f=0;f<rRNAFeatures.length;f++) {
-
-				//				if (f%1000 == 0) {
-				//					updateProgress("Quantitating "+stores[s].name()+" over "+mergedrRNAs.length+" genes", f, mergedTranscripts.length);
-				//				}
-
-				if (rRNAFeatures[f].chromosomeName() != lastChr) {
-					lastChr = rRNAFeatures[f].chromosomeName();
-					lastChrObject = collection.genome().getExactChromsomeNameMatch(lastChr);
-				}
+				String lastChr = "";
+				Chromosome lastChrObject = null;
 
 
-				long [] reads = stores[s].getReadsForProbe(new Probe(lastChrObject, rRNAFeatures[f].location().packedPosition()));
+				for (int f=0;f<rRNAFeatures.length;f++) {
 
-				for (int r=0;r<reads.length;r++) {
+					//				if (f%1000 == 0) {
+					//					updateProgress("Quantitating "+stores[s].name()+" over "+mergedrRNAs.length+" genes", f, mergedTranscripts.length);
+					//				}
 
-					if (cancel) {
-						progressCancelled();
-						return;
+					if (rRNAFeatures[f].chromosomeName() != lastChr) {
+						lastChr = rRNAFeatures[f].chromosomeName();
+						lastChrObject = collection.genome().getExactChromsomeNameMatch(lastChr);
 					}
 
-					// Get the length of the overlap
-					int overlap = 1 + (Math.min(SequenceRead.end(reads[r]),rRNAFeatures[f].location().end()) - Math.max(SequenceRead.start(reads[r]),rRNAFeatures[f].location().start()));
-					rRNABaseCounts[s] += overlap;
-				} 
+
+					long [] reads = stores[s].getReadsForProbe(new Probe(lastChrObject, rRNAFeatures[f].location().packedPosition()));
+
+					for (int r=0;r<reads.length;r++) {
+
+						if (cancel) {
+							progressCancelled();
+							return;
+						}
+
+						// Get the length of the overlap
+						int overlap = 1 + (Math.min(SequenceRead.end(reads[r]),rRNAFeatures[f].location().end()) - Math.max(SequenceRead.start(reads[r]),rRNAFeatures[f].location().start()));
+						rRNABaseCounts[s] += overlap;
+					} 
+				}
 			}
 		}
-
 
 		// Quantitate the chromosomes
 		long [][] chromosomeBaseCounts = new long[chromosomes.length][stores.length];
@@ -292,29 +308,35 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 
 		result.addPercentageSet("Percent in Gene", percentInGene);
 
-		double [] percentInTranscript = new double[stores.length];
-		for (int i=0;i<geneBaseCounts.length;i++) {
-			percentInTranscript[i] = (transcriptBaseCounts[i]/(double)geneBaseCounts[i])*100;
-			if (percentInTranscript[i] > 100) {
-				progressWarning("Percent in exons was >100 for "+stores[i]);
-				percentInTranscript[i] = 100;
+		double [] percentInTranscript = null;
+		if (transcriptFeatureName != null) {
+			percentInTranscript = new double[stores.length];
+			for (int i=0;i<geneBaseCounts.length;i++) {
+				percentInTranscript[i] = (transcriptBaseCounts[i]/(double)geneBaseCounts[i])*100;
+				if (percentInTranscript[i] > 100) {
+					progressWarning("Percent in exons was >100 for "+stores[i]);
+					percentInTranscript[i] = 100;
+				}
 			}
+			result.addPercentageSet("Percent in exons", percentInTranscript);
 		}
 
-		result.addPercentageSet("Percent in exons", percentInTranscript);
 
-		double [] percentInrRNA = new double[stores.length];
-		for (int i=0;i<rRNABaseCounts.length;i++) {
-			percentInrRNA[i] = (rRNABaseCounts[i]/(double)stores[i].getTotalReadLength())*100;
-			if (percentInrRNA[i] > 100) {
-				progressWarning("Percent in rRNA was >100 for "+stores[i]);
-				percentInrRNA[i] = 100;
+		double [] percentInrRNA = null;
+		if (rRNAFeatureName != null) {
+			percentInrRNA = new double[stores.length];
+			for (int i=0;i<rRNABaseCounts.length;i++) {
+				percentInrRNA[i] = (rRNABaseCounts[i]/(double)stores[i].getTotalReadLength())*100;
+				if (percentInrRNA[i] > 100) {
+					progressWarning("Percent in rRNA was >100 for "+stores[i]);
+					percentInrRNA[i] = 100;
+				}
 			}
+
+			result.addPercentageSet("Percent in rRNA", percentInrRNA);
 		}
-		
-		result.addPercentageSet("Percent in rRNA", percentInrRNA);
-		
-		
+
+
 		double [] percentageMeasuredGenes = new double[stores.length];
 		for (int i=0;i<measuredGenesCounts.length;i++) {
 			percentageMeasuredGenes[i] = measuredGenesCounts[i] /(double)mergedGenes.length*100;
@@ -329,14 +351,14 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 		for (int i=0;i<stores.length;i++) {
 			if (stores[i].getTotalReadLength() > maxLength) maxLength = stores[i].getTotalReadLength();
 		}
-		
+
 		for (int i=0;i<stores.length;i++) {
 			percentageOfMaxCoverage[i] = (stores[i].getTotalReadLength()*100d)/maxLength;
 		}
-		
+
 		result.addPercentageSet("Percentage of max data size", percentageOfMaxCoverage);
 
-		
+
 
 		double [][] percentInChromosomes = new double[chromosomes.length][stores.length];
 		for (int c=0;c<percentInChromosomes.length;c++) {
@@ -355,18 +377,19 @@ public class RNAQCCalcualtor implements Cancellable, Runnable {
 		}
 
 
-
-		double [] percentOnSenseStrand = new double[stores.length];
-		for (int i=0;i<transcriptBaseCounts.length;i++) {
-			percentOnSenseStrand[i] = (transcriptSameStrandBaseCounts[i]/(double)transcriptBaseCounts[i])*100;
-			if (percentOnSenseStrand[i] > 100) {
-				progressWarning("Percent on sense strand was >100 for "+stores[i]);
-				percentOnSenseStrand[i] = 100;
+		double [] percentOnSenseStrand = null;
+		if (transcriptFeatureName != null) {
+			percentOnSenseStrand = new double[stores.length];
+			for (int i=0;i<transcriptBaseCounts.length;i++) {
+				percentOnSenseStrand[i] = (transcriptSameStrandBaseCounts[i]/(double)transcriptBaseCounts[i])*100;
+				if (percentOnSenseStrand[i] > 100) {
+					progressWarning("Percent on sense strand was >100 for "+stores[i]);
+					percentOnSenseStrand[i] = 100;
+				}
 			}
+
+			result.addPercentageSet("Percent on sense strand", percentOnSenseStrand);
 		}
-
-
-		result.addPercentageSet("Percent on sense strand", percentOnSenseStrand);
 
 		progressComplete(result);
 	}
