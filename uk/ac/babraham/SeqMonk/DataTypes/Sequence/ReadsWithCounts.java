@@ -21,6 +21,8 @@
 
 package uk.ac.babraham.SeqMonk.DataTypes.Sequence;
 
+import java.io.Serializable;
+
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 
@@ -30,7 +32,7 @@ import uk.ac.babraham.SeqMonk.Utilities.LongVector;
  * @author andrewss
  *
  */
-public class ReadsWithCounts {
+public class ReadsWithCounts implements Serializable {
 
 	public long [] reads;
 	public int [] counts;
@@ -114,6 +116,7 @@ public class ReadsWithCounts {
 		
 		reads = tempreads.toArray();
 		counts = tempcounts.toArray();
+		
 	}
 	
 	public int totalCount () {
