@@ -147,10 +147,13 @@ public class DESeqFilter extends ProbeFilter {
 		// We need to make a temporary directory, save the data into it, write out the R script
 		// and then run it an collect the list of results, then clean up.
 
-		// Make up the list of DataStores in each replicate set		
-		DataStore [] fromStores = replicateSets[0].dataStores();
-		DataStore [] toStores = replicateSets[1].dataStores();
-
+		// Make up the list of DataStores in each replicate set	
+		DataStore [][] storeGroups = new DataStore[replicateSets.length][];
+		
+		for (int r=0;r<replicateSets.length;r++) {
+			storeGroups[r] = replicateSets[r].dataStores();
+		}
+		
 		File tempDir;
 		try {
 
@@ -183,13 +186,13 @@ public class DESeqFilter extends ProbeFilter {
 			}
 
 			StringBuffer sb = new StringBuffer();
-			for (int i=0;i<fromStores.length;i++) {
-				if (i>0) sb.append(",");
-				sb.append("\"from\"");
-			}
-			for (int i=0;i<toStores.length;i++) {
-				sb.append(",");
-				sb.append("\"to\"");
+			for (int s=0;s<storeGroups.length;s++) {
+				for (int i=0;i<storeGroups[s].length;i++) {
+					if (!(s==0 && i==0)) {
+						sb.append(",");
+					}
+					sb.append("\"group"+s+"\"");
+				}
 			}
 			template.setValue("CONDITIONS", sb.toString());
 			template.setValue("PVALUE", ""+cutoff);
@@ -207,15 +210,15 @@ public class DESeqFilter extends ProbeFilter {
 
 			sb = new StringBuffer();
 			sb.append("probe");
-			for (int i=0;i<fromStores.length;i++) {
-				sb.append("\t");
-				sb.append("from");
-				sb.append(i);
-			}
-			for (int i=0;i<toStores.length;i++) {
-				sb.append("\t");
-				sb.append("to");
-				sb.append(i);
+			
+			for (int s=0;s<storeGroups.length;s++) {
+				for (int i=0;i<storeGroups[s].length;i++) {
+					sb.append("\t");
+					sb.append("group");
+					sb.append(s);
+					sb.append("_");
+					sb.append(i);
+				}
 			}
 
 			pr.println(sb.toString());
@@ -233,25 +236,18 @@ public class DESeqFilter extends ProbeFilter {
 				}
 				sb = new StringBuffer();
 				sb.append(p);
-				for (int i=0;i<fromStores.length;i++) {
-					sb.append("\t");
-					value = fromStores[i].getValueForProbe(probes[p]);
-					if (value != (int)value) {
-						progressExceptionReceived(new IllegalArgumentException("Inputs to the DESeq filter MUST be raw, incorrected counts, not things like "+value));
-						pr.close();
-						return;
+				for (int s=0;s<storeGroups.length;s++) {
+					for (int i=0;i<storeGroups[s].length;i++) {
+
+						sb.append("\t");
+						value = storeGroups[s][i].getValueForProbe(probes[p]);
+						if (value != (int)value) {
+							progressExceptionReceived(new IllegalArgumentException("Inputs to the DESeq filter MUST be raw, incorrected counts, not things like "+value));
+							pr.close();
+							return;
+						}
+						sb.append(value);
 					}
-					sb.append(value);
-				}
-				for (int i=0;i<toStores.length;i++) {
-					sb.append("\t");
-					value = toStores[i].getValueForProbe(probes[p]);
-					if (value != (int)value) {
-						progressExceptionReceived(new IllegalArgumentException("Inputs to the DESeq filter MUST be raw, incorrected counts, not things like "+value));
-						pr.close();
-						return;
-					}
-					sb.append(value);
 				}
 
 				pr.println(sb.toString());

@@ -16,7 +16,11 @@ library("DESeq2")
 count.data.set <- DESeqDataSetFromMatrix(countData=just.raw.counts, colData=column.data,design= ~ source)
 
 # Perform the analysis.
-count.data.set <- DESeq(count.data.set)
+if(length(levels(column.data$source))>2) {
+  count.data.set <- DESeq(count.data.set, test="LRT", full= ~source, reduced= ~1)
+}else {
+  count.data.set <- DESeq(count.data.set)
+}
 
 # Retrieve the full set of results.
 binomial.result <- results(count.data.set,independentFiltering=%%INDEPENDENT%%)
