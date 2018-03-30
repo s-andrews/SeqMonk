@@ -34,6 +34,7 @@ import uk.ac.babraham.SeqMonk.Utilities.LongVector;
  */
 public class ReadsWithCounts implements Serializable {
 
+	private static final long serialVersionUID = 137753900274L;
 	public long [] reads;
 	public int [] counts;
 	
@@ -44,6 +45,9 @@ public class ReadsWithCounts implements Serializable {
 	 * @param counts
 	 */
 	public ReadsWithCounts (long [] reads, int [] counts) {
+		if (reads == null || counts == null) {
+			throw new IllegalStateException("Unexpected null: Reads ="+reads+" counts="+counts);
+		}
 		this.reads = reads;
 		this.counts = counts;
 	}
@@ -56,7 +60,21 @@ public class ReadsWithCounts implements Serializable {
 	 * @param reads
 	 */
 	public ReadsWithCounts (long [] reads) {
+		LongVector rv = new LongVector();
+		IntVector cv = new IntVector();
 		
+		for (int i=0;i<reads.length;i++) {
+			if (i>0 && reads[i-1]==reads[i]) {
+				cv.increaseLastBy(1);
+			}
+			else {
+				rv.add(reads[i]);
+				cv.add(1);
+			}
+		}
+		
+		this.reads = rv.toArray();
+		this.counts = cv.toArray();
 	}
 	
 	/**
