@@ -123,6 +123,7 @@ public class DESeqFilter extends ProbeFilter {
 
 		if (validRepSetCount < 2) {
 			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>We didn't find enough data to run this filter.<br>You need at least 2 replicate sets with at least 2 data stores in each to run this.</html>", "Not enough data", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
 
 
@@ -346,7 +347,7 @@ public class DESeqFilter extends ProbeFilter {
 	 */
 	@Override
 	public boolean isReady() {
-		if (replicateSets.length != 2) return false;
+		if (replicateSets.length < 2) return false;
 
 		if (cutoff == null || cutoff > 1 || cutoff < 0) return false;
 
