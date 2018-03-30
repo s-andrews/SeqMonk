@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -51,7 +52,9 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 	private DataStore [] stores;
 	private JComboBox geneFeaturesBox;
 	private JComboBox transcriptFeaturesBox;
+	private JCheckBox measureTranscriptsBox;
 	private JComboBox rRNAFeaturesBox;
+	private JCheckBox measureRRNABox;
 	private JList chromosomeList;
 	private DataCollection collection;
 	
@@ -76,7 +79,7 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 		gbc.gridx=1;
 		gbc.gridy=1;
 		
-		choicePanel.add(new JLabel("Gene features"),gbc);
+		choicePanel.add(new JLabel("Measure Genes"),gbc);
 		gbc.gridx++;
 		
 		geneFeaturesBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
@@ -92,7 +95,14 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 		gbc.gridy++;
 		gbc.gridx=1;
 
-		choicePanel.add(new JLabel("Transcript features"),gbc);
+		measureTranscriptsBox = new JCheckBox("Measure Transcripts",true);
+		choicePanel.add(measureTranscriptsBox,gbc);
+		measureTranscriptsBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				transcriptFeaturesBox.setEnabled(measureTranscriptsBox.isSelected());
+			}
+		});
 		gbc.gridx++;
 		
 		transcriptFeaturesBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
@@ -103,12 +113,26 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 				break;
 			}
 		}
+		
+		if (!transcriptFeaturesBox.getSelectedItem().equals("mRNA")) {
+			measureTranscriptsBox.setSelected(false);
+			transcriptFeaturesBox.setEnabled(false);
+		}
+		
 		choicePanel.add(transcriptFeaturesBox,gbc);
 		
 		gbc.gridy++;
 		gbc.gridx=1;
 
-		choicePanel.add(new JLabel("rRNA Feautres"),gbc);
+		
+		measureRRNABox = new JCheckBox("Measure rRNA",true);
+		choicePanel.add(measureRRNABox,gbc);
+		measureRRNABox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rRNAFeaturesBox.setEnabled(measureRRNABox.isSelected());
+			}
+		});
 		gbc.gridx++;
 		
 		rRNAFeaturesBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
@@ -119,6 +143,12 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 				break;
 			}
 		}
+		
+		if (!rRNAFeaturesBox.getSelectedItem().equals("rRNA")) {
+			measureRRNABox.setSelected(false);
+			rRNAFeaturesBox.setEnabled(false);
+		}
+		
 		choicePanel.add(rRNAFeaturesBox,gbc);
 		
 		gbc.gridy++;
@@ -170,8 +200,16 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 		if (ae.getActionCommand().equals("plot")) {
 			
 			String geneFeatures = (String)geneFeaturesBox.getSelectedItem();
-			String transcriptFeatures = (String)transcriptFeaturesBox.getSelectedItem();
-			String rRNAFeatures = (String)rRNAFeaturesBox.getSelectedItem();
+			String transcriptFeatures = null;
+			
+			if (measureTranscriptsBox.isSelected()) {
+				transcriptFeatures= (String)transcriptFeaturesBox.getSelectedItem();
+			}
+			
+			String rRNAFeatures = null;
+			if (measureTranscriptsBox.isSelected()) {
+				rRNAFeatures = (String)rRNAFeaturesBox.getSelectedItem();
+			}
 			
 			Object [] selectedChromosomes = chromosomeList.getSelectedValues();
 			
