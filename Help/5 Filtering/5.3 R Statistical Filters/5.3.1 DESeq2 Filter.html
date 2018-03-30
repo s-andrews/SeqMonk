@@ -23,9 +23,11 @@ in RNA-Seq workflows, but can actually be applied to many different experiment
 types where the underlying data is a set of read counts.
 </p>
 
-<p>The filter allows you to select two replicate sets with at least two data stores
+<p>The filter allows you to select two or more replicate sets with at least two data stores
 in each and will identify probes whose representation in the two sets differs
-significantly.</p>
+significantly. If exactly two replicate sets are selected then the standard DESeq
+workflow using a Wald test is performed. For more than 2 groups the DESeq 
+Liklihood Ratio Test is used to identify differences between any groups.</p>
 
 <p>For this filter to run correctly your data must fulfil two criteria</p>
 
