@@ -47,7 +47,9 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.QuantitationStrandType;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
+import uk.ac.babraham.SeqMonk.Displays.Report.ReportTableDialog;
 import uk.ac.babraham.SeqMonk.Pipelines.Pipeline;
+import uk.ac.babraham.SeqMonk.Reports.Report;
 
 /**
  * The RPKM pipeline is used for the quantitation of RNA-Seq data.  It takes in a 
@@ -400,8 +402,6 @@ public class RNASeqPipeline extends Pipeline {
 		}
 
 
-
-
 		// If we're correcting for DNA contamination we need to work out the average density of
 		// reads in intergenic regions
 		float [] dnaDensityPerKb = new float[data.length];
@@ -549,8 +549,6 @@ public class RNASeqPipeline extends Pipeline {
 		for (int i=0;i<modalDuplicationLevels.length;i++) {
 			System.err.println("For "+data[i].name()+" duplication was "+modalDuplicationLevels[i]);
 		}
-		
-	
 
 
 		// Having made probes we now need to quantitate them.  We'll fetch the
@@ -720,6 +718,45 @@ public class RNASeqPipeline extends Pipeline {
 
 		collection().probeSet().setCurrentQuantitation(getQuantitationDescription(mergeTranscripts,applyTranscriptLengthCorrection,correctDNAContamination,logTransform,rawCounts));
 
+		// If we estimated any parameters let's report them.
+		if (correctDNAContamination || correctDuplication) {
+			float [] dna = null;
+			if (correctDNAContamination) {
+				dna = dnaDensityPerKb;
+			}
+			int [] dup = null;
+			if (correctDuplication) {
+				dup = modalDuplicationLevels;
+			}
+			
+			RNASeqParametersModel model = new RNASeqParametersModel(data, dna, dup);
+			
+			ReportTableDialog report = new ReportTableDialog(SeqMonkApplication.getInstance(),new Report(null,null) {
+				
+				@Override
+				public void run() {}
+				
+				@Override
+				public String name() {
+					return "RNA-Seq parameter";
+				}
+				
+				@Override
+				public boolean isReady() {
+					return true;
+				}
+				
+				@Override
+				public JPanel getOptionsPanel() {
+					return null;
+				}
+				
+				@Override
+				public void generateReport() {}
+			},model);
+			
+		}
+		
 		quantitatonComplete();
 
 	}
