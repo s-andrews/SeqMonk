@@ -116,16 +116,6 @@ public class RNASeqPipeline extends Pipeline {
 				}
 			}
 			
-			if (goodNames) {
-				System.err.println("Names are good");
-			}
-			if (geneNames) {
-				System.err.println("Gene names present");
-			}
-			if (geneIDs) {
-				System.err.println("Gene IDs present");
-			}
-
 			if (goodNames || geneNames || geneIDs) {
 				Hashtable<String, FeatureGroup> groupedNames = new Hashtable<String, FeatureGroup>();
 
@@ -471,12 +461,7 @@ public class RNASeqPipeline extends Pipeline {
 			}
 
 		}
-		
-		for (int i=0;i<dnaDensityPerKb.length;i++) {
-			System.err.println("For "+data[i].name()+" dna/kb was "+dnaDensityPerKb[i]);
-		}
-		
-		
+				
 		// If we're correcting for duplication we need to work out the modal count depth in 
 		// intergenic regions
 		int [] modalDuplicationLevels = new int[data.length];
@@ -545,11 +530,6 @@ public class RNASeqPipeline extends Pipeline {
 
 		}
 		
-	
-		for (int i=0;i<modalDuplicationLevels.length;i++) {
-			System.err.println("For "+data[i].name()+" duplication was "+modalDuplicationLevels[i]);
-		}
-
 
 		// Having made probes we now need to quantitate them.  We'll fetch the
 		// probes overlapping each sub-feature and then aggregate these together
