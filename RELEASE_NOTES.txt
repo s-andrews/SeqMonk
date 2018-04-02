@@ -1,3 +1,26 @@
+RELEASE NOTES FOR SeqMonk v1.41.0
+---------------------------------
+This release adds some new functionality, but also tidies up a lot of existing
+features, making them work more smoothly.
+
+- Added a QQ plot
+
+- Improved the options and multiple testing correction in the logistic
+  regression filter.
+  
+- Fixed a slowness issue when working with hundreds of samples.
+
+- Added a mechanism to allow projects to update to newer versions of
+  core annotations in the same assembly.
+  
+- Added a fix for the RNA-Seq QC plot when there isn't a rRNA track in
+  the annotation.
+  
+- Modified the DESeq filter to allow multiple group comparisons by using
+  the Likelihood ratio test.
+  
+- Report the parameters estimated by the RNA-Seq pipeline.
+
 RELEASE NOTES FOR SeqMonk v1.40.1
 ---------------------------------
 This is a bugfix release of seqmonk which adds some optimisations to the 
