@@ -269,7 +269,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					totalFromMeth += fromMethCounts[i];
 					totalFrom += fromMethCounts[i];
 					totalFrom += fromUnmethCounts[i];
-					if (fromMethCounts[i] >0 || fromUnmethCounts[i]>0) {
+					if (fromMethCounts[i] + fromUnmethCounts[i] >= minObservations) {
 						++validFrom;
 					}
 				}
@@ -279,12 +279,14 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					totalToMeth += toMethCounts[i];
 					totalTo += toMethCounts[i];
 					totalTo += toUnmethCounts[i];
-					if (toMethCounts[i] >0 || toUnmethCounts[i]>0) {
+					if (toMethCounts[i] + toUnmethCounts[i] >= minObservations) {
 						++validTo;
 					}
 				}
 
-				if (validFrom < minObservations || validTo < minObservations) {
+				// We're going to be quite strict in saying that we need to
+				// have enough data in all stores to go ahead and do the test.
+				if (validFrom < fromStores.length || validTo < toStores.length) {
 					// We don't have enough data to measure this one
 					continue;
 				}
@@ -327,6 +329,12 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			}				
 
 			pr.close();
+			
+			// Sanity check to make sure we have something to work with.
+			if (numberOfTestsToCorrectBy == 0) {
+				progressExceptionReceived(new IllegalStateException("No probes had enough data to test."));
+			}
+			
 			
 			// Now we can complete the template 
 			
