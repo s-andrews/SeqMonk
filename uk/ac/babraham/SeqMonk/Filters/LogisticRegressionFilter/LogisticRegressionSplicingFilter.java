@@ -333,12 +333,12 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 				// If we get here then we're OK to use this probe pair
 
 				for (int i=0;i<fromProbe1Counts.length;i++) {
-					pr.println(p+"\tfrom\tfrom"+i+"\tmeth\t"+fromProbe1Counts[i]);
-					pr.println(p+"\tfrom\tfrom"+i+"\tunmeth\t"+fromProbe2Counts[i]);
+					pr.println(p+"\tfrom\t"+i+"\tmeth\t"+fromProbe1Counts[i]);
+					pr.println(p+"\tfrom\t"+i+"\tunmeth\t"+fromProbe2Counts[i]);
 				}
 				for (int i=0;i<toProbe1Counts.length;i++) {
-					pr.println(p+"\tto\tto"+i+"\tmeth\t"+toProbe1Counts[i]);
-					pr.println(p+"\tto\tto"+i+"\tunmeth\t"+toProbe2Counts[i]);
+					pr.println(p+"\tto\t"+i+"\tmeth\t"+toProbe1Counts[i]);
+					pr.println(p+"\tto\t"+i+"\tunmeth\t"+toProbe2Counts[i]);
 				}
 
 			}				

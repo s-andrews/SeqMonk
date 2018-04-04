@@ -318,12 +318,12 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				// If we get here then we're OK to use this probe
 
 				for (int i=0;i<fromMethCounts.length;i++) {
-					pr.println(p+"\tfrom\tfrom"+i+"\tmeth\t"+fromMethCounts[i]);
-					pr.println(p+"\tfrom\tfrom"+i+"\tunmeth\t"+fromUnmethCounts[i]);
+					pr.println(p+"\tfrom\t"+i+"\tmeth\t"+fromMethCounts[i]);
+					pr.println(p+"\tfrom\t"+i+"\tunmeth\t"+fromUnmethCounts[i]);
 				}
 				for (int i=0;i<toMethCounts.length;i++) {
-					pr.println(p+"\tto\tto"+i+"\tmeth\t"+toMethCounts[i]);
-					pr.println(p+"\tto\tto"+i+"\tunmeth\t"+toUnmethCounts[i]);
+					pr.println(p+"\tto\t"+i+"\tmeth\t"+toMethCounts[i]);
+					pr.println(p+"\tto\t"+i+"\tunmeth\t"+toUnmethCounts[i]);
 				}
 
 			}				

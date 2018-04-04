@@ -16,7 +16,9 @@ logistic.regression <- function (x) {
   
   fit <- glm(state ~ group+replicate, weights = count, data = x, family = binomial)
   
-  return (coef(summary(fit))[2,4])
+  #return (coef(summary(fit))[2,4])
+  return(coef(summary(fit))["groupto", "Pr(>|z|)"])
+  
 
 }
 
