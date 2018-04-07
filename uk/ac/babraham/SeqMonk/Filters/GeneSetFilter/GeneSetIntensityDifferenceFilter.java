@@ -105,7 +105,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 	private Double pValueLimit = 0.05;
 	
 	/* The default minimum absolute z-score that we use to filter the results */
-	private Double zScoreThreshold = 1d;
+	private Double zScoreThreshold = 0.5d;
 	
 	/* The mean values for each distribution slice */
 	protected float [][] customRegressionValues = null;
@@ -126,10 +126,10 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 	private int probesPerSet;
 	
 	/* minimum number of genes in geneset for it to be imported */
-	private int minGenesInSet = 50;
+	private int minGenesInSet = 10;
 	
 	/* maximum number of genes in geneset for it to be imported */
-	private int maxGenesInSet = 500;
+	private int maxGenesInSet = 50;
 
 	/* whether a geneSetFile has been selected - not sure how thoroughly the validity gets checked....*/ 
 //	private boolean validGeneSetFile = false;
@@ -762,12 +762,12 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 							return true;
 						}
 						else{
-							JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Minimum number of genes cannot be less than maximum.", "Adjust min/max genes", JOptionPane.ERROR_MESSAGE);
+//							JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Minimum number of genes cannot be less than maximum.", "Adjust min/max genes", JOptionPane.ERROR_MESSAGE);
 							return false;
 						}						
 					}
 					else{
-						JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "A valid gene set file needs to be selected.", "Gene set file required", JOptionPane.ERROR_MESSAGE);
+//						JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "A valid gene set file needs to be selected.", "Gene set file required", JOptionPane.ERROR_MESSAGE);
 						return false;
 					}
 				}	
@@ -1242,7 +1242,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			fileSelectPanel = new JPanel();
 			fileSelectPanel.setLayout(new BoxLayout(fileSelectPanel, BoxLayout.X_AXIS));
 			
-			geneSetFileLocation = new JTextField("            ");
+			geneSetFileLocation = new JTextField("            ",20);
 			if(validGeneSetFilepath != null){
 				geneSetFileLocation.setText(validGeneSetFilepath);
 			}			
@@ -1324,7 +1324,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		 * @see javax.swing.JComponent#getPreferredSize()
 		 */
 		public Dimension getPreferredSize () {
-			return new Dimension(700,500);
+			return new Dimension(800,500);
 		}
 
 		/* (non-Javadoc)
@@ -1375,10 +1375,10 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				else{
 					zScoreThreshold = d;					
 				}
-				System.err.println("adjusting the z-score threshold to " + zScoreThreshold);
+//				System.err.println("adjusting the z-score threshold to " + zScoreThreshold);
 			}
 			
-			if(f == minGenesInCategory){
+			else if(f == minGenesInCategory){
 				// bit messy
 				if(d == null || (d<1)){
 					minGenesInSet = 1;
@@ -1396,7 +1396,7 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				}
 			}											
 			else {
-				System.err.println("Unexpected text field "+f+" sending data to keylistener in differences filter");
+				throw new IllegalStateException("Unexpected text field "+f+" sending data to keylistener in differences filter");
 			}
 			optionsChanged();
 
@@ -1417,15 +1417,15 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			}
 
 			if(probeListRadioButton.isSelected()) {
-				minGenesInCategory.setBackground(Color.gray);
-				maxGenesInCategory.setBackground(Color.gray);
-				geneSetFileLocation.setBackground(Color.gray);
+				minGenesInCategory.setEnabled(false);
+				maxGenesInCategory.setEnabled(false);
+				geneSetFileLocation.setEnabled(false);
 				selectFileButton.setEnabled(false);								
 			}
 			else if(geneSetsFileRadioButton.isSelected() == false) {
-				minGenesInCategory.setBackground(Color.white);
-				maxGenesInCategory.setBackground(Color.white);
-				geneSetFileLocation.setBackground(Color.white);
+				minGenesInCategory.setEnabled(true);
+				maxGenesInCategory.setEnabled(true);
+				geneSetFileLocation.setEnabled(true);
 				selectFileButton.setEnabled(true);
 			}
 			optionsChanged();
