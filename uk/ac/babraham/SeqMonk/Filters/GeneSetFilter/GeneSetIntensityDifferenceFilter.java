@@ -521,6 +521,10 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			 */
 			for(int i=0; i<mappedGeneSets.length; i++){
 				
+				if (i%10 == 0) {
+					progressUpdated("Analysed "+i+" gene sets", i, mappedGeneSets.length);
+				}
+				
 				Probe [] geneSetProbes = mappedGeneSets[i].getProbes();
 
 				// to contain all the z-scores for the gene set
