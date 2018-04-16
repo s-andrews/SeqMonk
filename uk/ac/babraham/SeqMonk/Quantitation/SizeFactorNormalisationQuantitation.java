@@ -114,9 +114,9 @@ public class SizeFactorNormalisationQuantitation extends Quantitation {
 			}
 		}
 		
-		for (int d=0;d<lowestValues.length;d++) {
-			System.err.println("Lowest value for "+data[d]+" was "+lowestValues[d]);
-		}
+//		for (int d=0;d<lowestValues.length;d++) {
+//			System.err.println("Lowest value for "+data[d]+" was "+lowestValues[d]);
+//		}
 
 		// Now we want to build the average reference and record which probes we 
 		// used to make it.
