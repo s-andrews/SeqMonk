@@ -113,6 +113,10 @@ public class SizeFactorNormalisationQuantitation extends Quantitation {
 				return;
 			}
 		}
+		
+		for (int d=0;d<lowestValues.length;d++) {
+			System.err.println("Lowest value for "+data[d]+" was "+lowestValues[d]);
+		}
 
 		// Now we want to build the average reference and record which probes we 
 		// used to make it.
@@ -162,6 +166,8 @@ public class SizeFactorNormalisationQuantitation extends Quantitation {
 			if (useProbe[i]) ++validProbeCount;
 		}
 
+		System.err.println("Valid probe count was "+validProbeCount);
+		
 		if (validProbeCount == 0) {
 			progressExceptionReceived(new SeqMonkException("All probes had at least one unusable (normally zero) value. Can't continue"));
 		}
@@ -237,10 +243,10 @@ public class SizeFactorNormalisationQuantitation extends Quantitation {
 					}
 
 					if (correctionAction == ADD) {
-						data[d].setValueForProbe(allProbes[p], (float)(data[d].getValueForProbe(allProbes[p])+correctionFactors[d]));					
+						data[d].setValueForProbe(allProbes[p], (float)(data[d].getValueForProbe(allProbes[p])-correctionFactors[d]));					
 					}
 					else if (correctionAction == MULTIPLY) {
-						data[d].setValueForProbe(allProbes[p], (float)(data[d].getValueForProbe(allProbes[p])*correctionFactors[d]));					
+						data[d].setValueForProbe(allProbes[p], (float)(data[d].getValueForProbe(allProbes[p])/correctionFactors[d]));					
 					}
 				}
 			}
