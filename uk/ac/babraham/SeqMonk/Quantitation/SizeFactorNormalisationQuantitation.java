@@ -33,6 +33,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import jdk.nashorn.internal.runtime.UserAccessorProperty;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
@@ -44,9 +45,11 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 
 /**
- * A quantitation which corrects all dataStores relative to a reference store.
+ * A quantitation which corrects all dataStores relative to an averaged
+ * reference based on the median difference between them.
  */
-public class SizeFactorNormalisationQuantitation2 extends Quantitation {
+
+public class SizeFactorNormalisationQuantitation extends Quantitation {
 
 	private static final int ADD = 1;
 	private static final int MULTIPLY = 3;
@@ -55,13 +58,9 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 	private JComboBox correctionActions;
 	private DataStore [] data = null;
 	private int correctionAction;
-	private JTextField percentileField;
-	private JCheckBox autoPercentileBox;
-	private JCheckBox ignoreUnquantitatedBox;
 	private JComboBox calculateFromProbeList;
-	private float percentile = 75;
 
-	public SizeFactorNormalisationQuantitation2(SeqMonkApplication application) {
+	public SizeFactorNormalisationQuantitation(SeqMonkApplication application) {
 		super(application);
 	}
 
@@ -70,66 +69,107 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		
+
 		if (! isReady()) {
 			progressExceptionReceived(new SeqMonkException("Options weren't set correctly"));
 		}
-		
+
 		Probe [] allProbes = application.dataCollection().probeSet().getAllProbes();
 
 		Probe [] calculateProbes = ((ProbeList)calculateFromProbeList.getSelectedItem()).getAllProbes();
-		
-		float [][] percentileValues = new float[data.length][];
-		float [] minValues = new float[data.length];
 
-		// Work out the value at the appropriate percentile
-		for (int d=0;d<data.length;d++) {
 
-			// If we're using a fixed percentage then we just want a single value for the percentile values
-			// Otherwise we'll calculate for each percentage (0-100)
-			if (autoPercentileBox.isSelected()) {
-				percentileValues[d] = new float[101];
+		// We don't want to use probes which have a zero count.  Since we don't know what
+		// transformation they've done to their data we're going to assume that the lowest
+		// value in each dataset is the zero value, and we'll ignore anything which has 
+		// that value, whatever it is.
+
+		float [] lowestValues = new float[data.length];
+
+		for (int p=0;p<calculateProbes.length;p++) {
+			if (cancel) {
+				progressCancelled();
+				return;
 			}
-			else {
-				percentileValues[d] = new float[1];
-			}
-			
-			progressUpdated("Calculating correction for "+data[d].name(),d, data.length);
 
-			float [] theseValues = new float[calculateProbes.length];
-			for (int p=0;p<calculateProbes.length;p++) {
-				try {
-					theseValues[p] = data[d].getValueForProbe(calculateProbes[p]);
-				} 
-				catch (SeqMonkException e) {
-					progressExceptionReceived(e);
+			if (p % 1000 == 0) {
+				progressUpdated("Calculating baseline values",p,calculateProbes.length*3);
+			}
+
+			try {
+				for (int d=0;d<data.length;d++) {
+					if (p==0) {
+						lowestValues[d] = data[d].getValueForProbe(calculateProbes[p]);
+					}
+					else {
+						if (data[d].getValueForProbe(calculateProbes[p]) < lowestValues[d]) {
+							lowestValues[d] = data[d].getValueForProbe(calculateProbes[p]);
+						}
+					}
 				}
 			}
-
-			Arrays.sort(theseValues);
-
-			if (autoPercentileBox.isSelected()) {
-				for (int i=0;i<=100;i++) {
-//					percentileValues[d][i] = theseValues[(int)((theseValues.length-1)*i)/100];					
-					percentileValues[d][i] = getPercentileValue(theseValues, i);
-				}
+			catch(SeqMonkException sme) {
+				progressExceptionReceived(sme);
+				return;
 			}
-			else {
-//				percentileValues[d][0] = theseValues[(int)((theseValues.length-1)*percentile)/100];
-				percentileValues[d][0] = getPercentileValue(theseValues, percentile);
-			}
-			minValues[d] = theseValues[0];
 		}
 
-		float [] maxPercentiles = new float[percentileValues[0].length];
-				
-		for (int i=0;i<percentileValues.length;i++) {
-			for (int j=0;j<maxPercentiles.length;j++) {
-				if (i==0 || percentileValues[i][j] > maxPercentiles[j]) {
-					maxPercentiles[j] = percentileValues[i][j];
+		// Now we want to build the average reference and record which probes we 
+		// used to make it.
+
+		boolean [] useProbe = new boolean[calculateProbes.length];
+		for (int i=0;i<useProbe.length;i++)useProbe[i] = true;
+
+
+		double [] averageValues = new double[calculateProbes.length];
+
+		for (int p=0;p<calculateProbes.length;p++) {
+
+			if (p % 1000 == 0) {
+				progressUpdated("Calculating average store",p+calculateProbes.length,calculateProbes.length*3);
+			}
+
+			if (cancel) {
+				progressCancelled();
+				return;
+			}
+			try {
+				for (int d=0;d<data.length;d++) {
+					if (data[d].getValueForProbe(calculateProbes[p]) <= lowestValues[d]) {
+						useProbe[p] = false;
+						break;
+					}
+					averageValues[p] += data[d].getValueForProbe(calculateProbes[p]);
 				}
 			}
+			catch (SeqMonkException sme) {
+				progressExceptionReceived(sme);
+				return;
+			}
 		}
+
+		// We have the sum of values in the array now.  Divide by the 
+		// number of stores to get the mean.
+		for (int i=0;i<averageValues.length;i++) {
+			averageValues[i] /= data.length;
+		}
+
+		// Time for a sanity check.  We need to know if we have any probes
+		// left to work with.
+
+		int validProbeCount = 0;
+		for (int i=0;i<useProbe.length;i++) {
+			if (useProbe[i]) ++validProbeCount;
+		}
+
+		if (validProbeCount == 0) {
+			progressExceptionReceived(new SeqMonkException("All probes had at least one unusable (normally zero) value. Can't continue"));
+		}
+
+		// Finally we can go through the data and calculate the specific
+		// correction factors to apply the adjustments.
+
+		double [] correctionFactors = new double[data.length];
 
 		for (int d=0;d<data.length;d++) {
 
@@ -141,25 +181,51 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 
 			progressUpdated(d, data.length);
 
+			// Get the set of differences for this data
 
-			// Get the correction value
-			float [] correctionFactors = new float [percentileValues[0].length];
+			double [] differences = new double[validProbeCount];
 
-			if (correctionAction == ADD) {
-				for (int i=0;i<correctionFactors.length;i++) {
-					correctionFactors[i] = maxPercentiles[i]-percentileValues[d][i];
+			int lastIndex = 0;
+			try {
+				for (int p=0;p<calculateProbes.length;p++) {
+					if (!useProbe[p]) continue;
+
+					if (correctionAction == ADD) {
+						differences[lastIndex] = data[d].getValueForProbe(calculateProbes[p]) - averageValues[p];
+					}
+					else {
+						differences[lastIndex] = data[d].getValueForProbe(calculateProbes[p]) / averageValues[p];
+					}
+
+					++lastIndex;
 				}
 			}
-			else if (correctionAction == MULTIPLY) {
-				for (int i=0;i<correctionFactors.length;i++) {
-					correctionFactors[i] = (maxPercentiles[i]-minValues[d])/(percentileValues[d][i]-minValues[d]);
+			catch (SeqMonkException sme) {
+				progressExceptionReceived(sme);
+				return;
+			}
+
+			// Quick sanity check
+			if (lastIndex != validProbeCount) {
+				throw new IllegalStateException("Last index didn't match expected number of valid probes ("+lastIndex+" vs "+validProbeCount+")");
+			}
+
+			// Find the correction factor
+			correctionFactors[d] = SimpleStats.median(differences);
+
+			System.err.println("Correction factor for "+data[d]+" is "+correctionFactors[d]);
+
+			// More sanity checking...
+			if (correctionAction == MULTIPLY) {
+				if (correctionFactors[d] <= 0) {
+					progressExceptionReceived(new SeqMonkException("Got a zero or negative correction factor for "+data[d]+". You should probably be using ADD instead of MULTIPLY to correct"));
 				}
 			}
-			
-			// Now we work out the correction factor we're actually going to use
-			float correctionFactor = SimpleStats.median(correctionFactors);
-			
-			
+		}		
+
+		// Finally we can apply the corrections
+
+		for (int d=0;d<data.length;d++){	
 			// Apply the correction to all probes
 			try {
 				for (int p=0;p<allProbes.length;p++) {
@@ -171,10 +237,10 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 					}
 
 					if (correctionAction == ADD) {
-						data[d].setValueForProbe(allProbes[p], data[d].getValueForProbe(allProbes[p])+correctionFactor);					
+						data[d].setValueForProbe(allProbes[p], (float)(data[d].getValueForProbe(allProbes[p])+correctionFactors[d]));					
 					}
 					else if (correctionAction == MULTIPLY) {
-						data[d].setValueForProbe(allProbes[p], minValues[d]+((data[d].getValueForProbe(allProbes[p])-minValues[d])*correctionFactor));					
+						data[d].setValueForProbe(allProbes[p], (float)(data[d].getValueForProbe(allProbes[p])*correctionFactors[d]));					
 					}
 				}
 			}
@@ -186,26 +252,7 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 		quantitatonComplete();
 	}
 
-	
-	private float getPercentileValue (float [] allValues, float percentile) {
-		
-		int actualLength = allValues.length-1;
-				
-		if (ignoreUnquantitatedBox.isSelected()) {
-			// We find the last index which is a valid number (NaN values
-			// sort after real values).
-			for (int i=allValues.length-1;i>=0;i--) {
-				if (! Float.isNaN(allValues[i])) {
-					actualLength = i;
-					break;
-				}
-			}
-		}
-				
-		return(allValues[(int)((actualLength*percentile)/100)]);
-		
-		
-	}
+
 
 
 	/* (non-Javadoc)
@@ -234,41 +281,6 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 
 		gbc.gridx=1;
 		gbc.gridy++;
-		optionPanel.add(new JLabel("Percentile"),gbc);
-		
-		JPanel percentilePanel = new JPanel();
-		percentilePanel.setLayout(new BorderLayout());
-		
-		autoPercentileBox = new JCheckBox("Auto",false);
-		
-		percentilePanel.add(autoPercentileBox,BorderLayout.WEST);
-		
-		percentileField = new JTextField(""+percentile);
-		percentileField.addKeyListener(new NumberKeyListener(true, false));
-		percentilePanel.add(percentileField, BorderLayout.CENTER);
-		
-		autoPercentileBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				percentileField.setEnabled(!autoPercentileBox.isSelected());
-			}
-		});
-		
-		gbc.gridx++;
-
-		optionPanel.add(percentilePanel,gbc);
-
-		gbc.gridx=1;
-		gbc.gridy++;
-		optionPanel.add(new JLabel("Ignore unquantitated probes"),gbc);
-
-		ignoreUnquantitatedBox = new JCheckBox("",true);
-		
-		gbc.gridx++;
-
-		optionPanel.add(ignoreUnquantitatedBox, gbc);
-		
-		gbc.gridx=1;
-		gbc.gridy++;
 		optionPanel.add(new JLabel("Calculate from probe list"),gbc);
 		ProbeList [] currentLists = application.dataCollection().probeSet().getAllProbeLists();
 		calculateFromProbeList = new JComboBox(currentLists);
@@ -278,11 +290,11 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 				calculateFromProbeList.setSelectedIndex(i);
 			}
 		}
-		
+
 		gbc.gridx++;
 
 		optionPanel.add(calculateFromProbeList,gbc);
-		
+
 		return optionPanel;
 	}
 
@@ -291,28 +303,17 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 	 */
 	public boolean isReady() {
 
-		try {
-			percentile = Float.parseFloat(percentileField.getText());
-		}
-		catch (Exception e) {
-			return false;
-		}
-		
-		if (percentile < 0 || percentile > 100) {
-			return false;
-		}
-		
 		return true;
 
 	}	
-	
-	
+
+
 	public String description () {
 		String existingDescription = "Unknown quantitation";
 		if (application.dataCollection().probeSet().currentQuantitation() != null) {
 			existingDescription = application.dataCollection().probeSet().currentQuantitation();
 		}
-		return existingDescription+" transformed by percentile normalisation using "+correctionActions.getSelectedItem().toString()+" to the "+percentile+" percentile";
+		return existingDescription+" transformed by size factor normalisation using "+correctionActions.getSelectedItem().toString()+" using the  "+calculateFromProbeList.getSelectedItem().toString()+" probe list";
 	}
 
 
@@ -322,7 +323,7 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 	public void quantitate(DataStore[] data) {
 
 		this.data = data;
-		
+
 		// We need to set the correction action
 		if (correctionActions.getSelectedItem().equals("Add")) {
 			correctionAction = ADD;
@@ -351,7 +352,7 @@ public class SizeFactorNormalisationQuantitation2 extends Quantitation {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString () {
-		return "Percentile Normalisation Quantitation";
+		return "Size Factor Normalisation Quantitation";
 	}
 
 

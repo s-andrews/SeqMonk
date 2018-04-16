@@ -74,6 +74,7 @@ import uk.ac.babraham.SeqMonk.Quantitation.Quantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.RankQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.ReadCountQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.RelativeQuantitation;
+import uk.ac.babraham.SeqMonk.Quantitation.SizeFactorNormalisationQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.SmoothingQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.SmoothingSubtractionQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.SubsetNormalisationQuantitation;
@@ -132,6 +133,7 @@ public class DefineQuantitationOptions extends JDialog implements ActionListener
 				new ManualCorrectionQuantitation(application),
 				new LogTransformQuantitation(application),
 				new PercentileNormalisationQuantitation(application),
+				new SizeFactorNormalisationQuantitation(application),
 				new EnrichmentNormalisationQuantitation(application),
 				new SubsetNormalisationQuantitation(application),
 				new PerProbeNormalisationQuantitation(application),
