@@ -507,6 +507,7 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 			for (int p=0;p<probes.length;p++) {
 				try {
 					double diff = xStore.getValueForProbe(probes[p])-yStore.getValueForProbe(probes[p]);
+					if (Double.isNaN(diff)) continue;
 					if (diff < minDiff) continue;
 					if (diff > maxDiff) continue;
 
