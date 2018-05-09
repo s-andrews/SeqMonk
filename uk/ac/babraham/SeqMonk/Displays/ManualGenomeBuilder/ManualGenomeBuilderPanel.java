@@ -394,6 +394,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 
 					}
 					if (line.startsWith("#")) continue;
+					if (line.trim().equals("")) continue;
 
 					String [] fields = line.split("\t");
 
