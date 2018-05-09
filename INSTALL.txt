@@ -98,18 +98,26 @@ without it, but the R based filters will not be available.
 To configure SeqMonk and R you first need to install R on your system.  R can be downloaded
 from http://www.r-project.org/ and you should follow the instructions there to load it.
 
-If R is installed into your path, such that you can just type 'R' in a command shell and 
-see an R session started then you don't need to tell SeqMonk where it is.  If it's installed
-in a location not in the path then you need to go to Edit > Preferences > Programs in SeqMonk
-and select the R executable (either just called R, or R.exe on windows).
+For OSX and Linux users the installation of some R packages will require that you have 
+suitable development tools installed.  For OSX the easiest way to get these is to install the
+OSX R Tools Package which can be found at:
 
-Finally, the statistical filters in SeqMonk rely on a number of non-core packages in R.  To
-make it easy to install all of the packages you need there is an R script at the top level
-of the seqmonk installation folder which will install all of the dependencies for you.  To
-run this simply start an R session and then run:
+https://github.com/coatless/r-macos-rtools
 
-source("/path/to/seqmonk/load_required_modules.r")
+For Linux users you should install the normal build environment on your sytem.  Many systems
+will have this already, but you can explicitly install them with:
 
-..where you replace /path/to/seqmonk with the actual path to the seqmonk installation
-folder.  You should repeat this with every new version of seqmonk you load in case new
-dependencies have been introduced.
+Ubuntu: sudo apt install build-essential
+
+CentOS: sudo yum groupinstall "Development tools"
+
+In addition you may need to install some additional development libraries.  The exact set 
+can change over time, but the one which often crops up is the xml2-dev library
+
+Ubuntu: sudo apt install libxml2-dev
+
+CentOS: sudo yum install libxml2-devel
+
+SeqMonk should prompt you to identify the location of your R installation (if it's not
+found automatically), and will attempt to install any packages it requires for you during
+initial setup.
