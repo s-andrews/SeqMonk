@@ -104,7 +104,7 @@ OSX R Tools Package which can be found at:
 
 https://github.com/coatless/r-macos-rtools
 
-For Linux users you should install the normal build environment on your sytem.  Many systems
+For Linux users you should install the normal build environment on your system.  Many systems
 will have this already, but you can explicitly install them with:
 
 Ubuntu: sudo apt install build-essential
