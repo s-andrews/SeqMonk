@@ -601,7 +601,11 @@ public class RNASeqPipeline extends Pipeline {
 
 					// As we're correcting for read length then we work out the whole number of
 					// reads which this count could comprise, rounding down to a whole number.
-					totalCount /= readLengths[d];
+					
+					// We put the check in in case there are no reads at all and we end up with 
+					// a divide by zero error
+					if (readLengths[d]>0)
+						totalCount /= readLengths[d];
 
 					// We can now subtract the DNA contamination prediction.
 					if (correctDNAContamination) {
