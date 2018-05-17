@@ -34,7 +34,9 @@ import javax.swing.event.ChangeListener;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 
 /**
  * The Class TrendOverProbePreferencesDialog sets the preferences from which a
@@ -43,7 +45,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 public class QuantiationTrendPlotPreferencesDialog extends JDialog implements ActionListener {
 	
 	/** The probes. */
-	private ProbeList probes;
+	private ProbeList [] probes;
 	
 	/** The stores. */
 	private DataStore [] stores;
@@ -59,9 +61,9 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 	 * Instantiates a new trend over probe preferences dialog.
 	 * 
 	 * @param probes the probes
-	 * @param stores the stores
+	 * @param stores t he stores
 	 */
-	public QuantiationTrendPlotPreferencesDialog (DataCollection collection, ProbeList probes, DataStore [] stores) {
+	public QuantiationTrendPlotPreferencesDialog (DataCollection collection, ProbeList [] probes, DataStore [] stores) {
 		super(SeqMonkApplication.getInstance(),"Quantitation Trend Preferences");
 		this.probes = probes;
 		this.stores = stores;
@@ -127,10 +129,20 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 				JOptionPane.showMessageDialog(this, "These feature options don't generate any probes","No Probes made",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			new QuantitationTrendPlotDialog(probes,stores,prefPanel);
+			
+			QuantitationTrendData trendData = new QuantitationTrendData(stores, probes, prefPanel);
+			
+			trendData.addProgressListener(new ProgressDialog(this, "Calculating trend", trendData));
+			
+			//TODO: Add this dialog as a listener so we can kick off the plot when it's complete
+			
+			trendData.startCalculating();
+			
+			
+//			new QuantitationTrendPlotDialog(probes,stores,prefPanel);
 			setVisible(false);
 			//dispose(); // Can we do this?
 		}
-	}
-
+	}	
+	
 }
