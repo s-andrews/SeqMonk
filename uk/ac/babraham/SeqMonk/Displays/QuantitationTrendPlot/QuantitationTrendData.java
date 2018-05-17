@@ -292,10 +292,93 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 		}
 
 		// Find min and max values across the whole data.
+		boolean valueSet = false;
+		
+		if (upstreamData != null) {
+			
+			double [][][] data = upstreamData;
+			
+			for (int p=0;p<data.length;p++) {
+				for (int s=0;s<data[p].length;s++) {
+					for (int d=0;d<data[p][s].length;d++) {
+						if (Double.isNaN(data[p][s][d])) continue;
+						
+						if (!valueSet) {
+							minValue = data[p][s][d];
+							maxValue = minValue;
+							valueSet = true;
+						}
+						else {
+							if (data[p][s][d]> maxValue) {
+								maxValue = data[p][s][d];
+							}
+							if (data[p][s][d] < minValue) {
+								minValue = data[p][s][d];
+							}
+						}
+						
+					}
+				}
+			}
+		}
+		
+		if (centralData != null) {
+			
+			double [][][] data = centralData;
+			
+			for (int p=0;p<data.length;p++) {
+				for (int s=0;s<data[p].length;s++) {
+					for (int d=0;d<data[p][s].length;d++) {
+						if (Double.isNaN(data[p][s][d])) continue;
+						
+						if (!valueSet) {
+							minValue = data[p][s][d];
+							maxValue = minValue;
+							valueSet = true;
+						}
+						else {
+							if (data[p][s][d]> maxValue) {
+								maxValue = data[p][s][d];
+							}
+							if (data[p][s][d] < minValue) {
+								minValue = data[p][s][d];
+							}
+						}
+						
+					}
+				}
+			}
+		}
 
+		if (downstreamData != null) {
+			
+			double [][][] data = downstreamData;
+			
+			for (int p=0;p<data.length;p++) {
+				for (int s=0;s<data[p].length;s++) {
+					for (int d=0;d<data[p][s].length;d++) {
+						if (Double.isNaN(data[p][s][d])) continue;
+						
+						if (!valueSet) {
+							minValue = data[p][s][d];
+							maxValue = minValue;
+							valueSet = true;
+						}
+						else {
+							if (data[p][s][d]> maxValue) {
+								maxValue = data[p][s][d];
+							}
+							if (data[p][s][d] < minValue) {
+								minValue = data[p][s][d];
+							}
+						}
+						
+					}
+				}
+			}
+		}
 
-
-
+		progressComplete();
 	}
 
 	private double [] getMeanQuantitativeValues (Probe [] windows, DataStore store, Probe [] probes, int numberOfDivisions) throws SeqMonkException {
