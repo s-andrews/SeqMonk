@@ -375,7 +375,6 @@ public class EdgeRForRevFilter extends ProbeFilter {
 					return;
 				}
 				if (listener.exceptionReceived()) {
-					progressExceptionReceived(new SeqMonkException("R Script failed"));
 					pr.close();
 					return;
 				}
