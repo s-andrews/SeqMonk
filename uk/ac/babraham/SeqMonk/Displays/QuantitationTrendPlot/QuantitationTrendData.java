@@ -1,5 +1,6 @@
 package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
@@ -385,27 +386,34 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 		double [] values = new double[numberOfDivisions];
 		int [] counts = new int[numberOfDivisions];
 
+		System.err.println("There are "+windows.length+" windows and "+probes.length+" probes");
+				
 		int startIndex = 0;
-
 
 		for (int w=0;w<windows.length;w++) {
 			Probe window = windows[w];
-
-			for (int p=startIndex;p<probes.length;p++) {
-				Probe probe = probes[p];
-
-				// See if we've shifted chromosomes
-				if (p>0 && probe.chromosome() != probes[p-1].chromosome()) {
-					// Go on until we find the first hit to the new 
-					// chromosome and set that as the starting point
-					for (;p<probes.length;p++) {
-						if (probes[p].chromosome() == window.chromosome()) {
-							startIndex = p;
-							probe = probes[p];
-							break;
-						}
+			
+			if (w==0 || window.chromosome() != windows[w-1].chromosome()) {
+				
+				System.err.println("Moved to "+window.chromosome());
+				
+				boolean foundCorrectChr = false;
+				for (int p=startIndex;p<probes.length;p++) {
+					if (probes[p].chromosome() == window.chromosome()) {
+						startIndex = p;
+						foundCorrectChr = true;
+						break;
 					}
 				}
+				
+				if (! foundCorrectChr) {
+					// No point doing this as there aren't any probes on this chromosome
+					continue;
+				}
+			}
+			
+			for (int p=startIndex;p<probes.length;p++) {
+				Probe probe = probes[p];
 
 				if (window.chromosome() != probe.chromosome()) break;
 
@@ -420,7 +428,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 
 				// At this point we should definitely overlap, but let's
 				// do a sanity check anyway
-				if (probe.start() <= window.end() && probe.end() <= window.start()) {
+				if (probe.start() <= window.end() && probe.end() >= window.start()) {
 					// Now we need to find the extent of the overlap.  We're diving
 					// the whole window into chunks so we need to find out which of
 					// these we start and end in.
@@ -428,17 +436,16 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 					int overlapStart = Math.max(probe.start(), window.start());
 					int overlapEnd = Math.min(probe.end(), window.end());
 
-					int divisionStart = Math.round((overlapStart - window.start())/(window.length()/(float)numberOfDivisions));
-					int divisionEnd = Math.round((overlapEnd - window.start())/(window.length()/(float)numberOfDivisions));
+					int divisionStart = (int)((overlapStart - window.start())/(window.length()/(float)numberOfDivisions));
+					int divisionEnd = (int)((overlapEnd - window.start())/(window.length()/(float)numberOfDivisions));
 
+					System.err.println("Adding from "+divisionStart+" to "+divisionEnd);
+					
 					for (int i=divisionStart;i<=divisionEnd;i++) {
 						values[i] += store.getValueForProbe(probe);
 						counts[i]++;
 					}
 
-				}
-				else {
-					throw new IllegalStateException("Probe and window didn't overlap and they should have!");
 				}
 
 			}
@@ -449,9 +456,11 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 		// Now work out the mean values
 		for (int i=0;i<values.length;i++) {
 			if (counts[i]>0) {
+				System.err.println("Dividing by "+counts[i]);
 				values[i] /= counts[i];
 			}
 			else {
+				System.err.println("No counts for "+i);
 				values[i] = Double.NaN;
 			}
 		}
