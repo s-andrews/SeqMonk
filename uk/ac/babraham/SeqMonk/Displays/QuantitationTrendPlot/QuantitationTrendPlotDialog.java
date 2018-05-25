@@ -39,13 +39,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
-import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
-import uk.ac.babraham.SeqMonk.Utilities.ThreadSafeIntCounter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 /**
@@ -53,21 +47,19 @@ import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
  * plot.  It can display either a progress message or the actual
  * plot.
  */
-public class QuantitationTrendPlotDialog extends JDialog implements ActionListener, ChangeListener, ProgressListener {
+public class QuantitationTrendPlotDialog extends JDialog implements ActionListener, ChangeListener {
 
 	/** The trend panel. */
 	private JPanel trendPanel;
 	private QuantitationTrendPlotPanel upstreamTrendPanel = null;
 	private QuantitationTrendPlotPanel centralTrendPanel = null;
-	private QuantitationTrendPlotPanel downstreamTrendPanel = null;
-	
-	/** A counter to see how many panels we're waiting to complete */
-	private ThreadSafeIntCounter waitingCounter = new ThreadSafeIntCounter();
-	
+	private QuantitationTrendPlotPanel downstreamTrendPanel = null;	
 	
 	/** The smoothing slider */
 	private JSlider smoothingSlider;
 
+	
+	private QuantitationTrendData data;
 	
 	/**
 	 * Instantiates a new trend over probe dialog.
@@ -76,15 +68,11 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 	 * @param stores the stores
 	 * @param prefs the prefs
 	 */
-	public QuantitationTrendPlotDialog (ProbeList probeList, DataStore [] stores, QuantitationTrendPlotPreferencesPanel prefs) {
-		super(SeqMonkApplication.getInstance(),"Probe Trend Plot ["+probeList.name()+"]");
+	public QuantitationTrendPlotDialog (QuantitationTrendData data) {
+		super(SeqMonkApplication.getInstance(),"Probe Trend Plot");
+		this.data = data;
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		
-		setupFrame(probeList, stores, prefs);
-	}
-	
-	private void setupFrame (ProbeList probeList, DataStore [] stores, QuantitationTrendPlotPreferencesPanel prefs) {
-		
+				
 		
 		// The trend panel is now going to be made of a number of different components,
 		// all arranged horizontally.
@@ -109,57 +97,30 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		gbc.gridx=1;
 		gbc.gridy=1;
 		gbc.fill = GridBagConstraints.BOTH;
-						
+					
+		System.err.println("Adding panels");
 		// Upstream panel
-		Probe [] upstreamProbes = prefs.getUpstreamProbes();
-		if (upstreamProbes != null) {
-			waitingCounter.increment();
-			upstreamTrendPanel = new QuantitationTrendPlotPanel(upstreamProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureTypes()[0]);
+		if (data.hasUpstream) {
+			System.err.println("Has upstream");
+			upstreamTrendPanel = new QuantitationTrendPlotPanel(data,"upstream");
 			trendPanel.add(upstreamTrendPanel,gbc);
 			gbc.gridx++;
 		}
 		
 		// Central panel
-		Probe [] centralProbes = prefs.getCoreProbes();
-		if (centralProbes != null) {
-			waitingCounter.increment();
-			centralTrendPanel = new QuantitationTrendPlotPanel(centralProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureTypes()[0]);
-			trendPanel.add(centralTrendPanel,gbc);
-			gbc.gridx++;
-		}
+		centralTrendPanel = new QuantitationTrendPlotPanel(data,"central");
+		trendPanel.add(centralTrendPanel,gbc);
+		gbc.gridx++;
 		
 		// Downstream panel
-		Probe [] downstreamProbes = prefs.getDownstreamProbes();
-		if (downstreamProbes != null) {
-			waitingCounter.increment();
-			downstreamTrendPanel = new QuantitationTrendPlotPanel(downstreamProbes, stores, probeList.getAllProbes(),prefs.selectedFeatureTypes()[0]);
+		if (data.hasDownstream) {
+			System.err.println("Has downstream");
+			downstreamTrendPanel = new QuantitationTrendPlotPanel(data,"downstream");
 			trendPanel.add(downstreamTrendPanel,gbc);
 			gbc.gridx++;
 		}
 		
-		// Figure out which is the leftmost panel
-		if (upstreamProbes != null) {
-			upstreamTrendPanel.setLeftmost(true);
-		}
-		else if (centralProbes != null) {
-			centralTrendPanel.setLeftmost(true);
-		}
-		else {
-			downstreamTrendPanel.setLeftmost(true);
-		}
-		
-		// Figure out which is the rightmost panel
-		if (downstreamProbes != null) {
-			downstreamTrendPanel.setRightmost(true);
-		}
-		else if (centralProbes != null) {
-			centralTrendPanel.setRightmost(true);
-		}
-		else {
-			upstreamTrendPanel.setRightmost(true);
-		}
-		
-		
+				
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(trendPanel,BorderLayout.CENTER);
 		
@@ -177,14 +138,6 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		closeButton.setActionCommand("close");
 		closeButton.addActionListener(this);
 		buttonPanel.add(closeButton);
-
-		// I may not put this back, but it's broken at the moment anyway.
-		
-//		JButton saveDataButton = new JButton("Save Data");
-//		saveDataButton.setActionCommand("save_data");
-//		saveDataButton.addActionListener(this);
-//		buttonPanel.add(saveDataButton);
-
 		
 		JButton saveImageButton = new JButton("Save Image");
 		saveImageButton.setActionCommand("save_image");
@@ -237,22 +190,8 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 				
 				try {
 					PrintWriter pr = new PrintWriter(file);
-					boolean addHeader = true;
 					
-					if (upstreamTrendPanel != null) {
-						upstreamTrendPanel.saveData(pr, addHeader);
-						addHeader = false;
-					}
-					
-					if (centralTrendPanel != null) {
-						centralTrendPanel.saveData(pr, addHeader);
-						addHeader = false;
-					}
-					
-					if (downstreamTrendPanel != null) {
-						downstreamTrendPanel.saveData(pr, addHeader);
-						addHeader = false;
-					}
+					QuantitationTrendPlotDialog.this .data.writeData(pr);
 					
 					pr.close();
 					
@@ -270,39 +209,9 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 
 		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
-//		setSize(800,600);
 		setSize(700,350);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
-		
-		boolean addedProgress = false;
-		
-		if (upstreamTrendPanel != null) {
-			upstreamTrendPanel.addProgressListener(this);
-			if (!addedProgress) {
-				upstreamTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot",upstreamTrendPanel));
-				addedProgress = true;
-			}
-			upstreamTrendPanel.startCalculating();
-		}
-		
-		if (centralTrendPanel != null) {
-			centralTrendPanel.addProgressListener(this);
-			if (!addedProgress) {
-				centralTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot",centralTrendPanel));
-				addedProgress = true;
-			}
-			centralTrendPanel.startCalculating();
-		}
-
-		if (downstreamTrendPanel != null) {
-			downstreamTrendPanel.addProgressListener(this);
-			if (!addedProgress) {
-				downstreamTrendPanel.addProgressListener(new ProgressDialog("Quantitation Trend Plot",downstreamTrendPanel));
-				addedProgress = true;
-			}
-
-			downstreamTrendPanel.startCalculating();
-		}
+		setVisible(true);
 	}
 	
 	
@@ -391,68 +300,6 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		}
 	}
 
-	public void progressCancelled() {
-		dispose();
-	}
 
-	public void progressComplete(String command, Object result) {
-		waitingCounter.decrement();
-		if (waitingCounter.value() == 0) {
-			
-			boolean setValue = false;
-			double min = 0;
-			double max = 0;
-			
-			if (upstreamTrendPanel != null) {
-				if (!setValue) {
-					min = upstreamTrendPanel.localMin();
-					max = upstreamTrendPanel.localMax();
-					setValue = true;
-				}
-				if (upstreamTrendPanel.localMin() < min) min = upstreamTrendPanel.localMin();
-				if (upstreamTrendPanel.localMax() > max) max = upstreamTrendPanel.localMax();
-			}
 
-			if (centralTrendPanel != null) {
-				if (!setValue) {
-					min = centralTrendPanel.localMin();
-					max = centralTrendPanel.localMax();
-					setValue = true;
-				}
-				if (centralTrendPanel.localMin() < min) min = centralTrendPanel.localMin();
-				if (centralTrendPanel.localMax() > max) max = centralTrendPanel.localMax();
-			}
-
-			if (downstreamTrendPanel != null) {
-				if (!setValue) {
-					min = downstreamTrendPanel.localMin();
-					max = downstreamTrendPanel.localMax();
-					setValue = true;
-				}
-				if (downstreamTrendPanel.localMin() < min) min = downstreamTrendPanel.localMin();
-				if (downstreamTrendPanel.localMax() > max) max = downstreamTrendPanel.localMax();
-			}
-
-			// Set these values on the appropriate plots
-			if (upstreamTrendPanel != null) upstreamTrendPanel.setMinMax(min, max);
-			if (centralTrendPanel != null) centralTrendPanel.setMinMax(min, max);
-			if (downstreamTrendPanel != null) downstreamTrendPanel.setMinMax(min, max);
-
-			// TODO: Remove this temporary kludge to get a single scale for a set of graphs I'm making *******
-//			if (upstreamTrendPanel != null) upstreamTrendPanel.setMinMax(2.5, 7);
-//			if (centralTrendPanel != null) centralTrendPanel.setMinMax(2.5, 7);
-//			if (downstreamTrendPanel != null) downstreamTrendPanel.setMinMax(2.5, 7);
-
-			
-			setVisible(true);
-		}
-	}
-
-	public void progressExceptionReceived(Exception e) {
-		dispose();
-	}
-
-	public void progressUpdated(String message, int current, int max) {}
-
-	public void progressWarningReceived(Exception e) {}
 }

@@ -1,5 +1,6 @@
 package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -43,8 +44,8 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 	double downstreamAxisStart = Double.NaN;
 	double downstreamAxisEnd = Double.NaN;
 
-	boolean hasUpstream = false;
-	boolean hasDownstream = false;
+	boolean hasUpstream = true;
+	boolean hasDownstream = true;
 
 
 	public QuantitationTrendData (DataStore [] stores, ProbeList [] lists, QuantitationTrendPlotPreferencesPanel prefs) {
@@ -53,6 +54,14 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 		this.prefs = prefs;
 	}
 
+	public DataStore [] stores () {
+		return stores;
+	}
+	
+	public ProbeList [] lists () {
+		return lists;
+	}
+	
 	public void startCalculating () {
 		Thread t = new Thread(this);
 		t.start();
@@ -147,13 +156,6 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 	private void progressExceptionReceived(Exception e) {
 		for (ProgressListener listener : listeners) {
 			listener.progressExceptionReceived(e);
-		}
-	}
-
-
-	private void progressWarningReceived(Exception e) {
-		for (ProgressListener listener : listeners) {
-			listener.progressWarningReceived(e);;
 		}
 	}
 
@@ -426,8 +428,8 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 				// See if we've gone so far we can stop looking
 				if (probe.start() > window.end()) break;
 
-				// At this point we should definitely overlap, but let's
-				// do a sanity check anyway
+
+				// Check to see if they actually overlap
 				if (probe.start() <= window.end() && probe.end() >= window.start()) {
 					// Now we need to find the extent of the overlap.  We're diving
 					// the whole window into chunks so we need to find out which of
@@ -439,7 +441,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 					int divisionStart = (int)((overlapStart - window.start())/(window.length()/(float)numberOfDivisions));
 					int divisionEnd = (int)((overlapEnd - window.start())/(window.length()/(float)numberOfDivisions));
 
-					System.err.println("Adding from "+divisionStart+" to "+divisionEnd);
+//					System.err.println("Adding from "+divisionStart+" to "+divisionEnd);
 					
 					for (int i=divisionStart;i<=divisionEnd;i++) {
 						values[i] += store.getValueForProbe(probe);
@@ -469,6 +471,10 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 
 	}
 
+	public void writeData (PrintWriter pr) {
+		// TODO: Write data
+	}
+	
 
 	@Override
 	public void cancel() {
