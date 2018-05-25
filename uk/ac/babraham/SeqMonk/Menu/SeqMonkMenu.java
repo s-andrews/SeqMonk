@@ -704,10 +704,21 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 //		plotCodonBiasPlot.addActionListener(this);
 //		plotsMenu.add(plotCodonBiasPlot);
 
-		JMenuItem viewQuantitationTrend = new JMenuItem("Quantitation Trend Plot...");
-		viewQuantitationTrend.setActionCommand("view_quanttrend");
+		JMenu viewQuantitationTrend = new JMenu("Quantitation Trend Plot");
 		viewQuantitationTrend.setMnemonic(KeyEvent.VK_Q);
-		viewQuantitationTrend.addActionListener(this);
+		
+		JMenuItem viewQuantitationTrendCurrent = new JMenuItem("Current Probe List...");
+		viewQuantitationTrendCurrent.setActionCommand("view_quanttrend");
+		viewQuantitationTrendCurrent.setMnemonic(KeyEvent.VK_C);
+		viewQuantitationTrendCurrent.addActionListener(this);
+		viewQuantitationTrend.add(viewQuantitationTrendCurrent);
+		
+		JMenuItem viewQuantitationTrendMulti = new JMenuItem("Multiple Probe Lists...");
+		viewQuantitationTrendMulti.setActionCommand("multiprobe_view_quanttrend");
+		viewQuantitationTrendMulti.setMnemonic(KeyEvent.VK_M);
+		viewQuantitationTrendMulti.addActionListener(this);
+		viewQuantitationTrend.add(viewQuantitationTrendMulti);
+		
 		plotsMenu.add(viewQuantitationTrend);
 
 		plotsMenu.addSeparator();
@@ -1831,6 +1842,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			ProbeList [] probeLists = ProbeListSelectorDialog.selectProbeLists();
 			if (probeLists == null || probeLists.length == 0) return;
 
+			else if (action.equals("multiprobe_view_quanttrend")) {
+				new QuantiationTrendPlotPreferencesDialog(application.dataCollection(),probeLists,application.drawnDataSets());
+			}
 			else if (action.equals("multiprobe_view_boxwhisker")) {
 				if (application.dataCollection().getActiveDataStore() == null) {
 					JOptionPane.showMessageDialog(application, "You need to select a data store from the data panel to use this view","No active data store",JOptionPane.INFORMATION_MESSAGE);

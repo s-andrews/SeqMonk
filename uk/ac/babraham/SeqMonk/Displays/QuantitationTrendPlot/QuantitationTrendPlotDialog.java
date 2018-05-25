@@ -215,7 +215,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 
 		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
-		setSize(700,350);
+		setSize(750,500);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		setVisible(true);
 	}

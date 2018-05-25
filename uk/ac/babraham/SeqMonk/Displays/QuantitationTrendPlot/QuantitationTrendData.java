@@ -387,7 +387,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 		double [] values = new double[numberOfDivisions];
 		int [] counts = new int[numberOfDivisions];
 
-		System.err.println("There are "+windows.length+" windows and "+probes.length+" probes");
+//		System.err.println("There are "+windows.length+" windows and "+probes.length+" probes");
 				
 		int startIndex = 0;
 
