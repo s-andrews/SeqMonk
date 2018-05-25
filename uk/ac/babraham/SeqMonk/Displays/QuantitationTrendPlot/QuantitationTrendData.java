@@ -396,7 +396,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 			
 			if (w==0 || window.chromosome() != windows[w-1].chromosome()) {
 				
-				System.err.println("Moved to "+window.chromosome());
+//				System.err.println("Moved to "+window.chromosome());
 				
 				boolean foundCorrectChr = false;
 				for (int p=startIndex;p<probes.length;p++) {

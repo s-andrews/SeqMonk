@@ -100,7 +100,6 @@ public class QuantitationTrendPlotPanel extends JPanel implements MouseMotionLis
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
 	public void paint (Graphics g) {
-		System.err.println("Painting panel");
 		super.paint(g);
 		g.setColor(Color.WHITE);
 

@@ -92,16 +92,19 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		trendPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.weightx=0.5;
+		gbc.weightx=0.001;
 		gbc.weighty=0.5;
 		gbc.gridx=1;
 		gbc.gridy=1;
+		gbc.fill = GridBagConstraints.VERTICAL;
+		
+		trendPanel.add(new AxisScalePanel(data.getMinValue(), data.getMaxValue()),gbc);
 		gbc.fill = GridBagConstraints.BOTH;
-					
-		System.err.println("Adding panels");
+		gbc.gridx++;
+		gbc.weightx=0.5;
+		
 		// Upstream panel
 		if (data.hasUpstream) {
-			System.err.println("Has upstream");
 			upstreamTrendPanel = new QuantitationTrendPlotPanel(data,"upstream");
 			trendPanel.add(upstreamTrendPanel,gbc);
 			gbc.gridx++;
@@ -114,7 +117,6 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		
 		// Downstream panel
 		if (data.hasDownstream) {
-			System.err.println("Has downstream");
 			downstreamTrendPanel = new QuantitationTrendPlotPanel(data,"downstream");
 			trendPanel.add(downstreamTrendPanel,gbc);
 			gbc.gridx++;
