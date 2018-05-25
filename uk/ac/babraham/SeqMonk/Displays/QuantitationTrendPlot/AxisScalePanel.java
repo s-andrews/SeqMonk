@@ -67,7 +67,7 @@ public class AxisScalePanel extends JPanel {
 			
 			int yWidth = g.getFontMetrics().stringWidth(yText);
 			
-			g.drawString(yText, getWidth()-(5+yWidth), getY(yValue));
+			g.drawString(yText, getWidth()-(5+yWidth), getY(yValue)-(g.getFontMetrics().getHeight()/2));
 			
 		}
 		
