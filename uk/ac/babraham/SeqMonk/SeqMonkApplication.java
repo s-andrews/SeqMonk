@@ -140,7 +140,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public static void main(String[] args) {
 		
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			
+			// Recent java themes for linux are just horribly broken with missing
+			// bits of UI.  We're therefore not going to set a native look if
+			// we're on linux.  See bug #95 for details.
+			
+			if (! System.getProperty("os.name").toLowerCase().contains("linux")) {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
 		} catch (Exception e) {}
 
 		try {
