@@ -122,6 +122,10 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 			gbc.gridx++;
 		}
 		
+		gbc.weightx=0.00001;
+		gbc.fill = GridBagConstraints.VERTICAL;
+
+		trendPanel.add(new NamePanel(data.stores(), data.lists()),gbc);
 				
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(trendPanel,BorderLayout.CENTER);

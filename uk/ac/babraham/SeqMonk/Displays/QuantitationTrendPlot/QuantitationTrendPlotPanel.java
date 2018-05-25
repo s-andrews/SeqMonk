@@ -155,7 +155,7 @@ public class QuantitationTrendPlotPanel extends JPanel implements MouseMotionLis
 		for (int d=0;d<data.stores().length;d++) {
 			for (int l=0;l<data.lists().length;l++){
 
-				g.setColor(ColourIndexSet.getColour((data.lists().length*data.stores().length)+l));
+				g.setColor(ColourIndexSet.getColour((data.lists().length*d)+l));
 
 				double [] dataToPlot = null;
 
