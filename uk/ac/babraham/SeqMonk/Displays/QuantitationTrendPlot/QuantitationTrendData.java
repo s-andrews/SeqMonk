@@ -264,8 +264,8 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 
 				// Downstream is always fixed length.  We just need to find out
 				// what it is
-				downstreamAxisStart = 0-downstreamProbes[0].length();
-				downstreamAxisEnd = -1;
+				downstreamAxisStart = 1;
+				downstreamAxisEnd = downstreamProbes[0].length();
 
 				downstreamData = new double[lists.length][stores.length][];
 

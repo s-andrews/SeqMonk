@@ -56,7 +56,7 @@ public class QuantitationTrendPlotPanel extends JPanel implements MouseMotionLis
 	private double axisMin;
 	private double axisMax;
 
-	private int Y_AXIS_SPACE = 0;
+	private int Y_AXIS_SPACE = 20;
 
 	/**
 	 * Instantiates a new trend over probe panel.
@@ -128,6 +128,7 @@ public class QuantitationTrendPlotPanel extends JPanel implements MouseMotionLis
 		if (fixedLength) {
 			AxisScale xAxisScale = new AxisScale(axisMin, axisMax);
 
+			System.err.println("Drawing axis from "+axisMin+" to "+axisMax);
 			double currentXValue = xAxisScale.getStartingValue();
 			double lastXLabelEnd = -1;
 
