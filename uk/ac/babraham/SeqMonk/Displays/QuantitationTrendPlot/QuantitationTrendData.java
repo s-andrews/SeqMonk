@@ -268,7 +268,6 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 				downstreamAxisEnd = downstreamProbes[0].length();
 
 				downstreamData = new double[lists.length][stores.length][];
-
 				for (int l=0;l<lists.length;l++) {
 					Probe [] probes = lists[l].getAllProbes();
 
@@ -467,7 +466,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 		// Now work out the mean values
 		for (int i=0;i<values.length;i++) {
 			if (counts[i]>0) {
-				System.err.println("Dividing by "+counts[i]);
+//				System.err.println("Dividing by "+counts[i]);
 				values[i] /= counts[i];
 			}
 			else {

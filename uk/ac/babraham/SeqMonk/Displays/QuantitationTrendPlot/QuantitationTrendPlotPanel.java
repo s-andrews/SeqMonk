@@ -128,13 +128,13 @@ public class QuantitationTrendPlotPanel extends JPanel implements MouseMotionLis
 		if (fixedLength) {
 			AxisScale xAxisScale = new AxisScale(axisMin, axisMax);
 
-			System.err.println("Drawing axis from "+axisMin+" to "+axisMax);
 			double currentXValue = xAxisScale.getStartingValue();
 			double lastXLabelEnd = -1;
 
+			
 			while (currentXValue+xAxisScale.getInterval() <= axisMax) {
 				int thisX = 0;
-				double xProportion = (double)currentXValue/(axisMax-axisMin);
+				double xProportion = (double)(currentXValue-axisMin)/(axisMax-axisMin);
 				thisX += (int)(xProportion * getWidth());
 
 				int thisHalfLabelWidth = (g.getFontMetrics().stringWidth(xAxisScale.format(currentXValue))/2);
