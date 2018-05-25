@@ -441,9 +441,18 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 					int divisionStart = (int)((overlapStart - window.start())/(window.length()/(float)numberOfDivisions));
 					int divisionEnd = (int)((overlapEnd - window.start())/(window.length()/(float)numberOfDivisions));
 
+					// If our feature is on the reverse strand then we need to add the values
+					// in the opposite orientation so we keep a consistent directionality relative
+					// to the feature.
+					
+					if (window.strand() == Location.REVERSE) {
+						divisionStart = (numberOfDivisions-1)-divisionStart;
+						divisionEnd = (numberOfDivisions-1)-divisionEnd;
+					}
+					
 //					System.err.println("Adding from "+divisionStart+" to "+divisionEnd);
 					
-					for (int i=divisionStart;i<=divisionEnd;i++) {
+					for (int i=Math.min(divisionStart,divisionEnd);i<=Math.max(divisionStart, divisionEnd);i++) {
 						values[i] += store.getValueForProbe(probe);
 						counts[i]++;
 					}
