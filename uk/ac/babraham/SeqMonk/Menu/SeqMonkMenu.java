@@ -114,6 +114,8 @@ import uk.ac.babraham.SeqMonk.Displays.PCAPlot.PCADataCalculator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeTrendPlot.TrendOverProbePreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.QQDistributionPlot.QQDistributionDialog;
+import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendHeatmapDialog;
+import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendHeatmapPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendPlotPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.RNASeqQCPlot.RNAQCPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.Report.ReportOptions;
@@ -721,6 +723,25 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		
 		plotsMenu.add(viewQuantitationTrend);
 
+		
+		JMenu viewQuantitationHeatmap = new JMenu("Quantitation Trend Heatmap");
+		viewQuantitationHeatmap.setMnemonic(KeyEvent.VK_H);
+		
+		JMenuItem viewQuantitationHeatCurrent = new JMenuItem("Current Probe List...");
+		viewQuantitationHeatCurrent.setActionCommand("view_quantheat");
+		viewQuantitationHeatCurrent.setMnemonic(KeyEvent.VK_C);
+		viewQuantitationHeatCurrent.addActionListener(this);
+		viewQuantitationHeatmap.add(viewQuantitationHeatCurrent);
+		
+		JMenuItem viewQuantitationHeatMulti = new JMenuItem("Multiple Probe Lists...");
+		viewQuantitationHeatMulti.setActionCommand("multiprobe_view_quantheat");
+		viewQuantitationHeatMulti.setMnemonic(KeyEvent.VK_M);
+		viewQuantitationHeatMulti.addActionListener(this);
+		viewQuantitationHeatmap.add(viewQuantitationHeatMulti);
+		
+		plotsMenu.add(viewQuantitationHeatmap);
+
+		
 		plotsMenu.addSeparator();
 
 		JMenu viewHeatMap = new JMenu("HiC Heatmap");
@@ -1845,6 +1866,10 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			else if (action.equals("multiprobe_view_quanttrend")) {
 				new QuantitationTrendPlotPreferencesDialog(application.dataCollection(),probeLists,application.drawnDataSets());
 			}
+			else if (action.equals("multiprobe_view_quantheat")) {
+				new QuantitationTrendHeatmapPreferencesDialog(application.dataCollection(),probeLists,application.drawnDataSets());
+			}
+
 			else if (action.equals("multiprobe_view_boxwhisker")) {
 				if (application.dataCollection().getActiveDataStore() == null) {
 					JOptionPane.showMessageDialog(application, "You need to select a data store from the data panel to use this view","No active data store",JOptionPane.INFORMATION_MESSAGE);
@@ -2064,6 +2089,17 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			}
 		}
 
+		
+		else if (action.equals("view_quantheat")) {
+			if (! application.dataCollection().isQuantitated()) {
+				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				new QuantitationTrendHeatmapPreferencesDialog(application.dataCollection(),new ProbeList[]{application.dataCollection().probeSet().getActiveList()},application.drawnDataSets());
+			}
+		}
+
+		
 //		else if (action.equals("plot_codon_bias")) {
 //			new CodonBiasDialog(application.drawnDataSets(), application.dataCollection().genome().annotationCollection());
 //		}

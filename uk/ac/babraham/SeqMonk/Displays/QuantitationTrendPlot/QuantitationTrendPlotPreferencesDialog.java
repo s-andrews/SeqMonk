@@ -160,7 +160,12 @@ public class QuantitationTrendPlotPreferencesDialog extends JDialog implements A
 
 
 	public void progressComplete(String command, Object result) {
-		new QuantitationTrendPlotDialog((QuantitationTrendData)result);
+		if (this instanceof QuantitationTrendHeatmapPreferencesDialog) {
+			new QuantitationTrendHeatmapDialog((QuantitationTrendData)result);
+		}
+		else {
+			new QuantitationTrendPlotDialog((QuantitationTrendData)result);
+		}
 	}	
 	
 }
