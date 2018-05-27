@@ -114,7 +114,7 @@ import uk.ac.babraham.SeqMonk.Displays.PCAPlot.PCADataCalculator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeTrendPlot.TrendOverProbePreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.QQDistributionPlot.QQDistributionDialog;
-import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantiationTrendPlotPreferencesDialog;
+import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendPlotPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.RNASeqQCPlot.RNAQCPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.Report.ReportOptions;
 import uk.ac.babraham.SeqMonk.Displays.ScatterPlot.ScatterPlotDialog;
@@ -1843,7 +1843,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			if (probeLists == null || probeLists.length == 0) return;
 
 			else if (action.equals("multiprobe_view_quanttrend")) {
-				new QuantiationTrendPlotPreferencesDialog(application.dataCollection(),probeLists,application.drawnDataSets());
+				new QuantitationTrendPlotPreferencesDialog(application.dataCollection(),probeLists,application.drawnDataSets());
 			}
 			else if (action.equals("multiprobe_view_boxwhisker")) {
 				if (application.dataCollection().getActiveDataStore() == null) {
@@ -2060,7 +2060,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
 			}
 			else {
-				new QuantiationTrendPlotPreferencesDialog(application.dataCollection(),new ProbeList[]{application.dataCollection().probeSet().getActiveList()},application.drawnDataSets());
+				new QuantitationTrendPlotPreferencesDialog(application.dataCollection(),new ProbeList[]{application.dataCollection().probeSet().getActiveList()},application.drawnDataSets());
 			}
 		}
 

@@ -42,7 +42,7 @@ import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
  * The Class TrendOverProbePreferencesDialog sets the preferences from which a
  * trend plot can be drawn.
  */
-public class QuantiationTrendPlotPreferencesDialog extends JDialog implements ActionListener, ProgressListener {
+public class QuantitationTrendPlotPreferencesDialog extends JDialog implements ActionListener, ProgressListener {
 	
 	/** The probes. */
 	private ProbeList [] probes;
@@ -63,7 +63,7 @@ public class QuantiationTrendPlotPreferencesDialog extends JDialog implements Ac
 	 * @param probes the probes
 	 * @param stores t he stores
 	 */
-	public QuantiationTrendPlotPreferencesDialog (DataCollection collection, ProbeList [] probes, DataStore [] stores) {
+	public QuantitationTrendPlotPreferencesDialog (DataCollection collection, ProbeList [] probes, DataStore [] stores) {
 		super(SeqMonkApplication.getInstance(),"Quantitation Trend Preferences");
 		this.probes = probes;
 		this.stores = stores;
