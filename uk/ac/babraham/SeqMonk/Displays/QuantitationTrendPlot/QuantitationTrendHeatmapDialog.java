@@ -21,35 +21,26 @@ package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
-import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
-import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterDataSource;
-import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterPair;
-import uk.ac.babraham.SeqMonk.DataTypes.Cluster.HierarchicalClusterSet;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
-import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendData;
+import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.HeatmapPanel.QuantitationHeatmapPanelGroup;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
 import uk.ac.babraham.SeqMonk.Gradients.InvertedGradient;
@@ -66,6 +57,10 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 	private boolean negativeScale;
 
 	private QuantitationTrendData data;
+	
+	private JPanel exportPanel = new JPanel();
+	private QuantitationHeatmapPanelGroup quantPanel;
+	
 
 	public QuantitationTrendHeatmapDialog (QuantitationTrendData data) {
 		super(SeqMonkApplication.getInstance(),"Quantitation Trend Heatmap");
@@ -165,9 +160,18 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 
 
 		getContentPane().add(colourPanel,BorderLayout.NORTH);
+		
+		scaleBar = new GradientScaleBar((ColourGradient)gradients.getSelectedItem(), data.minValue, data.maxValue);
+		exportPanel.setLayout(new BorderLayout());
+		quantPanel = new QuantitationHeatmapPanelGroup(data);
+		exportPanel.add(quantPanel, BorderLayout.CENTER);
+		exportPanel.add(scaleBar, BorderLayout.EAST);
+		
+		add(exportPanel,BorderLayout.CENTER);
 
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setSize(800,600);
+		setVisible(true);
 
 	}
 
@@ -205,8 +209,7 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 			dispose();
 		}
 		else if (ae.getActionCommand().equals("save_image")) {
-			//TODO: Fix this
-//			ImageSaver.saveImage(clusterPanelGroup);
+			ImageSaver.saveImage(exportPanel);
 		}
 		else if (ae.getActionCommand().equals("highlight")) {
 			ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
