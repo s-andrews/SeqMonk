@@ -52,6 +52,11 @@ public class IntVector implements Serializable {
 		array[length-1] += value;
 	}
 	
+	public int getLast() {
+		return(array[length-1]);
+	}
+	
+	
 	public int length () {
 		return length;
 	}

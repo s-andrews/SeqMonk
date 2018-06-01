@@ -633,6 +633,7 @@ public class DataSet extends DataStore implements Runnable {
 		private long lastReadAdded = Long.MIN_VALUE;
 
 		public void addRead (long read, int count) {
+						
 			if (read == lastReadAdded) {
 				countVector.increaseLastBy(count);
 			}
@@ -689,7 +690,7 @@ public class DataSet extends DataStore implements Runnable {
 					break;
 				}
 			}
-
+			
 			if (foundDuplicates) {
 
 //				System.err.println("Compressing duplicate reads");
@@ -700,11 +701,11 @@ public class DataSet extends DataStore implements Runnable {
 
 				for (int r=0;r<reads.length;r++) {
 					if (reads[r] == lastRead) {
-						originalCounts.increaseLastBy(1);
+						originalCounts.increaseLastBy(counts[r]);
 					}
 					else {
 						originalReads.add(reads[r]);
-						originalCounts.add(1);
+						originalCounts.add(counts[r]);
 						lastRead = reads[r];
 					}
 				}
