@@ -161,9 +161,17 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 
 		getContentPane().add(colourPanel,BorderLayout.NORTH);
 		
+		double min = data.minValue;
+		double max = data.maxValue;
+		
+		if (min < 0) {
+			max = Math.max(max, 0-min);
+			min = 0 - max;
+		}
+		
 		scaleBar = new GradientScaleBar((ColourGradient)gradients.getSelectedItem(), data.minValue, data.maxValue);
 		exportPanel.setLayout(new BorderLayout());
-		quantPanel = new QuantitationHeatmapPanelGroup(data);
+		quantPanel = new QuantitationHeatmapPanelGroup(data,(ColourGradient)gradients.getSelectedItem(),min,max);
 		exportPanel.add(quantPanel, BorderLayout.CENTER);
 		exportPanel.add(scaleBar, BorderLayout.EAST);
 		
@@ -183,7 +191,7 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 			gradient = new InvertedGradient(gradient);
 		}
 
-		//		clusterPanel.setGradient(gradient);
+		quantPanel.setGradient(gradient);
 		scaleBar.setGradient(gradient);
 
 	}
@@ -192,12 +200,14 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 		if (ce.getSource() == dataZoomSlider) {
 			double value = Math.pow(2,dataZoomSlider.getValue()/10d);
 			//TODO: Fix this
-//			clusterPanel.setMaxValue(value);
+
 			if (negativeScale) {
 				scaleBar.setLimits(0-value, value);
+				quantPanel.setLimits(0-value, value);
 			}
 			else {
 				scaleBar.setLimits(0, value);
+				quantPanel.setLimits(0, value);
 			}
 		}
 
