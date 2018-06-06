@@ -705,9 +705,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 //		plotCodonBiasPlot.setMnemonic(KeyEvent.VK_B);
 //		plotCodonBiasPlot.addActionListener(this);
 //		plotsMenu.add(plotCodonBiasPlot);
+		
+		JMenu viewQuantTrendPlots = new JMenu("Quantitation Trend Plots..");
+		viewQuantTrendPlots.setMnemonic(KeyEvent.VK_Q);
 
 		JMenu viewQuantitationTrend = new JMenu("Quantitation Trend Plot");
-		viewQuantitationTrend.setMnemonic(KeyEvent.VK_Q);
+		viewQuantitationTrend.setMnemonic(KeyEvent.VK_P);
 		
 		JMenuItem viewQuantitationTrendCurrent = new JMenuItem("Current Probe List...");
 		viewQuantitationTrendCurrent.setActionCommand("view_quanttrend");
@@ -721,7 +724,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewQuantitationTrendMulti.addActionListener(this);
 		viewQuantitationTrend.add(viewQuantitationTrendMulti);
 		
-		plotsMenu.add(viewQuantitationTrend);
+		viewQuantTrendPlots.add(viewQuantitationTrend);
 
 		
 		JMenu viewQuantitationHeatmap = new JMenu("Quantitation Trend Heatmap");
@@ -739,7 +742,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewQuantitationHeatMulti.addActionListener(this);
 		viewQuantitationHeatmap.add(viewQuantitationHeatMulti);
 		
-		plotsMenu.add(viewQuantitationHeatmap);
+		viewQuantTrendPlots.add(viewQuantitationHeatmap);
+		
+		plotsMenu.add(viewQuantTrendPlots);
 
 		
 		plotsMenu.addSeparator();
