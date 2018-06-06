@@ -291,7 +291,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 	 */
 	public void stateChanged(ChangeEvent ce) {
 
-		// The dot size slider has been moved
+		// The smoothing slider has been moved
 
 		if (trendPanel != null) {
 			if (upstreamTrendPanel != null) {
