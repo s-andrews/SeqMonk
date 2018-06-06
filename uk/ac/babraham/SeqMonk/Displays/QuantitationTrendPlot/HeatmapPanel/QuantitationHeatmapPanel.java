@@ -64,8 +64,6 @@ public class QuantitationHeatmapPanel extends JPanel {
 	
 	public void paint (Graphics g) {
 		super.paint(g);
-		g.setColor(Color.RED);
-		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		int lastX = -1;
 		
@@ -81,7 +79,7 @@ public class QuantitationHeatmapPanel extends JPanel {
 
 	
 	private int getX (int index) {
-		double proportion = index/(double)data.length;
+		double proportion = index/(double)data.length-1;
 		return (int)(getWidth()*proportion);
 	}
 	
