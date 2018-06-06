@@ -1,3 +1,49 @@
+RELEASE NOTES FOR SeqMonk v1.42.0
+---------------------------------
+This release has a fix for a potentially nasty data import bug introduced in
+v1.40.1 and adds some new visualisation features.
+
+#############################
+# Important Data Import Bug #
+#############################
+
+We are indebted to John Chuang for spotting a data import bug which was 
+introduced in v1.40.1 and which could corrupt data imported from sorted
+BAM files containing duplicated sequences.  We'll do a full write up 
+elsewhere but the details of the bug can be seen in:
+
+https://github.com/s-andrews/SeqMonk/issues/99
+
+In short, if you have imported a sorted BAM file using SeqMonk v1.40.1 or
+v1.41.0 then you may have had some duplicate reads silently discarded. The
+issue could also theoretically affect sorted files, but the number of 
+sequences affected would be extremely low and is unlikely to materially 
+affect any datasets.
+
+Projects which had data imported in an earlier version of seqmonk, and the
+project was opened and saved in the affected versions are *not* affected.
+The bug is in the import step.
+
+If you imported sorted files into an affected version of the program then
+we recommend that you create a new project and re-import the BAM files 
+using seqmonk v1.42.0 (or later).
+
+Other changes in this release:
+
+- Added a size factor normalisation quantitation
+
+- Fixed a data update bug when creating custom genomes
+
+- Added a new Quantitation Trend Heatmap plot, and optimised the old
+  Quantitation Trend Plot code
+  
+- Worked around an EdgeR installation bug which caused the EdgeR 
+  filter to break.
+  
+- Fixed a problem with the linux themeing on Ubuntu 18.04
+
+
+
 RELEASE NOTES FOR SeqMonk v1.41.0
 ---------------------------------
 This release adds some new functionality, but also tidies up a lot of existing
