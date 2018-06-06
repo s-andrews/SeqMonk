@@ -179,7 +179,7 @@ public class QuantitationTrendPlotPanel extends JPanel implements MouseMotionLis
 						int thisSmoothing = Math.min(distanceToEnd*2, smoothingLevel);
 						
 						int startIndex = i-(thisSmoothing/2);
-						int endIndex = startIndex+thisSmoothing;
+						int endIndex = startIndex+(thisSmoothing-1);
 						
 						double total = 0;
 						for (int j=startIndex;j<=endIndex;j++) {
