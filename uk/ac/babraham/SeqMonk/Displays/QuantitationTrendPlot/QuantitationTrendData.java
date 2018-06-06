@@ -461,8 +461,6 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 			}
 		}
 
-		//TODO: Interpolate missing values?
-
 		// Now work out the mean values
 		for (int i=0;i<values.length;i++) {
 			if (counts[i]>0) {
@@ -474,7 +472,26 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 				values[i] = Double.NaN;
 			}
 		}
-
+		
+		// Interpolate missing values
+		
+		// Find first non-NaN value and fill in previous missing values
+		for (int i=0;i<values.length;i++) {
+			if (!Double.isNaN(values[i])) {
+				for (int j=0;j<i;j++) {
+					values[j] = values[i];
+				}
+				break;
+			}
+		}
+		
+		// Fill in remaining missing values
+		for (int i=1;i<values.length;i++) {
+			if (Double.isNaN(values[i])) {
+				values[i] = values[i-1];
+			}
+		}
+		
 		return values;
 
 	}
