@@ -90,7 +90,7 @@ public class QuantitationTrendPlotPreferencesDialog extends JDialog implements A
 		else {
 			// Some stores were bad
 			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Some unquantitated stores were removed", "Warning drawing plot", JOptionPane.WARNING_MESSAGE);
-			stores = validStores.toArray(new DataStore[0]);
+			this.stores = validStores.toArray(new DataStore[0]);
 		}
 		
 		

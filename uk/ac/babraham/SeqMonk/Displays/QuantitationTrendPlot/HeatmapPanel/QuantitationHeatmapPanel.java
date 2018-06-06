@@ -79,7 +79,7 @@ public class QuantitationHeatmapPanel extends JPanel {
 
 	
 	private int getX (int index) {
-		double proportion = index/(double)data.length-1;
+		double proportion = index/(double)(data.length-1);
 		return (int)(getWidth()*proportion);
 	}
 	
