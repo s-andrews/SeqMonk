@@ -23,6 +23,7 @@ package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -66,7 +67,33 @@ public class QuantitationTrendPlotPreferencesDialog extends JDialog implements A
 	public QuantitationTrendPlotPreferencesDialog (DataCollection collection, ProbeList [] probes, DataStore [] stores) {
 		super(SeqMonkApplication.getInstance(),"Quantitation Trend Preferences");
 		this.probes = probes;
-		this.stores = stores;
+		
+		
+		// Do a sanity check that all stores are quantitated, otherwise we can't use them.
+		Vector<DataStore> validStores = new Vector<DataStore>();
+		
+		for (int s=0;s<stores.length;s++) {
+			if (stores[s].isQuantitated()) {
+				validStores.add(stores[s]);
+			}
+		}
+		
+		if (validStores.size() == stores.length) {
+			// Everything is fine
+			this.stores = stores;
+		}
+		else if (validStores.size() == 0) {
+			// We have no data to work with.
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Can't draw this plot. None of your visible DataStores were quantitated", "Error drawing plot", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		else {
+			// Some stores were bad
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Some unquantitated stores were removed", "Warning drawing plot", JOptionPane.WARNING_MESSAGE);
+			stores = validStores.toArray(new DataStore[0]);
+		}
+		
+		
 		this.collection = collection;
 		
 		setupDialog();
