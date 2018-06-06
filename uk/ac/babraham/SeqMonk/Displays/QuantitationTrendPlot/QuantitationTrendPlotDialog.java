@@ -103,6 +103,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		gbc.gridx++;
 		gbc.weightx=0.5;
 		
+		
 		// Upstream panel
 		if (data.hasUpstream) {
 			upstreamTrendPanel = new QuantitationTrendPlotPanel(data,"upstream");

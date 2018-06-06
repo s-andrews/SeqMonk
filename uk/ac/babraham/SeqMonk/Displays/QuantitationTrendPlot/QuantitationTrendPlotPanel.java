@@ -120,11 +120,17 @@ public class QuantitationTrendPlotPanel extends JPanel implements MouseMotionLis
 
 		// X labels
 		if (!fixedLength) {
-			String xLabel = "Relative distance";
+			String xLabel = "Relative distance over "+data.featureName();
 			g.drawString(xLabel,(getWidth()/2)-(metrics.stringWidth(xLabel)/2),getHeight()-5);
 		}
 
 		if (fixedLength) {
+
+			if (segment.equals("central")) {
+				String xLabel = data.featureName();
+				g.drawString(xLabel,(getWidth()/2)-(metrics.stringWidth(xLabel)/2),10);
+			}
+
 			AxisScale xAxisScale = new AxisScale(axisMin, axisMax);
 
 			double currentXValue = xAxisScale.getStartingValue();

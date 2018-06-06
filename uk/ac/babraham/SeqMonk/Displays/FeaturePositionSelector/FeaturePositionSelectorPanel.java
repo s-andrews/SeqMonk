@@ -152,6 +152,11 @@ public class FeaturePositionSelectorPanel extends JPanel {
 
 	}
 	
+	public boolean isFixedWidth() {
+		// This will only *not* be fixed width if the position type is "Over Feature"
+		return (! positionTypeBox.getSelectedItem().equals("Over feature"));
+	}
+	
 	public void addChangeListener (ChangeListener l) {
 		if (!listeners.contains(l)) {
 			listeners.addElement(l);

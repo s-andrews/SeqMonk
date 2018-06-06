@@ -1,7 +1,6 @@
 package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Vector;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
@@ -32,7 +31,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 	double [][][] centralData; // Probes first, Stores second
 	double [][][] downstreamData; // Probes first, Stores second
 
-	boolean fixedWidth = false;
+	boolean fixedWidth;
 
 	double minValue = Double.NaN;
 	double maxValue = Double.NaN;
@@ -52,6 +51,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 		this.stores = stores;
 		this.lists = lists;
 		this.prefs = prefs;
+		this.fixedWidth = prefs.isFixedWidth();
 	}
 
 	public DataStore [] stores () {
@@ -60,6 +60,10 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 	
 	public ProbeList [] lists () {
 		return lists;
+	}
+
+	public String featureName () {
+		return prefs.selectedFeatureTypes()[0];
 	}
 	
 	public void startCalculating () {
@@ -217,19 +221,17 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 			}
 			else {
 
-				// Central could be fixed or dynamic.  We need to work out which
-
-				int centralLength = centralProbes[0].length();
-				for (int i=0;i<centralProbes.length;i++) {
-					if (centralProbes[i].length() != centralLength) {
-						fixedWidth = false;
-						break;
-					}
-				}
-
-				if (!isFixedWidth()) {
+				// Central could be fixed or dynamic.
+				
+				if (isFixedWidth()) {
 					centralAxisStart = 1;
-					centralAxisEnd = centralLength;
+					centralAxisEnd = 0;
+					
+					for (int i=0;i<centralProbes.length;i++) {
+						if (centralProbes[i].length() > centralAxisEnd) {
+							centralAxisEnd = centralProbes[i].length();
+						}
+					}
 				}
 
 				centralData = new double[lists.length][stores.length][];
