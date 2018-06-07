@@ -67,6 +67,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 	private JTextField pValueField;
 	private double pValue = 0.00001d;
 	private JCheckBox skipDeduplicationBox;
+	private JCheckBox skipRescoringBox;
 
 	private JTextField fragmentSizeField;
 	private int fragmentSize = 600;  // Average selected fragment size
@@ -160,12 +161,20 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		bgbc.gridx=1;
 		bottomPanel.add(skipDeduplicationBox,bgbc);
 
+		bgbc.gridx=0;
+		bgbc.gridy++;
+
+		bottomPanel.add(new JLabel("Skip rescoring step "),bgbc);
+		skipRescoringBox = new JCheckBox();
+		bgbc.gridx=1;
+		bottomPanel.add(skipRescoringBox,bgbc);
+
 
 		optionPanel.add(bottomPanel,gbc);
 		return optionPanel;	
 	}
 
-	
+
 	public boolean isReady() {
 		try {
 			pValue = Double.parseDouble(pValueField.getText());
@@ -213,7 +222,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		Thread t = new Thread(this);
 		t.start();
 	}
-	
+
 	/**
 	 * Gets a text description of the current set of options.
 	 * 
@@ -229,7 +238,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 				b.append(",");
 			}
 		}
-		
+
 		if (selectedInputStores.length > 0) {
 			b.append(" and input samples ");
 			for (int i=0;i<selectedInputStores.length;i++) {
@@ -238,12 +247,12 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 					b.append(",");
 				}
 			}
-			
+
 		}
 		else {
 			b.append(" and no input samples");
 		}
-		
+
 		b.append(". Fragment size was ");
 		b.append(fragmentSize);
 		b.append(". Significance threshold was ");
@@ -252,21 +261,24 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		if (skipDeduplicationBox.isSelected()){
 			b.append(". Deduplication step skipped");
 		}
-				
+		if (skipRescoringBox.isSelected()){
+			b.append(". Rescoring step skipped");
+		}
+
 		return b.toString();
 	}
-	
+
 
 	public void run() {
 
-//		for (int i=0;i<selectedChIPStores.length;i++) {
-//			System.err.println("Selcted ChIP="+selectedChIPStores[i]);
-//		}
-//		for (int i=0;i<selectedInputStores.length;i++) {
-//			System.err.println("Selcted Input="+selectedInputStores[i]);
-//		}
-		
-		
+		//		for (int i=0;i<selectedChIPStores.length;i++) {
+		//			System.err.println("Selcted ChIP="+selectedChIPStores[i]);
+		//		}
+		//		for (int i=0;i<selectedInputStores.length;i++) {
+		//			System.err.println("Selcted Input="+selectedInputStores[i]);
+		//		}
+
+
 		// First find the tag offsets between the watson and crick strands
 
 		// Work out the total average coverage for all of the combined ChIP samples
@@ -275,15 +287,15 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		for (int i=0;i<selectedChIPStores.length;i++) {
 			totalChIPCoverage += selectedChIPStores[i].getTotalReadLength();
 		}
-		
+
 		if (cancel) {
 			generationCancelled();
 			return;
 		}
 
 		double averageChIPCoveragePerBase = totalChIPCoverage / (double)collection.genome().getTotalGenomeLength();
-		
-		
+
+
 		double lowerCoverage = averageChIPCoveragePerBase*minFoldEnrichment;
 		double upperCoverage = averageChIPCoveragePerBase*maxFoldEnrichment;
 
@@ -297,13 +309,13 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		Vector<Probe> potentialHighConfidencePeaks = new Vector<Probe>();
 
 		for (int c=0;c<chromosomes.length;c++) {
-			
+
 			if (cancel) {
 				generationCancelled();
 				return;
 			}
 
-			
+
 			// Time for an update
 			updateGenerationProgress("Finding high confidence peaks on chromosome "+chromosomes[c].name(), c, chromosomes.length);
 
@@ -316,7 +328,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 					generationCancelled();
 					return;
 				}
-				
+
 				long totalLength = 0;
 				Probe probe = new Probe(chromosomes[c], startPosition, startPosition+fragmentSize);
 
@@ -384,8 +396,8 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 			generationCancelled();
 			return;
 		}
-		
-//		System.err.println("Found "+potentialHighConfidencePeaks.size()+" high confidence peaks");
+
+		//		System.err.println("Found "+potentialHighConfidencePeaks.size()+" high confidence peaks");
 
 		// Now we select 1000 random probes from this set
 		Probe [] highConfidencePeaks = potentialHighConfidencePeaks.toArray(new Probe[0]);
@@ -397,7 +409,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		for (int i=0;i<randomHighConfidenceProbes.length;i++) {
 			randomHighConfidenceProbes[i] = highConfidencePeaks[i];
 		}
-		
+
 		// Now find the average distance between forward / reverse reads in the candidate peaks
 
 		int [] distances = new int [highConfidencePeaks.length];
@@ -406,13 +418,13 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		Arrays.sort(randomHighConfidenceProbes);
 
 		for (int p=0;p<randomHighConfidenceProbes.length;p++) {
-			
+
 			// See if we need to quit
 			if (cancel) {
 				generationCancelled();
 				return;
 			}
-			
+
 			distances[p] = getInterStrandDistance(randomHighConfidenceProbes[p], selectedChIPStores);
 		}
 
@@ -420,7 +432,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 
 		if (medianInterStrandDistance < 0) medianInterStrandDistance = 0;
 
-//		System.err.println("Median inter strand difference = "+medianInterStrandDistance);
+		//		System.err.println("Median inter strand difference = "+medianInterStrandDistance);
 
 
 		// Now we find the depth cutoff for overrepresented single tags using a binomial distribution
@@ -435,9 +447,9 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		int redundantThreshold = bin.inverseCumulativeProbability(1-0.00001d);
 
 		if (redundantThreshold < 1) redundantThreshold = 1;
-		
-//		System.err.println("Redundancy threshold is "+redundantThreshold);
-	
+
+		//		System.err.println("Redundancy threshold is "+redundantThreshold);
+
 
 		// Now we construct a poisson distribution to work out the threshold to use for
 		// constructing a full candidate peak set.
@@ -447,22 +459,22 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		// To do this we need to get the full non-redundant length from the whole set
 		int totalNonRedCount = getNonRedundantReadCount(selectedChIPStores, redundantThreshold);
 
-//		System.err.println("Total non-redundant sequences is "+totalNonRedCount);
-		
+		//		System.err.println("Total non-redundant sequences is "+totalNonRedCount);
+
 		// We need to know the median read length for the data
 		int readLength = 0;
 		for (int i=0;i<selectedChIPStores.length;i++) {
 			readLength += selectedChIPStores[i].getTotalReadLength()/selectedChIPStores[i].getTotalReadCount();
 		}
 		readLength /= selectedChIPStores.length;
-		
+
 		double expectedCountsPerWindow = getExpectedCountPerWindow(totalNonRedCount, collection.genome().getTotalGenomeLength(), fragmentSize, readLength);
-		
+
 		PoissonDistribution poisson = new PoissonDistribution(expectedCountsPerWindow);
 
 		int readCountCutoff = poisson.inverseCumulativeProbability(1-pValue);
 
-//		System.err.println("Threshold for enrichment in a window is "+readCountCutoff+" reads using a p-value of "+pValue+" and a mean of "+(totalNonRedCount/(collection.genome().getTotalGenomeLength()/(double)fragmentSize)));
+		//		System.err.println("Threshold for enrichment in a window is "+readCountCutoff+" reads using a p-value of "+pValue+" and a mean of "+(totalNonRedCount/(collection.genome().getTotalGenomeLength()/(double)fragmentSize)));
 
 		// Now we go back through the whole dataset to do a search for all possible candidate probes 
 
@@ -476,7 +488,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 			Probe lastValidProbe = null;
 
 			for (int startPosition = 1;startPosition<chromosomes[c].length()-fragmentSize;startPosition+=fragmentSize/2) {
-				
+
 				// See if we need to quit
 				if (cancel) {
 					generationCancelled();
@@ -536,162 +548,177 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 
 		Probe [] allCandidateProbes = potentialHighConfidencePeaks.toArray(new Probe[0]);
 
-		// Work out which stores we're using to validate against.
-		DataStore [] validationStores;
-		boolean useInput = false;
-		double inputCorrection = 1;
-		
-		int validationNonRedCount;
 
-		if (selectedInputStores != null && selectedInputStores.length > 0) {
+		if (! skipRescoringBox.isSelected()) {
+
+			System.err.println("Skipping rescoring");
 			
-			// See if we need to quit
-			if (cancel) {
-				generationCancelled();
-				return;
+			// Work out which stores we're using to validate against.
+			DataStore [] validationStores;
+			boolean useInput = false;
+			double inputCorrection = 1;
+
+			int validationNonRedCount;
+
+			if (selectedInputStores != null && selectedInputStores.length > 0) {
+
+				// See if we need to quit
+				if (cancel) {
+					generationCancelled();
+					return;
+				}
+
+				validationStores = selectedInputStores;
+				useInput = true;
+
+				// We also need to work out the total number of nonredundant seqences
+				// in the input so we can work out a scaling factor so that the densities
+				// for input and chip are comparable.
+				validationNonRedCount = getNonRedundantReadCount(validationStores, redundantThreshold);
+
+				inputCorrection = totalNonRedCount/(double)validationNonRedCount;
+
+				System.err.println("From chip="+totalNonRedCount+" input="+validationNonRedCount+" correction is "+inputCorrection);
+
+
+
 			}
-			
-			validationStores = selectedInputStores;
-			useInput = true;
-
-			// We also need to work out the total number of nonredundant seqences
-			// in the input so we can work out a scaling factor so that the densities
-			// for input and chip are comparable.
-			validationNonRedCount = getNonRedundantReadCount(validationStores, redundantThreshold);
-			
-			inputCorrection = totalNonRedCount/(double)validationNonRedCount;
-
-			System.err.println("From chip="+totalNonRedCount+" input="+validationNonRedCount+" correction is "+inputCorrection);
-			
+			else {
+				validationStores = selectedChIPStores;
+				validationNonRedCount = totalNonRedCount;
+			}
 
 
+			Vector<Probe> finalValidatedProbes = new Vector<Probe>();
+
+			for (int p=0;p<allCandidateProbes.length;p++) {
+
+				// See if we need to quit
+				if (cancel) {
+					generationCancelled();
+					return;
+				}
+
+				if (p%100 == 0) {
+					updateGenerationProgress("Validated "+p+" out of "+allCandidateProbes.length+" raw peaks", p, allCandidateProbes.length);
+				}
+
+				//			System.err.println("Validating "+allCandidateProbes[p].chromosome()+":"+allCandidateProbes[p].start()+"-"+allCandidateProbes[p].end());
+
+				// We now need to find the maximum read density per 2*bandwidth against which
+				// we're going to validate this peak
+
+				// We're going to get all reads within 10kb of the peak, and then we can subselect from there
+
+				int midPoint = allCandidateProbes[p].middle();
+
+				Probe region10kb = new Probe(allCandidateProbes[p].chromosome(), Math.max(midPoint-5000,1),Math.min(midPoint+4999,allCandidateProbes[p].chromosome().length()),allCandidateProbes[p].strand());
+				Probe region5kb = new Probe(allCandidateProbes[p].chromosome(), Math.max(midPoint-2500,1),Math.min(midPoint+2499,allCandidateProbes[p].chromosome().length()),allCandidateProbes[p].strand());
+				Probe region1kb = new Probe(allCandidateProbes[p].chromosome(), Math.max(midPoint-500,1),Math.min(midPoint+499,allCandidateProbes[p].chromosome().length()),allCandidateProbes[p].strand());
+
+				// Get the probes for the largest region
+				long [] thisRegionReads = getReadsFromDataStoreCollection(region10kb, validationStores, 0);
+
+				// Deduplicate so it's a fair comparison
+				thisRegionReads = deduplicateReads(thisRegionReads, redundantThreshold); // Should we recalculate the redundant threshold based on the input coverage?
+
+				int region10kbcount = thisRegionReads.length;
+				int region5kbcount = 0;
+				int region1kbcount = 0;
+
+				// Go through the reads seeing if they fit into the 5 or 1kb regions
+				for (int r=0;r<thisRegionReads.length;r++) {
+					if (SequenceRead.overlaps(region5kb.packedPosition(), thisRegionReads[r])) ++region5kbcount;
+					if (SequenceRead.overlaps(region1kb.packedPosition(), thisRegionReads[r])) ++region1kbcount;
+				}
+
+				//			System.err.println("Input counts 10kb="+region10kbcount+" 5kb="+region5kbcount+" 1kb="+region1kbcount);
+
+				// Convert to densities per window and ajdust for global coverage
+
+				double globalDensity = getExpectedCountPerWindow(validationNonRedCount, collection.genome().getTotalGenomeLength(), allCandidateProbes[p].length(), readLength) * inputCorrection;
+				double density10kb = getExpectedCountPerWindow(region10kbcount, region10kb.length(), allCandidateProbes[p].length(), readLength) * inputCorrection;
+				double density5kb = getExpectedCountPerWindow(region5kbcount, region5kb.length(), allCandidateProbes[p].length(), readLength) * inputCorrection;
+				double density1kb = getExpectedCountPerWindow(region1kbcount, region1kb.length(), allCandidateProbes[p].length(), readLength) * inputCorrection;
+
+				// Find the highest density to use for the validation
+				double highestDensity = globalDensity;
+				if (density10kb > highestDensity) highestDensity = density10kb;
+				if (density5kb > highestDensity) highestDensity = density5kb;
+				if (useInput && density1kb > highestDensity) highestDensity = density1kb;
+
+				//			System.err.println("Global="+globalDensity+" 10kb="+density10kb+" 5kb="+density5kb+" 1kb="+density1kb+" using="+highestDensity);
+
+				// Construct a poisson distribution with this density
+				PoissonDistribution localPoisson = new PoissonDistribution(highestDensity);
+
+
+				//			System.err.println("Cutoff from global="+(new PoissonDistribution(globalDensity)).inverseCumulativeProbability(1-pValue)+" 10kb="+(new PoissonDistribution(density10kb)).inverseCumulativeProbability(1-pValue)+" 5kb="+(new PoissonDistribution(density5kb)).inverseCumulativeProbability(1-pValue)+" 1kb="+(new PoissonDistribution(density1kb)).inverseCumulativeProbability(1-pValue));
+				// Now check to see if the actual count from this peak is enough to still pass
+				long [] mergedProbeReads = getReadsFromDataStoreCollection(allCandidateProbes[p], selectedChIPStores, medianInterStrandDistance);
+				mergedProbeReads = deduplicateReads(mergedProbeReads,redundantThreshold);
+
+				SequenceRead.sort(mergedProbeReads);
+
+				int thisProbeOverlapCount = 0;
+				for (int i=0;i<mergedProbeReads.length;i++) {
+					if (SequenceRead.overlaps(mergedProbeReads[i], allCandidateProbes[p].packedPosition())) {
+						++thisProbeOverlapCount;
+					}
+				}
+
+				//			System.err.println("Read count in ChIP is "+thisProbeOverlapCount);
+
+				if (thisProbeOverlapCount > localPoisson.inverseCumulativeProbability(1-pValue)) {
+					finalValidatedProbes.add(allCandidateProbes[p]);
+					//				System.err.println("Adding probe to final set");
+				}
+
+			}
+
+			//		System.err.println("From "+allCandidateProbes.length+" candidates "+finalValidatedProbes.size()+" peaks were validated");
+
+			ProbeSet finalSet = new ProbeSet(getDescription(), finalValidatedProbes.toArray(new Probe[0]));
+
+			generationComplete(finalSet);
 		}
 		else {
-			validationStores = selectedChIPStores;
-			validationNonRedCount = totalNonRedCount;
-		}
-
-
-		Vector<Probe> finalValidatedProbes = new Vector<Probe>();
-
-		for (int p=0;p<allCandidateProbes.length;p++) {
 			
-			// See if we need to quit
-			if (cancel) {
-				generationCancelled();
-				return;
-			}
+			System.err.println("Not doing rescoring");
+			// We're not doing the rescoring
+			ProbeSet finalSet = new ProbeSet(getDescription(), allCandidateProbes);
 
-			if (p%100 == 0) {
-				updateGenerationProgress("Validated "+p+" out of "+allCandidateProbes.length+" raw peaks", p, allCandidateProbes.length);
-			}
-
-//			System.err.println("Validating "+allCandidateProbes[p].chromosome()+":"+allCandidateProbes[p].start()+"-"+allCandidateProbes[p].end());
-			
-			// We now need to find the maximum read density per 2*bandwidth against which
-			// we're going to validate this peak
-
-			// We're going to get all reads within 10kb of the peak, and then we can subselect from there
-
-			int midPoint = allCandidateProbes[p].middle();
-
-			Probe region10kb = new Probe(allCandidateProbes[p].chromosome(), Math.max(midPoint-5000,1),Math.min(midPoint+4999,allCandidateProbes[p].chromosome().length()),allCandidateProbes[p].strand());
-			Probe region5kb = new Probe(allCandidateProbes[p].chromosome(), Math.max(midPoint-2500,1),Math.min(midPoint+2499,allCandidateProbes[p].chromosome().length()),allCandidateProbes[p].strand());
-			Probe region1kb = new Probe(allCandidateProbes[p].chromosome(), Math.max(midPoint-500,1),Math.min(midPoint+499,allCandidateProbes[p].chromosome().length()),allCandidateProbes[p].strand());
-
-			// Get the probes for the largest region
-			long [] thisRegionReads = getReadsFromDataStoreCollection(region10kb, validationStores, 0);
-
-			// Deduplicate so it's a fair comparison
-			thisRegionReads = deduplicateReads(thisRegionReads, redundantThreshold); // Should we recalculate the redundant threshold based on the input coverage?
-
-			int region10kbcount = thisRegionReads.length;
-			int region5kbcount = 0;
-			int region1kbcount = 0;
-
-			// Go through the reads seeing if they fit into the 5 or 1kb regions
-			for (int r=0;r<thisRegionReads.length;r++) {
-				if (SequenceRead.overlaps(region5kb.packedPosition(), thisRegionReads[r])) ++region5kbcount;
-				if (SequenceRead.overlaps(region1kb.packedPosition(), thisRegionReads[r])) ++region1kbcount;
-			}
-
-//			System.err.println("Input counts 10kb="+region10kbcount+" 5kb="+region5kbcount+" 1kb="+region1kbcount);
-
-			// Convert to densities per window and ajdust for global coverage
-
-			double globalDensity = getExpectedCountPerWindow(validationNonRedCount, collection.genome().getTotalGenomeLength(), allCandidateProbes[p].length(), readLength) * inputCorrection;
-			double density10kb = getExpectedCountPerWindow(region10kbcount, region10kb.length(), allCandidateProbes[p].length(), readLength) * inputCorrection;
-			double density5kb = getExpectedCountPerWindow(region5kbcount, region5kb.length(), allCandidateProbes[p].length(), readLength) * inputCorrection;
-			double density1kb = getExpectedCountPerWindow(region1kbcount, region1kb.length(), allCandidateProbes[p].length(), readLength) * inputCorrection;
-			
-			// Find the highest density to use for the validation
-			double highestDensity = globalDensity;
-			if (density10kb > highestDensity) highestDensity = density10kb;
-			if (density5kb > highestDensity) highestDensity = density5kb;
-			if (useInput && density1kb > highestDensity) highestDensity = density1kb;
-
-//			System.err.println("Global="+globalDensity+" 10kb="+density10kb+" 5kb="+density5kb+" 1kb="+density1kb+" using="+highestDensity);
-			
-			// Construct a poisson distribution with this density
-			PoissonDistribution localPoisson = new PoissonDistribution(highestDensity);
-
-			
-//			System.err.println("Cutoff from global="+(new PoissonDistribution(globalDensity)).inverseCumulativeProbability(1-pValue)+" 10kb="+(new PoissonDistribution(density10kb)).inverseCumulativeProbability(1-pValue)+" 5kb="+(new PoissonDistribution(density5kb)).inverseCumulativeProbability(1-pValue)+" 1kb="+(new PoissonDistribution(density1kb)).inverseCumulativeProbability(1-pValue));
-			// Now check to see if the actual count from this peak is enough to still pass
-			long [] mergedProbeReads = getReadsFromDataStoreCollection(allCandidateProbes[p], selectedChIPStores, medianInterStrandDistance);
-			mergedProbeReads = deduplicateReads(mergedProbeReads,redundantThreshold);
-
-			SequenceRead.sort(mergedProbeReads);
-
-			int thisProbeOverlapCount = 0;
-			for (int i=0;i<mergedProbeReads.length;i++) {
-				if (SequenceRead.overlaps(mergedProbeReads[i], allCandidateProbes[p].packedPosition())) {
-					++thisProbeOverlapCount;
-				}
-			}
-
-//			System.err.println("Read count in ChIP is "+thisProbeOverlapCount);
-			
-			if (thisProbeOverlapCount > localPoisson.inverseCumulativeProbability(1-pValue)) {
-				finalValidatedProbes.add(allCandidateProbes[p]);
-//				System.err.println("Adding probe to final set");
-			}
+			generationComplete(finalSet);
 
 		}
-		
-//		System.err.println("From "+allCandidateProbes.length+" candidates "+finalValidatedProbes.size()+" peaks were validated");
-
-		ProbeSet finalSet = new ProbeSet(getDescription(), finalValidatedProbes.toArray(new Probe[0]));
-
-		generationComplete(finalSet);
 
 	}
-	
+
 	private double getExpectedCountPerWindow (int totalCount, long totalLength, int windowSize, int readLength) {
-		
+
 		// Basic count is simply the count divided by the number of
 		// windows
-		
+
 		double expectedCount = totalCount/(totalLength/(double)windowSize);
-		
+
 		// We now need to account for how many reads are going to span more than
 		// one window
 		double readOverlap = (readLength-1d)/windowSize;
-		
+
 		// We can now multiply this by the expected count and add that to the expected
 		// value to get the true expected value
-		
+
 		expectedCount += (expectedCount*readOverlap);
-		
+
 		return expectedCount;
 	}
 
 	private long [] deduplicateReads (long [] reads, int threshold) {
 
 		if (skipDeduplicationBox.isSelected()) return reads;
-		
-//		System.err.println("Threshold is "+threshold);
-		
+
+		//		System.err.println("Threshold is "+threshold);
+
 		LongVector passed = new LongVector();
 
 		int lastReadCount = 0;
@@ -729,11 +756,11 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 
 			long [] mergedChrReads = getReadsFromDataStoreCollection(chromosomes[c], stores, 0);
 
-//			System.err.println("Found "+mergedChrReads.length+" raw reads on "+chromosomes[c]);
+			//			System.err.println("Found "+mergedChrReads.length+" raw reads on "+chromosomes[c]);
 			SequenceRead.sort(mergedChrReads);
 
 			mergedChrReads = deduplicateReads(mergedChrReads, threshold);
-//			System.err.println("Found "+mergedChrReads.length+" deduplicated reads on "+chromosomes[c]);
+			//			System.err.println("Found "+mergedChrReads.length+" deduplicated reads on "+chromosomes[c]);
 
 			totalCount += mergedChrReads.length;
 		}
@@ -780,7 +807,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 
 	}
 
-	
+
 	// TODO: Report back ReadsWithCounts rather than flattening to a huge array.
 	private long [] getReadsFromDataStoreCollection (Chromosome c, DataStore [] stores, int strandOffset) {
 
@@ -788,7 +815,7 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		for (int d=0;d<stores.length;d++) {
 			allChrReads[d] = stores[d].getReadsForChromosome(c);
 		}
-		
+
 		ReadsWithCounts mergedReadsCounts = new ReadsWithCounts(allChrReads);
 
 		int totalProbeReadCount = mergedReadsCounts.totalCount();
