@@ -550,8 +550,6 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 
 
 		if (! skipRescoringBox.isSelected()) {
-
-			System.err.println("Skipping rescoring");
 			
 			// Work out which stores we're using to validate against.
 			DataStore [] validationStores;
@@ -684,7 +682,6 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		}
 		else {
 			
-			System.err.println("Not doing rescoring");
 			// We're not doing the rescoring
 			ProbeSet finalSet = new ProbeSet(getDescription(), allCandidateProbes);
 
