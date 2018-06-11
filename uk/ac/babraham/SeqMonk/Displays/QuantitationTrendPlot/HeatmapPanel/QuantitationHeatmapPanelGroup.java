@@ -1,5 +1,6 @@
 package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.HeatmapPanel;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -34,11 +35,12 @@ public class QuantitationHeatmapPanelGroup extends JPanel {
 		gbc.insets = new Insets(3, 3, 3, 3);
 		gbc.fill = GridBagConstraints.BOTH;
 		
-		// Do the probe list names first
+		// Do the probe list names first.  We need these to be the same size so we're using
+		// a subclass of JLabel which always requests the same amount of space.
 		ProbeList [] lists = data.lists();
 		for (int l=0;l<lists.length;l++) {
 			gbc.gridx=l;
-			add(new JLabel(lists[l].name(), JLabel.CENTER),gbc);
+			add(new sameWidthJLabel(lists[l].name(), JLabel.CENTER),gbc);
 		}
 		
 		DataStore [] stores = data.stores();
@@ -74,6 +76,18 @@ public class QuantitationHeatmapPanelGroup extends JPanel {
 			heatmaps[i].setLimits(min, max);
 		}
 		
+	}
+	
+	
+	private class sameWidthJLabel extends JLabel {
+		public sameWidthJLabel(String label, int orientation) {
+			super(label,orientation);
+		}
+		
+		public Dimension getPreferredSize () {
+			Dimension d = super.getPreferredSize();
+			return new Dimension(10, d.height);
+		}
 	}
 	
 }

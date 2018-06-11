@@ -55,8 +55,6 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 	private JCheckBox invertGradient;
 	private JButton highlightRepSetsButton;
 	private boolean negativeScale;
-
-	private QuantitationTrendData data;
 	
 	private JPanel exportPanel = new JPanel();
 	private QuantitationHeatmapPanelGroup quantPanel;
@@ -64,7 +62,6 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 
 	public QuantitationTrendHeatmapDialog (QuantitationTrendData data) {
 		super(SeqMonkApplication.getInstance(),"Quantitation Trend Heatmap");
-		this.data = data;
 
 
 		// Work out whether we're using a pos-neg or just pos scale
@@ -124,6 +121,7 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 		dataZoomSlider.setPaintLabels(true);
 		getContentPane().add(dataZoomSlider,BorderLayout.EAST);
 
+		// TODO: Set the initial slider position to the correct place.
 
 
 		// Add the colour options to the top
