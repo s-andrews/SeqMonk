@@ -422,7 +422,8 @@ public class CrashReporterDialog extends JDialog implements ActionListener {
 					JOptionPane.showMessageDialog(cr, "We found some information which might help solve the probelm you hit", "Help found", JOptionPane.INFORMATION_MESSAGE);
 					
 					// We've been returned a possible solution
-					new HTMLDisplayDialog(htmlResponse.toString());
+					HTMLDisplayDialog hd = new HTMLDisplayDialog(htmlResponse.toString());
+					hd.requestFocus();
 				}
 				setVisible(false);
 				cr.setVisible(false);
