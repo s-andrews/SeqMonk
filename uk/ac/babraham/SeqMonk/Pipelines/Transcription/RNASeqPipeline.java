@@ -652,7 +652,7 @@ public class RNASeqPipeline extends Pipeline {
 						// If these libraries are paired end then the total number of
 						// reads is also effectively halved.
 						
-						float totalReadCount;
+						float totalReadCount = 0;
 						
 						// We start by getting the original total.  For DNA contamination correction we'll have
 						// calculated this already, but otherwise we'll take the total count (total length/read length)
@@ -660,7 +660,8 @@ public class RNASeqPipeline extends Pipeline {
 							totalReadCount = correctedTotalCounts[d];
 						}
 						else {
-							totalReadCount = data[d].getTotalReadLength()/readLengths[d];
+							if (readLengths[d] > 0)
+								totalReadCount = data[d].getTotalReadLength()/readLengths[d];
 						}
 						
 						
