@@ -81,7 +81,7 @@ public class ProbeListAnnotationParser extends AnnotationParser {
 		
 		Vector<AnnotationSet> annotationSets = new Vector<AnnotationSet>();
 
-		AnnotationSet currentAnnotation = new AnnotationSet(genome, probeList.name());
+		AnnotationSet currentAnnotation = new AnnotationSet(genome, featureType);
 		annotationSets.add(currentAnnotation);
 
 		Probe [] probes = probeList.getAllProbes();
