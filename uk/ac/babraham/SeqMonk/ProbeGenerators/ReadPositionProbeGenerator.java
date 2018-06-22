@@ -265,7 +265,7 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 
 		Chromosome [] chromosomes = collection.genome().getAllChromosomes();
 
-		if (limitWithinRegion) {
+		if (limitWithinRegion && limitRegionBox.getSelectedItem().toString().equals("Currently Visible Region")) {
 			chromosomes = new Chromosome [] {DisplayPreferences.getInstance().getCurrentChromosome()};
 		}
 
