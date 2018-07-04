@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -69,7 +70,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 	private ReplicateSet [] replicateSets = new ReplicateSet[0];
 	private static Double pValueCutoff = 0.05;
-	private static Double absDiffCutoff = 5d;
+	private static Integer minObservations = 10;
 
 	private static boolean multiTest = true;
 	private static boolean resample = false;
@@ -108,6 +109,10 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		// Make up the list of DataStores in each replicate set		
 		DataStore [] fromStores = replicateSets[0].dataStores();
 		DataStore [] toStores = replicateSets[1].dataStores();
+		
+		// Check the value for the min observations.  We won't use a value lower than 3.
+		
+		if (minObservations < 3) minObservations = 3;
 
 		File tempDir;
 		try {
@@ -156,34 +161,21 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			// Get the template script
 			Template template = new Template(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Filters/LogisticRegressionFilter/logistic_regression_template.r"));
 
-			// Substitute in the variables we need to change
-			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
-
-			template.setValue("DIFFERENCE", ""+absDiffCutoff);
-
-			template.setValue("PVALUE", ""+pValueCutoff);
-
-			if (multiTest) {
-				template.setValue("MULTITEST", "TRUE");
-			}
-			else {
-				template.setValue("MULTITEST", "FALSE");
-			}
-
-
-			// Write the script file
-			File scriptFile = new File(tempDir.getAbsoluteFile()+"/script.r");
-			PrintWriter pr = new PrintWriter(scriptFile);
-			pr.print(template.toString());
-			pr.close();
 
 			// Write the count data
 
-			// Sort these so we can get probes from the same chromsome together
+			// Sort these so we can get probes from the same chromosome together
 			Arrays.sort(probes);
-			pr = null;
+			PrintWriter pr = null;
 			String lastChr = "";
-
+			
+			// Rather than not testing probes based on their absolute difference
+			// we should just post-filter them.  The easiest way to do this will
+			// be to not test (as we do now) but explicity pass in the number of
+			// tests we should have performed to the multiple testing correction.
+			
+			int numberOfTestsToCorrectBy = 0;
+			
 			PROBE: for (int p=0;p<probes.length;p++) {
 
 				if (!probes[p].chromosome().name().equals(lastChr)) {
@@ -277,7 +269,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					totalFromMeth += fromMethCounts[i];
 					totalFrom += fromMethCounts[i];
 					totalFrom += fromUnmethCounts[i];
-					if (fromMethCounts[i] >0 || fromUnmethCounts[i]>0) {
+					if (fromMethCounts[i] + fromUnmethCounts[i] >= minObservations) {
 						++validFrom;
 					}
 				}
@@ -287,23 +279,22 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					totalToMeth += toMethCounts[i];
 					totalTo += toMethCounts[i];
 					totalTo += toUnmethCounts[i];
-					if (toMethCounts[i] >0 || toUnmethCounts[i]>0) {
+					if (toMethCounts[i] + toUnmethCounts[i] >= minObservations) {
 						++validTo;
 					}
 				}
 
-				if (validFrom < 3 || validTo < 3) {
+				// We're going to be quite strict in saying that we need to
+				// have enough data in all stores to go ahead and do the test.
+				if (validFrom < fromStores.length || validTo < toStores.length) {
 					// We don't have enough data to measure this one
 					continue;
 				}
 
-				// Now check the differences.  We do this two ways - by adding the 
-				// total counts together, and by averaging the individual percentages
-				// Both of these have to pass if we're going to do the testing.
-
-				if (Math.abs((totalFromMeth*100f/totalFrom) - (totalToMeth*100f/totalTo)) < absDiffCutoff) {
-					continue;
-				}
+				// At this point we have to count this probe as valid for the 
+				// purposes of multiple testing correction
+				++numberOfTestsToCorrectBy;
+				
 
 				float [] fromPercentages = new float[validFrom];
 				float [] toPercentages = new float[validTo];
@@ -323,9 +314,6 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					++lastToIndex;
 				}
 
-				if (Math.abs(SimpleStats.mean(fromPercentages)-SimpleStats.mean(toPercentages)) < absDiffCutoff) {
-					continue;
-				}
 
 				// If we get here then we're OK to use this probe
 
@@ -341,6 +329,36 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			}				
 
 			pr.close();
+			
+			// Sanity check to make sure we have something to work with.
+			if (numberOfTestsToCorrectBy == 0) {
+				progressExceptionReceived(new IllegalStateException("No probes had enough data to test."));
+			}
+			
+			
+			// Now we can complete the template 
+			
+			// Substitute in the variables we need to change
+			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
+			
+			template.setValue("CORRECTCOUNT",""+numberOfTestsToCorrectBy);
+
+			template.setValue("PVALUE", ""+pValueCutoff);
+
+			if (multiTest) {
+				template.setValue("MULTITEST", "TRUE");
+			}
+			else {
+				template.setValue("MULTITEST", "FALSE");
+			}
+
+
+			// Write the script file
+			File scriptFile = new File(tempDir.getAbsoluteFile()+"/script.r");
+			pr = new PrintWriter(scriptFile);
+			pr.print(template.toString());
+			pr.close();
+
 
 			progressUpdated("Running R Script",0,1);
 
@@ -478,8 +496,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			b.append(" with ratios recalculated from normalised quantitation");
 		}
 
-		b.append(" with a minimum difference of ");
-		b.append(absDiffCutoff);
+		b.append(" with a minimum number of observations of ");
+		b.append(minObservations);
 
 		return b.toString();
 	}
@@ -499,8 +517,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			b.append(" after correction");
 		}
 
-		b.append(". Min diff ");
-		b.append(absDiffCutoff);
+		b.append(". Min obs ");
+		b.append(minObservations);
 
 		return b.toString();	
 	}
@@ -512,7 +530,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 		private JList dataList;
 		private JTextField pValueCutoffField;
-		private JTextField absDiffCutoffField;
+		private JTextField minObsField;
 		private JCheckBox multiTestBox;
 		private JCheckBox resampleBox;
 
@@ -558,6 +576,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.weightx=0.2;
 			gbc.weighty=0.5;
 			gbc.fill=GridBagConstraints.HORIZONTAL;
+			gbc.insets = new Insets(5, 5, 5, 5);
 
 
 			gbc.gridwidth=1;
@@ -576,14 +595,14 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.gridwidth=1;
 			gbc.gridy++;
 
-			choicePanel.add(new JLabel("Absolute diff cutoff",JLabel.RIGHT),gbc);
+			choicePanel.add(new JLabel("Minimum Observations",JLabel.RIGHT),gbc);
 
 			gbc.gridx++;
 			gbc.weightx=0.6;
 
-			absDiffCutoffField = new JTextField(absDiffCutoff.toString(),5);
-			absDiffCutoffField.addKeyListener(this);
-			choicePanel.add(absDiffCutoffField,gbc);
+			minObsField = new JTextField(minObservations.toString(),5);
+			minObsField.addKeyListener(this);
+			choicePanel.add(minObsField,gbc);
 
 			gbc.gridx=0;
 			gbc.gridy++;
@@ -604,7 +623,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.gridy++;
 			gbc.weightx=0.2;
 
-			choicePanel.add(new JLabel("Resample counts from current quantitation"),gbc);
+			choicePanel.add(new JLabel("Resample counts from current quantitation",JLabel.RIGHT),gbc);
 
 			gbc.gridx++;
 			gbc.weightx=0.6;
@@ -657,14 +676,14 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				}
 			}
 
-			else if (f.equals(absDiffCutoffField)) {
-				if (f.getText().length() == 0) absDiffCutoff = 0d;
+			else if (f.equals(minObsField)) {
+				if (f.getText().length() == 0) minObservations = 0;
 				else {
 					try {
-						absDiffCutoff = Double.parseDouble(absDiffCutoffField.getText());
+						minObservations = Integer.parseInt(minObsField.getText());
 					}
 					catch (NumberFormatException e) {
-						absDiffCutoffField.setText(absDiffCutoffField.getText().substring(0,absDiffCutoffField.getText().length()-1));
+						minObsField.setText(minObsField.getText().substring(0,minObsField.getText().length()-1));
 					}
 				}
 			}

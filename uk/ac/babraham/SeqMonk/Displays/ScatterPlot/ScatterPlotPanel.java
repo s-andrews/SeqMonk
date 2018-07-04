@@ -1,5 +1,5 @@
 /**
- * Copyright 2009-17 Simon Andrews
+ * Copyright 2009-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -507,6 +507,7 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 			for (int p=0;p<probes.length;p++) {
 				try {
 					double diff = xStore.getValueForProbe(probes[p])-yStore.getValueForProbe(probes[p]);
+					if (Double.isNaN(diff)) continue;
 					if (diff < minDiff) continue;
 					if (diff > maxDiff) continue;
 

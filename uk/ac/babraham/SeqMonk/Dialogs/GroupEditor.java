@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -48,6 +48,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataGroup;
 import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
+import uk.ac.babraham.SeqMonk.Dialogs.DataTrackSelector.DataStoreListModel;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 
@@ -60,19 +61,19 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 	private SeqMonkApplication application;
 	
 	/** The available model. */
-	private DefaultListModel availableModel = new DefaultListModel();
+	private DataStoreListModel availableModel = new DataStoreListModel();
 	
 	/** The available list. */
 	private JList availableList;
 	
 	/** The used model. */
-	private DefaultListModel usedModel = new DefaultListModel();
+	private DataStoreListModel usedModel = new DataStoreListModel();
 	
 	/** The used list. */
 	private JList usedList;
 	
 	/** The group model. */
-	private DefaultListModel groupModel = new DefaultListModel();
+	private DataStoreListModel groupModel = new DataStoreListModel();
 	
 	/** The group list. */
 	private JList groupList;
@@ -232,27 +233,23 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 		
 		// Fill the lists with the data we know about
 		DataStore [] dataStores = application.dataCollection().getAllDataSets();
-		for (int i=0;i<dataStores.length;i++) {
-			availableModel.addElement(dataStores[i]);
-		}
+		availableModel.addElements(dataStores);
 		
 		DataGroup [] dataGroups = application.dataCollection().getAllDataGroups();
-		for (int i=0;i<dataGroups.length;i++) {
-			groupModel.addElement(dataGroups[i]);
-		}
+		groupModel.addElements(dataGroups);
 
 		
 		setVisible(true);
 		
 		// A bif of a hack to make sure all lists
 		// resize as they should...
-		availableModel.addElement("temp");
-		usedModel.addElement("temp");
-		groupModel.addElement("temp");
-		validate();
-		availableModel.removeElement("temp");
-		usedModel.removeElement("temp");
-		groupModel.removeElement("temp");
+//		availableModel.addElement("temp");
+//		usedModel.addElement("temp");
+//		groupModel.addElement("temp");
+//		validate();
+//		availableModel.removeElement("temp");
+//		usedModel.removeElement("temp");
+//		groupModel.removeElement("temp");
 	}
 
 	/* (non-Javadoc)
@@ -262,13 +259,17 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 		String c = ae.getActionCommand();
 
 		if (c.equals("add")) {
-			Object [] adds = availableList.getSelectedValues();
+			Object [] addObj = availableList.getSelectedValues();
+			DataStore [] adds = new DataStore[addObj.length];
 			for (int i=0;i<adds.length;i++) {
-				usedModel.addElement(adds[i]);
-				availableModel.removeElement(adds[i]);
+				adds[i] = (DataStore)addObj[i];
 			}
+			usedModel.addElements(adds);
+			availableModel.removeElements(adds);
+			availableList.setSelectedIndices(new int[0]);
+			usedList.setSelectedIndices(new int[0]);
 			
-			Object [] o = usedModel.toArray();
+			Object [] o = usedModel.getStores();
 			DataSet [] s = new DataSet [o.length];
 			
 			for (int i=0;i<s.length;i++) {
@@ -283,13 +284,19 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 			new NameGatherer();			
 		}
 		else if (c.equals("remove")) {
-			Object [] adds = usedList.getSelectedValues();
+			Object [] addObj = usedList.getSelectedValues();
+			DataStore [] adds = new DataStore[addObj.length];
 			for (int i=0;i<adds.length;i++) {
-				usedModel.removeElement(adds[i]);
-				availableModel.addElement(adds[i]);
+				adds[i] = (DataStore)addObj[i];
 			}
+			usedModel.removeElements(adds);
+			availableModel.addElements(adds);
 			
-			Object [] o = usedModel.toArray();
+			availableList.setSelectedIndices(new int[0]);
+			usedList.setSelectedIndices(new int[0]);
+
+			
+			Object [] o = usedModel.getStores();
 			DataSet [] s = new DataSet [o.length];
 			
 			for (int i=0;i<s.length;i++) {
@@ -318,7 +325,7 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 
 			DataGroup s = new DataGroup(setName,new DataSet[0]);
 			application.dataCollection().addDataGroup(s);
-			groupModel.addElement(s);
+			groupModel.addElements(new DataStore []{s});
 		}
 		
 		else if (c.equals("rename_set")) {
@@ -339,8 +346,9 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 			DataGroup [] dataGroups = new DataGroup [o.length];
 			for (int i=0;i<o.length;i++) {
 				dataGroups[i]=(DataGroup)o[i];
-				groupModel.removeElement(o[i]);
 			}
+			
+			groupModel.removeElements(dataGroups);
 
 			application.dataCollection().removeDataGroups(dataGroups);
 
@@ -360,10 +368,8 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 		if (ae.getSource() == groupList) {
 
 			// Move all samples back to the available list
-			Object [] o = usedModel.toArray();
-			for (int i=0;i<o.length;i++) {
-				availableModel.addElement(o[i]);
-			}
+			DataStore [] o = usedModel.getStores();
+			availableModel.addElements(o);
 			usedModel.removeAllElements();
 
 			if(groupList.getSelectedValues().length == 1) {
@@ -371,10 +377,8 @@ public class GroupEditor extends JDialog implements ActionListener, ListSelectio
 				deleteButton.setEnabled(true);
 				DataGroup s = (DataGroup)groupList.getSelectedValue();
 				DataSet [] st = s.dataSets();
-				for (int i=0;i<st.length;i++) {
-					usedModel.addElement(st[i]);
-					availableModel.removeElement(st[i]);
-				}
+				usedModel.addElements(st);
+				availableModel.removeElements(st);
 			}
 			else if (groupList.getSelectedValues().length > 1) {
 				deleteButton.setEnabled(true);

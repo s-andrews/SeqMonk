@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 
-# Copyright Copyright 2009-15-10 Simon Andrews
+# Copyright Copyright 2009-18-10 Simon Andrews
 #
 #    This file is part of SeqMonk.
 #

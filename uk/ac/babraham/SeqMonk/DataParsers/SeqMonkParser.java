@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -80,6 +80,13 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	private boolean genomeLoaded = false;
 	private Exception exceptionReceived = null;
 	
+	// This value is an option the parser can set which allows a project to be
+	// loaded with a different genome than is specified in the file.  This can
+	// be used to allow switching between different compatible versions of 
+	// the same assmebly (ie moving between differnet annotation sets)
+	
+	private boolean forcedAssembly = false;
+	
 	
 	// These variables are used when a genome is required to be installed
 	// from a remote location.  The pause boolean is an easy way to wait
@@ -116,7 +123,10 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	 * 
 	 * @param file The file to parse
 	 */
-	public void parseFile (File file) {
+		
+	public void parseFile (File file, boolean forcedAssembly) {
+		
+		this.forcedAssembly = forcedAssembly;
 
 		/*
 		 * The attempt to open the file as a GZIP input stream can on some systems
@@ -255,6 +265,15 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 					parseLists(sections);
 				}
 				else if (sections[0].equals("Genome")) {
+					// If we're forcing an assembly then the genome will already
+					// be loaded by this point, so we just skip this.
+					
+					if (forcedAssembly) {
+						genomeLoaded = true;
+						continue;
+					}
+					
+					
 					parseGenome(sections);
 					// If we had a problem getting hold of the genome we will have put
 					// up a nice error for this, but we'll also have stored an exception

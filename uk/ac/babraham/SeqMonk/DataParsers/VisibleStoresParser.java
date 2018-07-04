@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -45,6 +45,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 
@@ -75,8 +76,8 @@ public class VisibleStoresParser extends DataParser {
 
 	private int forwardOffset = 0;
 	private int reverseOffset = 0;
-	
-	
+
+
 	/**
 	 * Instantiates a new active store parser.
 	 * 
@@ -126,11 +127,11 @@ public class VisibleStoresParser extends DataParser {
 			}
 
 		}
-		
+
 		forwardOffset = prefs.forwardOffset();
 		reverseOffset = prefs.reverseOffset();
-		
-		
+
+
 		filterByFeature = prefs.filterFeatureCheckbox.isSelected();
 		if (filterByFeature) {
 			excludeFeature = prefs.filterTypeBox.getSelectedItem().equals("Excluding");
@@ -146,32 +147,32 @@ public class VisibleStoresParser extends DataParser {
 				maxLength = Integer.parseInt(prefs.maxLengthField.getText());
 			}
 		}
-		
+
 		extractCentres = prefs.extractCentres();
 		centreExtractContext = prefs.centreExtractContext();
 
 		int downsampleTarget = 0;
 		if (prefs.downsampleBox.isSelected() && prefs.downsampleTargetField.getText().length() > 0) {
-			
+
 			downsample = true;
 			downsampleTarget = Integer.parseInt(prefs.downsampleTargetField.getText());
 		}
-		
+
 		DataSet [] newDataStores = new DataSet[visibleStores.length];
 
 		for (int s=0;s<visibleStores.length;s++) {
-			
+
 			if (downsample) {
 				// Work out the probability for this sample
 				int realReadCount = visibleStores[s].getTotalReadCount();
 				downsampleProbabilty = ((double)downsampleTarget) / realReadCount;
 			}
-			
+
 			DataSet newData = null;
 			try {
 
 				if (prefs.isHiC()) {
-					
+
 					newData = processHiCDataStore(visibleStores[s]);
 
 				}
@@ -219,7 +220,7 @@ public class VisibleStoresParser extends DataParser {
 
 			progressUpdated("Processing "+store.name()+" chr "+chrs[c].name(),c,chrs.length);
 
-			long [] reads = store.getReadsForChromosome(chrs[c]);
+			ReadsWithCounts reads = store.getReadsForChromosome(chrs[c]);
 
 			Feature [] features = null;
 			if (filterByFeature) {
@@ -229,137 +230,140 @@ public class VisibleStoresParser extends DataParser {
 
 			int currentFeaturePostion = 0;
 
-			for (int r=0;r<reads.length;r++) {
+			for (int r=0;r<reads.reads.length;r++) {
 
-				if (cancel) {
-					progressCancelled();
-					return null;
-				}
-				
-				if (downsample && downsampleProbabilty < 1) {
-					if (Math.random() > downsampleProbabilty) {
+				for (int ct=0;ct<reads.counts[r];ct++) {
+
+					long thisRead = reads.reads[r];
+					if (cancel) {
+						progressCancelled();
+						return null;
+					}
+
+					if (downsample && downsampleProbabilty < 1) {
+						if (Math.random() > downsampleProbabilty) {
+							continue;
+						}
+					}
+
+					long read;
+
+					int start = SequenceRead.start(thisRead);
+					int end = SequenceRead.end(thisRead);
+
+					int strand = SequenceRead.strand(thisRead);
+
+					if (filterByStrand) {
+						if (strand == Location.FORWARD && !keepForward) continue;
+						if (strand == Location.REVERSE && !keepReverse) continue;
+						if (strand == Location.UNKNOWN && !keepUnknown) continue;
+					}
+
+					if (filterByLength) {
+						int length = SequenceRead.length(thisRead);
+						if (minLength != null && length < minLength) continue;
+						if (maxLength != null && length > maxLength) continue;
+					}
+
+					if (strand == Location.FORWARD) {
+						start += forwardOffset;
+						end += forwardOffset;
+					}
+
+					if (strand == Location.REVERSE) {
+						start -= reverseOffset;
+						end -= reverseOffset;
+					}
+
+					if (filterByFeature && features.length == 0 && !excludeFeature) continue;
+
+					if (filterByFeature  && features.length > 0) {
+						// Check if we pass the filter for the current feature set
+
+						// See if we're comparing against the right feature
+						while (SequenceRead.start(thisRead) > features[currentFeaturePostion].location().end() && currentFeaturePostion < (features.length-1)) {
+							currentFeaturePostion++;
+						}
+
+						// Test to see if we overlap
+						if (SequenceRead.overlaps(thisRead, features[currentFeaturePostion].location().packedPosition())) {
+							if (excludeFeature) continue;
+						}
+						else {
+							if (!excludeFeature) continue;
+						}
+
+					}
+
+
+					if (reverse) {
+						if (strand == Location.FORWARD) {
+							strand = Location.REVERSE;
+						}
+						else if (strand == Location.REVERSE) {
+							strand = Location.FORWARD;
+						}
+
+					}
+
+					if (removeStrand) {
+						strand = Location.UNKNOWN;
+					}
+
+					if (extractCentres) {
+						int centre = start + ((end-start)/2);
+						start = centre-centreExtractContext;
+						end = centre+centreExtractContext;
+
+					}
+
+
+					if (extendBy != 0) {
+
+						// We now allow negative extensions to shorten reads
+						if (strand == Location.FORWARD || strand == Location.UNKNOWN) {
+							end += extendBy;
+							if (end < start) end = start;
+
+
+						}
+						else if (strand == Location.REVERSE) {
+							start -= extendBy;
+
+							if (start > end) start = end;
+						}
+					}
+
+					// We don't allow reads before the start of the chromosome
+					if (start < 1) {
+						int overrun = (0 - start)+1;
+						progressWarningReceived(new SeqMonkException("Reading position "+start+" was "+overrun+"bp before the start of chr"+chrs[c].name()+" ("+chrs[c].length()+")"));
 						continue;
 					}
-				}
 
-				long read;
-
-				int start = SequenceRead.start(reads[r]);
-				int end = SequenceRead.end(reads[r]);
-
-				int strand = SequenceRead.strand(reads[r]);
-				
-				if (filterByStrand) {
-					if (strand == Location.FORWARD && !keepForward) continue;
-					if (strand == Location.REVERSE && !keepReverse) continue;
-					if (strand == Location.UNKNOWN && !keepUnknown) continue;
-				}
-
-				if (filterByLength) {
-					int length = SequenceRead.length(reads[r]);
-					if (minLength != null && length < minLength) continue;
-					if (maxLength != null && length > maxLength) continue;
-				}
-				
-				if (strand == Location.FORWARD) {
-					start += forwardOffset;
-					end += forwardOffset;
-				}
-				
-				if (strand == Location.REVERSE) {
-					start -= reverseOffset;
-					end -= reverseOffset;
-				}
-
-				if (filterByFeature && features.length == 0 && !excludeFeature) continue;
-
-				if (filterByFeature  && features.length > 0) {
-					// Check if we pass the filter for the current feature set
-
-					// See if we're comparing against the right feature
-					while (SequenceRead.start(reads[r]) > features[currentFeaturePostion].location().end() && currentFeaturePostion < (features.length-1)) {
-						currentFeaturePostion++;
+					// We also don't allow readings which are beyond the end of the chromosome
+					if (end > chrs[c].length()) {
+						int overrun = end - chrs[c].length();
+						progressWarningReceived(new SeqMonkException("Reading position "+end+" was "+overrun+"bp beyond the end of chr"+chrs[c].name()+" ("+chrs[c].length()+")"));
+						continue;
 					}
 
-					// Test to see if we overlap
-					if (SequenceRead.overlaps(reads[r], features[currentFeaturePostion].location().packedPosition())) {
-						if (excludeFeature) continue;
+					// We can now make the new reading
+					try {
+						read = SequenceRead.packPosition(start,end,strand);
+						if (! prefs.isHiC()) {
+							// HiC additions are deferred until we know the other end is OK too.
+							newData.addData(chrs[c],read);
+						}
 					}
-					else {
-						if (!excludeFeature) continue;
+					catch (SeqMonkException e) {
+						progressWarningReceived(e);
+						continue;
 					}
 
 				}
-
-
-				if (reverse) {
-					if (strand == Location.FORWARD) {
-						strand = Location.REVERSE;
-					}
-					else if (strand == Location.REVERSE) {
-						strand = Location.FORWARD;
-					}
-
-				}
-				
-				if (removeStrand) {
-					strand = Location.UNKNOWN;
-				}
-				
-				if (extractCentres) {
-					int centre = start + ((end-start)/2);
-					start = centre-centreExtractContext;
-					end = centre+centreExtractContext;
-					
-				}
-				
-
-				if (extendBy != 0) {
-
-					// We now allow negative extensions to shorten reads
-					if (strand == Location.FORWARD || strand == Location.UNKNOWN) {
-						end += extendBy;
-						if (end < start) end = start;
-
-
-					}
-					else if (strand == Location.REVERSE) {
-						start -= extendBy;
-
-						if (start > end) start = end;
-					}
-				}
-
-				// We don't allow reads before the start of the chromosome
-				if (start < 1) {
-					int overrun = (0 - start)+1;
-					progressWarningReceived(new SeqMonkException("Reading position "+start+" was "+overrun+"bp before the start of chr"+chrs[c].name()+" ("+chrs[c].length()+")"));
-					continue;
-				}
-
-				// We also don't allow readings which are beyond the end of the chromosome
-				if (end > chrs[c].length()) {
-					int overrun = end - chrs[c].length();
-					progressWarningReceived(new SeqMonkException("Reading position "+end+" was "+overrun+"bp beyond the end of chr"+chrs[c].name()+" ("+chrs[c].length()+")"));
-					continue;
-				}
-
-				// We can now make the new reading
-				try {
-					read = SequenceRead.packPosition(start,end,strand);
-					if (! prefs.isHiC()) {
-						// HiC additions are deferred until we know the other end is OK too.
-						newData.addData(chrs[c],read);
-					}
-				}
-				catch (SeqMonkException e) {
-					progressWarningReceived(e);
-					continue;
-				}
-
 			}
 		}
-
 		return newData;
 	}
 
@@ -406,7 +410,7 @@ public class VisibleStoresParser extends DataParser {
 							continue;
 						}
 					}
-					
+
 					if ((! (reverse||removeStrand)) && extendBy == 0  && (!filterByFeature)) {
 						// Just add them as they are
 						newData.addData(chrs[c], sourceReads[r]);
@@ -465,12 +469,12 @@ public class VisibleStoresParser extends DataParser {
 						}
 
 					}
-					
+
 					if (removeStrand) {
 						sourceStrand = Location.UNKNOWN;
 						hitStrand = Location.UNKNOWN;
 					}
-					
+
 
 					if (extendBy > 0) {
 						if (sourceStrand == Location.FORWARD) {
@@ -559,11 +563,11 @@ public class VisibleStoresParser extends DataParser {
 	private class VisibleStoresOptionsPanel extends JPanel implements ActionListener {
 
 		private JComboBox removeDuplicates;
-		
+
 		private JCheckBox isHiC;
 		private JTextField hiCDistance;
 		private JCheckBox hiCIgnoreTransBox;
-		
+
 		private JCheckBox reverseReads;
 
 		private JCheckBox removeStrandInfo;
@@ -572,7 +576,7 @@ public class VisibleStoresParser extends DataParser {
 		private JPanel singleEndOptions;
 
 		private JComboBox filterTypeBox;
-		
+
 		private JCheckBox filterFeatureCheckbox;
 		private JComboBox filterFeatureBox;
 
@@ -587,7 +591,7 @@ public class VisibleStoresParser extends DataParser {
 		private JTextField shiftOffsetForward;
 		private JTextField shiftOffsetReverse;
 
-		
+
 		private JCheckBox downsampleBox;
 		private JTextField downsampleTargetField;
 
@@ -659,28 +663,28 @@ public class VisibleStoresParser extends DataParser {
 			gbc.gridx=2;
 			reverseReads = new JCheckBox();
 			commonOptions.add(reverseReads,gbc);
-			
+
 			gbc.gridx=1;
 			gbc.gridy++;
 			commonOptions.add(new JLabel("Remove strand information"),gbc);
 			gbc.gridx=2;
 			removeStrandInfo = new JCheckBox();
 			commonOptions.add(removeStrandInfo,gbc);
-			
+
 			reverseReads.addActionListener(new ActionListener() {
-				
+
 				public void actionPerformed(ActionEvent arg0) {
 					removeStrandInfo.setEnabled(!reverseReads.isSelected());
 				}
 			});
-			
+
 			removeStrandInfo.addActionListener(new ActionListener() {		
 				public void actionPerformed(ActionEvent e) {
 					reverseReads.setEnabled(!removeStrandInfo.isSelected());
 				}
 			});
 
-			
+
 			gbc.gridx=1;
 			gbc.gridy++;
 			commonOptions.add(new JLabel("Filter by strand"),gbc);
@@ -710,8 +714,8 @@ public class VisibleStoresParser extends DataParser {
 			directionPanel.add(strandFilterDirectionBox);
 			gbc.gridx=3;
 			commonOptions.add(directionPanel,gbc);
-			
-			
+
+
 			gbc.gridx=1;
 			gbc.gridy++;
 			commonOptions.add(new JLabel("Filter by feature"),gbc);
@@ -798,8 +802,8 @@ public class VisibleStoresParser extends DataParser {
 
 			gbc.gridx=3;
 			commonOptions.add(lengthFilterPanel,gbc);
-			
-			
+
+
 			gbc.gridx=1;
 			gbc.gridy++;
 			commonOptions.add(new JLabel("Shift Reads"),gbc);
@@ -833,7 +837,7 @@ public class VisibleStoresParser extends DataParser {
 			shiftReadsPanel.add(new JLabel("bp. Rev offset"));
 			shiftReadsPanel.add(shiftOffsetReverse);			
 			shiftReadsPanel.add(new JLabel("bp."));
-			
+
 			gbc.gridx=3;
 			commonOptions.add(shiftReadsPanel,gbc);
 
@@ -865,8 +869,8 @@ public class VisibleStoresParser extends DataParser {
 
 			gbc.gridx=3;
 			commonOptions.add(extractCentresPanel,gbc);
-			
-			
+
+
 			gbc.gridx=1;
 			gbc.gridy++;
 			commonOptions.add(new JLabel("Downsample data"),gbc);
@@ -897,8 +901,8 @@ public class VisibleStoresParser extends DataParser {
 			commonOptions.add(downsamplePanel,gbc);
 
 
-			
-			
+
+
 			add(commonOptions,BorderLayout.NORTH);
 
 			singleEndOptions = new JPanel();
@@ -948,7 +952,7 @@ public class VisibleStoresParser extends DataParser {
 			else if (removeDuplicates.getSelectedItem().equals("Yes, start and end")) {
 				return DataSet.DUPLICATES_REMOVE_START_END;
 			}
-			
+
 			throw new IllegalStateException("Didn't understand duplicate string "+removeDuplicates.getSelectedItem());
 		}
 
@@ -956,7 +960,7 @@ public class VisibleStoresParser extends DataParser {
 		public boolean reverseReads () {
 			return reverseReads.isSelected();
 		}
-		
+
 		public boolean removeStrandInfo () {
 			return removeStrandInfo.isSelected();
 		}
@@ -967,7 +971,7 @@ public class VisibleStoresParser extends DataParser {
 			}
 			return Integer.parseInt(extendReads.getText());
 		}
-		
+
 		public int forwardOffset () {
 			if (shiftReadsBox.isSelected()) {
 				if (shiftOffsetForward.getText().length() > 0) {
@@ -978,7 +982,7 @@ public class VisibleStoresParser extends DataParser {
 			else return 0;
 		}
 
-		
+
 		public int reverseOffset () {
 			if (shiftReadsBox.isSelected()) {
 				if (shiftOffsetReverse.getText().length() > 0) {
@@ -989,18 +993,18 @@ public class VisibleStoresParser extends DataParser {
 			else return 0;
 		}
 
-		
+
 		public boolean extractCentres () {
 			return extractCentresBox.isSelected();
 		}
-		
+
 		public int centreExtractContext () {
 			if (centreExtractContextField.getText().length() == 0) {
 				return 0;
 			}
 			return Integer.parseInt(centreExtractContextField.getText());
 		}
-		
+
 
 		public Dimension getPreferredSize () {
 			return new Dimension(600,500);

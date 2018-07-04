@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -22,6 +22,7 @@ package uk.ac.babraham.SeqMonk;
 
 import java.awt.BorderLayout;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -57,10 +58,11 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSetChangeListener;
 import uk.ac.babraham.SeqMonk.DataWriters.SeqMonkDataWriter;
 import uk.ac.babraham.SeqMonk.Dialogs.GenomeSelector;
-import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreviewPanel;
 import uk.ac.babraham.SeqMonk.Dialogs.DataParser.DataParserOptionsDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.GotoDialog.GotoDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreview.SeqMonkPreview;
+import uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreview.SeqMonkPreviewPanel;
 import uk.ac.babraham.SeqMonk.Displays.StatusPanel;
 import uk.ac.babraham.SeqMonk.Displays.ChromosomeViewer.ChromosomePositionScrollBar;
 import uk.ac.babraham.SeqMonk.Displays.ChromosomeViewer.ChromosomeViewer;
@@ -82,7 +84,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	private static SeqMonkApplication application;
 	
 	/** The version of SeqMonk */
-	public static final String VERSION = "1.40.1.devel";
+	public static final String VERSION = "1.42.1.devel";
 	
 	private SeqMonkMenu menu;
 	
@@ -109,9 +111,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	private StatusPanel statusPanel;
 	
 	/** The data collection is the main data model */
-	private DataCollection dataCollection = null;
-	
-	/** A list of feature names which are currently displayed in the chromosome view */
+	private DataCollection dataCollection = null;	/** A list of feature names which are currently displayed in the chromosome view */
 	private Vector<String> drawnFeatureTypes = new Vector<String>();
 	
 	/** A list of data stores which are currently displayed in the chromosome view */
@@ -140,7 +140,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public static void main(String[] args) {
 		
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			
+			// Recent java themes for linux are just horribly broken with missing
+			// bits of UI.  We're therefore not going to set a native look if
+			// we're on linux.  See bug #95 for details.
+			
+			if (! System.getProperty("os.name").toLowerCase().contains("linux")) {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
 		} catch (Exception e) {}
 
 		try {
@@ -475,8 +482,95 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 		File file = chooser.getSelectedFile();
 		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
-	
+			
 		loadProject(file);
+	}
+	
+	
+	/**
+	 * Launches a FileChooser to select a project file to open
+	 */
+	public void loadProjectAndSwitchAssembly () {
+		new GenomeSelector(application);
+		
+		JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+		chooser.setMultiSelectionEnabled(false);
+		SeqMonkPreviewPanel previewPanel = new SeqMonkPreviewPanel();
+		chooser.setAccessory(previewPanel);
+		chooser.addPropertyChangeListener(previewPanel);
+		chooser.setFileFilter(new FileFilter() {
+		
+			public String getDescription() {
+				return "SeqMonk files";
+			}
+		
+			public boolean accept(File f) {
+				if (f.isDirectory() || f.getName().toLowerCase().endsWith(".smk")) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+		
+		});
+		
+		int result = chooser.showOpenDialog(this);
+		if (result == JFileChooser.CANCEL_OPTION) return;
+
+		File file = chooser.getSelectedFile();
+		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+		
+		SeqMonkPreview preview;
+		
+		try {
+			preview = new SeqMonkPreview(file);
+		}
+		catch (IOException ioe) {
+			JOptionPane.showMessageDialog(this,"Couldn't read the file: "+ioe.getMessage(),"Can't read file",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		//Check that the project they selected is actually compatible with the genome they loaded.
+	
+		// Start with the species.  These should match exactly.
+		if (!preview.species().equals(dataCollection.genome().species().toString())) {
+			JOptionPane.showMessageDialog(this,"Species didn't match ("+preview.species()+" vs "+ dataCollection.genome().species().toString()+")","Incompatible file",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		// Now the assemblies.  These should match if we remove the _vXX (where X is a number).  This can occur at the end
+		// of the string or at a | symbol (for multi-genome projects).
+		
+		String assemblyString = dataCollection.genome().assembly().toString();
+		String fileAssembly = preview.assembly();
+		
+		String [] assemblyStringSections = assemblyString.split("\\|");
+		String [] fileAssemblySections = fileAssembly.split("\\|");
+		
+		boolean assemblyFail = false;
+		
+		if (assemblyStringSections.length != fileAssemblySections.length) {
+			System.err.println("Assembly sections didn't match "+assemblyStringSections.length+" vs "+fileAssemblySections.length);
+			assemblyFail = true;
+		}
+		
+		else {
+			for (int i=0;i<assemblyStringSections.length;i++) {
+				if (!assemblyStringSections[i].replaceAll("_v\\d+$", "").equals(fileAssemblySections[i].replaceAll("_v\\d+$", ""))) {
+					System.err.println(assemblyStringSections[i].replaceAll("_v\\d+$", "")+" didn't match "+fileAssemblySections[i].replaceAll("_v\\d+$", ""));
+					assemblyFail = true;
+				}
+			}
+		}
+		
+		
+		if (assemblyFail) {
+			JOptionPane.showMessageDialog(this,"Assemblies didn't match ("+preview.assembly()+" vs "+ dataCollection.genome().assembly().toString()+")","Incompatible file",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		loadProject(file,true);
 	}
 	
 	public String projectName () {
@@ -489,13 +583,20 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	}
 	
 
+	
+	
 	/**
 	 * Loads an existing project from a file.  Will wipe all existing data and prompt to
 	 * save if the currently loaded project has changed.
 	 * 
 	 * @param file The file to load
 	 */
+	
 	public void loadProject (File file) {
+		loadProject(file,false);
+	}
+	
+	public void loadProject (File file, boolean forceAssembly) {
 
 		if (file == null) return;
 		
@@ -521,7 +622,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		
 		SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
 		
-		wipeAllData();
+		if (!forceAssembly) {
+			wipeAllData();
+		}
 		
 		currentFile = file;
 		
@@ -531,7 +634,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		
 		ProgressDialog dppd = new ProgressDialog(this,"Loading data...");
 		parser.addProgressListener(dppd);
-		parser.parseFile(file);
+		parser.parseFile(file,forceAssembly);
 		dppd.requestFocus();
 		setTitle("SeqMonk ["+file.getName()+"]");
 		
@@ -877,7 +980,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 	/**
 	 * Adds new dataSets to the existing dataCollection and adds them
-	 * to the main chromsome view
+	 * to the main chromosome view
 	 * 
 	 * @param newData The new dataSets to add
 	 */

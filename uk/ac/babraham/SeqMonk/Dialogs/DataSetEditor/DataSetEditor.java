@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -34,6 +34,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -220,6 +222,10 @@ public class DataSetEditor extends JDialog implements ActionListener, ListSelect
 					String oldName = ds[s].name();
 					String newName = oldName.replaceAll(replaceWhat, replaceWith);
 					ds[s].setName(newName);
+				}
+				ListDataListener [] l = dataSetModel.getListDataListeners();
+				for (int i=0;i<l.length;i++) {
+					l[i].contentsChanged(new ListDataEvent(dataSetModel, ListDataEvent.CONTENTS_CHANGED, 0, ds.length));
 				}
 			}
 			catch (PatternSyntaxException pse) {

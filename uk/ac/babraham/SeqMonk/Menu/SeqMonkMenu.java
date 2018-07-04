@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -71,7 +71,6 @@ import uk.ac.babraham.SeqMonk.DataWriters.BedGraphDataWriter;
 import uk.ac.babraham.SeqMonk.Dialogs.AboutDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.AnnotationTrackSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.AutoSplitDataDialog;
-import uk.ac.babraham.SeqMonk.Dialogs.DataTrackSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.DataZoomSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.EditPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.FindFeatureDialog;
@@ -82,6 +81,7 @@ import uk.ac.babraham.SeqMonk.Dialogs.ListOverlapsDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProbeListSelectorDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetEditor;
 import uk.ac.babraham.SeqMonk.Dialogs.DataSetEditor.DataSetEditor;
+import uk.ac.babraham.SeqMonk.Dialogs.DataTrackSelector.DataTrackSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.Filters.FilterOptionsDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.GotoDialog.GotoDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.GotoDialog.GotoWindowDialog;
@@ -113,7 +113,9 @@ import uk.ac.babraham.SeqMonk.Displays.MAPlot.MAPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.PCAPlot.PCADataCalculator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeTrendPlot.TrendOverProbePreferencesDialog;
-import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantiationTrendPlotPreferencesDialog;
+import uk.ac.babraham.SeqMonk.Displays.QQDistributionPlot.QQDistributionDialog;
+import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendHeatmapPreferencesDialog;
+import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendPlotPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.RNASeqQCPlot.RNAQCPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.Report.ReportOptions;
 import uk.ac.babraham.SeqMonk.Displays.ScatterPlot.ScatterPlotDialog;
@@ -377,6 +379,19 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewMoveRight.addActionListener(this);
 		viewMenu.add(viewMoveRight);
 
+		JMenuItem viewPageLeft = new JMenuItem("Page left");
+		viewPageLeft.setActionCommand("page_left");
+		viewPageLeft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK));
+		viewPageLeft.addActionListener(this);
+		viewMenu.add(viewPageLeft);
+
+		JMenuItem viewPageRight = new JMenuItem("Page Right");
+		viewPageRight.setActionCommand("page_right");
+		viewPageRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK));
+		viewPageRight.addActionListener(this);
+		viewMenu.add(viewPageRight);
+
+		
 
 		add(viewMenu);
 
@@ -549,7 +564,24 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewCumDist.add(viewCumDistProbes);		
 
 		plotsMenu.add(viewCumDist);
-		
+
+		JMenu viewQQDist = new JMenu("QQ Distribution Plot");
+		viewQQDist.setMnemonic(KeyEvent.VK_Q);
+
+		JMenuItem viewQQDistStores = new JMenuItem("Visible Data Stores...");
+		viewQQDistStores.setActionCommand("view_qqdist");
+		viewQQDistStores.setMnemonic(KeyEvent.VK_S);
+		viewQQDistStores.addActionListener(this);
+		viewQQDist.add(viewQQDistStores);
+
+		JMenuItem viewQQDistProbes = new JMenuItem("Multiple Probe Lists...");
+		viewQQDistProbes.setActionCommand("multiprobe_view_qqdist");
+		viewQQDistProbes.setMnemonic(KeyEvent.VK_M);
+		viewQQDistProbes.addActionListener(this);
+		viewQQDist.add(viewQQDistProbes);		
+
+		plotsMenu.add(viewQQDist);
+
 		
 		JMenu viewBeanPlot = new JMenu("Bean Plot");
 		viewBeanPlot.setMnemonic(KeyEvent.VK_B);
@@ -672,13 +704,48 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 //		plotCodonBiasPlot.setMnemonic(KeyEvent.VK_B);
 //		plotCodonBiasPlot.addActionListener(this);
 //		plotsMenu.add(plotCodonBiasPlot);
+		
+		JMenu viewQuantTrendPlots = new JMenu("Quantitation Trend Plots..");
+		viewQuantTrendPlots.setMnemonic(KeyEvent.VK_Q);
 
-		JMenuItem viewQuantitationTrend = new JMenuItem("Quantitation Trend Plot...");
-		viewQuantitationTrend.setActionCommand("view_quanttrend");
-		viewQuantitationTrend.setMnemonic(KeyEvent.VK_Q);
-		viewQuantitationTrend.addActionListener(this);
-		plotsMenu.add(viewQuantitationTrend);
+		JMenu viewQuantitationTrend = new JMenu("Quantitation Trend Plot");
+		viewQuantitationTrend.setMnemonic(KeyEvent.VK_P);
+		
+		JMenuItem viewQuantitationTrendCurrent = new JMenuItem("Current Probe List...");
+		viewQuantitationTrendCurrent.setActionCommand("view_quanttrend");
+		viewQuantitationTrendCurrent.setMnemonic(KeyEvent.VK_C);
+		viewQuantitationTrendCurrent.addActionListener(this);
+		viewQuantitationTrend.add(viewQuantitationTrendCurrent);
+		
+		JMenuItem viewQuantitationTrendMulti = new JMenuItem("Multiple Probe Lists...");
+		viewQuantitationTrendMulti.setActionCommand("multiprobe_view_quanttrend");
+		viewQuantitationTrendMulti.setMnemonic(KeyEvent.VK_M);
+		viewQuantitationTrendMulti.addActionListener(this);
+		viewQuantitationTrend.add(viewQuantitationTrendMulti);
+		
+		viewQuantTrendPlots.add(viewQuantitationTrend);
 
+		
+		JMenu viewQuantitationHeatmap = new JMenu("Quantitation Trend Heatmap");
+		viewQuantitationHeatmap.setMnemonic(KeyEvent.VK_H);
+		
+		JMenuItem viewQuantitationHeatCurrent = new JMenuItem("Current Probe List...");
+		viewQuantitationHeatCurrent.setActionCommand("view_quantheat");
+		viewQuantitationHeatCurrent.setMnemonic(KeyEvent.VK_C);
+		viewQuantitationHeatCurrent.addActionListener(this);
+		viewQuantitationHeatmap.add(viewQuantitationHeatCurrent);
+		
+		JMenuItem viewQuantitationHeatMulti = new JMenuItem("Multiple Probe Lists...");
+		viewQuantitationHeatMulti.setActionCommand("multiprobe_view_quantheat");
+		viewQuantitationHeatMulti.setMnemonic(KeyEvent.VK_M);
+		viewQuantitationHeatMulti.addActionListener(this);
+		viewQuantitationHeatmap.add(viewQuantitationHeatMulti);
+		
+		viewQuantTrendPlots.add(viewQuantitationHeatmap);
+		
+		plotsMenu.add(viewQuantTrendPlots);
+
+		
 		plotsMenu.addSeparator();
 
 		JMenu viewHeatMap = new JMenu("HiC Heatmap");
@@ -924,7 +991,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		edgeRFilter.setMnemonic(KeyEvent.VK_E);
 		countStatsReplicatedMenu.add(edgeRFilter);		
 
-		JMenuItem logisticRegressionFilter = new JMenuItem("[R] Logisitic Regression (for/rev)...");
+		JMenuItem logisticRegressionFilter = new JMenuItem("[R] Logistic Regression (for/rev)...");
 		logisticRegressionFilter.setActionCommand("filter_r_logistic_regression");
 		logisticRegressionFilter.addActionListener(this);
 		logisticRegressionFilter.setMnemonic(KeyEvent.VK_L);
@@ -937,7 +1004,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		proportionStatsReplicatedMenu.add(edgeRForRevFilter);		
 
 
-		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("[R] Logisitic Regression Splicing...");
+		JMenuItem logisticRegressionSplicingFilter = new JMenuItem("[R] Logistic Regression Splicing...");
 		logisticRegressionSplicingFilter.setActionCommand("filter_r_logistic_regression_splicing");
 		logisticRegressionSplicingFilter.addActionListener(this);
 		logisticRegressionSplicingFilter.setMnemonic(KeyEvent.VK_S);
@@ -1216,6 +1283,13 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		fileOpen.setMnemonic(KeyEvent.VK_O);
 		fileMenu.add(fileOpen);		
 
+		JMenuItem fileOpenSwitch = new JMenuItem ("Open project and switch assembly...");
+		fileOpenSwitch.setActionCommand("open_switch");
+		fileOpenSwitch.addActionListener(this);
+		fileOpenSwitch.setMnemonic(KeyEvent.VK_W);
+		fileMenu.add(fileOpenSwitch);		
+
+		
 		fileMenu.addSeparator();
 
 		if (fileImportData == null) {
@@ -1653,6 +1727,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		else if (action.equals("move_right")) {
 			application.chromosomeViewer().moveRight();
 		}
+		else if (action.equals("page_left")) {
+			application.chromosomeViewer().pageLeft();
+		}
+		else if (action.equals("page_right")) {
+			application.chromosomeViewer().pageRight();
+		}
 		else if (action.equals("view_display_options")) {
 			new DisplayPreferencesEditorDialog();
 		}
@@ -1746,8 +1826,23 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			}
 		}
 
+		else if (action.equals("view_qqdist")) {
+			if (! application.dataCollection().isQuantitated()) {
+				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				try {
+					new QQDistributionDialog(application.drawnDataSets(),application.dataCollection().probeSet().getActiveList());
+				} 
+				catch (SeqMonkException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+		}
+
+		
 		else if (action.equals("plot_rna_qc")) {
-			new RNAQCPreferencesDialog(application.dataCollection());
+			new RNAQCPreferencesDialog(application.dataCollection(), application.drawnDataSets());
 		}
 
 		else if (action.equals("plot_small_rna_qc")) {
@@ -1771,6 +1866,13 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 
 			ProbeList [] probeLists = ProbeListSelectorDialog.selectProbeLists();
 			if (probeLists == null || probeLists.length == 0) return;
+
+			else if (action.equals("multiprobe_view_quanttrend")) {
+				new QuantitationTrendPlotPreferencesDialog(application.dataCollection(),probeLists,application.drawnDataSets());
+			}
+			else if (action.equals("multiprobe_view_quantheat")) {
+				new QuantitationTrendHeatmapPreferencesDialog(application.dataCollection(),probeLists,application.drawnDataSets());
+			}
 
 			else if (action.equals("multiprobe_view_boxwhisker")) {
 				if (application.dataCollection().getActiveDataStore() == null) {
@@ -1825,6 +1927,19 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					throw new IllegalStateException(e);
 				}
 			}
+			else if (action.equals("multiprobe_view_qqdist")) {
+				if (application.dataCollection().getActiveDataStore() == null) {
+					JOptionPane.showMessageDialog(application, "You need to select a data store from the data panel to use this view","No active data store",JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				try {
+					new QQDistributionDialog(application.dataCollection().getActiveDataStore(),probeLists);
+				} 
+				catch (SeqMonkException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+
 			else if (action.equals("multiprobe_view_line_graph")){
 				try {
 					new LineGraphDialog(application.drawnDataSets(), probeLists);
@@ -1974,10 +2089,21 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
 			}
 			else {
-				new QuantiationTrendPlotPreferencesDialog(application.dataCollection(),application.dataCollection().probeSet().getActiveList(),application.drawnDataStores());
+				new QuantitationTrendPlotPreferencesDialog(application.dataCollection(),new ProbeList[]{application.dataCollection().probeSet().getActiveList()},application.drawnDataSets());
 			}
 		}
 
+		
+		else if (action.equals("view_quantheat")) {
+			if (! application.dataCollection().isQuantitated()) {
+				JOptionPane.showMessageDialog(application, "You need to have quantitated your data to view this plot","No quantitation...",JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				new QuantitationTrendHeatmapPreferencesDialog(application.dataCollection(),new ProbeList[]{application.dataCollection().probeSet().getActiveList()},application.drawnDataSets());
+			}
+		}
+
+		
 //		else if (action.equals("plot_codon_bias")) {
 //			new CodonBiasDialog(application.drawnDataSets(), application.dataCollection().genome().annotationCollection());
 //		}
@@ -2196,6 +2322,10 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		else if (action.equals("open")) {
 			application.loadProject();
 		}
+		else if (action.equals("open_switch")) {
+			application.loadProjectAndSwitchAssembly();
+		}
+
 		else if (action.startsWith("filter")) {
 			try {
 

@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -109,7 +109,12 @@ public class DataStoreSummaryReport extends Report {
 			
 			
 			// Now work out the mean read length
-			summaries[s].medianReadLength = (int)(summaries[s].totalReadLength/summaries[s].totalReads);
+			if (summaries[s].totalReads > 0) {
+				summaries[s].medianReadLength = (int)(summaries[s].totalReadLength/summaries[s].totalReads);
+			}
+			else {
+				summaries[s].medianReadLength = 0;
+			}
 			
 			// ..and the fold coverage
 			summaries[s].foldCoverage = ((double)summaries[s].totalReadLength)/dataCollection().genome().getTotalGenomeLength();

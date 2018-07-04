@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -23,6 +23,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 
 /**
  * The Class DataStore is a generic representation of a set 
@@ -87,7 +88,7 @@ public abstract class DataStore implements Comparable<DataStore>{
 	 * @param c the c
 	 * @return the reads for chromsome
 	 */
-	public abstract long [] getReadsForChromosome (Chromosome c);
+	public abstract ReadsWithCounts getReadsForChromosome (Chromosome c);
 		
 	/**
 	 * Gets the read count for chromosome.

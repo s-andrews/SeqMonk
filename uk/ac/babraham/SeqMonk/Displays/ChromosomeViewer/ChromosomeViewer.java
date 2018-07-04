@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -389,6 +389,26 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 	public void moveRight() {
 		int currentWidth = (currentEnd-currentStart)+1;
 		int interval = currentWidth/50;
+		if (currentEnd+interval > chromosome.length()) interval = chromosome.length()-currentEnd;
+		DisplayPreferences.getInstance().setLocation(SequenceRead.packPosition(currentStart+interval,currentEnd+interval,Location.UNKNOWN));
+	}
+
+	/**
+	 * Moves the view a small amount left
+	 */
+	public void pageLeft() {
+		int currentWidth = (currentEnd-currentStart)+1;
+		int interval = currentWidth;
+		if (currentStart < interval+1) interval = currentStart-1;
+		DisplayPreferences.getInstance().setLocation(SequenceRead.packPosition(currentStart-interval,currentEnd-interval,Location.UNKNOWN));
+	}
+
+	/**
+	 * Moves the view a small amount right.
+	 */
+	public void pageRight() {
+		int currentWidth = (currentEnd-currentStart)+1;
+		int interval = currentWidth;
 		if (currentEnd+interval > chromosome.length()) interval = chromosome.length()-currentEnd;
 		DisplayPreferences.getInstance().setLocation(SequenceRead.packPosition(currentStart+interval,currentEnd+interval,Location.UNKNOWN));
 	}

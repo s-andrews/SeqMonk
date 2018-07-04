@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -25,11 +25,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
@@ -40,6 +42,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 public class ProbeListProbeGenerator extends ProbeGenerator implements Runnable {
 
 	private JComboBox selectedListBox;
+	private JCheckBox reverseDirectionBox;
 	private ProbeList selectedList;
 	private JPanel optionPanel = null;
 	private ProbeList [] currentLists = new ProbeList[0];
@@ -117,7 +120,17 @@ public class ProbeListProbeGenerator extends ProbeGenerator implements Runnable 
 			}
 		});
 		optionPanel.add(selectedListBox,gbc);
-						
+		
+		gbc.gridx=1;
+		gbc.gridy++;
+		gbc.weightx=0.1;
+		optionPanel.add(new JLabel("Reverse Probe Direction"),gbc);
+
+		gbc.gridx++;
+		gbc.weightx=0.9;
+		reverseDirectionBox = new JCheckBox();
+		optionPanel.add(reverseDirectionBox,gbc);
+		
 		return optionPanel;
 	}
 	
@@ -139,8 +152,15 @@ public class ProbeListProbeGenerator extends ProbeGenerator implements Runnable 
 	public void run() {
 		
 		Vector<Probe> newProbes = new Vector<Probe>();
+		boolean reverse = reverseDirectionBox.isSelected();
+		
 		
 		String description = collection.probeSet().description()+" then took subset of probes in "+selectedList.name();
+		
+		if (reverse) {
+			description = description+" and reversed all probe directions";
+		}
+		
 		
 		Probe [] probes = selectedList.getAllProbes();
 		
@@ -160,8 +180,23 @@ public class ProbeListProbeGenerator extends ProbeGenerator implements Runnable 
 				
 			// We can't just reinsert the same probe object since it will
 			// have a different index in the new ProbeSet
-			newProbes.add(new Probe(probes[p].chromosome(), probes[p].packedPosition(),probes[p].name()));
 			
+			if (reverse) {
+				
+				// We reverse the existing strand.  We don't do anything to 
+				// probes with unknown strand.
+				int strand = probes[p].strand();
+				if (strand == Location.FORWARD) {
+					strand = Location.REVERSE;
+				}
+				else if (strand == Location.REVERSE) {
+					strand = Location.FORWARD;
+				}
+				newProbes.add(new Probe(probes[p].chromosome(), probes[p].start(), probes[p].end(),strand,probes[p].name()));
+			}
+			else {
+				newProbes.add(new Probe(probes[p].chromosome(), probes[p].packedPosition(),probes[p].name()));
+			}
 
 		}
 		

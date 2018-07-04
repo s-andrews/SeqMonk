@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-17 Simon Andrews
+ * Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -42,10 +42,10 @@ public class CumulativeDistributionPanel extends JPanel {
 	// These set the limits, either globally, or if we're zoomed in
 	// along with a flag to say when they've been calculated
 	
-	private double absoluteMin;
-	private double absoluteMax;
-	private double usedMin;
-	private double usedMax;	
+	protected double absoluteMin;
+	protected double absoluteMax;
+	protected double usedMin;
+	protected double usedMax;	
 	
 	
 	// Spacing for the drawn panel
@@ -157,7 +157,7 @@ public class CumulativeDistributionPanel extends JPanel {
 	
 
 	
-	private float [] shortenDistribution (float [] distribution) {
+	protected float [] shortenDistribution (float [] distribution) {
 	
 		// Firstly we need to remove any point which aren't valid.
 		int nanCount = 0;
@@ -181,8 +181,8 @@ public class CumulativeDistributionPanel extends JPanel {
 		
 		Arrays.sort(distribution);
 	
-		// We need to return a 500 element array
-		float [] shortDistribution = new float[500];
+		// We need to return a 1000 element array
+		float [] shortDistribution = new float[1000];
 		
 		if (distribution.length == 0) {
 			// There's no valid data here so make everything zero
@@ -194,7 +194,7 @@ public class CumulativeDistributionPanel extends JPanel {
 		
 		else {
 			for (int i=0;i<shortDistribution.length;i++) {
-				int index = (int)((distribution.length-1)*(i/500d));
+				int index = (int)((distribution.length-1)*(i/1000d));
 				shortDistribution[i] = distribution[index];
 			}
 		}

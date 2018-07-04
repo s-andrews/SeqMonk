@@ -1,5 +1,5 @@
 /**
- * Copyright 2012-17 Simon Andrews
+ * Copyright 2012-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -74,6 +74,28 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 	public HierarchicalClusterDialog (ProbeList probes, DataStore [] stores, boolean normalise) {
 		super(SeqMonkApplication.getInstance(),"Hierarchical Clusters for "+probes.name());
 		this.probes = probes;
+		
+		// Before we go any further let's do a sanity check.  If they're trying to cluster
+		// more than 5k probes then they're on to a loser and this is going to be horribly
+		// slow.
+		
+		if (probes.getAllProbes().length > 5000) {
+			
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(),
+					"<html>Do you *really* want to do this?<br><br> "
+					+ "You are asking to cluster *lots* of probes which will take a *long* time.<br>"
+					+ "This plot works well up to around 2500 probes and will get exponentially<br>"
+					+ "slower as you add more probes.<br><br> "
+					+ "It normally only makes sense to cluster things which you know to be changing,<br>"
+					+ "rather than everything you've quantitated.  You can proceed if you want, but<br>"
+					+ "be warned that you might be in for a long wait - longer than I'd bother with.<br><br>"
+					+ "To speed things up you can use the random probe filter to randomly subsample<br>"
+					+ "your probe set, which will produce a plot which looks identical in a fraction<br>"
+					+ "of the time", 
+					"This will be SLOW!!", JOptionPane.WARNING_MESSAGE);
+		}
+		
+		
 		
 		// Work out whether we're using a pos-neg or just pos scale
 		if (normalise) {

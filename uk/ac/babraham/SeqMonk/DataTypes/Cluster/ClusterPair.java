@@ -1,5 +1,5 @@
 /**
- * Copyright 2012-17 Simon Andrews
+ * Copyright 2012-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -34,6 +34,14 @@ public class ClusterPair {
 	}
 	
 	public ClusterPair (ClusterPair pair1, ClusterPair pair2, float rValue) {
+		
+		// We had some crash reports where one of the clusters must have been
+		// null. Never got to the cause so added this trap to try to get a better
+		// stack trace if it happens again.
+		if (pair1 == null || pair2 == null) {
+			throw new IllegalStateException("Clusters cannot be null");
+		}
+		
 		this.pair1 = pair1;
 		this.pair2 = pair2;
 		this.rValue = rValue;

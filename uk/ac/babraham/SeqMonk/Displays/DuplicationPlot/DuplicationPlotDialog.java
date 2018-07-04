@@ -1,5 +1,5 @@
 /**
- * Copyright 2016-17 Simon Andrews
+ * Copyright 2016-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -23,13 +23,19 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
@@ -37,6 +43,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Displays.RNASeqQCPlot.RNAQCResultsDialog;
+import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class DuplicationPlotDialog extends JDialog implements Runnable, Cancellable, ActionListener, ChangeListener {
@@ -87,19 +95,24 @@ public class DuplicationPlotDialog extends JDialog implements Runnable, Cancella
 		dotSizeSlider.addChangeListener(this);
 		getContentPane().add(dotSizeSlider,BorderLayout.EAST);
 
-
 		JPanel buttonPanel = new JPanel();
-		JButton closeButton = new JButton("Close");
-		closeButton.setActionCommand("close");
-		closeButton.addActionListener(this);
-		buttonPanel.add(closeButton);
-
 
 		JButton saveImageButton = new JButton("Save Image");
 		saveImageButton.setActionCommand("save_image");
 		saveImageButton.addActionListener(this);
 		buttonPanel.add(saveImageButton);
+		
+		JButton saveDataButton = new JButton("Save Data");
+		saveDataButton.setActionCommand("save_data");
+		saveDataButton.addActionListener(this);
+		buttonPanel.add(saveDataButton);
 
+		JButton closeButton = new JButton("Close");
+		closeButton.setActionCommand("close");
+		closeButton.addActionListener(this);
+		buttonPanel.add(closeButton);
+
+		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
 
 
@@ -177,6 +190,62 @@ public class DuplicationPlotDialog extends JDialog implements Runnable, Cancella
 		}
 		else if (ae.getActionCommand().equals("save_image")){
 			ImageSaver.saveImage(multiPlotPanel);
+		}
+		else if (ae.getActionCommand().equals("save_data")) {
+
+			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+			chooser.setMultiSelectionEnabled(false);
+			chooser.setFileFilter(new FileFilter() {
+
+				public String getDescription() {
+					return "Text Files";
+				}
+
+				public boolean accept(File f) {
+					if (f.isDirectory() || f.getName().toLowerCase().endsWith(".txt")) {
+						return true;
+					}
+					return false;
+				}
+			});
+
+			int result = chooser.showSaveDialog(DuplicationPlotDialog.this);
+			if (result == JFileChooser.CANCEL_OPTION) return;
+
+			File file = chooser.getSelectedFile();
+			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+
+			if (file.isDirectory()) return;
+
+			if (! file.getPath().toLowerCase().endsWith(".txt")) {
+				file = new File(file.getPath()+".txt");
+			}
+
+			// Check if we're stepping on anyone's toes...
+			if (file.exists()) {
+				int answer = JOptionPane.showOptionDialog(DuplicationPlotDialog.this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+
+				if (answer > 0) {
+					return;
+				}
+			}
+
+			// Now write out the results
+
+			try {
+				PrintWriter pr = new PrintWriter(file);
+
+				for (int i=0;i<plotPanels.length;i++) {
+					plotPanels[i].writeData(pr);
+				}
+
+				pr.close();
+
+			}
+			catch (IOException ioe) {
+				throw new IllegalStateException(ioe);
+			}
+
 		}
 
 	}

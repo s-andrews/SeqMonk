@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -31,7 +31,6 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -270,6 +269,9 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
 
 			template.setValue("PVALUE", ""+pValueCutoff);
+			
+			template.setValue("CORRECTCOUNT",""+pairs.length);
+
 
 			if (multiTest) {
 				template.setValue("MULTITEST", "TRUE");

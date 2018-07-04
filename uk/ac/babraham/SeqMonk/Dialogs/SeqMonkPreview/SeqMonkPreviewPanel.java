@@ -1,5 +1,5 @@
 /**
- * Copyright 2011-17 Simon Andrews
+ * Copyright 2011-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -17,7 +17,7 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.SeqMonk.Dialogs;
+package uk.ac.babraham.SeqMonk.Dialogs.SeqMonkPreview;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -74,96 +74,14 @@ public class SeqMonkPreviewPanel extends JPanel implements PropertyChangeListene
 	}
 	
 	private void previewFile (File file) {
-		
-		FileInputStream fis = null;
-		BufferedReader br = null;
-		
+				
 		try {
-			fis = new FileInputStream(file);
-			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(fis)));
+			SeqMonkPreview preview = new SeqMonkPreview(file);
+			label.setText(preview.toString());
 		}
 		catch (IOException ioe) {
-			
-			try {
-				if (fis != null) {
-					fis.close();
-				}
-				br = new BufferedReader(new FileReader(file));
-			}
-			catch (IOException ioex) {
-				label.setText("Failed to read file");
-				return;
-			}
-		}
-
-		try {
-			
-			// Read the header into a separate variable in case they've clicked on
-			// an empty file.  This way we can check for a null value from reading
-			// the first line.
-			String header = br.readLine();
-			
-			if (header == null || ! header.startsWith("SeqMonk Data Version")) {
-				label.setText("Not a SeqMonk file");
-				br.close();
-				return;
-			}
-
-			StringBuffer sb = new StringBuffer();
-			sb.append("<html>");
-				
-			// The next line should be the genome species and version
-				
-			String genome = br.readLine();
-			if (! genome.startsWith("Genome\t")) {
-				label.setText("Not a SeqMonk file");
-				br.close();
-				return;					
-			}
-
-			genome = genome.replaceAll("\t", " ");
-				
-			sb.append(genome);
-			sb.append("<br><br>");
-				
-			int linesRead = 0;
-			// Next we keep going until we hit the samples line, but we'll
-			// give up if we haven't found the sample information after
-			// 10k lines
-			while (linesRead < 100000) {
-				++linesRead;
-				String line = br.readLine();
-				if (line == null) {
-					break;
-				}
-					
-				if (line.startsWith("Samples\t")) {
-					sb.append("Samples:<br>");
-					int sampleCount = Integer.parseInt((line.split("\t"))[1]);
-					for (int i=0;i<sampleCount;i++) {
-						line = br.readLine();
-						sb.append((line.split("\t"))[0]);
-						sb.append("<br>");
-					}
-					sb.append("<br>");
-					break;
-				}
-				
-			}
-			
-			if (linesRead >= 100000) {
-				sb.append("Couldn't find samples at top of file");
-			}
-								
-			br.close();
-			sb.append("</html>");
-			label.setText(sb.toString());
-			
-		} 
-		catch (IOException ex) {
-			ex.printStackTrace();
 			label.setText("Failed to read file");
-		}		
+		}
 	}
 		
 }

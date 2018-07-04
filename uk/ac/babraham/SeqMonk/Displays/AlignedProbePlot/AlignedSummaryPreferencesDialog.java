@@ -1,5 +1,5 @@
 /**
- * Copyright 2009-17 Simon Andrews
+ * Copyright 2009-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -31,6 +31,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
@@ -81,6 +82,11 @@ public class AlignedSummaryPreferencesDialog extends JDialog implements ActionLi
 		super(SeqMonkApplication.getInstance(),"Aligned Probe Preferences");
 		this.lists = lists;
 		this.stores = stores;
+		
+		if (stores.length == 0) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>You need at least one data store to be visible to draw this plot<br>Add at least one store to the chromosome view, then try again", "Can't draw plot", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
 		
 		getContentPane().setLayout(new BorderLayout());
 		

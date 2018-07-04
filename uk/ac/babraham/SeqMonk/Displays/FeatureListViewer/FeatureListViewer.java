@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -54,23 +54,24 @@ public class FeatureListViewer extends JTable implements MouseListener {
 		this.application = SeqMonkApplication.getInstance();
 
 
-		String [] headers = new String [] {"Feature","Type","Description","Chr","Start","End"};
-		Class [] classes = new Class [] {String.class,String.class,String.class,String.class,Integer.class,Integer.class};
+		String [] headers = new String [] {"Feature","ID","Type","Description","Chr","Start","End"};
+		Class [] classes = new Class [] {String.class,String.class,String.class,String.class,String.class,Integer.class,Integer.class};
 		
 		Object [][] rowData = new Object [features.length][headers.length];
 		
 		for (int i=0;i<features.length;i++) {
 			rowData[i][0] = features[i];
-			rowData[i][1] = features[i].type();
-			rowData[i][2] = features[i].description();
+			rowData[i][1] = features[i].id();
+			rowData[i][2] = features[i].type();
+			rowData[i][3] = features[i].description();
 			if (features[i].chromosomeName() != null) {
-				rowData[i][3] = features[i].chromosomeName();
+				rowData[i][4] = features[i].chromosomeName();
 			}
 			else {
-				rowData[i][3] = "No chr";				
+				rowData[i][4] = "No chr";				
 			}
-			rowData[i][4] = new Integer(features[i].location().start());
-			rowData[i][5] = new Integer(features[i].location().end());
+			rowData[i][5] = new Integer(features[i].location().start());
+			rowData[i][6] = new Integer(features[i].location().end());
 		}
 
 		TableSorter sorter = new TableSorter(new FeatureTableModel(rowData,headers,classes));

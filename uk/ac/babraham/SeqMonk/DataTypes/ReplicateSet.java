@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-17 Simon Andrews
+ * Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -24,6 +24,7 @@ import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 
@@ -143,14 +144,14 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForChromsome(uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome)
 	 */
-	public long[] getReadsForChromosome(Chromosome c) {
-		long [][] readsFromAllChrs = new long[dataStores.length][];
+	public ReadsWithCounts getReadsForChromosome(Chromosome c) {
+		ReadsWithCounts [] readsFromAllChrs = new ReadsWithCounts[dataStores.length];
 		
 		for (int i=0;i<dataStores.length;i++) {
 			readsFromAllChrs[i] = dataStores[i].getReadsForChromosome(c);
 		}
 		
-		return LongSetSorter.sortLongSets(readsFromAllChrs);
+		return new ReadsWithCounts(readsFromAllChrs);
 	}
 
 	/* (non-Javadoc)

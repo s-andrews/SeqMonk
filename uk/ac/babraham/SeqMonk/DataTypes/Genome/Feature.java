@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -128,6 +128,26 @@ public class Feature implements Comparable<Feature>, Serializable {
 	public AnnotationTagValue [] getAnnotationTagValues () {
 		return annotation;
 	}
+	
+	public boolean hasTag (String tagName) {
+		for (int i=0;i<annotation.length;i++) {
+			if (annotation[i].tag().equals(tagName)) {
+//				System.err.println("Found tag "+annotation[i].tag()+" with value "+annotation[i].value());
+				return(true);
+			}
+		}
+		
+		return false;
+	}
+
+	public String getValueForTag (String tagName) {
+		for (int i=0;i<annotation.length;i++) {
+			if (annotation[i].tag().equals(tagName)) return(annotation[i].value());
+		}
+		
+		return null;
+	}
+
 	
 	/**
 	 * Gets the all annotation.
@@ -305,6 +325,13 @@ public class Feature implements Comparable<Feature>, Serializable {
 			thisValue = new String((value.split(":"))[1]);
 			thisSource = NAME;
 		}
+
+		// Except for the Ensembl GTFs which use this way of identifying gene names
+		else if (key.equals("gene_name")) {
+			thisValue = value;
+			thisSource = NAME;
+		}
+
 		
 		else if (key.equals("db_xref") && value.indexOf("MarkerSymbol")>=0) {
 			thisValue = new String((value.split(":"))[1]);

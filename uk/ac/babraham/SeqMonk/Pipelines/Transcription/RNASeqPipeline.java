@@ -1,5 +1,5 @@
 /**
- * Copyright 2011-17 Simon Andrews
+ * Copyright 2011-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -47,7 +47,9 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.QuantitationStrandType;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
+import uk.ac.babraham.SeqMonk.Displays.Report.ReportTableDialog;
 import uk.ac.babraham.SeqMonk.Pipelines.Pipeline;
+import uk.ac.babraham.SeqMonk.Reports.Report;
 
 /**
  * The RPKM pipeline is used for the quantitation of RNA-Seq data.  It takes in a 
@@ -97,20 +99,44 @@ public class RNASeqPipeline extends Pipeline {
 		if (merge) {
 
 			// Test to see if these features have names which suggest that we can merge
-			// based on their names along
+			// based on their names along.  We can also test to see if there is a gene_name
+			// or gene_id tag which we can use
 			boolean goodNames = true;
+			boolean geneNames = true;
+			boolean geneIDs = true;
 			for (int i=0;i<features.length;i++) {
-				if (!features[i].name().matches(".*-\\d{3}")){
+				if (goodNames && !features[i].name().matches(".*-\\d{3}")){
 					goodNames = false;
-					break;
+				}
+				if (geneIDs && !features[i].hasTag("gene_id")) {
+					geneIDs = false;
+				}
+				if (geneNames && !features[i].hasTag("gene_name")) {
+					geneNames = false;
 				}
 			}
-
-			if (goodNames) {
+			
+			if (goodNames || geneNames || geneIDs) {
 				Hashtable<String, FeatureGroup> groupedNames = new Hashtable<String, FeatureGroup>();
 
 				for (int i=0;i<features.length;i++) {
-					String name = features[i].name().replaceFirst("-\\d{3}$", "");
+					String name;
+					
+					if (goodNames) {
+						name = features[i].name().replaceFirst("-\\d{3}$", "");
+					}
+					else if (geneNames) {
+						name = features[i].getValueForTag("gene_name");
+					}
+					else if (geneIDs) {
+						name = features[i].getValueForTag("gene_id");
+					}
+					else {
+						throw new IllegalStateException("One of the previous name mappings should have worked.");
+					}
+					
+					
+					
 					if (!groupedNames.containsKey(name)) {
 						groupedNames.put(name,new FeatureGroup(name));
 					}
@@ -366,8 +392,6 @@ public class RNASeqPipeline extends Pipeline {
 		}
 
 
-
-
 		// If we're correcting for DNA contamination we need to work out the average density of
 		// reads in intergenic regions
 		float [] dnaDensityPerKb = new float[data.length];
@@ -437,12 +461,7 @@ public class RNASeqPipeline extends Pipeline {
 			}
 
 		}
-		
-		for (int i=0;i<dnaDensityPerKb.length;i++) {
-			System.err.println("For "+data[i].name()+" dna/kb was "+dnaDensityPerKb[i]);
-		}
-		
-		
+				
 		// If we're correcting for duplication we need to work out the modal count depth in 
 		// intergenic regions
 		int [] modalDuplicationLevels = new int[data.length];
@@ -511,13 +530,6 @@ public class RNASeqPipeline extends Pipeline {
 
 		}
 		
-	
-		for (int i=0;i<modalDuplicationLevels.length;i++) {
-			System.err.println("For "+data[i].name()+" duplication was "+modalDuplicationLevels[i]);
-		}
-		
-	
-
 
 		// Having made probes we now need to quantitate them.  We'll fetch the
 		// probes overlapping each sub-feature and then aggregate these together
@@ -589,7 +601,11 @@ public class RNASeqPipeline extends Pipeline {
 
 					// As we're correcting for read length then we work out the whole number of
 					// reads which this count could comprise, rounding down to a whole number.
-					totalCount /= readLengths[d];
+					
+					// We put the check in in case there are no reads at all and we end up with 
+					// a divide by zero error
+					if (readLengths[d]>0)
+						totalCount /= readLengths[d];
 
 					// We can now subtract the DNA contamination prediction.
 					if (correctDNAContamination) {
@@ -636,7 +652,7 @@ public class RNASeqPipeline extends Pipeline {
 						// If these libraries are paired end then the total number of
 						// reads is also effectively halved.
 						
-						float totalReadCount;
+						float totalReadCount = 0;
 						
 						// We start by getting the original total.  For DNA contamination correction we'll have
 						// calculated this already, but otherwise we'll take the total count (total length/read length)
@@ -644,7 +660,8 @@ public class RNASeqPipeline extends Pipeline {
 							totalReadCount = correctedTotalCounts[d];
 						}
 						else {
-							totalReadCount = data[d].getTotalReadLength()/readLengths[d];
+							if (readLengths[d] > 0)
+								totalReadCount = data[d].getTotalReadLength()/readLengths[d];
 						}
 						
 						
@@ -686,6 +703,45 @@ public class RNASeqPipeline extends Pipeline {
 
 		collection().probeSet().setCurrentQuantitation(getQuantitationDescription(mergeTranscripts,applyTranscriptLengthCorrection,correctDNAContamination,logTransform,rawCounts));
 
+		// If we estimated any parameters let's report them.
+		if (correctDNAContamination || correctDuplication) {
+			float [] dna = null;
+			if (correctDNAContamination) {
+				dna = dnaDensityPerKb;
+			}
+			int [] dup = null;
+			if (correctDuplication) {
+				dup = modalDuplicationLevels;
+			}
+			
+			RNASeqParametersModel model = new RNASeqParametersModel(data, dna, dup);
+			
+			ReportTableDialog report = new ReportTableDialog(SeqMonkApplication.getInstance(),new Report(null,null) {
+				
+				@Override
+				public void run() {}
+				
+				@Override
+				public String name() {
+					return "RNA-Seq parameter";
+				}
+				
+				@Override
+				public boolean isReady() {
+					return true;
+				}
+				
+				@Override
+				public JPanel getOptionsPanel() {
+					return null;
+				}
+				
+				@Override
+				public void generateReport() {}
+			},model);
+			
+		}
+		
 		quantitatonComplete();
 
 	}

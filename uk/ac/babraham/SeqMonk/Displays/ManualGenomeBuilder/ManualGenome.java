@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-17 Simon Andrews
+ * Copyright 2013-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -55,10 +55,9 @@ public class ManualGenome extends AbstractTableModel {
 	}
 	
 	public void enableUpdates () {
-		incrementalUpdates = true;
 		updatePseudoGenome();
 		fireTableDataChanged();
-		
+		incrementalUpdates = true;		
 	}
 	
 	public ManualGenomeChromosome getChromosome (int index) {
@@ -134,6 +133,7 @@ public class ManualGenome extends AbstractTableModel {
 	}
 
 	protected void pseudoChromosomeUpdated (ManualGenomeChromosome chr) {
+		
 		if (incrementalUpdates) fireTableCellUpdated(chrs.indexOf(chr), 2);		
 		if (incrementalUpdates) fireTableCellUpdated(chrs.indexOf(chr), 3);		
 	}

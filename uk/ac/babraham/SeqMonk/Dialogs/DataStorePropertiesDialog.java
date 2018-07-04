@@ -1,5 +1,5 @@
 /**
- * Copyright 2009-17 Simon Andrews
+ * Copyright 2009-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -39,6 +39,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 
 /**
@@ -188,20 +189,20 @@ public class DataStorePropertiesDialog extends JDialog implements ActionListener
 		int longestLength = 0;
 
 		for (int c=0;c<chrs.length;c++) {
-			long [] reads = dataStore.getReadsForChromosome(chrs[c]);
+			ReadsWithCounts reads = dataStore.getReadsForChromosome(chrs[c]);
 
-			for (int i=0;i<reads.length;i++) {
-				totalCount++;
+			for (int i=0;i<reads.reads.length;i++) {
+				totalCount+=reads.counts[i];
 				
 				if (i==0) {
-					shortestLength = SequenceRead.length(reads[i]);
-					longestLength = SequenceRead.length(reads[i]);
+					shortestLength = SequenceRead.length(reads.reads[i]);
+					longestLength = SequenceRead.length(reads.reads[i]);
 				}
 	
-				if (SequenceRead.length(reads[i]) < shortestLength) shortestLength = SequenceRead.length(reads[i]);
-				if (SequenceRead.length(reads[i]) > longestLength) longestLength = SequenceRead.length(reads[i]);
+				if (SequenceRead.length(reads.reads[i]) < shortestLength) shortestLength = SequenceRead.length(reads.reads[i]);
+				if (SequenceRead.length(reads.reads[i]) > longestLength) longestLength = SequenceRead.length(reads.reads[i]);
 				
-				averageLength += SequenceRead.length(reads[i]);
+				averageLength += SequenceRead.length(reads.reads[i])*reads.counts[i];
 			}
 		}		
 		averageLength /= totalCount;

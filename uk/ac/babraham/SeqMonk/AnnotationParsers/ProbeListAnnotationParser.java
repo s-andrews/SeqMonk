@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-17 Simon Andrews
+ * Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -81,7 +81,7 @@ public class ProbeListAnnotationParser extends AnnotationParser {
 		
 		Vector<AnnotationSet> annotationSets = new Vector<AnnotationSet>();
 
-		AnnotationSet currentAnnotation = new AnnotationSet(genome, probeList.name());
+		AnnotationSet currentAnnotation = new AnnotationSet(genome, featureType);
 		annotationSets.add(currentAnnotation);
 
 		Probe [] probes = probeList.getAllProbes();

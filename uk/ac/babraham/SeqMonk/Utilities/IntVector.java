@@ -1,5 +1,5 @@
 /**
- * Copyright 2011-17 Simon Andrews
+ * Copyright 2011-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -51,6 +51,11 @@ public class IntVector implements Serializable {
 		
 		array[length-1] += value;
 	}
+	
+	public int getLast() {
+		return(array[length-1]);
+	}
+	
 	
 	public int length () {
 		return length;

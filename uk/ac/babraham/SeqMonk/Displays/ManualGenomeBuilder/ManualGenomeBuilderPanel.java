@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-17 Simon Andrews
+ * Copyright 2013-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -394,6 +394,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 
 					}
 					if (line.startsWith("#")) continue;
+					if (line.trim().equals("")) continue;
 
 					String [] fields = line.split("\t");
 

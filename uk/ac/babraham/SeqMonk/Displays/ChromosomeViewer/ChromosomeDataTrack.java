@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -46,10 +46,13 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.IntVector;
+import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 
 /**
  * The Class ChromosomeDataTrack represents a single track in the
@@ -212,7 +215,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		}
 
 	}
-	
+
 
 	public Dimension getMinimumSize () {
 		return new Dimension(1, 1);
@@ -234,8 +237,6 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		lastInteractionIndexStart = 0;
 
 		Arrays.sort(probes);
-		reads = data.getReadsForChromosome(DisplayPreferences.getInstance().getCurrentChromosome());
-		// Reads should come ready sorted
 
 		//Force the slots to be reassigned
 		height = 0;
@@ -338,11 +339,17 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		}
 
 		// We now need to assign each probe to a slot
-		
-		// To avoid clashing with updates from other methods we'll cache a copy of the reads array
-		long [] reads = this.reads;
-		
-		slotValues = new int [reads.length];
+
+		// We're going to go back to the original source for the reads.  That way we only need to keep 
+		// hold of the ones which are assignable in this height of view which could save us a lot of
+		// memory
+
+		ReadsWithCounts rwc = data.getReadsForChromosome(DisplayPreferences.getInstance().getCurrentChromosome());
+
+		// We'll start a temporary list of the reads which we can draw, and this will be what we put together.
+		LongVector drawableReads = new LongVector();
+		IntVector drawableSlotValues = new IntVector();
+
 		// We can also make the array of cached positions to optimise drawing
 		lastReadXEnds = new int [slotCount];		
 
@@ -365,38 +372,43 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			// fit
 			int nextPossibleSlot = 0;
 
-			READ: for (int r=0;r<reads.length;r++) {
+			for (int r=0;r<rwc.reads.length;r++) {
 
-				if (nextPossibleSlot != 0) {
-					// See if we can quickly skip this read
-					if (nextPossibleSlot > SequenceRead.start(reads[r])) {
-						slotValues[r] = -1;
-						continue;
+				long read = rwc.reads[r];
+				READ: for (int c=0;c<rwc.counts[r];c++) {
+
+
+					if (nextPossibleSlot != 0) {
+						// See if we can quickly skip this read
+						if (nextPossibleSlot > SequenceRead.start(reads[r])) {
+							continue;
+						}
+						else {
+							// Reset this as we're adding reads again.
+							nextPossibleSlot = 0;
+						}
 					}
-					else {
-						// Reset this as we're adding reads again.
-						nextPossibleSlot = 0;
+
+					for (int s=0;s<slotCount;s++) {
+						if (lastBase[s] < SequenceRead.start(read)) {
+							drawableReads.add(read);
+							drawableSlotValues.add(s);
+							lastBase[s] = SequenceRead.end(read);
+							continue READ;
+						}	
 					}
-				}
 
-				for (int s=0;s<slotCount;s++) {
-					if (lastBase[s] < SequenceRead.start(reads[r])) {
-						slotValues[r] = s;
-						lastBase[s] = SequenceRead.end(reads[r]);
-						continue READ;
-					}	
-				}
+					// If we get here then we don't have enough
+					// slots to draw the reads in this chromosome.
+					// In this case we just don't draw them in this
+					// display.  That means we don't add them to 
+					// the drawable slots or drawable reads
 
-				// If we get here then we don't have enough
-				// slots to draw the reads in this chromosome.
-				// In this case we just don't draw them in this
-				// display
-				slotValues[r] = -1;	
-
-				// Now set the nextPossibleSlot value so we can 
-				// skip stuff quickly in future
-				for (int s=0;s<slotCount;s++) {
-					if (lastBase[s] > nextPossibleSlot) nextPossibleSlot = lastBase[s];
+					// Now set the nextPossibleSlot value so we can 
+					// skip stuff quickly in future
+					for (int s=0;s<slotCount;s++) {
+						if (lastBase[s] < nextPossibleSlot) nextPossibleSlot = lastBase[s];
+					}
 				}
 			}
 		}
@@ -405,34 +417,40 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			// If we're using split mode then reads of unknown strand go
 			// in the middle line.  Forward reads go above that and reverse
 			// reads go below.
-			READ: for (int r=0;r<reads.length;r++) {
-				int startSlot = 0;
-				int interval = slotCount;
-				if (SequenceRead.strand(reads[r]) == Location.FORWARD) {
-					startSlot = 1;
-					interval = 2;
-				}
-				else if (SequenceRead.strand(reads[r]) == Location.REVERSE) {
-					startSlot = 2;
-					interval = 2;
-				}
-				for (int s=startSlot;s<slotCount;s+=interval) {
-					if (lastBase[s] < SequenceRead.start(reads[r])) {
-						slotValues[r] = s;
-						lastBase[s] = SequenceRead.end(reads[r]);
-						continue READ;
+			for (int r=0;r<rwc.reads.length;r++) {
+				long read = rwc.reads[r];
+				READ: for (int c=0;c<rwc.counts[r];c++) {
+					int startSlot = 0;
+					int interval = slotCount;
+					if (SequenceRead.strand(read) == Location.FORWARD) {
+						startSlot = 1;
+						interval = 2;
 					}
+					else if (SequenceRead.strand(read) == Location.REVERSE) {
+						startSlot = 2;
+						interval = 2;
+					}
+					for (int s=startSlot;s<slotCount;s+=interval) {
+						if (lastBase[s] < SequenceRead.start(read)) {
+							drawableSlotValues.add(s);
+							drawableReads.add(read);
+							lastBase[s] = SequenceRead.end(read);
+							continue READ;
+						}
+					}
+
+					// If we get here then we don't have enough
+					// slots to draw the reads in this chromosome.
+					// In this case we just don't draw them in this
+					// display.  That just measns we don't add them
+					// to anything.
 				}
-
-				// If we get here then we don't have enough
-				// slots to draw the reads in this chromosome.
-				// In this case we just don't draw them in this
-				// display
-				slotValues[r] = -1;	
-
 			}
 		}
-
+		
+		reads = drawableReads.toArray();
+		slotValues = drawableSlotValues.toArray();
+		
 	}
 
 	private int [][] getHiCPixelCounts () {
@@ -573,7 +591,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				break;
 			}
 		}
-				
+
 		if (lastValidIndex <= 0) {
 			// There are no valid values
 			return new float[]{0,1};
@@ -581,7 +599,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 		minMax[0] = values[(int)(lastValidIndex * 0.1)];
 		minMax[1] = values[(int)(lastValidIndex * 0.9)];
-		
+
 		return minMax;
 	}
 
@@ -662,7 +680,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		if (drawReads) {
 			assignSlots();
 		}
-		
+
 		// Cache a copy of the current reads array so we don't get it changed from under us
 		long [] reads = this.reads;
 
@@ -910,11 +928,11 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			g.setFont(new Font("Default",Font.PLAIN,fontSize));
 			nameHeight = g.getFontMetrics().getAscent()+g.getFontMetrics().getDescent();
 			if (nameHeight<getHeight()) break;
-			
+
 			fontSize--;
-			
+
 		}
-				
+
 		// Draw a box into which we'll put the track name so it's not obscured
 		// by the data
 		int nameWidth = g.getFontMetrics().stringWidth(name);
@@ -1056,7 +1074,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		// This might makes lines look a little odd in heavily overlapped datasets with
 		// different probe lengths but it prevents drawing artefacts in bar graphs where
 		// probes can appear and disappear.
-		
+
 		if (wholeXEnd > lastProbeXEnd) {
 			lastProbeXEnd = wholeXEnd;
 			lastProbeValue = value;
@@ -1203,13 +1221,13 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 					g.fillOval((wholeXStart+((wholeXEnd-wholeXStart)/2))-2, thisPointY-2, 4, 4);
 				}
-				
+
 			}
-			
+
 			else  {
 				float variabilityValuePlus;
 				float variabilityValueMinus;
-				
+
 				if (variation == DisplayPreferences.VARIATION_STDEV) {
 					variabilityValuePlus = value+SimpleStats.stdev(values);
 					variabilityValueMinus = value-SimpleStats.stdev(values);
@@ -1229,21 +1247,21 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				else {
 					throw new IllegalStateException("Don't understand variability value "+variation);
 				}
-				
+
 				int yPlus = getYForProbeValue(variabilityValuePlus);
 				int yMinus = getYForProbeValue(variabilityValueMinus);
-				
+
 				// Move the ends in a bit so the error bars are narrower than the blocks
 				int xOffset = (wholeXEnd-wholeXStart)/5;
-				
+
 				// Draw some whiskers around the probe.
 				g.drawLine(wholeXStart+xOffset, yPlus, wholeXEnd-xOffset, yPlus);
 				g.drawLine(wholeXStart+xOffset, yMinus, wholeXEnd-xOffset, yMinus);
-				
+
 				int middleX = wholeXStart+((wholeXEnd-wholeXStart)/2);
-				
+
 				g.drawLine(middleX, yPlus, middleX, yMinus);	
-				
+
 			}
 
 		}
@@ -1251,14 +1269,14 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 
 	}
-	
+
 	private int getYForProbeValue (float value) {
 		int yValue;
 
 		if (value > maxValue) value = maxValue;
 		if (value < minValue) value = minValue;
 
-		
+
 		if (showNegative) {
 			if (drawReads) {
 				if (value > 0) {
@@ -1286,16 +1304,16 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				yValue =  height - ((int)(((double)height)*(value/maxValue)));
 			}
 		}
-		
+
 		return yValue;
-		
+
 	}
-	
+
 	private float getValueForYPixel (int pixel) {
 
 		int trueHeight = 0;
 		int offset = 0;
-		
+
 		if (showNegative) {
 			if (drawReads) {
 				trueHeight = height/4;
@@ -1317,11 +1335,11 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				offset = height-pixel;
 			}
 		}
-		
+
 		float returnValue = maxValue * (offset/(float)trueHeight);
 
-//		System.err.println("Value="+returnValue+" trueHeight="+trueHeight+" offset="+offset+" y="+pixel);
-			
+		//		System.err.println("Value="+returnValue+" trueHeight="+trueHeight+" offset="+offset+" y="+pixel);
+
 		return returnValue;
 	}
 
@@ -1422,30 +1440,30 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 	 * @param y the y
 	 */
 	private void findProbe (int x, int y) {
-		
+
 		// The rule is that we find all probes where x falls within the probe
 		// region.  If we have multiple probes to choose from then we pick
 		// the one with the value closest to 0 which is still encompassed by the 
 		// y point.
-		
+
 		float pointValue = getValueForYPixel(y);
-				
+
 		DrawnProbe bestProbe = null;
 		float bestValue = 0;
 		boolean wasWithinRange = false;
-		
+
 		Enumeration<DrawnProbe> e = drawnProbes.elements();
 		while (e.hasMoreElements()) {
 			DrawnProbe p = e.nextElement();
 			if (p.isInFeature(x,y)) {
-				
+
 				float thisProbeValue = 0;
 				try {
 					thisProbeValue = data.getValueForProbe(p.probe);
 				} catch (SeqMonkException e1) {}
 
 				boolean isWithinRange = false;
-				
+
 				if (pointValue >= 0 && thisProbeValue >= 0 && thisProbeValue >= pointValue) {
 					isWithinRange = true;
 				}
@@ -1455,8 +1473,8 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				else {
 					isWithinRange = false;
 				}
-				
-				
+
+
 				if (bestProbe == null) {
 					// This is the best option so far
 					bestProbe = p;
@@ -1464,9 +1482,9 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 					wasWithinRange = isWithinRange;
 					continue;
 				}
-				
+
 				// See if this is better than the last one
-				
+
 				// Does this overlap where the last probe didn't?
 				if (!wasWithinRange && isWithinRange) {
 					// This is a new overlap, so it's better
@@ -1475,7 +1493,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 					wasWithinRange = isWithinRange;
 					continue;					
 				}
-				
+
 				if (isWithinRange) {
 					// See if it's closer to the origin than the best we have
 					if (bestValue >=0 && thisProbeValue < bestValue) {
@@ -1504,7 +1522,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		}
 		return;
 
-	
+
 	}
 
 	/* (non-Javadoc)

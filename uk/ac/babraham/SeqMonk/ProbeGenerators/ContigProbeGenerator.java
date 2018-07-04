@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -45,8 +45,11 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadStrandType;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
+import uk.ac.babraham.SeqMonk.Utilities.IntVector;
+import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 /**
@@ -266,14 +269,13 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 			// We'll merge together the reads for all of the selected DataStores and
 			// compute a single set of probes which covers all of them.
 
-			long [][] v = new long[selectedStores.length][];
+			ReadsWithCounts [] v = new ReadsWithCounts[selectedStores.length];
 			for (int s=0;s<selectedStores.length;s++) {
 				v[s] = selectedStores[s].getReadsForChromosome(chromosomes[c]);
 			}
 
-			long [] rawReads = LongSetSorter.sortLongSets(v);
+			ReadsWithCounts rawReads = new ReadsWithCounts(v);
 						
-
 			v = null;
 
 			// We now want to convert this list into a non-redundant set of
@@ -289,11 +291,11 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 			}
 
 			for (int strand=0;strand<strandsToTry.length;strand++) {
-				SequenceReadWithCount [] reads = getNonRedundantReads(rawReads,strandsToTry[strand]);
+				ReadsWithCounts reads = getNonRedundantReads(rawReads,strandsToTry[strand]);
 				
 //				System.err.println("Found "+reads.length+" reads on chr "+chromosomes[c]+" with strand "+strandsToTry[strand]);
 				
-				if (reads.length == 0) {
+				if (reads.totalCount() == 0) {
 //					System.err.println("Skipping strand "+strandsToTry[strand]+" on chr "+chromosomes[c]);
 					continue;
 				}
@@ -314,7 +316,7 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 				LinkedList<SequenceReadWithCount> currentSet = new LinkedList<SequenceReadWithCount>();
 				int currentSetSize = 0;
 
-				for (int r=0;r<reads.length;r++) {
+				for (int r=0;r<reads.reads.length;r++) {
 
 					// See if we need to quit
 					if (cancel) {
@@ -325,7 +327,7 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 					// Firstly we need to remove any reads from the set which
 					// end before this read starts
 
-					while (currentSetSize>0 && SequenceRead.end(currentSet.getFirst().read)<SequenceRead.start(reads[r].read)) {
+					while (currentSetSize>0 && SequenceRead.end(currentSet.getFirst().read)<SequenceRead.start(reads.reads[r])) {
 						SequenceReadWithCount lastRead = currentSet.removeFirst();
 						currentSetSize -= lastRead.count;
 
@@ -368,8 +370,8 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 
 					// If there's nothing there already then just add it
 					if (currentSetSize == 0) {
-						currentSet.add(reads[r]);
-						currentSetSize += reads[r].count;
+						currentSet.add(new SequenceReadWithCount(reads.reads[r],reads.counts[r]));
+						currentSetSize += reads.counts[r];
 					}
 
 					// If there are reads in the current set then we need to add this read
@@ -385,20 +387,20 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 
 							// If we reach the front of the set then we add ourselves to the front
 							if (! it.hasPrevious()){
-								currentSet.addFirst(reads[r]);
-								currentSetSize += reads[r].count;
+								currentSet.addFirst(new SequenceReadWithCount(reads.reads[r],reads.counts[r]));
+								currentSetSize += reads.counts[r];
 								break;
 							}
 							else {
 								SequenceReadWithCount previousRead = it.previous();
-								if (SequenceRead.end(previousRead.read)<SequenceRead.end(reads[r].read)) {
+								if (SequenceRead.end(previousRead.read)<SequenceRead.end(reads.reads[r])) {
 
 									// We want to add ourselves after this element so backtrack
 									// by one position (which must exist because we just went
 									// past it
 									it.next();
-									it.add(reads[r]);
-									currentSetSize += reads[r].count;
+									it.add(new SequenceReadWithCount(reads.reads[r],reads.counts[r]));
+									currentSetSize += reads.counts[r];
 									break;
 								}
 							}
@@ -408,7 +410,7 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 
 					// See if we crossed the threshold for starting a new probe
 					if (start < 0 && currentSetSize >= depthCutoff) {
-						start = SequenceRead.start(reads[r].read);
+						start = SequenceRead.start(reads.reads[r]);
 					}
 
 				}
@@ -496,39 +498,33 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 	 * @param reads the reads
 	 * @return the non redundant reads
 	 */
-	private SequenceReadWithCount [] getNonRedundantReads (long [] reads, int limitToStrand) {
+	private ReadsWithCounts getNonRedundantReads (ReadsWithCounts reads, int limitToStrand) {
 		
 		boolean limitStrand = false;
 		if (limitToStrand == Location.FORWARD || limitToStrand == Location.REVERSE || limitToStrand == Location.UNKNOWN) {
 			limitStrand = true;
 		}
+		
+		if (!limitStrand) {
+			return reads; // It's already done.
+		}
 
-		Vector<SequenceReadWithCount> keepers = new Vector<SequenceReadWithCount>();
-		SequenceReadWithCount last = null;
+		
+		LongVector keptReads = new LongVector();
+		IntVector keptCounts = new IntVector();
+		
+		for (int r=0;r<reads.reads.length;r++) {
 
-		for (int r=0;r<reads.length;r++) {
-
-			if (! readStrandType.useRead(reads[r])) {
+			if (! readStrandType.useRead(reads.reads[r])) {
 				continue;
 			}
 
-			if (limitStrand && (SequenceRead.strand(reads[r]) != limitToStrand)) continue;
+			if (limitStrand && (SequenceRead.strand(reads.reads[r]) != limitToStrand)) continue;
 
-			if (last == null || SequenceRead.start(last.read) != SequenceRead.start(reads[r]) || SequenceRead.end(last.read) != SequenceRead.end(reads[r])) {
-				// We need to make a new entry
-				last = new SequenceReadWithCount(reads[r],1);
-				keepers.add(last);
-			}
-			else {
-				last.count++;
-			}
+			keptReads.add(reads.reads[r]);
+			keptCounts.add(reads.counts[r]);
 		}
-
-		if (last != null) {
-			keepers.add(last);
-		}
-
-		return keepers.toArray(new SequenceReadWithCount[0]);
+		return new ReadsWithCounts(keptReads.toArray(),keptCounts.toArray());
 	}
 
 	/* (non-Javadoc)
@@ -570,9 +566,6 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 		isReady();
 	}
 
-	/**
-	 * The Class SequenceReadWithCount.
-	 */
 	private class SequenceReadWithCount {
 
 		/** The read. */

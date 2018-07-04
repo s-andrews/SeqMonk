@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-17 Simon Andrews
+ * Copyright 2014-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -48,37 +49,25 @@ import uk.ac.babraham.SeqMonk.Utilities.ListDefaultSelector;
 
 public class RNAQCPreferencesDialog extends JDialog implements ActionListener, ProgressListener {
 
-	private JList dataList;
+	private DataStore [] stores;
 	private JComboBox geneFeaturesBox;
 	private JComboBox transcriptFeaturesBox;
+	private JCheckBox measureTranscriptsBox;
 	private JComboBox rRNAFeaturesBox;
+	private JCheckBox measureRRNABox;
 	private JList chromosomeList;
 	private DataCollection collection;
 	
-	public RNAQCPreferencesDialog(DataCollection collection)  {
+	public RNAQCPreferencesDialog(DataCollection collection, DataStore [] stores)  {
 		super(SeqMonkApplication.getInstance(),"RNA-Seq QC Plot");
+		
+		if (stores.length == 0) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "There are no visible data stores", "Can't draw plot", JOptionPane.INFORMATION_MESSAGE);
+		}
+		
+		this.stores = stores;
 		this.collection = collection;
 		getContentPane().setLayout(new BorderLayout());
-		JPanel dataPanel = new JPanel();
-		dataPanel.setBorder(BorderFactory.createEmptyBorder(4,4,0,4));
-		dataPanel.setLayout(new BorderLayout());
-		dataPanel.add(new JLabel("Data Sets/Groups",JLabel.CENTER),BorderLayout.NORTH);
-
-		DefaultListModel dataModel = new DefaultListModel();
-
-		DataStore [] stores = collection.getAllDataStores();
-		
-		for (int i=0;i<stores.length;i++) {
-			dataModel.addElement(stores[i]);
-		}
-
-		dataList = new JList(dataModel);
-		dataList.setPrototypeCellValue("No longer than this please");
-		ListDefaultSelector.selectDefaultStores(dataList);
-		dataList.setCellRenderer(new TypeColourRenderer());
-		dataPanel.add(new JScrollPane(dataList),BorderLayout.CENTER);
-
-		getContentPane().add(dataPanel,BorderLayout.WEST);
 
 		JPanel choicePanel = new JPanel();
 		
@@ -90,7 +79,7 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 		gbc.gridx=1;
 		gbc.gridy=1;
 		
-		choicePanel.add(new JLabel("Gene features"),gbc);
+		choicePanel.add(new JLabel("Measure Genes"),gbc);
 		gbc.gridx++;
 		
 		geneFeaturesBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
@@ -106,7 +95,14 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 		gbc.gridy++;
 		gbc.gridx=1;
 
-		choicePanel.add(new JLabel("Transcript features"),gbc);
+		measureTranscriptsBox = new JCheckBox("Measure Transcripts",true);
+		choicePanel.add(measureTranscriptsBox,gbc);
+		measureTranscriptsBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				transcriptFeaturesBox.setEnabled(measureTranscriptsBox.isSelected());
+			}
+		});
 		gbc.gridx++;
 		
 		transcriptFeaturesBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
@@ -117,12 +113,26 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 				break;
 			}
 		}
+		
+		if (!transcriptFeaturesBox.getSelectedItem().equals("mRNA")) {
+			measureTranscriptsBox.setSelected(false);
+			transcriptFeaturesBox.setEnabled(false);
+		}
+		
 		choicePanel.add(transcriptFeaturesBox,gbc);
 		
 		gbc.gridy++;
 		gbc.gridx=1;
 
-		choicePanel.add(new JLabel("rRNA Feautres"),gbc);
+		
+		measureRRNABox = new JCheckBox("Measure rRNA",true);
+		choicePanel.add(measureRRNABox,gbc);
+		measureRRNABox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rRNAFeaturesBox.setEnabled(measureRRNABox.isSelected());
+			}
+		});
 		gbc.gridx++;
 		
 		rRNAFeaturesBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
@@ -133,6 +143,12 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 				break;
 			}
 		}
+		
+		if (!rRNAFeaturesBox.getSelectedItem().equals("rRNA")) {
+			measureRRNABox.setSelected(false);
+			rRNAFeaturesBox.setEnabled(false);
+		}
+		
 		choicePanel.add(rRNAFeaturesBox,gbc);
 		
 		gbc.gridy++;
@@ -184,8 +200,16 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 		if (ae.getActionCommand().equals("plot")) {
 			
 			String geneFeatures = (String)geneFeaturesBox.getSelectedItem();
-			String transcriptFeatures = (String)transcriptFeaturesBox.getSelectedItem();
-			String rRNAFeatures = (String)rRNAFeaturesBox.getSelectedItem();
+			String transcriptFeatures = null;
+			
+			if (measureTranscriptsBox.isSelected()) {
+				transcriptFeatures= (String)transcriptFeaturesBox.getSelectedItem();
+			}
+			
+			String rRNAFeatures = null;
+			if (measureRRNABox.isSelected()) {
+				rRNAFeatures = (String)rRNAFeaturesBox.getSelectedItem();
+			}
 			
 			Object [] selectedChromosomes = chromosomeList.getSelectedValues();
 			
@@ -195,20 +219,7 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 				chromosomes[c] = (Chromosome)selectedChromosomes[c];
 			}
 			
-			Object [] selectedObjects = dataList.getSelectedValues();
-			
-			if (selectedObjects.length == 0) {
-				JOptionPane.showMessageDialog(this, "No data stores were selected", "Oops", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			DataStore [] selectedStores = new DataStore[selectedObjects.length];
-			for (int i=0;i<selectedObjects.length;i++) {
-				selectedStores[i] = (DataStore)selectedObjects[i];
-			}
-			
-			
-			RNAQCCalcualtor calc = new RNAQCCalcualtor(collection, geneFeatures, transcriptFeatures, rRNAFeatures, chromosomes, selectedStores);
+			RNAQCCalcualtor calc = new RNAQCCalcualtor(collection, geneFeatures, transcriptFeatures, rRNAFeatures, chromosomes, stores);
 			calc.addListener(this);
 			calc.addListener(new ProgressDialog("RNA-Seq QC Plot", calc));
 			calc.startCalculating();

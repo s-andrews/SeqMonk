@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -35,6 +35,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
@@ -120,10 +121,7 @@ public class DataSet extends DataStore implements Runnable {
 	private Chromosome lastCachedChromosome = null;
 
 	/** The reads last loaded from the cache */
-	private long [] lastCachedReads = null;
-
-	/** The counts last loaded from the cache */
-	private int [] lastCachedCounts = null;
+	private ReadsWithCounts lastCachedReads = null;
 
 
 	/** 
@@ -279,7 +277,7 @@ public class DataSet extends DataStore implements Runnable {
 
 		if (! isFinalised) finalise();
 
-		long [] allReads = getReadsForChromosome(p.chromosome());
+		long [] allReads = getReadsForChromosome(p.chromosome()).reads;
 
 		if (allReads.length == 0) return false;
 
@@ -352,17 +350,15 @@ public class DataSet extends DataStore implements Runnable {
 
 		if (! isFinalised) finalise();
 
-		long [] allReads;
-		int [] allCounts;
+		ReadsWithCounts allReads;
 
 		loadCacheForChromosome(p.chromosome());
 
 		// We take a copy of the arrays now so that we don't get a problem if something
 		// else updates them whilst we're still working otherwise we get index errors.
 		allReads = lastCachedReads;
-		allCounts = lastCachedCounts;
 
-		if (allReads.length == 0) return new long[0];
+		if (allReads.reads.length == 0) return new long[0];
 
 		LongVector reads = new LongVector();		
 		IntVector counts = new IntVector();
@@ -388,7 +384,7 @@ public class DataSet extends DataStore implements Runnable {
 			int longestRead = getMaxReadLength();
 
 			for (;lastIndex >0;lastIndex--) {
-				if (p.start()-SequenceRead.start(allReads[lastIndex]) > longestRead) {
+				if (p.start()-SequenceRead.start(allReads.reads[lastIndex]) > longestRead) {
 					break;
 				}
 			}
@@ -414,13 +410,13 @@ public class DataSet extends DataStore implements Runnable {
 
 		boolean cacheSet = false;
 
-		for (int i=startPos;i<allReads.length;i++) {
+		for (int i=startPos;i<allReads.reads.length;i++) {
 			// Reads come in order, so we can stop when we've seen enough.
-			if (SequenceRead.start(allReads[i]) > p.end()) {
+			if (SequenceRead.start(allReads.reads[i]) > p.end()) {
 				break;
 			}
 
-			if (SequenceRead.overlaps(allReads[i], p.packedPosition())) {
+			if (SequenceRead.overlaps(allReads.reads[i], p.packedPosition())) {
 				// They overlap.
 
 				// If this is the first hit we've seen for this probe
@@ -429,8 +425,8 @@ public class DataSet extends DataStore implements Runnable {
 					lastIndex = i;
 					cacheSet = true;
 				}
-				reads.add(allReads[i]);
-				counts.add(allCounts[i]);
+				reads.add(allReads.reads[i]);
+				counts.add(allReads.counts[i]);
 			}
 		}
 
@@ -443,7 +439,7 @@ public class DataSet extends DataStore implements Runnable {
 	}
 
 
-	private void loadCacheForChromosome (Chromosome c) {
+	private synchronized void loadCacheForChromosome (Chromosome c) {
 
 		// Check if we need to reset which chromosome was loaded last.
 
@@ -461,21 +457,16 @@ public class DataSet extends DataStore implements Runnable {
 
 			// Check to see if we even have any data for this chromosome
 			if (!readData.containsKey(c)) {
-				lastCachedReads = new long[0];
-				lastCachedCounts = new int[0];
+				lastCachedReads = new ReadsWithCounts(new long[0]);
 			}
 
 			else {
 				// We need to reload the data from the temp files.  We have two files - one for the reads
 				// and one for the counts.
 				try {
-					ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(readData.get(c).readsTempFile)));
-					lastCachedReads = (long [])ois.readObject();
+					ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(readData.get(c).readsWithCountsTempFile)));
+					lastCachedReads = (ReadsWithCounts)ois.readObject();
 					ois.close();
-					ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(readData.get(c).countsTempFile)));
-					lastCachedCounts = (int [])ois.readObject();
-					ois.close();
-
 				}
 				catch (Exception e) {
 					throw new IllegalStateException(e);
@@ -487,7 +478,7 @@ public class DataSet extends DataStore implements Runnable {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForChromsome(uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome)
 	 */
-	public synchronized long [] getReadsForChromosome(Chromosome c) {
+	public synchronized ReadsWithCounts getReadsForChromosome(Chromosome c) {
 
 		if (! isFinalised) finalise();
 
@@ -499,13 +490,12 @@ public class DataSet extends DataStore implements Runnable {
 			// We used to have a check for whether we were caching, but that's gone
 			// now because they don't have the option to not cache any more.
 
-			return expandReadsAndCounts(lastCachedReads,lastCachedCounts);
+			return lastCachedReads;
 
 
 		}
 		else {
-			lastCachedReads = new long[0];
-			lastCachedCounts = new int[0];
+			lastCachedReads = new ReadsWithCounts(new long[0]);
 			return lastCachedReads;
 		}
 	}
@@ -553,12 +543,7 @@ public class DataSet extends DataStore implements Runnable {
 		while (e.hasMoreElements()) {
 			Chromosome c = e.nextElement();
 
-			File f = readData.get(c).readsTempFile;
-			if (f != null) {
-				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
-			}
-
-			f = readData.get(c).countsTempFile;
+			File f = readData.get(c).readsWithCountsTempFile;
 			if (f != null) {
 				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
 			}
@@ -575,7 +560,7 @@ public class DataSet extends DataStore implements Runnable {
 		if (! isFinalised) finalise();
 
 		if (readData.containsKey(c)) {
-			return getReadsForChromosome(c).length;
+			return getReadsForChromosome(c).totalCount();
 		}
 		else {
 			return 0;
@@ -640,9 +625,7 @@ public class DataSet extends DataStore implements Runnable {
 		private IntVector countVector = new IntVector();
 
 		/** The temp file in which this data will be saved in the cache folder */
-		public File readsTempFile = null;
-		public File countsTempFile = null;
-
+		public File readsWithCountsTempFile = null;
 
 		/** A cache of the last read position added so we know if we can just
 		 * increment the count instead of adding a new entry
@@ -650,6 +633,7 @@ public class DataSet extends DataStore implements Runnable {
 		private long lastReadAdded = Long.MIN_VALUE;
 
 		public void addRead (long read, int count) {
+						
 			if (read == lastReadAdded) {
 				countVector.increaseLastBy(count);
 			}
@@ -691,23 +675,64 @@ public class DataSet extends DataStore implements Runnable {
 			}
 			originalReads.clear();
 			originalCounts.clear();
+			
+			
+			// Now that we have sorted data we should find out if we can compress this
+			// any further by collapsing identical reads which were non-adjacent in the
+			// original data.  This will only happen during an initial import but it 
+			// will save us some memory.
 
-			if (removeDuplicates == DUPLICATES_REMOVE_NO) {}
+			boolean foundDuplicates = false;
 
-			else if (removeDuplicates == DUPLICATES_REMOVE_START_END) {
-				long lastRead = 0;
-				for (int i=0;i<reads.length;i++) {
-					if (lastRead == 0 || SequenceRead.compare(lastRead, reads[i]) != 0) {
-						originalReads.add(reads[i]);
-						originalCounts.add(counts[i]);
-						lastRead = reads[i];
+			for (int i=1;i<reads.length;i++) {
+				if (reads[i] == reads[i-1]) {
+					foundDuplicates = true;
+					break;
+				}
+			}
+			
+			if (foundDuplicates) {
+
+//				System.err.println("Compressing duplicate reads");
+
+				// Go back through the data reconstructing the original reads and original counts
+
+				long lastRead = Long.MIN_VALUE;
+
+				for (int r=0;r<reads.length;r++) {
+					if (reads[r] == lastRead) {
+						originalCounts.increaseLastBy(counts[r]);
+					}
+					else {
+						originalReads.add(reads[r]);
+						originalCounts.add(counts[r]);
+						lastRead = reads[r];
 					}
 				}
 
 				reads = originalReads.toArray();
-				counts = originalCounts.toArray();
 				originalReads.clear();
+
+				counts = originalCounts.toArray();
 				originalCounts.clear();
+
+			}
+
+
+			readVector = null;
+			countVector = null;
+
+			
+			// Now we can perform deduplication if we need to.
+			
+
+			if (removeDuplicates == DUPLICATES_REMOVE_NO) {}
+
+			else if (removeDuplicates == DUPLICATES_REMOVE_START_END) {
+				
+				// Deduplicating on start+end is easy since we just set all of the counts to be one
+				counts = new int[reads.length];
+				for (int i=0;i<counts.length;i++) counts[i] = 1;
 			}
 
 			else  {
@@ -745,7 +770,7 @@ public class DataSet extends DataStore implements Runnable {
 						if (forwardPositions[keyPosition]) continue; // We've already used this
 						else {
 							originalReads.add(reads[i]);
-							originalCounts.add(counts[i]);
+							originalCounts.add(1);
 							forwardPositions[keyPosition] = true;
 						}
 					}
@@ -764,7 +789,7 @@ public class DataSet extends DataStore implements Runnable {
 						if (reversePositions[keyPosition]) continue; // We've already used this
 						else {
 							originalReads.add(reads[i]);
-							originalCounts.add(counts[i]);
+							originalCounts.add(1);
 							reversePositions[keyPosition] = true;	
 						}
 
@@ -784,7 +809,7 @@ public class DataSet extends DataStore implements Runnable {
 						if (unknownPositions[keyPosition]) continue; // We've already used this
 						else {
 							originalReads.add(reads[i]);
-							originalCounts.add(counts[i]);
+							originalCounts.add(1);
 							unknownPositions[keyPosition] = true;
 						}
 					}
@@ -799,50 +824,6 @@ public class DataSet extends DataStore implements Runnable {
 			} // End of deduplication section.
 
 
-			// Now that we have sorted data we should find out if we can compress this
-			// any further by collapsing identical reads which were non-adjacent in the
-			// original data.  This will only happen during an initial import but it 
-			// will save us some memory.
-
-			boolean foundDuplicates = false;
-
-			for (int i=1;i<reads.length;i++) {
-				if (reads[i] == reads[i-1]) {
-					foundDuplicates = true;
-					break;
-				}
-			}
-
-			if (foundDuplicates) {
-
-//				System.err.println("Compressing duplicate reads");
-
-				// Go back through the data reconstructing the original reads and original counts
-
-				long lastRead = Long.MIN_VALUE;
-
-				for (int r=0;r<reads.length;r++) {
-					if (reads[r] == lastRead) {
-						originalCounts.increaseLastBy(1);
-					}
-					else {
-						originalReads.add(reads[r]);
-						originalCounts.add(1);
-						lastRead = reads[r];
-					}
-				}
-
-				reads = originalReads.toArray();
-				originalReads.clear();
-
-				counts = originalCounts.toArray();
-				originalCounts.clear();
-
-			}
-
-
-			readVector = null;
-			countVector = null;
 
 			// Work out the cached values for total length,count and for/rev/unknown counts
 
@@ -900,15 +881,10 @@ public class DataSet extends DataStore implements Runnable {
 			totalReadLength.incrementBy(readLengths);
 
 			try {
-				readsTempFile = File.createTempFile("seqmonk_read_set", ".temp", SeqMonkPreferences.getInstance().tempDirectory());
-				countsTempFile = File.createTempFile("seqmonk_count_set", ".temp", SeqMonkPreferences.getInstance().tempDirectory());
-				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(readsTempFile)));
-				oos.writeObject(reads);
+				readsWithCountsTempFile = File.createTempFile("seqmonk_read_set", ".temp", SeqMonkPreferences.getInstance().tempDirectory());
+				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(readsWithCountsTempFile)));
+				oos.writeObject(new ReadsWithCounts(reads,counts));
 				oos.close();
-				oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(countsTempFile)));
-				oos.writeObject(counts);
-				oos.close();
-
 			}
 			catch (IOException ioe) {
 				throw new IllegalStateException(ioe);

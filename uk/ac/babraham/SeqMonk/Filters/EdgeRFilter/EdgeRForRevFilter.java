@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -375,7 +375,6 @@ public class EdgeRForRevFilter extends ProbeFilter {
 					return;
 				}
 				if (listener.exceptionReceived()) {
-					progressExceptionReceived(new SeqMonkException("R Script failed"));
 					pr.close();
 					return;
 				}

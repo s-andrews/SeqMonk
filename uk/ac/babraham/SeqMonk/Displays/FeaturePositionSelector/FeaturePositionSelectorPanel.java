@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-17 Simon Andrews
+ * Copyright 2013-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -76,6 +76,7 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		
 		gbc.gridx = 3;
 		gbc.weighty = 0.9;
+		gbc.fill = GridBagConstraints.BOTH;
 		featureTypeBox = new JList(collection.genome().annotationCollection().listAvailableFeatureTypes());
 		if (!allowMultiSelection) {
 			featureTypeBox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -91,6 +92,7 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		gbc.gridx = 2;
 		gbc.weightx = 0.1;
 		gbc.weighty = 0.1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 
 		add(new JLabel ("Split into subfeatures"),gbc);
 
@@ -148,6 +150,11 @@ public class FeaturePositionSelectorPanel extends JPanel {
 		positionPanel.add(new JLabel(" bp"));
 		add(positionPanel,gbc);
 
+	}
+	
+	public boolean isFixedWidth() {
+		// This will only *not* be fixed width if the position type is "Over Feature"
+		return (! positionTypeBox.getSelectedItem().equals("Over feature"));
 	}
 	
 	public void addChangeListener (ChangeListener l) {

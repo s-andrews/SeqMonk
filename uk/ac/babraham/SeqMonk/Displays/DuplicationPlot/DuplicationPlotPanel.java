@@ -1,5 +1,5 @@
 /**
- * Copyright 2009-17 Simon Andrews
+ * Copyright 2009-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -25,6 +25,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
@@ -238,6 +239,23 @@ public class DuplicationPlotPanel extends JPanel implements Runnable, MouseMotio
 
 		//		System.out.println("Nonred was "+nonRedundantValues.length+" from "+probes.length);
 
+	}
+	
+	protected void writeData (PrintWriter pr) {
+		for (int i=0;i<probes.length;i++) {
+			StringBuffer sb = new StringBuffer();
+			
+			sb.append(name);
+			sb.append("\t");
+			sb.append(probes[i].toString());
+			sb.append("\t");
+			sb.append(densities[i]);
+			sb.append("\t");
+			sb.append(duplications[i]);
+			
+			pr.println(sb.toString());
+			
+		}
 	}
 
 	/* (non-Javadoc)

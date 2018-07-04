@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-17 Simon Andrews
+ * Copyright Copyright 2010-18 Simon Andrews
  *
  *    This file is part of SeqMonk.
  *
@@ -96,10 +96,10 @@ public class FindFeatureDialog extends JDialog implements ActionListener, Runnab
 	/** The last searched type. */
 	private static String lastSearchedType = "gene";
 	
-	// We also want to remember if they searched just the name or the
-	// whole annotation
+	// We also want to remember if they searched just the name id or
+	// the whole annotation
 	/** The search all. */
-	private static boolean searchAll = false;
+	private static String lastSearchTarget = "name";
 
 	/**
 	 * Instantiates a new find feature dialog.
@@ -122,12 +122,16 @@ public class FindFeatureDialog extends JDialog implements ActionListener, Runnab
 		search = new JTextField(15);
 		choicePanel.add(search);
 		choicePanel.add(new JLabel(" in "));
-		searchIn = new JComboBox(new String [] {"name","all"});
+		searchIn = new JComboBox(new String [] {"name","id","all"});
 
 		// Restore any saved preference from the last search
-		if (FindFeatureDialog.searchAll) {
+		if (lastSearchTarget == "all") {
+			searchIn.setSelectedIndex(2);
+		}
+		else if (lastSearchTarget == "id") {
 			searchIn.setSelectedIndex(1);
 		}
+
 		choicePanel.add(searchIn);
 		
 		choicePanel.add(new JLabel(" of "));
@@ -211,18 +215,9 @@ public class FindFeatureDialog extends JDialog implements ActionListener, Runnab
 		}
 		Vector<Feature> hits = new Vector<Feature>();
 		String query = search.getText().toLowerCase().trim();
-		
-		boolean searchAll = false;
-		if (((String)searchIn.getSelectedItem()).equals("all")) {
-			searchAll = true;
-			// Remember this for the next search
-			FindFeatureDialog.searchAll = true;
-		}
-		else {
-			// Remember this for the next search
-			FindFeatureDialog.searchAll = false;
-		}
-		
+
+		lastSearchTarget = (String)searchIn.getSelectedItem();
+				
 		String [] types;
 		
 		if (featureType.getSelectedItem().equals("all")) {
@@ -246,14 +241,25 @@ public class FindFeatureDialog extends JDialog implements ActionListener, Runnab
 				
 				spd.progressUpdated("Searching...", (j*f.length)+k, types.length*f.length);
 				
-				if (f[k].name().toLowerCase().indexOf(query)>=0) {
-					hits.add(f[k]);
-					continue;
+				if (lastSearchTarget == "name") {
+					if (f[k].name().toLowerCase().indexOf(query)>=0) {
+						hits.add(f[k]);
+						continue;
+					}
 				}
-				if (searchAll) {
+				else if (lastSearchTarget == "id") {
+					if (f[k].id().toLowerCase().indexOf(query)>=0) {
+						hits.add(f[k]);
+						continue;
+					}
+				}
+				else if (lastSearchTarget == "all") {
 					if (f[k].getAllAnnotation().toLowerCase().indexOf(query)>=0) {
 						hits.add(f[k]);
 					}						
+				}
+				else {
+					throw new IllegalStateException("Unknown search target: "+lastSearchTarget);
 				}
 			}
 		}
