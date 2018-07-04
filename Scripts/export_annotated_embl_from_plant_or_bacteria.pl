@@ -73,10 +73,10 @@ sub load_registry {
   my $ontology_dba = Bio::EnsEMBL::DBSQL::OntologyDBAdaptor -> new (
 								    -SPECIES => 'Multi',
 								    -GROUP => 'ontology',
-								    -HOST => 'mysql.ebi.ac.uk',
+								    -HOST => 'mysql-eg-publicsql.ebi.ac.uk',
 								    -PORT => 4157,
 								    -USER => 'anonymous',
-								    -DBNAME => 'ensemblgenomes_ontology_21_74',
+								    -DBNAME => 'ensemblgenomes_ontology_34_87',
 								   );
 
   return $registry;
@@ -97,11 +97,13 @@ sub select_db_adapter {
 
   foreach my $adapter (@adapters) {
     ++$count;
-    warn "$count:Found adapter of type ".$adapter->group()."\n";
+    #warn "$count:Found adapter of type ".$adapter->group()."\n";
 
     # We'll want to know the name of the current assembly which
     # we fetch via a coordsystem adapter
     next unless ($adapter->get_adaptor('coordsystem')->fetch_all()->[0]->version());
+
+    warn $adapter->get_adaptor('coordsystem')->fetch_all()->[0]->version(),"\n";
 
     push @slice_adapters,$adapter;
     $adapter->dbc()->disconnect_if_idle();
