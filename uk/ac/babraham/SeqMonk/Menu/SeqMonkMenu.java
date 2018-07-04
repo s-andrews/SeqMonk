@@ -114,7 +114,6 @@ import uk.ac.babraham.SeqMonk.Displays.PCAPlot.PCADataCalculator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
 import uk.ac.babraham.SeqMonk.Displays.ProbeTrendPlot.TrendOverProbePreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.QQDistributionPlot.QQDistributionDialog;
-import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendHeatmapDialog;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendHeatmapPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendPlotPreferencesDialog;
 import uk.ac.babraham.SeqMonk.Displays.RNASeqQCPlot.RNAQCPreferencesDialog;
