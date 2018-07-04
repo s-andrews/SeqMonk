@@ -77,6 +77,12 @@ public class ProbeListReportCreator {
 			
 		}
 
+		catch (UnsupportedOperationException uoe) {
+			// This platform doesn't allow us to open a browser 
+			// automatically.  Print a message instead.
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>Your report has been saved at<br><br>"+file.getAbsolutePath()+"<br><br>Open this file in a browser to view the report.", "Report created", JOptionPane.INFORMATION_MESSAGE);
+		}
+		
 		catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
