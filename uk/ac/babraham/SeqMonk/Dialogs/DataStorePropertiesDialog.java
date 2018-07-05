@@ -50,7 +50,7 @@ public class DataStorePropertiesDialog extends JDialog implements ActionListener
 	/** The forward count. */
 	private JLabel forwardCount;
 	
-	/** The revese count. */
+	/** The reverse count. */
 	private JLabel reveseCount;
 	
 	/** The total count. */
@@ -100,6 +100,12 @@ public class DataStorePropertiesDialog extends JDialog implements ActionListener
 			infoPanel.add(new JLabel("File Name"),gbc);
 			gbc.gridx=2;
 			infoPanel.add(new JLabel(((DataSet)dataStore).fileName()),gbc);
+			gbc.gridy++;
+			gbc.gridx=1;
+			infoPanel.add(new JLabel("Import Options"), gbc);
+			gbc.gridx=2;
+			infoPanel.add(new JLabel(((DataSet)dataStore).importOptions()),gbc);
+			
 		}
 
 		else if (dataStore instanceof DataGroup) {

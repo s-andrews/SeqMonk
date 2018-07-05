@@ -211,7 +211,7 @@ public class VisibleStoresParser extends DataParser {
 		boolean reverse = prefs.reverseReads();
 		boolean removeStrand = prefs.removeStrandInfo();
 
-		DataSet newData = new DataSet(store.name()+"_reimport","Reimported from "+store.name(),prefs.removeDuplicates());
+		DataSet newData = new DataSet(store.name()+"_reimport","Reimported from "+store.name(),prefs.removeDuplicates(),prefs.getImportOptionsDescription());
 
 		// Now process the data
 		Chromosome [] chrs = dataCollection().genome().getAllChromosomes();
@@ -375,7 +375,7 @@ public class VisibleStoresParser extends DataParser {
 		boolean reverse = prefs.reverseReads();
 		boolean removeStrand = prefs.removeStrandInfo();
 
-		PairedDataSet newData = new PairedDataSet(store.name()+"_reimport","Reimported from "+store.name(),prefs.removeDuplicates(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
+		PairedDataSet newData = new PairedDataSet(store.name()+"_reimport","Reimported from "+store.name(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
 
 
 		// Now process the data
@@ -922,6 +922,15 @@ public class VisibleStoresParser extends DataParser {
 
 		}
 
+		
+		public String getImportOptionsDescription () {
+			StringBuffer sb = new StringBuffer();
+			
+			//TODO: Collect import options
+			
+			return sb.toString();
+		}
+		
 		public boolean isHiC () {
 			// isHiC only exists if this datastore is HiC to start
 			// with, so it has to exist and be selected.

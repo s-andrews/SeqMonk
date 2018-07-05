@@ -78,7 +78,7 @@ public class BismarkCovFileParser extends DataParser {
 				
 				String line;
 	
-				newData[f] = new DataSet(covFiles[f].getName(),covFiles[f].getCanonicalPath(),prefs.removeDuplicates());
+				newData[f] = new DataSet(covFiles[f].getName(),covFiles[f].getCanonicalPath(),prefs.removeDuplicates(),"Cov Parser - No Options");
 								
 				int lineCount = 0;
 				// Now process the file

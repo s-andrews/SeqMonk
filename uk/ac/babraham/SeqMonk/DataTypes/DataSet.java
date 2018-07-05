@@ -70,6 +70,9 @@ public class DataSet extends DataStore implements Runnable {
 
 	/** The original file name - can't be changed by the user */
 	private String fileName;
+	
+	/** These are the import options used **/
+	private String importOptions;
 
 	/** A flag to say if we've optimised this dataset */
 	private boolean isFinalised = false;
@@ -145,10 +148,11 @@ public class DataSet extends DataStore implements Runnable {
 	 * @param name The initial value for the user changeable name
 	 * @param fileName The name of the data source  - which can't be changed by the user
 	 */
-	public DataSet (String name, String fileName, int removeDuplicates) {
+	public DataSet (String name, String fileName, int removeDuplicates, String importOptions) {
 		super(name);
 		this.fileName = fileName;
 		this.removeDuplicates = removeDuplicates;
+		this.importOptions = importOptions;
 
 		// We need to set a shutdown hook to delete any cache files we hold
 		Runtime.getRuntime().addShutdownHook(new Thread(this));
@@ -266,6 +270,16 @@ public class DataSet extends DataStore implements Runnable {
 	public String fileName () {
 		return fileName;
 	}
+	
+	/**
+	 * Returns a string describing the options used during data import
+	 * 
+	 * @return
+	 */
+	public String importOptions () {
+		return importOptions;
+	}
+	
 
 	/**
 	 * A quick check to see if any data overlaps with a probe

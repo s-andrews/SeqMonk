@@ -77,7 +77,7 @@ public class QuasRFileParser extends DataParser {
 				
 				String line;
 	
-				newData[f] = new DataSet(quasrFiles[f].getName(),quasrFiles[f].getCanonicalPath(),prefs.removeDuplicates());
+				newData[f] = new DataSet(quasrFiles[f].getName(),quasrFiles[f].getCanonicalPath(),prefs.removeDuplicates(),"QuasR importer - No options");
 								
 				int lineCount = 0;
 				// Now process the file

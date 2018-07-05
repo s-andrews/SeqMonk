@@ -178,10 +178,10 @@ public class GenericSeqReadParser extends DataParser {
 					}
 					
 					// TODO: Add an option to remove trans hits when importing from the generic parser.
-					newData[f] = new PairedDataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),removeDuplicates,distance,false);
+					newData[f] = new PairedDataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),removeDuplicates,optionsPanel.getImportOptionsDescription(),distance,false);
 				}
 				else {
-					newData[f] = new DataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),removeDuplicates);					
+					newData[f] = new DataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),removeDuplicates, optionsPanel.getImportOptionsDescription());					
 				}
 
 				int lineCount = 0;
@@ -563,6 +563,14 @@ public class GenericSeqReadParser extends DataParser {
 		 */
 		public Dimension getPreferredSize () {
 			return new Dimension(800,600);
+		}
+		
+		public String getImportOptionsDescription () {
+			StringBuffer sb = new StringBuffer();
+			
+			//TODO: Collect the import options
+			
+			return sb.toString();
 		}
 	
 		/**

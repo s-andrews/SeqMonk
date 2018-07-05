@@ -70,7 +70,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	 * If the file to be loaded has a version higher than this then
 	 * the parser won't attempt to load it. */
 	
-	public static final int MAX_DATA_VERSION = 17;
+	public static final int MAX_DATA_VERSION = 18;
 
 	private SeqMonkApplication application;
 	private BufferedReader br;
@@ -567,23 +567,37 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 			sections = br.readLine().split("\\t");
 			// Originally there was only one section (the DataSet name).  Then
 			// there were two names, a user supplied name and the original
-			// imported file name.  Now there are 3 sections where the third section
+			// imported file name.  Then there are 3 sections where the third section
 			// indicates the type of dataset.  The only unusual one is a HiC dataset
-			// anything else is assumed to be a normal dataset.
+			// anything else is assumed to be a normal dataset. There are now 4
+			// sections where the fourth section is the import options used.
 			if (sections.length == 1) {
-				dataSets[i] = new DataSet(sections[0],"Not known",DataSet.DUPLICATES_REMOVE_NO);
+				dataSets[i] = new DataSet(sections[0],"Not known",DataSet.DUPLICATES_REMOVE_NO,"");
 			}
 			else if (sections.length == 2) {
-				dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO);
+				dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"");
 			}
 			else if (sections.length == 3) {
 				if (sections[2].equals("HiC")) {
-					dataSets[i] = new PairedDataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,0,false);					
+					dataSets[i] = new PairedDataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"",0,false);					
 				}
 				else {
-					dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO);
+					dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"");
 				}
 			}
+			else if (sections.length == 4) {
+				if (sections[2].equals("HiC")) {
+					dataSets[i] = new PairedDataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,sections[3],0,false);					
+				}
+				else {
+					dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,sections[3]);
+				}
+			}
+			else {
+				throw new SeqMonkException("Unexpected number of sections for data set line "+sections.length);
+			}
+			
+
 			application.dataCollection().addDataSet(dataSets[i]);
 		}
 

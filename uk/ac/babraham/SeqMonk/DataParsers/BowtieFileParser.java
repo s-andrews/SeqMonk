@@ -111,10 +111,10 @@ public class BowtieFileParser extends DataParser {
 				String line2 = null;
 	
 				if (prefs.isHiC()) {
-					newData[f] = new PairedDataSet(bowtieFiles[f].getName(),bowtieFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());					
+					newData[f] = new PairedDataSet(bowtieFiles[f].getName(),bowtieFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());					
 				}
 				else {
-					newData[f] = new DataSet(bowtieFiles[f].getName(),bowtieFiles[f].getCanonicalPath(),prefs.removeDuplicates());
+					newData[f] = new DataSet(bowtieFiles[f].getName(),bowtieFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription());
 				}
 								
 				int lineCount = 0;

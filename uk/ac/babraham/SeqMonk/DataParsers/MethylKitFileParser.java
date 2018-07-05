@@ -77,7 +77,7 @@ public class MethylKitFileParser extends DataParser {
 				
 				String line;
 	
-				newData[f] = new DataSet(methylKitFiles[f].getName(),methylKitFiles[f].getCanonicalPath(),prefs.removeDuplicates());
+				newData[f] = new DataSet(methylKitFiles[f].getName(),methylKitFiles[f].getCanonicalPath(),prefs.removeDuplicates(),"Methylkit importer - No options");
 								
 				int lineCount = 0;
 				// Now process the file

@@ -111,7 +111,7 @@ public class ActiveProbeListParser extends DataParser {
 		
 		
 
-		DataSet newData = new DataSet(activeList.name(),"Reimported from "+activeList.name(),prefs.removeDuplicates());
+		DataSet newData = new DataSet(activeList.name(),"Reimported from "+activeList.name(),prefs.removeDuplicates(),prefs.getOptionsDescription());
 
 		// Now process the data
 		Chromosome [] chrs = dataCollection().genome().getAllChromosomes();
@@ -310,6 +310,28 @@ public class ActiveProbeListParser extends DataParser {
 
 		}
 
+		public String getOptionsDescription () {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("Strand=");
+			sb.append(strandOptionBox.getSelectedItem());
+			sb.append("; ");
+			
+			sb.append("Remove Duplicates=");
+			sb.append(removeDuplicates.getSelectedItem());
+			sb.append("; ");
+
+			if (reverseReads()) {
+				sb.append("Reverse Reads; ");
+			}
+			
+			if (extendReads() != 0) {
+				sb.append("Extend Reads=");
+				sb.append(extendReads());
+			}
+			
+			return(sb.toString());
+		}
 
 		public int removeDuplicates () {
 			if (removeDuplicates.getSelectedItem().equals("No")) {

@@ -135,10 +135,10 @@ public class BAMFileParser extends DataParser {
 				SAMFileReader inputSam = new SAMFileReader(samFiles[f]); 
 
 				if (prefs.isHiC()) {
-					newData[f] = new PairedDataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
+					newData[f] = new PairedDataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
 				}
 				else {
-					newData[f] = new DataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates());				
+					newData[f] = new DataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription());
 				}
 
 				int lineCount = 0;

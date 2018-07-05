@@ -59,7 +59,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 	
 	// THIS VALUE IS IMPORTANT!!!
 	/** The Constant DATA_VERSION. */
-	public static final int DATA_VERSION = 17;
+	public static final int DATA_VERSION = 18;
 	
 	// If you make ANY changes to the format written by this class
 	// you MUST increment this value to stop older parsers from
@@ -380,10 +380,10 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 		p.println("Samples\t"+dataSets.length);
 		for (int i=0;i<dataSets.length;i++) {
 			if (dataSets[i] instanceof PairedDataSet) {
-				p.println(dataSets[i].name()+"\t"+dataSets[i].fileName()+"\tHiC");
+				p.println(dataSets[i].name()+"\t"+dataSets[i].fileName()+"\tHiC\t"+dataSets[i].importOptions());
 			}
 			else {
-				p.println(dataSets[i].name()+"\t"+dataSets[i].fileName()+"\t");
+				p.println(dataSets[i].name()+"\t"+dataSets[i].fileName()+"\t\t"+dataSets[i].importOptions());
 			}
 		}
 

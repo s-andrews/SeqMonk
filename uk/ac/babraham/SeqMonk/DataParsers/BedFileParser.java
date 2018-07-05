@@ -80,12 +80,12 @@ public class BedFileParser extends DataParser {
 				}
 				
 				String line;
-	
+					
 				if (prefs.isHiC()) {
-					newData[f] = new PairedDataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());					
+					newData[f] = new PairedDataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());					
 				}
 				else {
-					newData[f] = new DataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),prefs.removeDuplicates());
+					newData[f] = new DataSet(probeFiles[f].getName(),probeFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription());
 				}
 								
 				int lineCount = 0;

@@ -299,6 +299,17 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 
 	}
 	
+	public String getImportOptionsDescription () {
+		StringBuffer sb = new StringBuffer();
+		
+		//TODO: Work out all of the possible options!
+		
+		return sb.toString();
+		
+		
+		
+	}
+	
 	public void setSpliced (boolean spliced) {
 		splitSplicedReads.setSelected(spliced);
 	}
