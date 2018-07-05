@@ -33,15 +33,12 @@ public class GeneSetScatterPlotPanel extends ScatterPlotPanel{
 	private static final int X_AXIS_SPACE = 50;
 	private static final int Y_AXIS_SPACE = 30;
 	private float [][] customRegressionValues = null;
-//	private SimpleRegression simpleRegression;
 	
 	public  GeneSetScatterPlotPanel(DataStore xStore, DataStore yStore, ProbeList probeList, ProbeList[] subLists, boolean commonScale, int dotSize, float[][]customRegressionValues, SimpleRegression simpleRegression) {
 		
 		super(xStore, yStore, probeList, subLists, commonScale, dotSize);
-		// TODO Auto-generated constructor stub
 		
 		this.customRegressionValues = customRegressionValues;
-//		this.simpleRegression = simpleRegression;
 		
 	}
 	

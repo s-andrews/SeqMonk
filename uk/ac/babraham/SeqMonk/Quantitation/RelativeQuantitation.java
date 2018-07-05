@@ -271,7 +271,7 @@ public class RelativeQuantitation extends Quantitation implements ItemListener, 
 			existingDescription = application.dataCollection().probeSet().currentQuantitation();
 		}
 		return existingDescription+" transformed by relative quantitation using "+diffTypeBox.getSelectedItem().toString()+" with pairs ";
-		// TODO: add pairing information
+		// TODO: add pairing information?
 	}
 
 

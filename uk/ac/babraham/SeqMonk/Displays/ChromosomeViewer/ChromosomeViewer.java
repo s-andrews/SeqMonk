@@ -596,9 +596,7 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 		repaint();
 	}
 
-	public void probeSetReplaced(ProbeSet p) {
-		// TODO: Do we need to do anything here?  Probably not as active probe list replaced will be called
-	}
+	public void probeSetReplaced(ProbeSet p) {}
 
 	public void replicateSetAdded(ReplicateSet r) {}
 

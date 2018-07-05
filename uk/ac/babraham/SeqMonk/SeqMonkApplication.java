@@ -991,7 +991,6 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		
 		for (int i=0;i<newData.length;i++) {
 			if (newData[i].getTotalReadCount() > 0) {
-				//TODO: Can we leave this out as this should be handled by the data collection listener?
 				dataCollection.addDataSet(newData[i]);
 				storesToAdd.add(newData[i]);
 			}
@@ -1311,14 +1310,8 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		changesWereMade();
 	}
 
-	public void activeDataStoreChanged(DataStore s) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void activeDataStoreChanged(DataStore s) {}
 
-	public void activeProbeListChanged(ProbeList l) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void activeProbeListChanged(ProbeList l) {}
 
 }

@@ -229,42 +229,6 @@ public class RScriptRunner implements Runnable, Cancellable {
 
 	public void cancel() {
 		cancel = true;
-	}
-	
-	
-//	public static void main (String [] args) {
-//		RScriptRunner r = new RScriptRunner(new File("/Volumes/Data/RTest"));
-//		
-//		r.addProgressListener(new ProgressListener() {
-//			
-//			public void progressWarningReceived(Exception e) {
-//				e.printStackTrace();
-//				
-//			}
-//			
-//			public void progressUpdated(String message, int current, int max) {
-//				System.out.println(message);
-//			}
-//			
-//			public void progressExceptionReceived(Exception e) {
-//				e.printStackTrace();
-//			}
-//			
-//			public void progressComplete(String command, Object result) {
-//				System.out.println("Complete");
-//			}
-//			
-//			public void progressCancelled() {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
-//		
-//		r.runScript();
-//		
-//		
-//	}
-	
-	
+	}	
 	
 }

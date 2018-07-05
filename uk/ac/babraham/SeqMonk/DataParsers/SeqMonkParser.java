@@ -725,14 +725,6 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 
 						long packedPosition2 = quickParseLong(line,tabPosition2+1);
 
-						
-//						System.err.println("From line "+line+"\n pos1="+packedPosition+" chr="+(line.substring(tabPosition,tabPosition2)+"pos2="+packedPosition2));
-//						try {
-//							Thread.sleep(1000);
-//						} catch (InterruptedException e1) {
-//							// TODO Auto-generated catch block
-//							e1.printStackTrace();
-//						}
 
 						try {
 							dataSets[i].addData(c,packedPosition,hicDataIsPresorted);

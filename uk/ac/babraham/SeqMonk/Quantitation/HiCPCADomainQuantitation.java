@@ -315,10 +315,7 @@ public class HiCPCADomainQuantitation extends Quantitation implements ProgressLi
 	}
 	
 	
-	public void progressWarningReceived(Exception e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void progressWarningReceived(Exception e) {}
 
 	public void progressComplete(String command, Object result) {
 		wait = false;		

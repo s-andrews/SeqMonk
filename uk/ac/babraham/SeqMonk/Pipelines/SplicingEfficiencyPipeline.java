@@ -610,8 +610,6 @@ public class SplicingEfficiencyPipeline extends Pipeline {
 			quantitationDescription.append(" correcting for feature length");
 		}
 
-		//TODO: Add more description
-
 		collection().probeSet().setCurrentQuantitation(quantitationDescription.toString());
 
 		quantitatonComplete();

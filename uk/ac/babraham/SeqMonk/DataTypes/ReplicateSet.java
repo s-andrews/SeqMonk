@@ -429,7 +429,6 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 
 	
 	public float getCorrectionForLength(Chromosome c, int minDist, int maxDist) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 	

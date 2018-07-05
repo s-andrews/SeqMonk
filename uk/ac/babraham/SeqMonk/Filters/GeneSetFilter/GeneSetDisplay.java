@@ -813,10 +813,7 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 		}
 	}
 
-	public void windowActivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowActivated(WindowEvent arg0) {}
 
 	public void windowClosed(WindowEvent arg0) {
 		
@@ -827,31 +824,15 @@ public class GeneSetDisplay extends JDialog implements ListSelectionListener, Mo
 				currentSelectedProbeList = null;
 			}	
 		}	
-		// TODO Auto-generated method stub
 	}
 
-	public void windowClosing(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowClosing(WindowEvent arg0) {}
 
-	public void windowDeactivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeactivated(WindowEvent arg0) {}
 
-	public void windowDeiconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeiconified(WindowEvent arg0) {}
 
-	public void windowIconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowIconified(WindowEvent arg0) {}
 
-	public void windowOpened(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowOpened(WindowEvent arg0) {}
 }

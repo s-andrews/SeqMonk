@@ -271,15 +271,9 @@ public class ProbeSetTreeModel implements TreeModel, ProbeSetChangeListener, Dat
 		}
 	}
 	
-	public void activeDataStoreChanged(DataStore s) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void activeDataStoreChanged(DataStore s) {}
 
-	public void activeProbeListChanged(ProbeList l) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void activeProbeListChanged(ProbeList l) {}
 
 	/**
 	 * Gets the path to root.

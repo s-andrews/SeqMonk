@@ -647,7 +647,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			progressCancelled();
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -1539,19 +1538,11 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		}
 	}	
 	
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-			
-	}
+	public void keyPressed(KeyEvent arg0) {}
 
-	public void keyReleased(KeyEvent kr) {
-			
-	}
+	public void keyReleased(KeyEvent kr) {}
 
-	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowActivated(WindowEvent e) {}
 
 	public void windowClosed(WindowEvent e) {
 				
@@ -1561,32 +1552,16 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 		}
 				
 		progressCancelled();
-		// TODO Auto-generated method stub
 		
 	}
 
-	public void windowClosing(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowClosing(WindowEvent e) {}
 
-	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeactivated(WindowEvent e) {}
 
-	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeiconified(WindowEvent e) {}
 
-	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowIconified(WindowEvent e) {}
 
-	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowOpened(WindowEvent e) {}
 }	
