@@ -568,7 +568,29 @@ public class GenericSeqReadParser extends DataParser {
 		public String getImportOptionsDescription () {
 			StringBuffer sb = new StringBuffer();
 			
-			//TODO: Collect the import options
+			sb.append("Start row=");
+			sb.append(startRowValue);
+			sb.append(" Chr col=");
+			sb.append(chrColValue);
+			sb.append(" Start col=");
+			sb.append(startColValue);
+			sb.append(" End col=");
+			sb.append(endColValue);
+			sb.append(" Strand col=");
+			sb.append(strandColValue);
+			sb.append(" Count col=");
+			sb.append(countColValue);
+			if (extendBy() != 0) {
+				sb.append(" Extend=");
+				sb.append(extendBy());
+			}
+			
+			if (isHiC()) {
+				sb.append(" Is HiC.");
+			}
+			
+			sb.append(" Remove Dups=");
+			sb.append(removeDuplicates.getSelectedItem());
 			
 			return sb.toString();
 		}
