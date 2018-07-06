@@ -302,7 +302,62 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	public String getImportOptionsDescription () {
 		StringBuffer sb = new StringBuffer();
 		
-		//TODO: Work out all of the possible options!
+		if (readType != null) {
+			sb.append("Library type ");
+			sb.append(readType.getSelectedItem());
+		}
+		
+		sb.append(" Dedup=");
+		sb.append(removeDuplicates.getSelectedItem());
+		
+		if (minMappingQuality != null) {
+			if (minMappingQuality() != 0) {
+				sb.append(" MAPQ>=");
+				sb.append(minMappingQuality());
+			}
+		}
+		
+		if (reverseReads != null) {
+			if (reverseReads()) {
+				sb.append(" All reads reversed");
+			}
+		}
+		
+		if (primaryAlignmentsOnly()) {
+			sb.append(" Primary alignments only.");
+		}
+		
+		if (splitSplicedReads()) {
+			sb.append(" Treat as RNA-Seq data");
+			if (importIntrons()) {
+				sb.append(" Import Introns, not exons");
+			}
+		}
+		
+		if (extendReads() != 0) {
+			sb.append(" Extend reads by ");
+			sb.append(extendReads());
+		}
+		
+		if (pairedEnd()) {
+			if (pairDistanceCutoff() != 0) {
+				sb.append("Paired distance cutoff = ");
+				sb.append(pairDistanceCutoff());
+			}
+		}
+		
+		if (isHiC()) {
+			sb.append(" Treated as HiC");
+			if (hiCIgnoreTrans()) {
+				sb.append(" Trans di-tags removed");
+			}
+			if (hiCDistance() > 0) {
+				sb.append(" HiC distance cutoff = ");
+				sb.append(hiCDistance());
+			}
+		}
+		
+		
 		
 		return sb.toString();
 		
