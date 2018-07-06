@@ -171,6 +171,10 @@ public class ProbeListReport {
 			xhtml.writeCharacters("Original File");
 			xhtml.writeEndElement(); // th
 
+			xhtml.writeStartElement("th");
+			xhtml.writeCharacters("Import Options");
+			xhtml.writeEndElement(); // th
+			
 			xhtml.writeEndElement(); // tr (header)
 
 			DataSet [] sets = SeqMonkApplication.getInstance().dataCollection().getAllDataSets();
@@ -186,6 +190,10 @@ public class ProbeListReport {
 				xhtml.writeCharacters(sets[i].fileName());
 				xhtml.writeEndElement(); // td
 
+				xhtml.writeStartElement("td");
+				xhtml.writeCharacters(sets[i].importOptions());
+				xhtml.writeEndElement(); // td
+				
 				xhtml.writeEndElement(); // tr (dataset)
 
 			}
