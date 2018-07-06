@@ -313,7 +313,8 @@ public class ActiveProbeListParser extends DataParser {
 		public String getOptionsDescription () {
 			StringBuilder sb = new StringBuilder();
 			
-			sb.append("Strand=");
+			sb.append("Active probe parser");
+			sb.append(" Strand=");
 			sb.append(strandOptionBox.getSelectedItem());
 			sb.append("; ");
 			
