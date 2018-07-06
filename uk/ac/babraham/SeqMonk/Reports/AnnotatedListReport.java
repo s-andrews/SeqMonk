@@ -545,7 +545,7 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 			case 8: return "Description";
 			case 9: return "Feature Strand";
 			case 10: return "Type";
-			case 11: return "Orientation";
+			case 11: return "Feature Orientation";
 			case 12: return "Distance";
 			default: return stores[c-13].name();
 			}
