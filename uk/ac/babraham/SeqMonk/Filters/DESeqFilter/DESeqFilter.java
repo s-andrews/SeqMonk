@@ -302,8 +302,6 @@ public class DESeqFilter extends ProbeFilter {
 
 			runner.cleanUp();
 
-			// TODO: Show log of R session?
-
 			filterFinished(newList);
 
 

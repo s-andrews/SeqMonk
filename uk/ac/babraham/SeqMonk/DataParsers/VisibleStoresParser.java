@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
+import sun.awt.windows.ThemeReader;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
@@ -134,7 +135,7 @@ public class VisibleStoresParser extends DataParser {
 
 		filterByFeature = prefs.filterFeatureCheckbox.isSelected();
 		if (filterByFeature) {
-			excludeFeature = prefs.filterTypeBox.getSelectedItem().equals("Excluding");
+			excludeFeature = prefs.featureFilterTypeBox.getSelectedItem().equals("Excluding");
 			featureType = (String)prefs.filterFeatureBox.getSelectedItem();
 		}
 
@@ -575,7 +576,7 @@ public class VisibleStoresParser extends DataParser {
 		private JTextField extendReads;
 		private JPanel singleEndOptions;
 
-		private JComboBox filterTypeBox;
+		private JComboBox featureFilterTypeBox;
 
 		private JCheckBox filterFeatureCheckbox;
 		private JComboBox filterFeatureBox;
@@ -726,8 +727,8 @@ public class VisibleStoresParser extends DataParser {
 
 			JPanel featurePanel = new JPanel();
 
-			filterTypeBox = new JComboBox(new String [] {"Overlapping","Excluding"});
-			filterTypeBox.setEnabled(false);
+			featureFilterTypeBox = new JComboBox(new String [] {"Overlapping","Excluding"});
+			featureFilterTypeBox.setEnabled(false);
 			filterFeatureBox = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
 			filterFeatureBox.setPrototypeDisplayValue("No longer than this please");
 			filterFeatureBox.setEnabled(false);
@@ -738,15 +739,15 @@ public class VisibleStoresParser extends DataParser {
 				public void actionPerformed(ActionEvent arg0) {
 					if (filterFeatureCheckbox.isSelected()) {
 						filterFeatureBox.setEnabled(true);
-						filterTypeBox.setEnabled(true);
+						featureFilterTypeBox.setEnabled(true);
 					}
 					else {
 						filterFeatureBox.setEnabled(false);
-						filterTypeBox.setEnabled(false);
+						featureFilterTypeBox.setEnabled(false);
 					}
 				}
 			});
-			featurePanel.add(filterTypeBox);
+			featurePanel.add(featureFilterTypeBox);
 			featurePanel.add(filterFeatureBox);
 			gbc.gridx=3;
 			commonOptions.add(featurePanel,gbc);
@@ -926,7 +927,62 @@ public class VisibleStoresParser extends DataParser {
 		public String getImportOptionsDescription () {
 			StringBuffer sb = new StringBuffer();
 			
-			//TODO: Collect import options
+			sb.append("Visible stores parser");
+
+			if (filterByStrand) {
+				sb.append(" Keep only strand ");
+				sb.append(strandFilterDirectionBox.getSelectedItem());
+			}
+			
+			if (filterByFeature) {
+				sb.append(" Filter by feature ");
+				sb.append(featureFilterTypeBox.getSelectedItem());
+				sb.append(" ");
+				sb.append(filterFeatureBox.getSelectedItem());
+			}
+			
+			if (filterByLength) {
+				sb.append(" Filter by read length from ");
+				sb.append(minLengthField.getText());
+				sb.append(" to ");
+				sb.append(maxLengthField.getText());
+			}
+			
+			sb.append(" Remove Duplicates");
+			sb.append(removeDuplicates.getSelectedItem());
+			
+			if (shiftReadsBox.isSelected()) {
+				sb.append(" Shift reads for=");
+				sb.append(shiftOffsetForward.getText());
+				sb.append(" rev=");
+				sb.append(shiftOffsetReverse.getText());
+			}
+			
+			
+			if (extractCentres) {
+				sb.append(" Extract centres +/- ");
+				sb.append(centreExtractContext());				
+			}
+			
+			if (downsample) {
+				sb.append(" Downsample to approx ");
+				sb.append(downsampleTargetField.getText());
+			}
+			
+			if (extendReads() != 0) {
+				sb.append(" Extend by ");
+				sb.append(extendReads());
+			}
+			
+			if (isHiC()) {
+				sb.append("HiC distance ");
+				sb.append(hiCDistance());
+				
+				if (hiCIgnoreTrans()) {
+					sb.append(" Ignoring trans ditags");
+				}
+			}
+
 			
 			return sb.toString();
 		}

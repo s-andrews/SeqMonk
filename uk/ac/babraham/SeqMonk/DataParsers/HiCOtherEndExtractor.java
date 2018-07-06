@@ -314,7 +314,15 @@ public class HiCOtherEndExtractor extends DataParser {
 		public String getImportOptionsDescription () {
 			StringBuffer sb = new StringBuffer();
 			
-			//TODO: Collect import options
+			sb.append("HiC Other Ends ");
+			sb.append("Source is ");
+			sb.append(sourcesBox.getSelectedItem());
+			if (mergeIntoOne()) {
+				sb.append(" merged into single track");
+			}
+			if (excludeSelf()) {
+				sb.append(" excluding self");
+			}
 			
 			return sb.toString();
 		}
