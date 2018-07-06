@@ -214,17 +214,17 @@ public class SeqMonkReimportParser extends DataParser {
 			// anything else is assumed to be a normal dataset. There are now 4
 			// sections where the fourth section is the import options used.
 			if (sections.length == 1) {
-				dataSets[i] = new DataSet(sections[0],"Not known",DataSet.DUPLICATES_REMOVE_NO,"");
+				dataSets[i] = new DataSet(sections[0],"Not known",DataSet.DUPLICATES_REMOVE_NO,"Not recorded");
 			}
 			else if (sections.length == 2) {
-				dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"");
+				dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"Not recorded");
 			}
 			else if (sections.length == 3) {
 				if (sections[2].equals("HiC")) {
-					dataSets[i] = new PairedDataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"",0,false);					
+					dataSets[i] = new PairedDataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"Not recorded",0,false);					
 				}
 				else {
-					dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"");
+					dataSets[i] = new DataSet(sections[0],sections[1],DataSet.DUPLICATES_REMOVE_NO,"Not recorded");
 				}
 			}
 			else if (sections.length == 4) {
