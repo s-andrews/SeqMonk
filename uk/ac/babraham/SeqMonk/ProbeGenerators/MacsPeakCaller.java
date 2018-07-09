@@ -108,6 +108,18 @@ public class MacsPeakCaller extends ProbeGenerator implements Runnable,ListSelec
 		gbc.weighty = 0.5;
 
 		DataStore [] stores = collection.getAllDataStores();
+		
+		// Do a sanity check to remove any stores with no data in them.
+		Vector<DataStore> validStores = new Vector<DataStore>();
+		
+		for (int s=0;s<stores.length;s++) {
+			if (stores[s].getTotalReadCount() > 0) {
+				validStores.add(stores[s]);
+			}
+		}
+		
+		
+		stores = validStores.toArray(new DataStore[0]);
 
 		chipStoresList = new JList(stores);
 		chipStoresList.getSelectionModel().addListSelectionListener(this);
