@@ -415,7 +415,7 @@ public class GenericAnnotationParser extends AnnotationParser {
 			c.fill = GridBagConstraints.NONE;
 
 			optionPanel.add(new JLabel("Column Delimiter"),c);
-			delimiters = new JComboBox(new String [] {"Tab","Space","Comma"});
+			delimiters = new JComboBox(new String [] {"Tab","Space","Comma","Whitespace"});
 			delimiters.addActionListener(this);
 			c.gridx=1;
 			c.weightx=0.1;
@@ -641,6 +641,10 @@ public class GenericAnnotationParser extends AnnotationParser {
 			if (((String)(delimiters.getSelectedItem())).equals("Comma")) {
 				return ",";
 			}
+			if (((String)(delimiters.getSelectedItem())).equals("Whitespace")) {
+				return "\\s+";
+			}
+
 			throw new IllegalArgumentException("Unknown delimiter option selected '"+delimiters.getSelectedItem()+"'");
 		}
 
@@ -829,7 +833,7 @@ public class GenericAnnotationParser extends AnnotationParser {
 				//			}
 
 
-				String [] sections = previewData[r+(startRowValue-1)].split("["+getDelimiter()+"]");
+				String [] sections = previewData[r+(startRowValue-1)].split(getDelimiter());
 				if (sections.length <=c) {
 					return null;
 				}
