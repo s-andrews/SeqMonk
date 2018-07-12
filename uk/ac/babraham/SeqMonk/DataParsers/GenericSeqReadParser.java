@@ -432,7 +432,7 @@ public class GenericSeqReadParser extends DataParser {
 			c.insets = new Insets(2, 2, 2, 2);
 
 			optionPanel.add(new JLabel("Column Delimiter"),c);
-			delimiters = new JComboBox(new String [] {"Tab","Space","Comma"});
+			delimiters = new JComboBox(new String [] {"Tab","Space","Comma","Whitespace"});
 			delimiters.addActionListener(this);
 			c.gridx=1;
 			c.weightx=0.1;
@@ -692,6 +692,9 @@ public class GenericSeqReadParser extends DataParser {
 			if (((String)(delimiters.getSelectedItem())).equals("Comma")) {
 				return ",";
 			}
+			if (((String)(delimiters.getSelectedItem())).equals("Whitespace")) {
+				return "\\s+";
+			}
 			return null;
 		}
 
@@ -835,7 +838,7 @@ public class GenericSeqReadParser extends DataParser {
 				//			}
 
 
-				String [] sections = previewData[r+(startRowValue-1)].split("["+getDelimiter()+"]");
+				String [] sections = previewData[r+(startRowValue-1)].split(getDelimiter());
 				if (sections.length <=c) {
 					return null;
 				}
