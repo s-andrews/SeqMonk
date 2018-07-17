@@ -491,7 +491,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 * Launches a FileChooser to select a project file to open
 	 */
 	public void loadProjectAndSwitchAssembly () {
-		new GenomeSelector(application);
+		GenomeSelector gs = new GenomeSelector(application);
+		
+		if (gs.theyCancelled()) return;
 		
 		JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 		chooser.setMultiSelectionEnabled(false);

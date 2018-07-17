@@ -64,6 +64,8 @@ public class GenomeSelector extends JDialog {
 
 	/** The ok button. */
 	private JButton okButton;
+	
+	private boolean theyCancelled = false;
 
 	/**
 	 * Instantiates a new genome selector.
@@ -192,8 +194,7 @@ public class GenomeSelector extends JDialog {
 			// There are no controls so just show the main window.
 			getContentPane().add(new JScrollPane(genomesTree),BorderLayout.CENTER);
 		}
-
-
+		
 		// Create the buttons at the bottom.
 		ButtonListener l = new ButtonListener();
 
@@ -227,6 +228,10 @@ public class GenomeSelector extends JDialog {
 
 		setVisible(true);
 
+	}
+	
+	public boolean theyCancelled () {
+		return theyCancelled;
 	}
 
 	/**
@@ -291,6 +296,7 @@ public class GenomeSelector extends JDialog {
 				dispose();
 			}
 			else if (ae.getActionCommand().equals("cancel")) {
+				theyCancelled = true;
 				setVisible(false);
 				dispose();
 			}
