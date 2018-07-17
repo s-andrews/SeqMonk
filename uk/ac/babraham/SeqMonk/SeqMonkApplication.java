@@ -494,7 +494,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		GenomeSelector gs = new GenomeSelector(application);
 		
 		if (gs.theyCancelled()) return;
-		
+
 		JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 		chooser.setMultiSelectionEnabled(false);
 		SeqMonkPreviewPanel previewPanel = new SeqMonkPreviewPanel();
@@ -534,7 +534,12 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		}
 		
 		//Check that the project they selected is actually compatible with the genome they loaded.
-	
+			
+		if (dataCollection == null) {
+			JOptionPane.showMessageDialog(this, "Sorry, your genome took too long to load. Please try again and it will work next time", "Genome not loaded", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
 		// Start with the species.  These should match exactly.
 		if (!preview.species().equals(dataCollection.genome().species().toString())) {
 			JOptionPane.showMessageDialog(this,"Species didn't match ("+preview.species()+" vs "+ dataCollection.genome().species().toString()+")","Incompatible file",JOptionPane.ERROR_MESSAGE);
