@@ -26,8 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -44,8 +42,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
-import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
-import uk.ac.babraham.SeqMonk.Utilities.ListDefaultSelector;
 
 public class RNAQCPreferencesDialog extends JDialog implements ActionListener, ProgressListener {
 
@@ -63,6 +59,12 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 		
 		if (stores.length == 0) {
 			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "There are no visible data stores", "Can't draw plot", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		if (collection.genome().annotationCollection().listAvailableFeatureTypes().length == 0) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "You don't have any annotation available", "Can't draw plot", JOptionPane.INFORMATION_MESSAGE);
+			return;
 		}
 		
 		this.stores = stores;
@@ -114,7 +116,7 @@ public class RNAQCPreferencesDialog extends JDialog implements ActionListener, P
 			}
 		}
 		
-		if (!transcriptFeaturesBox.getSelectedItem().equals("mRNA")) {
+		if (transcriptFeaturesBox.getSelectedItem() == null  || !transcriptFeaturesBox.getSelectedItem().equals("mRNA")) {
 			measureTranscriptsBox.setSelected(false);
 			transcriptFeaturesBox.setEnabled(false);
 		}
