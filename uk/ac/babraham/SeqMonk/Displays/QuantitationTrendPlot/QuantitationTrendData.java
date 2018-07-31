@@ -499,7 +499,65 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 	}
 
 	public void writeData (PrintWriter pr) {
-		// TODO: Write data
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("region\tbin");
+		for (int p=0;p<lists.length;p++) {
+			for (int s=0;s<stores.length;s++) {
+				sb.append("\t");
+				sb.append(lists[p].name()+" - "+stores[s].name());
+			}
+		}
+		
+		pr.println(sb.toString());
+		
+		if (hasUpstream()) {
+			for (int bin=0;bin<upstreamData[0][0].length;bin++) {
+				sb = new StringBuffer();
+				sb.append("upstream\t");
+				sb.append(bin);
+				sb.append("\t");
+				for (int p=0;p<lists.length;p++) {
+					for (int s=0;s<stores.length;s++) {
+						sb.append("\t");
+						sb.append(upstreamData[p][s][bin]);
+					}
+				}
+				pr.println(sb.toString());
+			}
+		}
+		
+		if (true) {  // Everything has a central data portion
+			for (int bin=0;bin<centralData[0][0].length;bin++) {
+				sb = new StringBuffer();
+				sb.append("central\t");
+				sb.append(bin);
+				sb.append("\t");
+				for (int p=0;p<lists.length;p++) {
+					for (int s=0;s<stores.length;s++) {
+						sb.append("\t");
+						sb.append(centralData[p][s][bin]);
+					}
+				}
+				pr.println(sb.toString());
+			}
+		}
+
+		if (hasDownstream()) {
+			for (int bin=0;bin<downstreamData[0][0].length;bin++) {
+				sb = new StringBuffer();
+				sb.append("downstream\t");
+				sb.append(bin);
+				sb.append("\t");
+				for (int p=0;p<lists.length;p++) {
+					for (int s=0;s<stores.length;s++) {
+						sb.append("\t");
+						sb.append(downstreamData[p][s][bin]);
+					}
+				}
+				pr.println(sb.toString());
+			}
+		}		
 	}
 	
 
