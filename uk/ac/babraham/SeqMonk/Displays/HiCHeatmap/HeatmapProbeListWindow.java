@@ -217,7 +217,7 @@ public class HeatmapProbeListWindow extends JFrame implements ActionListener, Pr
 		
 		// If the heatmap panel hasn't been made then we need to get rid of
 		// the whole window.  If it has then it's a clustering which was cancelled.
-		if (heatmapPanel == null) {
+		if (heatmapPanel == null || clusterButton == null) {
 			dispose();
 		}
 		clusterButton.setEnabled(true);
