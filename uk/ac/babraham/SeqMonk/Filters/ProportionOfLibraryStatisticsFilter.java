@@ -178,7 +178,7 @@ public class ProportionOfLibraryStatisticsFilter extends ProbeFilter {
 
 						int n11 = (int)fromStores[f].getValueForProbe(probes[p]);
 						int n12 = fromTotalCount - n11;
-						int n21 = (int)toStores[f].getValueForProbe(probes[p]);
+						int n21 = (int)toStores[t].getValueForProbe(probes[p]);
 						int n22 = toTotalCount - n21;
 						
 						double [] pValues = FishersExactTest.fishersExactTest(n11, n12, n21, n22);	
