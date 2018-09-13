@@ -111,7 +111,7 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 	private ProbePairValue closestPoint = null;
 
 
-	private static final int X_AXIS_SPACE = 50;
+	private static int X_AXIS_SPACE = 50; // We let this vary once we know the scaling.
 	private static final int Y_AXIS_SPACE = 30;
 
 
@@ -308,8 +308,12 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 		}
 
 
-		// If we're here then we can actually draw the graphs
+		// We need the y scale to be able to work out the X_AXIS_SPACE
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
+		X_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
 
+		
+		// If we're here then we can actually draw the graphs
 		g.setColor(Color.BLACK);
 
 		// X axis
@@ -318,7 +322,8 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 		AxisScale xAxisScale = new AxisScale(minValueX, maxValueX);
 		double currentXValue = xAxisScale.getStartingValue();
 		while (currentXValue < maxValueX) {
-			g.drawString(xAxisScale.format(currentXValue), getX(currentXValue), getHeight()-(Y_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
+			String xLabel = xAxisScale.format(currentXValue);
+			g.drawString(xLabel, getX(currentXValue)-(metrics.stringWidth(xLabel)/2), getHeight()-(Y_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
 			g.drawLine(getX(currentXValue),getHeight()-Y_AXIS_SPACE,getX(currentXValue),getHeight()-(Y_AXIS_SPACE-3));
 			currentXValue += xAxisScale.getInterval();
 		}
@@ -326,10 +331,10 @@ public class PCAScatterPlotPanel extends JPanel implements Runnable, MouseMotion
 		// Y axis
 		g.drawLine(X_AXIS_SPACE, 10, X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE);
 
-		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < maxValueY) {
-			g.drawString(yAxisScale.format(currentYValue), 5, getY(currentYValue)+(g.getFontMetrics().getAscent()/2));
+			String yText = yAxisScale.format(currentYValue);
+			g.drawString(yText, X_AXIS_SPACE-(6+metrics.stringWidth(yText)), getY(currentYValue)+(g.getFontMetrics().getAscent()/2));
 			g.drawLine(X_AXIS_SPACE,getY(currentYValue),X_AXIS_SPACE-3,getY(currentYValue));
 			currentYValue += yAxisScale.getInterval();
 		}
