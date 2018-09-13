@@ -753,13 +753,13 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				for (int i=0;i<probes.length;i++) {
 					//				System.out.println("Looking at read "+i+" Start: "+reads[i].start()+" End: "+reads[i].end()+" Global Start:"+startBp+" End:"+endBp);
 					if (probes[i].end() > startBp && probes[i].start() < endBp) {
-						drawProbe(probes[i],g);
+						drawProbe(probes[i],g,false);
 					}
 				}
 
 				// Always draw the active probe last so it stays on top, unless we're doing a line graph
 				if (activeProbe != null && DisplayPreferences.getInstance().getGraphType() != DisplayPreferences.GRAPH_TYPE_LINE) {
-					drawProbe(activeProbe, g);
+					drawProbe(activeProbe, g, true);
 				}
 			}
 			else {
@@ -1025,7 +1025,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 	 * @param p the p
 	 * @param g the g
 	 */
-	private void drawProbe (Probe p, Graphics g) {
+	private void drawProbe (Probe p, Graphics g, boolean forceDraw) {
 
 		int wholeXStart = bpToPixel(p.start());
 		int wholeXEnd = bpToPixel(p.end()+1);
@@ -1058,16 +1058,18 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 		// Don't draw probes which overlap exactly with the last one
 		// and are of lower height
-		if (wholeXEnd <= lastProbeXEnd) {
+		if (!forceDraw) {
+			if (wholeXEnd <= lastProbeXEnd) {
 
-			if (lastProbeValue > 0 && value > 0 && value <= lastProbeValue) {
-				return;
+				if (lastProbeValue > 0 && value > 0 && value <= lastProbeValue) {
+					return;
+				}
+
+				if (lastProbeValue < 0 && value < 0 && value >= lastProbeValue) {
+					return;
+				}
+
 			}
-
-			if (lastProbeValue < 0 && value < 0 && value >= lastProbeValue) {
-				return;
-			}
-
 		}
 
 		// We only update the last value if we have moved past the end of the last probe
