@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -73,7 +74,7 @@ public class LimmaFilter extends ProbeFilter {
 	private static boolean multiTest = true;
 
 	private final LimmaOptionsPanel optionsPanel;
-
+	
 	/**
 	 * Instantiates a new limma stats filter.
 	 * 
@@ -94,8 +95,6 @@ public class LimmaFilter extends ProbeFilter {
 		ReplicateSet [] repSets = collection.getAllReplicateSets();
 		int validRepSetCount = 0;
 
-		Probe [] probes = startingList.getAllProbes();
-
 		for (int r=0;r<repSets.length;r++) {
 			if (repSets[r].isQuantitated() && repSets[r].dataStores().length>=2) {
 				++validRepSetCount;
@@ -108,7 +107,6 @@ public class LimmaFilter extends ProbeFilter {
 		if (validRepSetCount < 2) {
 			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>We didn't find enough data to run this filter.<br>You need at least 2 replicate sets with at least 2 data stores in each to run this.</html>", "Not enough data", JOptionPane.WARNING_MESSAGE);
 		}
-
 
 	}
 
@@ -137,6 +135,51 @@ public class LimmaFilter extends ProbeFilter {
 		File tempDir;
 		try {
 
+			Probe [] probes = startingList.getAllProbes();
+
+			// LIMMA won't use probes which have an NA in them, so we need to remove
+			// any probes which aren't complete across all samples
+			
+			Vector<Probe> validProbes = new Vector<Probe>();
+			
+			for (int p=0;p<probes.length;p++) {
+				boolean valid = true;
+				
+				for (int s=0;s<fromStores.length;s++) {
+					if (Float.isNaN(fromStores[s].getValueForProbe(probes[p]))) {
+						valid = false;
+						break;
+					}
+				}
+				
+				// Only check the to stores if from was OK
+				if (valid) {
+					for (int s=0;s<toStores.length;s++) {
+						if (Float.isNaN(toStores[s].getValueForProbe(probes[p]))) {
+							valid = false;
+							break;
+						}
+					}
+					
+				}
+				if (valid) {
+					validProbes.add(probes[p]);
+				}
+			}
+			
+			if (validProbes.size() == 0) {
+				JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Found no probes without NA values - can't run LIMMA", "Can't run LIMMA", JOptionPane.ERROR_MESSAGE);
+				progressCancelled();
+				return;
+			}
+			
+			if (validProbes.size() < probes.length) {
+				progressWarningReceived(new SeqMonkException("Removed "+(probes.length-validProbes.size())+" probes since they contained NA values"));
+			}
+			
+			probes = validProbes.toArray(new Probe[0]);
+
+			
 			progressUpdated("Creating temp directory",0,1);
 
 			tempDir = TempDirectory.createTempDirectory();
@@ -198,8 +241,7 @@ public class LimmaFilter extends ProbeFilter {
 
 			progressUpdated("Writing count data",0,1);
 
-			Probe [] probes = startingList.getAllProbes();
-
+			
 			float value;
 
 			for (int p=0;p<probes.length;p++) {

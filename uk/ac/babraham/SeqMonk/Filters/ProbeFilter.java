@@ -204,7 +204,20 @@ public abstract class ProbeFilter implements Runnable,Cancellable {
 			i.next().progressExceptionReceived(e);
 		}
 	}
-		
+
+	/**
+	 * Passes on Progress warning received message to all listeners
+	 * 
+	 * @param e The exception
+	 */
+	protected void progressWarningReceived (Exception e) {
+		Iterator<ProgressListener> i = listeners.iterator();
+		while (i.hasNext()) {
+			i.next().progressWarningReceived(e);
+		}
+	}
+
+	
 	/**
 	 * Passes on Filter finished message to all listeners
 	 * 
