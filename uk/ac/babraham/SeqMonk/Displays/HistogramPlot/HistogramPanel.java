@@ -447,8 +447,9 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 				}
 				
 				String yText = yAxisScale.format(currentYValue);
-				g.drawString(yText, (X_AXIS_SPACE - 3) - g.getFontMetrics().stringWidth(yText), (int)((getHeight()-Y_AXIS_SPACE)-yHeight)+(g.getFontMetrics().getAscent()/2));
-
+				g.drawString(yText, (X_AXIS_SPACE - 6) - g.getFontMetrics().stringWidth(yText), (int)((getHeight()-Y_AXIS_SPACE)-yHeight)+(g.getFontMetrics().getAscent()/2));
+				g.drawLine(X_AXIS_SPACE-3, (int)((getHeight()-Y_AXIS_SPACE)-yHeight), X_AXIS_SPACE, (int)((getHeight()-Y_AXIS_SPACE)-yHeight));
+				
 				// Put a line across the plot
 				if (currentYValue != 0) {
 					g.setColor(Color.LIGHT_GRAY);
@@ -465,8 +466,9 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 								
 				double currentXValue = xAxisScale.getStartingValue();
 				while (currentXValue < currentMaxValue) {
-					g.drawString(xAxisScale.format(currentXValue), getX(currentXValue), (int)((getHeight()-Y_AXIS_SPACE)+15));
-					
+					String xText = xAxisScale.format(currentXValue);
+					g.drawString(xText, getX(currentXValue)-(g.getFontMetrics().stringWidth(xText)/2), (int)((getHeight()-Y_AXIS_SPACE)+15));
+					g.drawLine(getX(currentXValue), getHeight()-Y_AXIS_SPACE, getX(currentXValue), (getHeight()-Y_AXIS_SPACE)+3);
 					currentXValue += xAxisScale.getInterval();
 					
 				}
