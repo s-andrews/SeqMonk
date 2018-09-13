@@ -332,8 +332,8 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 	 */
 	private class MainHistogramPanel extends JPanel implements MouseListener,MouseMotionListener {
 		
-		private static final int X_AXIS_SPACE = 50;
 		private static final int Y_AXIS_SPACE = 30;
+		private int X_AXIS_SPACE = 50; // This will vary once we've calculated the scale
 		
 		
 		/** The categories. */
@@ -397,6 +397,11 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 			// Draw the graph axes first.  We leave a border on all sides
 			g.setColor(Color.BLACK);
 			
+			// We need to know the y-scaling to be able to leave enough space
+			AxisScale yAxisScale = new AxisScale(0, maxCount);
+
+			X_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
 			g.drawLine(X_AXIS_SPACE, 5, X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE);
 			g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, getWidth()-5, getHeight()-Y_AXIS_SPACE);
 			
@@ -428,7 +433,6 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 			}
 			
 			// Now draw the scale on the y axis
-			AxisScale yAxisScale = new AxisScale(0, maxCount);
 			
 			double currentYValue = yAxisScale.getStartingValue();
 			
@@ -442,7 +446,8 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 					yHeight = currentYValue*yScale;
 				}
 				
-				g.drawString(yAxisScale.format(currentYValue), 2, (int)((getHeight()-Y_AXIS_SPACE)-yHeight)+(g.getFontMetrics().getAscent()/2));
+				String yText = yAxisScale.format(currentYValue);
+				g.drawString(yText, (X_AXIS_SPACE - 3) - g.getFontMetrics().stringWidth(yText), (int)((getHeight()-Y_AXIS_SPACE)-yHeight)+(g.getFontMetrics().getAscent()/2));
 
 				// Put a line across the plot
 				if (currentYValue != 0) {

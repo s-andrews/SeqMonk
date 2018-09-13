@@ -23,6 +23,8 @@ import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 
+import uk.ac.babraham.SeqMonk.SeqMonkApplication;
+
 public class AxisScale {
 
 	private double min;
@@ -87,7 +89,7 @@ public class AxisScale {
 		
 		// Finally we work out the width needed for the end value since that
 		// should be the largest one we have to print
-		xSpace = (new JPanel()).getGraphics().getFontMetrics().stringWidth(format(max));
+		xSpace = SeqMonkApplication.getInstance().getGraphics().getFontMetrics().stringWidth(format(max));
 	}
 	
 	public String format (double number) {
@@ -130,11 +132,5 @@ public class AxisScale {
 	public int getXSpaceNeeded () {
 		return xSpace;
 	}
-	
-	
-	public static void main (String [] args) {
-		AxisScale as = new AxisScale(-4.75, 4.52);
 		
-		System.out.println("Scale is "+as.getMin()+"-"+as.getMax()+" starts at "+as.getStartingValue()+" with interval "+as.getInterval());
-	}
 }
