@@ -21,6 +21,8 @@ package uk.ac.babraham.SeqMonk.Utilities;
 
 import java.text.DecimalFormat;
 
+import javax.swing.JPanel;
+
 public class AxisScale {
 
 	private double min;
@@ -28,6 +30,8 @@ public class AxisScale {
 	private double starting;
 	private double interval;
 	private DecimalFormat df = null;
+	
+	private int xSpace;
 	
 	public AxisScale (double min, double max) {
 		
@@ -54,8 +58,6 @@ public class AxisScale {
 			base /= 10;
 		}
 				
-		
-
 		double [] divisions = new double [] {0.1,0.2,0.25,0.5};
 		
 		OUTER: while (true) {
@@ -83,7 +85,9 @@ public class AxisScale {
 		
 		starting = testStart;
 		
-		
+		// Finally we work out the width needed for the end value since that
+		// should be the largest one we have to print
+		xSpace = (new JPanel()).getGraphics().getFontMetrics().stringWidth(format(max));
 	}
 	
 	public String format (double number) {
@@ -122,6 +126,11 @@ public class AxisScale {
 	public double getMax () {
 		return max;
 	}
+	
+	public int getXSpaceNeeded () {
+		return xSpace;
+	}
+	
 	
 	public static void main (String [] args) {
 		AxisScale as = new AxisScale(-4.75, 4.52);

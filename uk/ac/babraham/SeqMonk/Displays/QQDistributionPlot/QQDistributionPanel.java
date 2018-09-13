@@ -19,20 +19,12 @@
  */
 package uk.ac.babraham.SeqMonk.Displays.QQDistributionPlot;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.Arrays;
-import java.util.Vector;
-
-import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Displays.CumulativeDistribution.CumulativeDistributionPanel;
-import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
-import uk.ac.babraham.SeqMonk.Utilities.AxisScale;
 
 public class QQDistributionPanel extends CumulativeDistributionPanel {
 
