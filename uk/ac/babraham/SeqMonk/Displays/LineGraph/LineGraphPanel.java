@@ -70,8 +70,8 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 	private float min;
 	
 	// Spacing for the drawn panel
-	private static final int X_AXIS_SPACE = 50;
-	private static final int Y_AXIS_SPACE = 30;
+	private int Y_AXIS_SPACE = 50;
+	private static final int X_AXIS_SPACE = 30;
 
 	
 	
@@ -236,11 +236,11 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 	}
 	
 	private int getYPixels (double value) {
-		return (getHeight()-Y_AXIS_SPACE) - (int)((getHeight()-(10d+Y_AXIS_SPACE))*((value-usedMin)/(usedMax-usedMin)));
+		return (getHeight()-X_AXIS_SPACE) - (int)((getHeight()-(10d+X_AXIS_SPACE))*((value-usedMin)/(usedMax-usedMin)));
 	}
 
 	private int getXPixels(int pos) {
-		return X_AXIS_SPACE + (pos*((getWidth()-(10+X_AXIS_SPACE))/(stores.length-1)));
+		return Y_AXIS_SPACE + (pos*((getWidth()-(10+Y_AXIS_SPACE))/(stores.length-1)));
 	}
 
 	public void paint (Graphics g) {
@@ -253,27 +253,31 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 		
 		g.setColor(Color.BLACK);
 		
+		// Work out the y spacing
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+		Y_AXIS_SPACE = 10+yAxisScale.getXSpaceNeeded();
+		
 		// Draw the axes
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, getWidth()-10, getHeight()-Y_AXIS_SPACE); // X-axis
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, X_AXIS_SPACE, 10); // Y-axis
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, getWidth()-10, getHeight()-X_AXIS_SPACE); // X-axis
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, Y_AXIS_SPACE, 10); // Y-axis
 		
 		// Draw the Y scale
-		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < usedMax) {
-			g.drawString(yAxisScale.format(currentYValue), 5, getYPixels(currentYValue)+(g.getFontMetrics().getAscent()/2));
-			g.drawLine(X_AXIS_SPACE,getYPixels(currentYValue),X_AXIS_SPACE-3,getYPixels(currentYValue));
+			String yLabel = yAxisScale.format(currentYValue);
+			g.drawString(yLabel, Y_AXIS_SPACE-(5+g.getFontMetrics().stringWidth(yLabel)), getYPixels(currentYValue)+(g.getFontMetrics().getAscent()/2));
+			g.drawLine(Y_AXIS_SPACE,getYPixels(currentYValue),Y_AXIS_SPACE-3,getYPixels(currentYValue));
 			currentYValue += yAxisScale.getInterval();
 		}
 		
 		// Draw x ticks
 		for (int s=0;s<stores.length;s++) {
-			int xTick = X_AXIS_SPACE + (s*((getWidth()-(10+X_AXIS_SPACE))/(stores.length-1)));
-			g.drawLine(xTick, getHeight()-Y_AXIS_SPACE, xTick, getHeight()-(Y_AXIS_SPACE-3));
+			int xTick = Y_AXIS_SPACE + (s*((getWidth()-(10+Y_AXIS_SPACE))/(stores.length-1)));
+			g.drawLine(xTick, getHeight()-X_AXIS_SPACE, xTick, getHeight()-(X_AXIS_SPACE-3));
 		}
 		
 		for (int s=0;s<stores.length;s++) {
-			int xTick = X_AXIS_SPACE + (s*((getWidth()-(10+X_AXIS_SPACE))/(stores.length-1)));
+			int xTick = Y_AXIS_SPACE + (s*((getWidth()-(10+Y_AXIS_SPACE))/(stores.length-1)));
 			
 			int stringWidth = g.getFontMetrics().stringWidth(stores[s].name());
 			int xStart = xTick - (stringWidth/2);
@@ -281,7 +285,7 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 			if (xStart < 1) xStart = 1;
 			if (xStart + stringWidth > (getWidth()-1)) xStart = (getWidth()-1)-stringWidth;
 			
-			g.drawString(stores[s].name(), xStart, getHeight()-(Y_AXIS_SPACE-(g.getFontMetrics().getHeight()+3)));
+			g.drawString(stores[s].name(), xStart, getHeight()-(X_AXIS_SPACE-(g.getFontMetrics().getHeight()+3)));
 		}
 		
 		// Put the probe list name at the top
@@ -330,7 +334,7 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 				getValues(probes[p]);
 				g.setColor(DisplayPreferences.getInstance().getGradient().getColor(values[0], usedMin, usedMax));
 				for (int s=0;s<values.length;s++) {
-					thisX = X_AXIS_SPACE + (s*((getWidth()-(10+X_AXIS_SPACE))/(stores.length-1)));
+					thisX = Y_AXIS_SPACE + (s*((getWidth()-(10+Y_AXIS_SPACE))/(stores.length-1)));
 					value = values[s]; 
 	
 					if (value < usedMin) value = usedMin;
@@ -349,7 +353,7 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 				getValues(selectedProbe);
 				g.setColor(Color.BLACK);
 				for (int s=0;s<values.length;s++) {
-					thisX = X_AXIS_SPACE + (s*((getWidth()-(10+X_AXIS_SPACE))/(stores.length-1)));
+					thisX = Y_AXIS_SPACE + (s*((getWidth()-(10+Y_AXIS_SPACE))/(stores.length-1)));
 					value = values[s]; 
 	
 					if (value < usedMin) value = usedMin;
@@ -402,7 +406,7 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 		
 		// Don't do anything if we're before the first store
 		// or after the last one
-		if (x < X_AXIS_SPACE || x > getWidth() -10) return;
+		if (x < Y_AXIS_SPACE || x > getWidth() -10) return;
 		
 		// We first need to find the points we're between and
 		// the proportion we are between the points
