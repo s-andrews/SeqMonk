@@ -126,8 +126,8 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 	private ProbePairValue closestPoint = null;
 
 
-	private static final int X_AXIS_SPACE = 50;
-	private static final int Y_AXIS_SPACE = 30;
+	private int Y_AXIS_SPACE = 50;
+	private static final int X_AXIS_SPACE = 30;
 
 
 	/**
@@ -293,27 +293,32 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 
 		// If we're here then we can actually draw the graphs
 
+		// First get the y spacing
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+		
 		g.setColor(Color.BLACK);
 
 		// X axis
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, getWidth()-10, getHeight()-Y_AXIS_SPACE);
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, getWidth()-10, getHeight()-X_AXIS_SPACE);
 
 		AxisScale xAxisScale = new AxisScale(minValueX, maxValueX);
 		double currentXValue = xAxisScale.getStartingValue();
 		while (currentXValue < maxValueX) {
-			g.drawString(xAxisScale.format(currentXValue), getX(currentXValue), getHeight()-(Y_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
-			g.drawLine(getX(currentXValue),getHeight()-Y_AXIS_SPACE,getX(currentXValue),getHeight()-(Y_AXIS_SPACE-3));
+			String xLabel = xAxisScale.format(currentXValue);
+			g.drawString(xLabel, getX(currentXValue)-(g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-(X_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
+			g.drawLine(getX(currentXValue),getHeight()-X_AXIS_SPACE,getX(currentXValue),getHeight()-(X_AXIS_SPACE-3));
 			currentXValue += xAxisScale.getInterval();
 		}
 
 		// Y axis
-		g.drawLine(X_AXIS_SPACE, 10, X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE);
+		g.drawLine(Y_AXIS_SPACE, 10, Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE);
 
-		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < maxValueY) {
-			g.drawString(yAxisScale.format(currentYValue), 5, getY(currentYValue)+(g.getFontMetrics().getAscent()/2));
-			g.drawLine(X_AXIS_SPACE,getY(currentYValue),X_AXIS_SPACE-3,getY(currentYValue));
+			String yLabel = yAxisScale.format(currentYValue); 
+			g.drawString(yLabel, Y_AXIS_SPACE-(5+g.getFontMetrics().stringWidth(yLabel)), getY(currentYValue)+(g.getFontMetrics().getAscent()/2));
+			g.drawLine(Y_AXIS_SPACE,getY(currentYValue),Y_AXIS_SPACE-3,getY(currentYValue));
 			currentYValue += yAxisScale.getInterval();
 		}
 
@@ -321,14 +326,14 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 		g.drawString(store.name(),(getWidth()/2)-(metrics.stringWidth(store.name())/2),getHeight()-3);		
 
 		// Y label
-		g.drawString("Proportion Same Strand",X_AXIS_SPACE+3,15);
+		g.drawString("Proportion Same Strand",Y_AXIS_SPACE+3,15);
 			
 		
 		// If we have sublists draw them below this in the right colours
 		if (subLists != null) {
 			for (int s=0;s<subLists.length;s++) {
 				g.setColor(ColourIndexSet.getColour(s));
-				g.drawString(subLists[s].name(),X_AXIS_SPACE+3,15+(g.getFontMetrics().getHeight()*(s+1)));
+				g.drawString(subLists[s].name(),Y_AXIS_SPACE+3,15+(g.getFontMetrics().getHeight()*(s+1)));
 			}
 			g.setColor(Color.BLACK);
 		}
@@ -358,8 +363,8 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 			//			System.out.println("Drawing label at x="+cursorX+" y="+cursorY+" x*="+getValueFromX(cursorX)+" y*="+getValueFromY(cursorY));
 
 			String label = "x="+df.format(getValueFromX(cursorX))+" y="+df.format(getValueFromY(cursorY));
-			int labelXPos = X_AXIS_SPACE+((getWidth()-(X_AXIS_SPACE+10))/2)-(g.getFontMetrics().stringWidth(label)/2);
-			g.drawString(label, labelXPos, getHeight()-(Y_AXIS_SPACE+3));
+			int labelXPos = Y_AXIS_SPACE+((getWidth()-(Y_AXIS_SPACE+10))/2)-(g.getFontMetrics().stringWidth(label)/2);
+			g.drawString(label, labelXPos, getHeight()-(X_AXIS_SPACE+3));
 
 			// We also draw the names on the closest point if there is one
 			if (closestPoint != null && closestPoint.probe() != null) {
@@ -377,7 +382,7 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 	 */
 	public double getValueFromY (int y) {
 		double value = minValueY;
-		value += (maxValueY-minValueY) * (((getHeight()-(10+Y_AXIS_SPACE)-(y-10d)) / (getHeight()-(10+Y_AXIS_SPACE))));
+		value += (maxValueY-minValueY) * (((getHeight()-(10+X_AXIS_SPACE)-(y-10d)) / (getHeight()-(10+X_AXIS_SPACE))));
 		return value;
 	}
 
@@ -389,7 +394,7 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 	 */
 	public double getValueFromX (int x) {
 		double value = minValueX;
-		value += (maxValueX-minValueX) * ((x-X_AXIS_SPACE) / (double)(getWidth()-(10+X_AXIS_SPACE)));
+		value += (maxValueX-minValueX) * ((x-Y_AXIS_SPACE) / (double)(getWidth()-(10+Y_AXIS_SPACE)));
 		return value;
 	}
 
@@ -403,9 +408,9 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 	public int getY (double value) {
 		double proportion = (value-minValueY)/(maxValueY-minValueY);
 
-		int y = getHeight()-Y_AXIS_SPACE;
+		int y = getHeight()-X_AXIS_SPACE;
 
-		y -= (int)((getHeight()-(10+Y_AXIS_SPACE))*proportion);
+		y -= (int)((getHeight()-(10+X_AXIS_SPACE))*proportion);
 
 		// Sanity check
 		if (y < 10) {
@@ -428,13 +433,13 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 	public int getX (double value) {
 		double proportion = (value-minValueX)/(maxValueX-minValueX);
 
-		int x = X_AXIS_SPACE;
+		int x = Y_AXIS_SPACE;
 
-		x += (int)((getWidth()-(10+X_AXIS_SPACE))*proportion);
+		x += (int)((getWidth()-(10+Y_AXIS_SPACE))*proportion);
 
 		// Sanity check
-		if (x < X_AXIS_SPACE) {
-			x = X_AXIS_SPACE;
+		if (x < Y_AXIS_SPACE) {
+			x = Y_AXIS_SPACE;
 		}
 		
 		if (x >= getWidth()) {
