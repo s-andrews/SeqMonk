@@ -44,8 +44,8 @@ public class PCAHistogramPanel extends JPanel {
 	
 	private double cutoffValue = 0;
 
-	private static final int X_AXIS_SPACE = 50;
-	private static final int Y_AXIS_SPACE = 30;
+	private static final int Y_AXIS_SPACE = 50;
+	private static final int X_AXIS_SPACE = 30;
 
 
 	/** The categories. */
@@ -111,8 +111,8 @@ public class PCAHistogramPanel extends JPanel {
 		// Draw the graph axes first.  We leave a border on all sides
 		g.setColor(Color.BLACK);
 
-		g.drawLine(X_AXIS_SPACE, 5, X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE);
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, getWidth()-5, getHeight()-Y_AXIS_SPACE);
+		g.drawLine(Y_AXIS_SPACE, 5, Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE);
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, getWidth()-5, getHeight()-X_AXIS_SPACE);
 
 		// If we don't have any data we can stop here
 		if (categories == null) return;
@@ -127,7 +127,7 @@ public class PCAHistogramPanel extends JPanel {
 		// We need the scaling factor for the y-axis
 		double yScale = 0;
 
-		yScale = (double)(getHeight()-(5+Y_AXIS_SPACE))/maxCount;
+		yScale = (double)(getHeight()-(5+X_AXIS_SPACE))/maxCount;
 		
 
 		// Now draw the scale on the y axis
@@ -138,13 +138,15 @@ public class PCAHistogramPanel extends JPanel {
 		while (currentYValue < maxCount) {
 
 			double yHeight = currentYValue*yScale;
+			
+			String yLabel = yAxisScale.format(currentYValue);
 
-			g.drawString(yAxisScale.format(currentYValue), 2, (int)((getHeight()-Y_AXIS_SPACE)-yHeight)+(g.getFontMetrics().getAscent()/2));
+			g.drawString(yLabel, Y_AXIS_SPACE - (5+g.getFontMetrics().stringWidth(yLabel)), (int)((getHeight()-X_AXIS_SPACE)-yHeight)+(g.getFontMetrics().getAscent()/2));
 
 			// Put a line across the plot
 			if (currentYValue != 0) {
 				g.setColor(Color.LIGHT_GRAY);
-				g.drawLine(X_AXIS_SPACE, (int)((getHeight()-Y_AXIS_SPACE)-yHeight), getWidth()-5, (int)((getHeight()-Y_AXIS_SPACE)-yHeight));
+				g.drawLine(Y_AXIS_SPACE, (int)((getHeight()-X_AXIS_SPACE)-yHeight), getWidth()-5, (int)((getHeight()-X_AXIS_SPACE)-yHeight));
 				g.setColor(Color.BLACK);
 			}
 
@@ -157,7 +159,7 @@ public class PCAHistogramPanel extends JPanel {
 
 			double currentXValue = xAxisScale.getStartingValue();
 			while (currentXValue < currentMaxValue) {
-				g.drawString(xAxisScale.format(currentXValue), getX(currentXValue), (int)((getHeight()-Y_AXIS_SPACE)+15));
+				g.drawString(xAxisScale.format(currentXValue), getX(currentXValue), (int)((getHeight()-X_AXIS_SPACE)+15));
 
 				currentXValue += xAxisScale.getInterval();
 
@@ -175,29 +177,29 @@ public class PCAHistogramPanel extends JPanel {
 
 			double ySize = categories[c].count*yScale;
 			
-			g.fillRect(categories[c].xStart, (int)((getHeight()-Y_AXIS_SPACE)-ySize), categories[c].xEnd-categories[c].xStart, (int)(ySize));
+			g.fillRect(categories[c].xStart, (int)((getHeight()-X_AXIS_SPACE)-ySize), categories[c].xEnd-categories[c].xStart, (int)(ySize));
 
 
 			// Draw a box around it
 			g.setColor(Color.BLACK);
-			g.drawRect(categories[c].xStart, (int)((getHeight()-Y_AXIS_SPACE)-ySize), categories[c].xEnd-categories[c].xStart, (int)(ySize));
+			g.drawRect(categories[c].xStart, (int)((getHeight()-X_AXIS_SPACE)-ySize), categories[c].xEnd-categories[c].xStart, (int)(ySize));
 
 		}
 		
 		// Draw the line for the cutoff value
 		g.setColor(Color.RED);
-		g.drawLine(getX(cutoffValue), 5, getX(cutoffValue), getHeight()-Y_AXIS_SPACE);
+		g.drawLine(getX(cutoffValue), 5, getX(cutoffValue), getHeight()-X_AXIS_SPACE);
 
 		
 
 	}
 
 	public int getX (double xValue) {
-		return X_AXIS_SPACE + (int)(((getWidth()-(X_AXIS_SPACE+5))/(currentMaxValue-currentMinValue))*(xValue-currentMinValue));
+		return Y_AXIS_SPACE + (int)(((getWidth()-(Y_AXIS_SPACE+5))/(currentMaxValue-currentMinValue))*(xValue-currentMinValue));
 	}
 
 	public double getXValue (int xPosition) {			
-		return ((((double)(xPosition-X_AXIS_SPACE))/(getWidth()-(X_AXIS_SPACE+5)))*(currentMaxValue-currentMinValue))+currentMinValue;			
+		return ((((double)(xPosition-Y_AXIS_SPACE))/(getWidth()-(Y_AXIS_SPACE+5)))*(currentMaxValue-currentMinValue))+currentMinValue;			
 	}
 
 

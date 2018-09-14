@@ -40,8 +40,8 @@ public class VarianceLineGraphPanel extends JPanel {
 	private double usedMax;
 
 	// Spacing for the drawn panel
-	private static final int X_AXIS_SPACE = 50;
-	private static final int Y_AXIS_SPACE = 30;
+	private static final int Y_AXIS_SPACE = 50;
+	private static final int X_AXIS_SPACE = 30;
 
 
 
@@ -57,11 +57,11 @@ public class VarianceLineGraphPanel extends JPanel {
 	}
 
 	private int getYPixels (double value) {
-		return (getHeight()-Y_AXIS_SPACE) - (int)((getHeight()-(10d+Y_AXIS_SPACE))*((value-usedMin)/(usedMax-usedMin)));
+		return (getHeight()-X_AXIS_SPACE) - (int)((getHeight()-(10d+X_AXIS_SPACE))*((value-usedMin)/(usedMax-usedMin)));
 	}
 
 	private int getXPixels(int pos) {
-		return X_AXIS_SPACE + (pos*((getWidth()-(10+X_AXIS_SPACE))/(values.length-1)));
+		return Y_AXIS_SPACE + (pos*((getWidth()-(10+Y_AXIS_SPACE))/(values.length-1)));
 	}
 
 	public void paint (Graphics g) {
@@ -72,27 +72,31 @@ public class VarianceLineGraphPanel extends JPanel {
 
 		g.setColor(Color.BLACK);
 
+		// In contrast to other plots we fix the Y axis space here because
+		// it needs to line up with the histogram below.
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+		
 		// Draw the axes
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, getWidth()-10, getHeight()-Y_AXIS_SPACE); // X-axis
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, X_AXIS_SPACE, 10); // Y-axis
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, getWidth()-10, getHeight()-X_AXIS_SPACE); // X-axis
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, Y_AXIS_SPACE, 10); // Y-axis
 
 		// Draw the Y scale
-		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < usedMax) {
-			g.drawString(yAxisScale.format(currentYValue), 5, getYPixels(currentYValue)+(g.getFontMetrics().getAscent()/2));
-			g.drawLine(X_AXIS_SPACE,getYPixels(currentYValue),X_AXIS_SPACE-3,getYPixels(currentYValue));
+			String yLabel = yAxisScale.format(currentYValue);
+			g.drawString(yLabel, Y_AXIS_SPACE-(5+g.getFontMetrics().stringWidth(yLabel)), getYPixels(currentYValue)+(g.getFontMetrics().getAscent()/2));
+			g.drawLine(Y_AXIS_SPACE,getYPixels(currentYValue),Y_AXIS_SPACE-3,getYPixels(currentYValue));
 			currentYValue += yAxisScale.getInterval();
 		}
 
 		// Draw x ticks
 		for (int s=0;s<values.length;s++) {
-			int xTick = X_AXIS_SPACE + (s*((getWidth()-(10+X_AXIS_SPACE))/(values.length-1)));
-			g.drawLine(xTick, getHeight()-Y_AXIS_SPACE, xTick, getHeight()-(Y_AXIS_SPACE-3));
+			int xTick = Y_AXIS_SPACE + (s*((getWidth()-(10+Y_AXIS_SPACE))/(values.length-1)));
+			g.drawLine(xTick, getHeight()-X_AXIS_SPACE, xTick, getHeight()-(X_AXIS_SPACE-3));
 		}
 
 		for (int s=0;s<values.length;s++) {
-			int xTick = X_AXIS_SPACE + (s*((getWidth()-(10+X_AXIS_SPACE))/(values.length-1)));
+			int xTick = Y_AXIS_SPACE + (s*((getWidth()-(10+Y_AXIS_SPACE))/(values.length-1)));
 
 			int stringWidth = g.getFontMetrics().stringWidth("PC"+(s+1));
 			int xStart = xTick - (stringWidth/2);
@@ -100,12 +104,12 @@ public class VarianceLineGraphPanel extends JPanel {
 			if (xStart < 1) xStart = 1;
 			if (xStart + stringWidth > (getWidth()-1)) xStart = (getWidth()-1)-stringWidth;
 
-			g.drawString("PC"+(s+1), xStart, getHeight()-(Y_AXIS_SPACE-(g.getFontMetrics().getHeight()+3)));
+			g.drawString("PC"+(s+1), xStart, getHeight()-(X_AXIS_SPACE-(g.getFontMetrics().getHeight()+3)));
 		}
 
 		// Put the probe list name at the top
 		String listName = "Variance";
-		g.drawString(listName, X_AXIS_SPACE, 10);
+		g.drawString(listName, Y_AXIS_SPACE, 10);
 
 		// Now draw the probes
 
@@ -138,7 +142,7 @@ public class VarianceLineGraphPanel extends JPanel {
 		thisX = getXPixels(selectedIndex);
 		
 		g.setColor(Color.BLACK);
-		g.drawLine(thisX, getHeight()-Y_AXIS_SPACE, thisX, 10);
+		g.drawLine(thisX, getHeight()-X_AXIS_SPACE, thisX, 10);
 		
 		
 	}
