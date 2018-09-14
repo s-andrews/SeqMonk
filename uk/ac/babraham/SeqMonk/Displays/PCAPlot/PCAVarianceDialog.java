@@ -90,6 +90,7 @@ public class PCAVarianceDialog extends JDialog implements ActionListener, Change
 		plotAndControlsPanel.add(variancePlotPanel,BorderLayout.CENTER);
 
 		rotationCutoffSlider = new JSlider(0,500,250);
+		rotationCutoffSlider.setPaintTicks(true);
 		rotationCutoffSlider.addChangeListener(this);
 
 		plotAndControlsPanel.add(rotationCutoffSlider, BorderLayout.SOUTH);
