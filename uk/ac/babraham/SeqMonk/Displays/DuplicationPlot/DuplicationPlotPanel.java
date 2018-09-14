@@ -303,7 +303,8 @@ public class DuplicationPlotPanel extends JPanel implements Runnable, MouseMotio
 		AxisScale xAxisScale = new AxisScale(minValueX, maxValueX);
 		double currentXValue = xAxisScale.getStartingValue();
 		while (currentXValue < maxValueX) {
-			g.drawString(xAxisScale.format(currentXValue), getX(currentXValue), getHeight()-(Y_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
+			String xLabel = xAxisScale.format(currentXValue);
+			g.drawString(xLabel, getX(currentXValue)-(g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-(Y_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
 			g.drawLine(getX(currentXValue),getHeight()-Y_AXIS_SPACE,getX(currentXValue),getHeight()-(Y_AXIS_SPACE-3));
 			currentXValue += xAxisScale.getInterval();
 		}
