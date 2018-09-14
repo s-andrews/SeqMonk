@@ -49,8 +49,8 @@ public class CumulativeDistributionPanel extends JPanel {
 	
 	
 	// Spacing for the drawn panel
-	private static final int X_AXIS_SPACE = 50;
-	private static final int Y_AXIS_SPACE = 30;
+	private int Y_AXIS_SPACE = 50;
+	private static final int X_AXIS_SPACE = 30;
 
 	
 	public CumulativeDistributionPanel (DataStore store, ProbeList [] lists) throws SeqMonkException {
@@ -204,14 +204,14 @@ public class CumulativeDistributionPanel extends JPanel {
 	}
 
 	private int getYPixels (double value) {
-		return (getHeight()-Y_AXIS_SPACE) - (int)((getHeight()-(10d+Y_AXIS_SPACE))*((value-usedMin)/(usedMax-usedMin)));
+		return (getHeight()-X_AXIS_SPACE) - (int)((getHeight()-(10d+X_AXIS_SPACE))*((value-usedMin)/(usedMax-usedMin)));
 	}
 	
 	private int getXPixels (double value) {
 		double proportion = value/100;
 		
 		
-		return X_AXIS_SPACE+ (int)((getWidth()-(10+X_AXIS_SPACE))*proportion);
+		return Y_AXIS_SPACE+ (int)((getWidth()-(10+Y_AXIS_SPACE))*proportion);
 	}
 
 	public void paint (Graphics g) {
@@ -222,20 +222,25 @@ public class CumulativeDistributionPanel extends JPanel {
 				
 		g.setColor(Color.BLACK);
 		
+		// Work out the space for the y axis
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+		
 		// Draw the axes
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, getWidth()-10, getHeight()-Y_AXIS_SPACE); // X-axis
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, X_AXIS_SPACE, 10); // Y-axis
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, getWidth()-10, getHeight()-X_AXIS_SPACE); // X-axis
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, Y_AXIS_SPACE, 10); // Y-axis
 		
 		// Draw the Y scale
-		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < usedMax) {
-			g.drawString(yAxisScale.format(currentYValue), 5, getYPixels(currentYValue)+(g.getFontMetrics().getAscent()/2));
+			String yLabel = yAxisScale.format(currentYValue); 
+			g.drawString(yLabel, Y_AXIS_SPACE-(5+g.getFontMetrics().stringWidth(yLabel)), getYPixels(currentYValue)+(g.getFontMetrics().getAscent()/2));
 			g.setColor(Color.LIGHT_GRAY);
-			g.drawLine(X_AXIS_SPACE-3, getYPixels(currentYValue), getWidth()-10, getYPixels(currentYValue));
-			g.drawLine(X_AXIS_SPACE,getYPixels(currentYValue),X_AXIS_SPACE-3,getYPixels(currentYValue));
-			g.setColor(Color.LIGHT_GRAY);
-			g.drawLine(X_AXIS_SPACE+1, getYPixels(currentYValue), getWidth()-10, getYPixels(currentYValue));
+			if (currentYValue != yAxisScale.getStartingValue()) {
+				g.drawLine(Y_AXIS_SPACE, getYPixels(currentYValue), getWidth()-10, getYPixels(currentYValue));
+			}
+			g.setColor(Color.BLACK);
+			g.drawLine(Y_AXIS_SPACE,getYPixels(currentYValue),Y_AXIS_SPACE-3,getYPixels(currentYValue));
 			g.setColor(Color.BLACK);
 			currentYValue += yAxisScale.getInterval();
 		}
@@ -244,13 +249,14 @@ public class CumulativeDistributionPanel extends JPanel {
 		AxisScale xAxisScale = new AxisScale(0, 100);
 		double currentXValue = xAxisScale.getStartingValue();
 		while (currentXValue < 100) {
-			g.drawString(xAxisScale.format(currentXValue), getXPixels(currentXValue), getHeight()-(Y_AXIS_SPACE-(g.getFontMetrics().getHeight()+3)));
-			g.drawLine(getXPixels(currentXValue),getHeight()-Y_AXIS_SPACE,getXPixels(currentXValue),getHeight()-(Y_AXIS_SPACE-3));
+			String xLabel = xAxisScale.format(currentXValue); 
+			g.drawString(xLabel, getXPixels(currentXValue)-(g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-(X_AXIS_SPACE-(g.getFontMetrics().getHeight()+3)));
+			g.drawLine(getXPixels(currentXValue),getHeight()-X_AXIS_SPACE,getXPixels(currentXValue),getHeight()-(X_AXIS_SPACE-3));
 			currentXValue += xAxisScale.getInterval();
 		}
 		// Mark the 50th percentile
 		g.setColor(Color.LIGHT_GRAY);
-		g.drawLine(getXPixels(50), getHeight()-Y_AXIS_SPACE, getXPixels(50), 10);
+		g.drawLine(getXPixels(50), getHeight()-X_AXIS_SPACE, getXPixels(50), 10);
 		g.setColor(Color.BLACK);
 		
 				
@@ -260,7 +266,7 @@ public class CumulativeDistributionPanel extends JPanel {
 		// Put the names on the right
 		for (int n=0;n<names.length;n++) {
 			g.setColor(ColourIndexSet.getColour(n));
-			g.drawString(names[n], X_AXIS_SPACE+5, g.getFontMetrics().getHeight()*(n+1));
+			g.drawString(names[n], Y_AXIS_SPACE+5, g.getFontMetrics().getHeight()*(n+1));
 			
 		}
 		
@@ -271,13 +277,13 @@ public class CumulativeDistributionPanel extends JPanel {
 			int lastY = 0;
 			int lastX = 0;
 		
-			double width = getWidth()-(X_AXIS_SPACE+10);
+			double width = getWidth()-(Y_AXIS_SPACE+10);
 		
 			for (int x=0;x<distributions[d].length;x++) {
 			
 				double proportion = x/(double)distributions[d].length;
 				int thisY = getYPixels(distributions[d][x]);
-				int thisX = X_AXIS_SPACE;
+				int thisX = Y_AXIS_SPACE;
 				thisX += (int)(width*proportion);
 				if (x>0) {
 					g.drawLine(lastX, lastY, thisX, thisY);
