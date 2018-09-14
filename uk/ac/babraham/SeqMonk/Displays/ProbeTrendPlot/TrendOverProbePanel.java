@@ -201,20 +201,11 @@ public class TrendOverProbePanel extends JPanel implements Runnable, MouseMotion
 			return;
 		}
 
-		// First work out the amount of space we need to leave for the X axis
-		int X_AXIS_SPACE = 0;
 
 		AxisScale yAxisScale = new AxisScale(minCount, maxCount);
 
-		double currentYValue = yAxisScale.getStartingValue();
-
-		while (currentYValue < maxCount) {
-			int stringWidth = g.getFontMetrics().stringWidth(yAxisScale.format(currentYValue))+10;
-			if (stringWidth > X_AXIS_SPACE) {
-				X_AXIS_SPACE = stringWidth;
-			}
-			currentYValue += yAxisScale.getInterval();
-		}
+		// First work out the amount of space we need to leave for the X axis
+		int X_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
 
 		if (Y_AXIS_SPACE == 0) {
 			Y_AXIS_SPACE = g.getFontMetrics().getAscent()*3;
@@ -246,7 +237,7 @@ public class TrendOverProbePanel extends JPanel implements Runnable, MouseMotion
 
 			double currentXValue = xAxisScale.getStartingValue();
 
-			while (currentXValue+xAxisScale.getInterval() < fixedLength) {
+			while (currentXValue+xAxisScale.getInterval() <= xAxisScale.getMax()) {
 				int thisX = X_AXIS_SPACE;
 				double xProportion = (double)currentXValue/fixedLength;
 				thisX += (int)(xProportion * (getWidth()-(X_AXIS_SPACE+10)));
@@ -261,9 +252,9 @@ public class TrendOverProbePanel extends JPanel implements Runnable, MouseMotion
 
 		// Labels on the y-axis
 
-		currentYValue = yAxisScale.getStartingValue();
+		double currentYValue = yAxisScale.getStartingValue();
 
-		while (currentYValue < maxCount) {
+		while (currentYValue < yAxisScale.getMax()) {
 			g.drawString(yAxisScale.format(currentYValue), 2, getY(currentYValue)+(g.getFontMetrics().getAscent()/2));
 			g.drawLine(X_AXIS_SPACE, getY(currentYValue),X_AXIS_SPACE-3,getY(currentYValue));
 			currentYValue += yAxisScale.getInterval();
