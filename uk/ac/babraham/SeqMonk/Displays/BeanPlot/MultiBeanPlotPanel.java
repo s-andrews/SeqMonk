@@ -37,7 +37,7 @@ public class MultiBeanPlotPanel extends JPanel {
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx=0.5;
-		gbc.insets = new Insets(2,2,2,2);
+		gbc.insets = new Insets(2,0,2,0);
 		
 		gbc.gridx=0;
 		gbc.gridy=0;
