@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.SeqMonk.Utilities;
 
+import java.awt.FontMetrics;
 import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
@@ -87,9 +88,18 @@ public class AxisScale {
 		
 		starting = testStart;
 		
-		// Finally we work out the width needed for the end value since that
-		// should be the largest one we have to print
-		xSpace = SeqMonkApplication.getInstance().getGraphics().getFontMetrics().stringWidth(format(max));
+		// Finally we work out the width needed to draw the numbers for this
+		// scale.  We can't tell which is largest so we measure them all.
+		FontMetrics metrics = SeqMonkApplication.getInstance().getGraphics().getFontMetrics();
+		xSpace = 0;
+		
+		double current = getStartingValue();
+		
+		while (current <= getMax()) {
+			int width = metrics.stringWidth(format(current));
+			if (width > xSpace) xSpace = width;
+			current += getInterval();
+		}
 	}
 	
 	public String format (double number) {
