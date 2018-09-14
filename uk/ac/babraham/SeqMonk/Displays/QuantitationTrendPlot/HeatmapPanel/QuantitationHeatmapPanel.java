@@ -1,6 +1,5 @@
 package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.HeatmapPanel;
 
-import java.awt.Color;
 import java.awt.Graphics;
 
 import javax.swing.JPanel;
@@ -10,7 +9,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendData;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Utilities.DoubleVector;
-import uk.ac.babraham.SeqMonk.Utilities.FloatVector;
 
 public class QuantitationHeatmapPanel extends JPanel {
 

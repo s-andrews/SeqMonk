@@ -55,7 +55,7 @@ public class AxisScalePanel extends JPanel {
 		
 		for (double yValue = scale.getStartingValue();yValue <= scale.getMax();yValue+=scale.getInterval()) {
 			int y = getY(yValue);
-			g.drawLine(getWidth()-3, y, getWidth(), y);
+			g.drawLine(getWidth()-3, y, getWidth(), y);	
 			
 			String yText = "";
 			if ((int)yValue == yValue) {
@@ -67,7 +67,7 @@ public class AxisScalePanel extends JPanel {
 			
 			int yWidth = g.getFontMetrics().stringWidth(yText);
 			
-			g.drawString(yText, getWidth()-(5+yWidth), getY(yValue)-(g.getFontMetrics().getHeight()/2));
+			g.drawString(yText, getWidth()-(5+yWidth), getY(yValue)+(g.getFontMetrics().getAscent()/2));
 			
 		}
 		
