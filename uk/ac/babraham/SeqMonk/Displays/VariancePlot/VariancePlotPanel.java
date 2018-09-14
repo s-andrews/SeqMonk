@@ -129,8 +129,8 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 	private ProbePairValue closestPoint = null;
 
 
-	private static final int X_AXIS_SPACE = 50;
-	private static final int Y_AXIS_SPACE = 30;
+	private int Y_AXIS_SPACE = 50;
+	private static final int X_AXIS_SPACE = 30;
 
 
 	/**
@@ -338,28 +338,35 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 
 
 		// If we're here then we can actually draw the graphs
-
+		
+		// We need to know the y spacing
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+		
+		
+		
 		g.setColor(Color.BLACK);
 
 		// X axis
-		g.drawLine(X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE, getWidth()-10, getHeight()-Y_AXIS_SPACE);
+		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, getWidth()-10, getHeight()-X_AXIS_SPACE);
 
 		AxisScale xAxisScale = new AxisScale(minValueX, maxValueX);
 		double currentXValue = xAxisScale.getStartingValue();
 		while (currentXValue < maxValueX) {
-			g.drawString(xAxisScale.format(currentXValue), getX(currentXValue), getHeight()-(Y_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
-			g.drawLine(getX(currentXValue),getHeight()-Y_AXIS_SPACE,getX(currentXValue),getHeight()-(Y_AXIS_SPACE-3));
+			String xLabel = xAxisScale.format(currentXValue);
+			g.drawString(xLabel, getX(currentXValue)-(g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-(X_AXIS_SPACE-(3+g.getFontMetrics().getHeight())));
+			g.drawLine(getX(currentXValue),getHeight()-X_AXIS_SPACE,getX(currentXValue),getHeight()-(X_AXIS_SPACE-3));
 			currentXValue += xAxisScale.getInterval();
 		}
 
 		// Y axis
-		g.drawLine(X_AXIS_SPACE, 10, X_AXIS_SPACE, getHeight()-Y_AXIS_SPACE);
+		g.drawLine(Y_AXIS_SPACE, 10, Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE);
 
-		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < maxValueY) {
-			g.drawString(yAxisScale.format(currentYValue), 5, getY(currentYValue)+(g.getFontMetrics().getAscent()/2));
-			g.drawLine(X_AXIS_SPACE,getY(currentYValue),X_AXIS_SPACE-3,getY(currentYValue));
+			String yLabel = yAxisScale.format(currentYValue); 
+			g.drawString(yLabel, Y_AXIS_SPACE-(5+g.getFontMetrics().stringWidth(yLabel)), getY(currentYValue)+(g.getFontMetrics().getAscent()/2));
+			g.drawLine(Y_AXIS_SPACE,getY(currentYValue),Y_AXIS_SPACE-3,getY(currentYValue));
 			currentYValue += yAxisScale.getInterval();
 		}
 
@@ -368,13 +375,13 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 
 		// Y label
 		if (varianceMeasure == VARIANCE_SEM) {
-			g.drawString("SEM",X_AXIS_SPACE+3,15);
+			g.drawString("SEM",Y_AXIS_SPACE+3,15);
 		}
 		else if (varianceMeasure == VARIANCE_STDEV) {
-			g.drawString("StDev",X_AXIS_SPACE+3,15);
+			g.drawString("StDev",Y_AXIS_SPACE+3,15);
 		}
 		else if (varianceMeasure == VARIANCE_COEF) {
-			g.drawString("Coef Var",X_AXIS_SPACE+3,15);			
+			g.drawString("Coef Var",Y_AXIS_SPACE+3,15);			
 		}
 			
 		
@@ -382,7 +389,7 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 		if (subLists != null) {
 			for (int s=0;s<subLists.length;s++) {
 				g.setColor(ColourIndexSet.getColour(s));
-				g.drawString(subLists[s].name(),X_AXIS_SPACE+3,15+(g.getFontMetrics().getHeight()*(s+1)));
+				g.drawString(subLists[s].name(),Y_AXIS_SPACE+3,15+(g.getFontMetrics().getHeight()*(s+1)));
 			}
 			g.setColor(Color.BLACK);
 		}
@@ -420,7 +427,7 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 		// We annotate with the overall difference to the mean
 		String overallDiffLabel = "Overall variance difference = "+df.format(smoothedTrend.averageDeviationFromSmoothed());
 		g.setColor(Color.BLACK);
-		g.drawString(overallDiffLabel, getWidth()-(10+g.getFontMetrics().stringWidth(overallDiffLabel)), getHeight()-(Y_AXIS_SPACE+3));
+		g.drawString(overallDiffLabel, getWidth()-(10+g.getFontMetrics().stringWidth(overallDiffLabel)), getHeight()-(X_AXIS_SPACE+3));
 		
 		// Finally we draw the current measures if the mouse is inside the plot
 		if (cursorX > 0) {
@@ -428,8 +435,8 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 			//			System.out.println("Drawing label at x="+cursorX+" y="+cursorY+" x*="+getValueFromX(cursorX)+" y*="+getValueFromY(cursorY));
 
 			String label = "x="+df.format(getValueFromX(cursorX))+" y="+df.format(getValueFromY(cursorY))+" diff="+df.format(getValueFromY(cursorY)-smoothedTrend.getSmoothedValueForX((float)getValueFromX(cursorX)));
-			int labelXPos = X_AXIS_SPACE+((getWidth()-(X_AXIS_SPACE+10))/2)-(g.getFontMetrics().stringWidth(label)/2);
-			g.drawString(label, labelXPos, getHeight()-(Y_AXIS_SPACE+3));
+			int labelXPos = Y_AXIS_SPACE+((getWidth()-(Y_AXIS_SPACE+10))/2)-(g.getFontMetrics().stringWidth(label)/2);
+			g.drawString(label, labelXPos, getHeight()-(X_AXIS_SPACE+3));
 
 			// We also draw the names on the closest point if there is one
 			if (closestPoint != null && closestPoint.probe() != null) {
@@ -447,7 +454,7 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 	 */
 	public double getValueFromY (int y) {
 		double value = minValueY;
-		value += (maxValueY-minValueY) * (((getHeight()-(10+Y_AXIS_SPACE)-(y-10d)) / (getHeight()-(10+Y_AXIS_SPACE))));
+		value += (maxValueY-minValueY) * (((getHeight()-(10+X_AXIS_SPACE)-(y-10d)) / (getHeight()-(10+X_AXIS_SPACE))));
 		return value;
 	}
 
@@ -459,7 +466,7 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 	 */
 	public double getValueFromX (int x) {
 		double value = minValueX;
-		value += (maxValueX-minValueX) * ((x-X_AXIS_SPACE) / (double)(getWidth()-(10+X_AXIS_SPACE)));
+		value += (maxValueX-minValueX) * ((x-Y_AXIS_SPACE) / (double)(getWidth()-(10+Y_AXIS_SPACE)));
 		return value;
 	}
 
@@ -473,9 +480,9 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 	public int getY (double value) {
 		double proportion = (value-minValueY)/(maxValueY-minValueY);
 
-		int y = getHeight()-Y_AXIS_SPACE;
+		int y = getHeight()-X_AXIS_SPACE;
 
-		y -= (int)((getHeight()-(10+Y_AXIS_SPACE))*proportion);
+		y -= (int)((getHeight()-(10+X_AXIS_SPACE))*proportion);
 
 		// Sanity check
 		if (y < 10) {
@@ -498,13 +505,13 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 	public int getX (double value) {
 		double proportion = (value-minValueX)/(maxValueX-minValueX);
 
-		int x = X_AXIS_SPACE;
+		int x = Y_AXIS_SPACE;
 
-		x += (int)((getWidth()-(10+X_AXIS_SPACE))*proportion);
+		x += (int)((getWidth()-(10+Y_AXIS_SPACE))*proportion);
 
 		// Sanity check
-		if (x < X_AXIS_SPACE) {
-			x = X_AXIS_SPACE;
+		if (x < Y_AXIS_SPACE) {
+			x = Y_AXIS_SPACE;
 		}
 		
 		if (x >= getWidth()) {
