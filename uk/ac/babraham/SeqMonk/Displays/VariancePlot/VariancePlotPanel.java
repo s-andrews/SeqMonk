@@ -337,14 +337,7 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 		}
 
 
-		// If we're here then we can actually draw the graphs
-		
-		// We need to know the y spacing
-		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
-		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
-		
-		
-		
+		// If we're here then we can actually draw the graphs		
 		g.setColor(Color.BLACK);
 
 		// X axis
@@ -361,6 +354,8 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 
 		// Y axis
 		g.drawLine(Y_AXIS_SPACE, 10, Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE);
+
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
 
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < maxValueY) {
@@ -698,6 +693,10 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 			e.printStackTrace();
 		}
 
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
+		
 		readyToDraw = true;
 		repaint();
 
