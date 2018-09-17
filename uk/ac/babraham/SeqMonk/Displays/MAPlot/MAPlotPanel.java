@@ -322,8 +322,6 @@ public class MAPlotPanel extends JPanel implements Runnable, MouseMotionListener
 		// If we're here then we can actually draw the graphs
 		
 		// First work out the spacing for the y axis
-		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
-		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
 
 		g.setColor(Color.BLACK);
 
@@ -346,6 +344,8 @@ public class MAPlotPanel extends JPanel implements Runnable, MouseMotionListener
 
 		// Y axis
 		g.drawLine(Y_AXIS_SPACE, 10, Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE);
+
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
 
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < maxValueY) {
@@ -587,6 +587,11 @@ public class MAPlotPanel extends JPanel implements Runnable, MouseMotionListener
 			// Clear these arrays since we don't need them any more.
 			xData = null;
 			yData = null;
+			
+			// Fix the space for the Y axis
+			AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
+			Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
 
 		}
 		catch (SeqMonkException e) {
