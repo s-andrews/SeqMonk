@@ -56,6 +56,8 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 	private JButton highlightRepSetsButton;
 	private boolean negativeScale;
 	
+	private QuantitationTrendData data;
+	
 	private JPanel exportPanel = new JPanel();
 	private QuantitationHeatmapPanelGroup quantPanel;
 	
@@ -63,6 +65,7 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 	public QuantitationTrendHeatmapDialog (QuantitationTrendData data) {
 		super(SeqMonkApplication.getInstance(),"Quantitation Trend Heatmap");
 
+		this.data = data;
 
 		// Work out whether we're using a pos-neg or just pos scale
 		if (data.getMinValue() < 0) {
@@ -100,7 +103,7 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 		// The slider actually ends up as an exponential scale (to the power of 2).
 		// We allow 200 increments on the slider but only go up to 2**20 hence dividing
 		// by 10 to get the actual power to raise to.
-		dataZoomSlider = new JSlider(0,200,20);
+		dataZoomSlider = new JSlider(0,200,100);
 		dataZoomSlider.setOrientation(JSlider.VERTICAL);
 		dataZoomSlider.addChangeListener(this);
 		dataZoomSlider.setMajorTickSpacing(10);
@@ -196,17 +199,15 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 
 	public void stateChanged(ChangeEvent ce) {
 		if (ce.getSource() == dataZoomSlider) {
-			double value = Math.pow(2,dataZoomSlider.getValue()/10d);
-			//TODO: Fix this
-
-			if (negativeScale) {
-				scaleBar.setLimits(0-value, value);
-				quantPanel.setLimits(0-value, value);
-			}
-			else {
-				scaleBar.setLimits(0, value);
-				quantPanel.setLimits(0, value);
-			}
+			
+			double value = dataZoomSlider.getValue()/100d;
+			
+			double range = data.maxValue-data.minValue;
+						
+			range *= value;
+						
+			scaleBar.setLimits(data.minValue, data.minValue+range);
+			quantPanel.setLimits(data.minValue, data.minValue+range);
 		}
 
 	}
