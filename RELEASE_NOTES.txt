@@ -1,3 +1,36 @@
+RELEASE NOTES FOR SeqMonk v1.42.1
+---------------------------------
+This release was an opportunity for a general cleanup of a lot of cosmetic
+issues which had been building up, as well as addressing a number of bugs.
+
+Things which we fixed were:
+
+- Fixed the text alignment on a lot of plot axes to be more pretty
+
+- Fixed a data scaling bug on the QQ plot which sometimes missed out the
+  last point
+  
+- Fixed a crash in LIMMA when data contained NA values
+
+- Fixed a cancellation bug in the HiC heatmap
+
+- Fixed a null pointer bug in the proportion of library bug
+
+- Added an option to save the data from the quantitation trend plot
+
+- Added whitespace support to generic text import
+
+- We now record the import options used when importing data
+
+- Handle platforms where we can't automatically open a web browser better
+
+- Fixed a bug where the read position probe generator only did a single chromosome
+
+- Improved the layout of the quantitation trend heatmap
+
+- Fixed a bug with NA or infinite values in the quantitation trend plot
+
+
 RELEASE NOTES FOR SeqMonk v1.42.0
 ---------------------------------
 This release has a fix for a potentially nasty data import bug introduced in
