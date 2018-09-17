@@ -25,6 +25,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Displays.CumulativeDistribution.CumulativeDistributionPanel;
+import uk.ac.babraham.SeqMonk.Utilities.AxisScale;
 
 public class QQDistributionPanel extends CumulativeDistributionPanel {
 
@@ -36,6 +37,10 @@ public class QQDistributionPanel extends CumulativeDistributionPanel {
 		absoluteMax = 100;
 		usedMin = absoluteMin;
 		usedMax = absoluteMax;
+		
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
 	}
 
 	public QQDistributionPanel (DataStore [] stores, ProbeList list) throws SeqMonkException {
@@ -46,6 +51,10 @@ public class QQDistributionPanel extends CumulativeDistributionPanel {
 		absoluteMax = 100;
 		usedMin = absoluteMin;
 		usedMax = absoluteMax;	
+		
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
 	}
 		
 	protected float [] shortenDistribution (float [] distribution) {

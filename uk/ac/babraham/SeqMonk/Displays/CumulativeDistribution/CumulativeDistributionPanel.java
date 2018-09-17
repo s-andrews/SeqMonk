@@ -49,7 +49,7 @@ public class CumulativeDistributionPanel extends JPanel {
 	
 	
 	// Spacing for the drawn panel
-	private int Y_AXIS_SPACE = 50;
+	protected int Y_AXIS_SPACE = 50;
 	private static final int X_AXIS_SPACE = 30;
 
 	
@@ -90,6 +90,11 @@ public class CumulativeDistributionPanel extends JPanel {
 		usedMax = absoluteMax;
 		
 		if (usedMax == usedMin) usedMax = usedMin+1;
+		
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
+		
 	
 	}
 
@@ -141,6 +146,10 @@ public class CumulativeDistributionPanel extends JPanel {
 		usedMax = absoluteMax;
 		
 		if (usedMax == usedMin) usedMax = usedMin+1;
+		
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
 	
 	}
 	
@@ -221,16 +230,14 @@ public class CumulativeDistributionPanel extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
 				
 		g.setColor(Color.BLACK);
-		
-		// Work out the space for the y axis
-		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
-		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
-		
+				
 		// Draw the axes
 		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, getWidth()-10, getHeight()-X_AXIS_SPACE); // X-axis
 		g.drawLine(Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE, Y_AXIS_SPACE, 10); // Y-axis
 		
 		// Draw the Y scale
+		AxisScale yAxisScale = new AxisScale(usedMin, usedMax);
+
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < usedMax) {
 			String yLabel = yAxisScale.format(currentYValue); 
