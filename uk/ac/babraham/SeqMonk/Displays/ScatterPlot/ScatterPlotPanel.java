@@ -327,7 +327,6 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 		
 		// We need to work out the spacing for the y axis
 		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
-		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
 
 		g.setColor(Color.BLACK);
 
@@ -589,6 +588,11 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 			// Clear these arrays since we don't need them any more.
 			xData = null;
 			yData = null;
+			
+			// Work out how much space we need for the y axis
+			AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
+			Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
 
 		}
 		catch (SeqMonkException e) {
