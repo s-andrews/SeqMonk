@@ -81,6 +81,11 @@ public class QQDistributionPanel extends CumulativeDistributionPanel {
 			absDistribution[i] = (float)(runningTotal/totalCount)*100;
 		}
 		
+		// Sanity check
+		if (absDistribution[absDistribution.length-1] != 100) {
+			throw new IllegalStateException("Last value in QQ was only " + absDistribution[absDistribution.length-1]);
+		}
+		
 		distribution = absDistribution;
 		
 		// We need to return a 1000 element array
@@ -95,10 +100,16 @@ public class QQDistributionPanel extends CumulativeDistributionPanel {
 		
 		else {
 			for (int i=0;i<shortDistribution.length;i++) {
-				int index = (int)((distribution.length-1)*(i/1000d));
+				int index = (int)((distribution.length-1)*(i/999d));
 				shortDistribution[i] = distribution[index];
 			}
 		}
+
+		// Sanity check 2
+		if (shortDistribution[shortDistribution.length-1] != 100) {
+			throw new IllegalStateException("Last value in short QQ was only " + shortDistribution[shortDistribution.length-1]);
+		}
+
 		
 		return shortDistribution;
 		
