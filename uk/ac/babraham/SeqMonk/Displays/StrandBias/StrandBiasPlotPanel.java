@@ -27,16 +27,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import uk.ac.babraham.SeqMonk.SeqMonkException;
-import uk.ac.babraham.SeqMonk.Analysis.Statistics.SmoothedVarianceDataset;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
-import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
@@ -292,10 +287,6 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 
 
 		// If we're here then we can actually draw the graphs
-
-		// First get the y spacing
-		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
-		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
 		
 		g.setColor(Color.BLACK);
 
@@ -313,6 +304,8 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 
 		// Y axis
 		g.drawLine(Y_AXIS_SPACE, 10, Y_AXIS_SPACE, getHeight()-X_AXIS_SPACE);
+
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
 
 		double currentYValue = yAxisScale.getStartingValue();
 		while (currentYValue < maxValueY) {
@@ -547,7 +540,10 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 			
 		}
 		
-		
+		// Work out the axis spacing
+		AxisScale yAxisScale = new AxisScale(minValueY, maxValueY);
+		Y_AXIS_SPACE = yAxisScale.getXSpaceNeeded()+10;
+
 
 		readyToDraw = true;
 		repaint();
