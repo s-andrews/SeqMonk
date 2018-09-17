@@ -72,7 +72,7 @@ public class PCADataCalculator implements Runnable, PCASource {
 		
 		this.stores = validStores.toArray(new DataStore[0]);
 		
-		if (this.stores.length < 2) {
+		if (this.stores.length <= 2) {
 			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Can't run PCA - you need at least 2 visible, quantitated data stores to run this.","Can't run PCA",JOptionPane.ERROR_MESSAGE);
 			pd.progressCancelled();
 			return;
