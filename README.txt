@@ -17,7 +17,7 @@ operating systems.
 If you have any comments about SeqMonk we would like to hear them.  You
 can either enter them in our bug tracking system at:
 
-http://www.bioinformatics.babraham.ac.uk/bugzilla/
+https://github.com/s-andrews/seqmonk/issues/
 
 ..or send them directly to simon.andrews@babraham.ac.uk.
 
