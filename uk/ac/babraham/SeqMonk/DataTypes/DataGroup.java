@@ -141,15 +141,15 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	 */
 	public ReadsWithCounts getReadsForChromosome(Chromosome c) {
 		
-		ReadsWithCounts [] readsFromAllChrs = new ReadsWithCounts[dataSets.length];
+		ReadsWithCounts [] readsFromAllDataSets = new ReadsWithCounts[dataSets.length];
 
 //		int totalCount = 0;
 		
 		for (int i=0;i<dataSets.length;i++) {
-			readsFromAllChrs[i] = dataSets[i].getReadsForChromosome(c);
+			readsFromAllDataSets[i] = dataSets[i].getReadsForChromosome(c);
 		}
 		
-		return new ReadsWithCounts(readsFromAllChrs);
+		return new ReadsWithCounts(readsFromAllDataSets);
 		
 	}
 

@@ -22,6 +22,9 @@
 package uk.ac.babraham.SeqMonk.DataTypes.Sequence;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;
@@ -87,6 +90,7 @@ public class ReadsWithCounts implements Serializable {
 		
 		if (readsToMerge.length == 0) {
 			reads = new long[0];
+			
 			counts = new int[0];
 			return;
 		}
@@ -96,44 +100,82 @@ public class ReadsWithCounts implements Serializable {
 			return;
 		}
 		
-		LongVector tempreads = new LongVector();
-		IntVector tempcounts = new IntVector();
-						
-		int [] currentIndices = new int[readsToMerge.length];
 		
-		long lowestValue = 0;
+		// Let's try a new approach.  We can merge and deduplicate the reads 
+		// first and then sum up the counts as a second step.
 		
-		// Need to do something when we reach the end of a sublist
+		// First we get the set of unique positions between all of the sets
 		
-		while (true) {
-			boolean allFinished = true;
-			
-			// Add the lowest read to the full set
-			lowestValue = 0;
-			for (int j=0;j<currentIndices.length;j++) {
-				if (currentIndices[j] == readsToMerge[j].reads.length) continue; // Skip datasets we've already emptied
-				allFinished = false;
-				if (lowestValue == 0 || SequenceRead.compare(readsToMerge[j].reads[currentIndices[j]],lowestValue) < 0) {
-					lowestValue = readsToMerge[j].reads[currentIndices[j]];
-				}
+		Set<Long> uniqueReads = new HashSet<Long>();
+		
+		for (int m=0;m<readsToMerge.length;m++) {
+			long [] reads = readsToMerge[m].reads;
+			for (int r=0;r<reads.length;r++) {
+				uniqueReads.add(reads[r]);
 			}
+		}
+		
+		reads = new long[uniqueReads.size()];
+		
+		Iterator<Long> it = uniqueReads.iterator();
+		int i=0;
+		while (it.hasNext()) {
+			reads[i] = it.next();
+			i++;
+		}
+		
+		// Now we sort it so it should be in the same order as the 
+		// original reads.
+		
+		SequenceRead.sort(reads);
+		
+		uniqueReads.clear();
+				
+		counts = new int [reads.length];
+		
+		
+		// Now we go through each of the original lists comparing
+		// them to the latest value and incrementing the total 
+		// counts as appropriate.  Because the lists are always in
+		// order then we should always see everything.
+		
+		int [] currentIndices = new int[readsToMerge.length];
+				
+		for (int r=0;r<reads.length;r++) {
 			
-			if (allFinished) break;
-			
-			tempreads.add(lowestValue);
-			tempcounts.add(0);
+			long lowestValue = reads[r];
 
 			for (int j=0;j<currentIndices.length;j++) {
 				if (currentIndices[j] == readsToMerge[j].reads.length) continue; // Skip datasets we've already emptied
+				
 				if (readsToMerge[j].reads[currentIndices[j]] == lowestValue) {
-					tempcounts.increaseLastBy(readsToMerge[j].counts[currentIndices[j]]);
+					counts[r] += readsToMerge[j].counts[currentIndices[j]];
 					++currentIndices[j];
 				}
 			}
 		}
 		
-		reads = tempreads.toArray();
-		counts = tempcounts.toArray();
+		// As a final sanity check we can see if we ended up with the final
+		// index position recorded for each of the lists.
+		for (int d=0;d<readsToMerge.length;d++) {
+			if (currentIndices[d] != readsToMerge[d].reads.length) {
+				throw new IllegalStateException("In index "+d+" expected "+readsToMerge[d].reads.length+" reads but got "+currentIndices[d]);
+			}
+		}
+		
+		// We can also check that the summed counts is the same.
+		
+		// This is a bit of a performance hit so we comment this out when we're not testing.
+		
+//		int totalCount = 0;
+//		for (int d=0;d<readsToMerge.length;d++) {
+//			totalCount += readsToMerge[d].totalCount();
+//		}
+//		
+//		if (totalCount != totalCount()) {
+//			throw new IllegalStateException("Total counts weren't the same");
+//		}
+		
 		
 	}
 	
