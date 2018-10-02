@@ -327,7 +327,7 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 			sb.append(" Primary alignments only.");
 		}
 		
-		if (splitSplicedReads()) {
+		if (splitSplicedReads != null && splitSplicedReads()) {
 			sb.append(" Treat as RNA-Seq data");
 			if (importIntrons()) {
 				sb.append(" Import Introns, not exons");
