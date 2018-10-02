@@ -372,7 +372,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			// fit
 			int nextPossibleSlot = 0;
 
-			for (int r=0;r<rwc.reads.length;r++) {
+			POSITION: for (int r=0;r<rwc.reads.length;r++) {
 
 				long read = rwc.reads[r];
 				
@@ -385,7 +385,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 					if (nextPossibleSlot != 0) {
 						// See if we can quickly skip this read
 						if (nextPossibleSlot > SequenceRead.start(reads[r])) {
-							continue;
+							continue POSITION;
 						}
 						else {
 							// Reset this as we're adding reads again.
@@ -421,9 +421,30 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			// If we're using split mode then reads of unknown strand go
 			// in the middle line.  Forward reads go above that and reverse
 			// reads go below.
-			for (int r=0;r<rwc.reads.length;r++) {
+			
+			int nextPossibleSlot = 0;
+			
+			POSITION: for (int r=0;r<rwc.reads.length;r++) {
+
 				long read = rwc.reads[r];
-				READ: for (int c=0;c<rwc.counts[r];c++) {
+				
+				
+				// Only check up to half the slot count reads, since we
+				// can't possibly place the same read more times than that
+				READ: for (int c=0;c<Math.min(rwc.counts[r],(slotCount/2)+1);c++) {
+					
+					if (nextPossibleSlot != 0) {
+						// See if we can quickly skip this read
+						if (nextPossibleSlot > SequenceRead.start(reads[r])) {
+							continue POSITION;
+						}
+						else {
+							// Reset this as we're adding reads again.
+							nextPossibleSlot = 0;
+						}
+					}
+
+					
 					int startSlot = 0;
 					int interval = slotCount;
 					if (SequenceRead.strand(read) == Location.FORWARD) {
@@ -446,8 +467,16 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 					// If we get here then we don't have enough
 					// slots to draw the reads in this chromosome.
 					// In this case we just don't draw them in this
-					// display.  That just measns we don't add them
+					// display.  That just means we don't add them
 					// to anything.
+				
+					// Now set the nextPossibleSlot value so we can 
+					// skip stuff quickly in future
+					for (int s=0;s<slotCount;s++) {
+						if (lastBase[s] < nextPossibleSlot) nextPossibleSlot = lastBase[s];
+					}
+
+					
 				}
 			}
 		}
