@@ -375,7 +375,11 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			for (int r=0;r<rwc.reads.length;r++) {
 
 				long read = rwc.reads[r];
-				READ: for (int c=0;c<rwc.counts[r];c++) {
+				
+				// There's never any point in checking more reads for the same
+				// position than the number of slots, so we can optimise this a
+				// bit.
+				READ: for (int c=0;c<Math.min(rwc.counts[r],slotCount);c++) {
 
 
 					if (nextPossibleSlot != 0) {
