@@ -261,13 +261,34 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 			
 			p.close();
 
-			// We can now overwrite the original file
+			
+			// At this point the file should be complete, but we've seen situations where it isn't.  I think
+			// this might be from virus checkers getting in the way.  Either way we can be a bit safer about
+			// how we do the final renaming.
+			
+			// We used to just delete the original data, and then rename the temp file to the orignal name
+			// but we can be safer if we rename the original to a temp file, rename the temp to the orignal
+			// name, and then delete the original temp.
+
+			File originalTempFile = null;
+			
 			if (file.exists()) {
-				if (!file.delete()) {
-					throw new IOException("Couldn't delete old project file ("+file.getName()+") when making new one");
+				originalTempFile = File.createTempFile("seqmonk",".temp.smk", file.getParentFile());
+
+				// This call makes a blank temp file so we need to delete that before we rename the existing
+				// file to it.
+				if (!originalTempFile.delete()) {
+					throw new IOException("Failed to delete original temp file "+originalTempFile.getName());
+				}
+				
+				
+				if (! file.renameTo(originalTempFile)) {
+					throw new IOException("Failed to rename original file "+file.getName()+" to "+originalTempFile.getName());
 				}
 			}
 			
+			
+			// Now we can rename the temp file with the new data back to the original name
 			if (! tempFile.renameTo(file)) {
 				
 				// Before we give up, let's try waiting a bit to see if the filesystem sorts itself
@@ -278,6 +299,15 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 					throw new IOException("Failed to rename temporary file "+tempFile.getName()+" to "+file.getName());
 				}
 			}
+
+			
+			// Finally, if all of this has worked we can delete the orignal data in the originalTemp file
+			if (originalTempFile != null) {
+				if (!originalTempFile.delete()) {
+					throw new IOException("Couldn't delete old project file ("+originalTempFile.getName()+") when making new one");
+				}
+			}
+			
 			
 			Enumeration<ProgressListener> e = listeners.elements();
 			while (e.hasMoreElements()) {

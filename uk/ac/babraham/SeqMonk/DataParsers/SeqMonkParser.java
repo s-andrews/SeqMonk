@@ -73,6 +73,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	public static final int MAX_DATA_VERSION = 18;
 
 	private SeqMonkApplication application;
+	private FileInputStream fis;
 	private BufferedReader br;
 	private Vector<ProgressListener> listeners = new Vector<ProgressListener>();
 	private DataSet [] dataSets;
@@ -134,11 +135,11 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 		 * lowest fileinputstream as a separate object so we can be absolutely sure
 		 * that it's closed before we reopen as a normal input stream.
 		 */
-		FileInputStream fis = null;
+		fis = null;
 
 		try {
 			fis = new FileInputStream(file);
-			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(fis)));
+			br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))));
 		}
 		catch (IOException ioe) {
 
@@ -313,6 +314,10 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 			// We're finished with the file
 			br.close();
 
+			// If we're still holding a fileinput stream open we need to close that too
+			if (fis != null) {
+				fis.close();
+			}
 
 			cleanUpFeatureTracks();
 
@@ -325,6 +330,10 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 			}
 			try {
 				br.close();
+				if (fis != null) {
+					fis.close();
+				}
+
 			} 
 			catch (IOException e1) {
 				throw new IllegalStateException(e1);
