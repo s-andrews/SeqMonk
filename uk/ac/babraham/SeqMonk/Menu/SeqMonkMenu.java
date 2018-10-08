@@ -134,6 +134,7 @@ import uk.ac.babraham.SeqMonk.Filters.FeatureFilter;
 import uk.ac.babraham.SeqMonk.Filters.FeatureNameFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityDifferenceFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityReplicateFilter;
+import uk.ac.babraham.SeqMonk.Filters.IntersectListsFilter;
 import uk.ac.babraham.SeqMonk.Filters.MonteCarloFilter;
 import uk.ac.babraham.SeqMonk.Filters.PositionFilter;
 import uk.ac.babraham.SeqMonk.Filters.ProbeLengthFilter;
@@ -1171,19 +1172,33 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		filterRandom.setMnemonic(KeyEvent.VK_R);
 		filterMenu.add(filterRandom);
 
+		JMenu combineListsMenu = new JMenu("Combine existing lists");
 
-		JMenuItem filterCollate = new JMenuItem("Collate Existing Lists...");
-		filterCollate.setActionCommand("filter_collate");
-		filterCollate.addActionListener(this);
-		filterCollate.setMnemonic(KeyEvent.VK_L);
-		filterMenu.add(filterCollate);
-		
-		JMenuItem filterCombine = new JMenuItem("Logically Combine Existing Lists...");
+
+		JMenuItem filterCombine = new JMenuItem("Logically Combine Two Lists...");
 		filterCombine.setActionCommand("filter_combine");
 		filterCombine.addActionListener(this);
 		filterCombine.setMnemonic(KeyEvent.VK_C);
-		filterMenu.add(filterCombine);
+		combineListsMenu.add(filterCombine);
 
+		JMenuItem filterIntersect = new JMenuItem("Intersect Multiple Lists...");
+		filterIntersect.setActionCommand("filter_intersect");
+		filterIntersect.addActionListener(this);
+		filterIntersect.setMnemonic(KeyEvent.VK_I);
+		combineListsMenu.add(filterIntersect);
+		
+		JMenuItem filterCollate = new JMenuItem("Collate Multiple Lists...");
+		filterCollate.setActionCommand("filter_collate");
+		filterCollate.addActionListener(this);
+		filterCollate.setMnemonic(KeyEvent.VK_L);
+		combineListsMenu.add(filterCollate);
+
+
+		
+
+		filterMenu.add(combineListsMenu);
+		
+		
 		add(filterMenu);
 
 		reportMenu = new JMenu("Reports");
@@ -2469,6 +2484,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				}
 				else if (action.equals("filter_collate")) {
 					new FilterOptionsDialog(application.dataCollection(),new CollateListsFilter(application.dataCollection()));
+				}
+				else if (action.equals("filter_intersect")) {
+					new FilterOptionsDialog(application.dataCollection(),new IntersectListsFilter(application.dataCollection()));
 				}
 
 			}

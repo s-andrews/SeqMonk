@@ -231,7 +231,6 @@ public class ProbeList implements Comparable<ProbeList> {
 		
 		isSorted = false;
 
-		
 	}
 		
 	/**
@@ -377,6 +376,7 @@ public class ProbeList implements Comparable<ProbeList> {
 			
 		return Float.NaN;
 	}
+	
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
