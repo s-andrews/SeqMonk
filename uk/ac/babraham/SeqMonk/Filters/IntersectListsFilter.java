@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.SeqMonk.Filters;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -30,6 +31,7 @@ import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
@@ -212,8 +214,12 @@ public class IntersectListsFilter extends ProbeFilter {
 			 */
 			public CollateListsOptionPanel () {
 				
+				JPanel masterPanel = new JPanel();
+				
+				
 				allLists = collection.probeSet().getAllProbeLists();
-				setLayout(new GridBagLayout());
+				setLayout(new BorderLayout());
+				masterPanel.setLayout(new GridBagLayout());
 				
 				includeBoxes = new JCheckBox [allLists.length];
 				excludeBoxes = new JCheckBox [allLists.length];
@@ -221,7 +227,7 @@ public class IntersectListsFilter extends ProbeFilter {
 				GridBagConstraints gbc = new GridBagConstraints();
 				gbc.gridx=0;
 				gbc.gridy=0;
-				gbc.weighty=0.5;
+				gbc.weighty=0.01;
 				gbc.fill = GridBagConstraints.HORIZONTAL;
 				gbc.weightx=0.99;
 				gbc.insets = new Insets(3, 3, 3, 3);
@@ -230,25 +236,25 @@ public class IntersectListsFilter extends ProbeFilter {
 				gbc.gridx=0;
 				JLabel listLabel = new JLabel("List");
 				listLabel.setFont(new Font("default", Font.BOLD, 12));
-				add(listLabel,gbc);
+				masterPanel.add(listLabel,gbc);
 				
 				gbc.weightx=0.01;
 				gbc.gridx=1;
 				JLabel includeLabel = new JLabel("Include");
 				includeLabel.setFont(new Font("default", Font.BOLD, 12));
-				add(includeLabel,gbc);
+				masterPanel.add(includeLabel,gbc);
 				
 				gbc.gridx=2;
 				JLabel excludeLabel = new JLabel("Exclude");
 				excludeLabel.setFont(new Font("default", Font.BOLD, 12));
-				add(excludeLabel,gbc);
+				masterPanel.add(excludeLabel,gbc);
 
 				gbc.gridx=0;
 				gbc.weightx=0.99;
 				
 				for (int i=0;i<allLists.length;i++) {
 					gbc.gridy=i+1;
-					add(new JLabel(allLists[i].toString()),gbc);
+					masterPanel.add(new JLabel(allLists[i].toString()),gbc);
 				}
 				
 				gbc.weightx=0.01;
@@ -257,13 +263,22 @@ public class IntersectListsFilter extends ProbeFilter {
 					gbc.gridy=i+1;
 					gbc.gridx=1;
 					includeBoxes[i] = new JCheckBox();
-					add(includeBoxes[i],gbc);
+					masterPanel.add(includeBoxes[i],gbc);
 					gbc.gridx=2;
 					excludeBoxes[i] = new JCheckBox();
-					add(excludeBoxes[i],gbc);
+					masterPanel.add(excludeBoxes[i],gbc);
 				}
 
+				// Force the components to the top of the panel
+				gbc.gridy++;
+				gbc.gridx=1;
+				gbc.gridwidth=3;
+				gbc.fill = GridBagConstraints.BOTH;
+				gbc.weighty=0.999;
+				masterPanel.add(new JPanel(),gbc);
 				
+				
+				add (new JScrollPane(masterPanel),BorderLayout.CENTER);
 			}
 			
 			private ProbeList [] includedLists () {
@@ -297,7 +312,7 @@ public class IntersectListsFilter extends ProbeFilter {
 			 * @see javax.swing.JComponent#getPreferredSize()
 			 */
 			public Dimension getPreferredSize () {
-				return new Dimension(600,300);
+				return new Dimension(400,500);
 			}
 
 	}
