@@ -194,7 +194,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 			
 			// Generate a temp file in the same directory as the final
 			// destination
-			tempFile = File.createTempFile("seqmonk",".temp", file.getParentFile());
+			tempFile = File.createTempFile("seqmonk",".temp.smk", file.getParentFile());
 			
 			BufferedOutputStream bos;
 			
@@ -264,12 +264,19 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 			// We can now overwrite the original file
 			if (file.exists()) {
 				if (!file.delete()) {
-					throw new IOException("Couldn't delete old project file when making new one");
+					throw new IOException("Couldn't delete old project file ("+file.getName()+") when making new one");
 				}
 			}
 			
 			if (! tempFile.renameTo(file)) {
-				throw new IOException("Failed to rename temporary file");
+				
+				// Before we give up, let's try waiting a bit to see if the filesystem sorts itself
+				// out, and then trying again
+				Thread.sleep(10000);
+				if (! tempFile.renameTo(file)) {
+					// OK, now it's really failed.  Give up
+					throw new IOException("Failed to rename temporary file "+tempFile.getName()+" to "+file.getName());
+				}
 			}
 			
 			Enumeration<ProgressListener> e = listeners.elements();
