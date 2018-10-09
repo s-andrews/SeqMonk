@@ -24,7 +24,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
-import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 /**
  * The Class DataGroup is a virtual DataStore which can combine
@@ -212,14 +211,18 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForProbe(uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe)
 	 */
-	public long [] getReadsForProbe(Probe p) {
-		long [][] returnReads = new long [dataSets.length][];
+	public ReadsWithCounts getReadsWithCountsForProbe(Probe p) {
+		ReadsWithCounts [] returnReads = new ReadsWithCounts [dataSets.length];
 		for (int i=0;i<dataSets.length;i++) {
-			returnReads[i] = dataSets[i].getReadsForProbe(p);
+			returnReads[i] = dataSets[i].getReadsWithCountsForProbe(p);
 		}
-		return LongSetSorter.sortLongSets(returnReads);
+		return new ReadsWithCounts(returnReads);
 	}
 	
+	
+	public long [] getReadsForProbe (Probe p) {
+		return getReadsWithCountsForProbe(p).expandReads();
+	}
 
 	public boolean isValidHiC() {
 		if (dataSets.length == 0) return false;

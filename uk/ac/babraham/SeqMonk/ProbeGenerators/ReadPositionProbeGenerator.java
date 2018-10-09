@@ -42,15 +42,15 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadStrandType;
+import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
-import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
-import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 /**
  * The Class ReadPositionProbeGenerator makes probes over every unique position
@@ -183,7 +183,7 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 
 		// They're not going to be given the option to select in the active probe
 		// list if there isn't one.
-		
+
 		if (collection.probeSet() == null) {
 			limitRegionBox = new JComboBox(new String [] {"Currently Visible Region"});			
 		}
@@ -276,117 +276,105 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 			updateGenerationProgress("Processed "+c+" chromosomes", c, chromosomes.length);
 
 
-			// We'll merge together the reads for all of the selected DataStores and
-			// compute a single set of probes which covers all of them.
+			// We ultimately want to end up with an array of readsPlusCounts objects which 
+			// cover all of the parts of this chromosome we want to design over.
 
-			Probe [] regions = new Probe [0];
+			ReadsWithCounts [] rawReads = new ReadsWithCounts[0];
+
+
+
+			
+			// TODO: FIX THIS - NOT WORKING AT THE MOMENT
 			if (limitWithinRegion) {
+
+				// If we're limiting by region we need to get a set of probes which we can merge
+				// to get the regions we want to analyse.
+
+				Probe [] regionProbes = new Probe[0];
+
 				if (limitRegionBox.getSelectedItem().toString().equals("Currently Visible Region")) {
 					if (chromosomes[c] == DisplayPreferences.getInstance().getCurrentChromosome()) {
-						regions = new Probe[] {new Probe(chromosomes[c], DisplayPreferences.getInstance().getCurrentLocation())};
+						regionProbes = new Probe[] {new Probe(chromosomes[c], DisplayPreferences.getInstance().getCurrentLocation())};
 					}
 				}
 				else if (limitRegionBox.getSelectedItem().toString().equals("Active Probe List")) {
-					regions = collection.probeSet().getActiveList().getProbesForChromosome(chromosomes[c]);
+					regionProbes = collection.probeSet().getActiveList().getProbesForChromosome(chromosomes[c]);
 				}
 				else {
 					throw new IllegalStateException("Don't know how to filter by "+limitRegionBox.getSelectedItem().toString());
 				}
+
+				// TODO: Merge the probes first?
+				
+				rawReads = new ReadsWithCounts [regionProbes.length];
+				
+				for (int r=0;r<regionProbes.length;r++) {
+					if (selectedStores.length == 1) {
+						rawReads[r] = selectedStores[0].getReadsWithCountsForProbe(regionProbes[r]);
+					}
+					else {
+						ReadsWithCounts [] groupedCounts = new ReadsWithCounts[selectedStores.length];
+						for (int i=0;i<selectedStores.length;i++) {
+							groupedCounts[i] = selectedStores[i].getReadsWithCountsForProbe(regionProbes[r]);
+						}
+						rawReads[r] = new ReadsWithCounts(groupedCounts);
+					}
+				}
+				
 			}	
 			else {
-				regions = new Probe[] {new Probe(chromosomes[c], 0, chromosomes[c].length())};
+				// We assemble the counts for all of the stores together
+				ReadsWithCounts [] groupedCounts = new ReadsWithCounts[selectedStores.length];
+				for (int i=0;i<selectedStores.length;i++) {
+					groupedCounts[i] = selectedStores[i].getReadsForChromosome(chromosomes[c]);
+				}
+				rawReads = new ReadsWithCounts[] {new ReadsWithCounts(groupedCounts)};
 			}
 
-			for (int p=0;p<regions.length;p++) {
+			for (int p=0;p<rawReads.length;p++) {
 
-				long [][] v = new long[selectedStores.length][];
-				
-				for (int s=0;s<selectedStores.length;s++) {
-					v[s] = selectedStores[s].getReadsForProbe(regions[p]);
-				}
+				long [] reads = rawReads[p].reads;
+				int [] counts = rawReads[p].counts;
 
-				long [] rawReads = getUsableRedundantReads(LongSetSorter.sortLongSets(v));
-				v = null;
-
-				int currentCount = 1;
 
 				int currentStart = 0;
 				int currentEnd = 0;
 				int currentPositionCount = 0;
+				int currentStrand = 0;
 
-				for (int r=1;r<rawReads.length;r++) {
-					// See if this read is different to the last one
+				for (int r=0;r<reads.length;r++) {
 
-					if (SequenceRead.start(rawReads[r]) == SequenceRead.start(rawReads[r-1]) && SequenceRead.end(rawReads[r]) == SequenceRead.end(rawReads[r-1]) && (ignoreStrand || SequenceRead.strand(rawReads[r]) == SequenceRead.strand(rawReads[r-1]))) {
-						// It's the same
-						++currentCount;
-					}
-					else {
-						// Check if we need to make a new probe
-						if (currentCount >= minCount) {
+					// Are we ignoring this read
+					if (!readStrandType.useRead(reads[r])) continue;
 
-							// Add this probe to the current set
-							if (currentPositionCount == 0) {
-								// Start a new position
-								currentStart = SequenceRead.start(rawReads[r-1]);
-								currentEnd = SequenceRead.end(rawReads[r-1]);
-							}
-							else {
-								// Extend the existing position
+					// Do we have enough data
+					if (counts[r] < minCount) continue;
 
-								if (SequenceRead.end(rawReads[r-1]) > currentEnd) {
-									currentEnd = SequenceRead.end(rawReads[r-1]);
-								}
-
-							}
-
-							currentPositionCount++;
-
-							// Check if we have enough data to create a new probe
-
-							if (currentPositionCount == readsPerWindow) {
-								int strand = Probe.UNKNOWN;
-								if (! ignoreStrand) {
-									strand = SequenceRead.strand(rawReads[r-1]);
-								}
-								newProbes.add(new Probe(chromosomes[c], currentStart,currentEnd,strand));
-								currentPositionCount = 0;
-							}
-
+					// Do we make a probe from the existing data
+					if (currentPositionCount == 0 || currentPositionCount == readsPerWindow) {
+						if (currentPositionCount == readsPerWindow) {
+							newProbes.add(new Probe(chromosomes[c], currentStart,currentEnd,currentStrand));
 						}
-						currentCount = 1;
+						// Now start a new probe with the data from this read
+						currentStart = SequenceRead.start(reads[r]);
+						currentEnd = SequenceRead.end(reads[r]);
+						currentStrand = SequenceRead.strand(reads[r]);
+						currentPositionCount = 1;
+
+						if (ignoreStrand) {
+							currentStrand = Location.UNKNOWN;
+						}
 					}
+
+					else {
+						// Extend the current read
+						if (SequenceRead.end(reads[r]) > currentEnd) currentEnd = SequenceRead.end(reads[r]);
+
+						if (SequenceRead.strand(reads[r]) != currentStrand) currentStrand = Location.UNKNOWN;
+					}
+
 				}
 
-				// See if we need to add the last read
-				if (currentCount >= minCount  && rawReads.length >= 1) {
-
-					// Add this probe to the current set
-					if (currentPositionCount == 0) {
-						// Start a new position
-						currentStart = SequenceRead.start(rawReads[rawReads.length-1]);
-						currentEnd = SequenceRead.end(rawReads[rawReads.length-1]);
-					}
-					else {
-						// Extend the existing position
-
-						if (SequenceRead.end(rawReads[rawReads.length-1]) > currentEnd) {
-							currentEnd = SequenceRead.end(rawReads[rawReads.length-1]);
-						}
-
-					}
-
-					currentPositionCount++;
-
-					// Make a probe with whatever we have left
-
-					int strand = Probe.UNKNOWN;
-					if (! ignoreStrand) {
-						strand = SequenceRead.strand(rawReads[rawReads.length-1]);
-					}
-					newProbes.add(new Probe(chromosomes[c], currentStart,currentEnd,strand));
-
-				}			
 
 			}
 		}
@@ -416,14 +404,14 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 
 		b.append(" MinCount=");
 		b.append(minCount);
-		
+
 		b.append(" Positions per window=");
 		b.append(readsPerWindow);
-		
+
 		if (ignoreStrand) {
 			b.append (" Ignoring strand");
 		}
-		
+
 		if (limitWithinRegion) {
 			b.append(" Designed within ");
 			b.append(limitRegionBox.getSelectedItem());
@@ -432,24 +420,6 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 		return b.toString();
 	}
 
-	/**
-	 * Removes reads the user chose to ignore
-	 * 
-	 * @param reads the reads
-	 * @return the non redundant reads
-	 */
-	private long [] getUsableRedundantReads (long [] reads) {
-		LongVector keepers = new LongVector();
-
-		for (int r=0;r<reads.length;r++) {
-
-			if (! readStrandType.useRead(reads[r])) {
-				continue;
-			}
-			keepers.add(reads[r]);
-		}
-		return keepers.toArray();
-	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.Dialogs.Cancellable#cancel()

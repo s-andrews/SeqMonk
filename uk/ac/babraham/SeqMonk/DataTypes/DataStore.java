@@ -75,12 +75,22 @@ public abstract class DataStore implements Comparable<DataStore>{
 	}
 	
 	/**
-	 * Gets the reads for probe.
+	 * Gets the reads for a probe as a linear array.
 	 * 
 	 * @param p the p
 	 * @return the reads for probe
 	 */
 	public abstract long [] getReadsForProbe (Probe p);
+
+	
+	/**
+	 * Gets the reads for a probe as a readsWithCounts object.
+	 * 
+	 * @param p the p
+	 * @return the reads for probe
+	 */
+	public abstract ReadsWithCounts getReadsWithCountsForProbe (Probe p);
+
 	
 	/**
 	 * Gets the reads for chromosome.

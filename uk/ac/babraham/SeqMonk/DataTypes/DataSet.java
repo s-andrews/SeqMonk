@@ -360,7 +360,7 @@ public class DataSet extends DataStore implements Runnable {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForProbe(uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe)
 	 */
-	public long [] getReadsForProbe(Probe p) {
+	public ReadsWithCounts getReadsWithCountsForProbe(Probe p) {
 
 		if (! isFinalised) finalise();
 
@@ -372,7 +372,7 @@ public class DataSet extends DataStore implements Runnable {
 		// else updates them whilst we're still working otherwise we get index errors.
 		allReads = lastCachedReads;
 
-		if (allReads.reads.length == 0) return new long[0];
+		if (allReads.reads.length == 0) return new ReadsWithCounts(new long[0]);
 
 		LongVector reads = new LongVector();		
 		IntVector counts = new IntVector();
@@ -444,12 +444,11 @@ public class DataSet extends DataStore implements Runnable {
 			}
 		}
 
-
-		long [] returnReads  = expandReadsAndCounts(reads.toArray(), counts.toArray());
-
-		// With the new way of tracking we shouldn't ever need to sort these.
-		//		SequenceRead.sort(returnReads);
-		return returnReads;
+		return new ReadsWithCounts(reads.toArray(), counts.toArray());
+	}
+	
+	public long [] getReadsForProbe (Probe p) {
+		return getReadsWithCountsForProbe(p).expandReads();
 	}
 
 
@@ -515,37 +514,7 @@ public class DataSet extends DataStore implements Runnable {
 	}
 
 
-	/** 
-	 * This method turns two arrays (reads and counts) into a single expanded read
-	 * array with the counts expanded out into a single linear stream.
-	 * @param reads
-	 * @param counts
-	 * @return
-	 */
-	private static long [] expandReadsAndCounts (long [] reads, int [] counts) {
-		// Get the total size of the array to return
 
-		int totalSize = 0;
-
-		for (int i=0;i<counts.length;i++) {
-			totalSize += counts[i];
-		}
-
-		// Make the array to return
-		long [] returnArray = new long[totalSize];
-
-		// Expand the set.
-		int currentPosition = 0;
-		for (int i=0;i<reads.length;i++) {
-			for (int j=0;j<counts[i];j++) {
-				returnArray[currentPosition] = reads[i];
-				currentPosition++;
-			}
-		}
-
-		return(returnArray);
-
-	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()

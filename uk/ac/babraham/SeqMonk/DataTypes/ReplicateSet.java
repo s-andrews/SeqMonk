@@ -25,7 +25,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
-import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 
 /**
@@ -214,13 +213,19 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForProbe(uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe)
 	 */
-	public long[] getReadsForProbe(Probe p) {
-		long [][] returnReads = new long [dataStores.length][];
+	public ReadsWithCounts getReadsWithCountsForProbe(Probe p) {
+		ReadsWithCounts [] returnReads = new ReadsWithCounts [dataStores.length];
 		for (int i=0;i<dataStores.length;i++) {
-			returnReads[i] = dataStores[i].getReadsForProbe(p);
+			returnReads[i] = dataStores[i].getReadsWithCountsForProbe(p);
 		}
-		return LongSetSorter.sortLongSets(returnReads);
+		return new ReadsWithCounts(returnReads);
 	}
+	
+	
+	public long [] getReadsForProbe (Probe p) {
+		return getReadsWithCountsForProbe(p).expandReads();
+	}
+
 	
 	
 	/**
