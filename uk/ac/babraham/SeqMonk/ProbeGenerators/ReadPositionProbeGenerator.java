@@ -371,6 +371,8 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 						if (SequenceRead.end(reads[r]) > currentEnd) currentEnd = SequenceRead.end(reads[r]);
 
 						if (SequenceRead.strand(reads[r]) != currentStrand) currentStrand = Location.UNKNOWN;
+						
+						++currentPositionCount;
 					}
 
 				}
