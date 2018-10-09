@@ -339,7 +339,7 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 			sb.append(extendReads());
 		}
 		
-		if (pairedEnd()) {
+		if (readType != null && pairedEnd()) {
 			if (pairDistanceCutoff() != 0) {
 				sb.append("Paired distance cutoff = ");
 				sb.append(pairDistanceCutoff());
