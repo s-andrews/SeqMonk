@@ -133,9 +133,12 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 
 		// We're finished with the file
 		br.close();
-
-
-		return(setsToKeep.toArray(new AnnotationSet[0]));
+		
+		
+		// Find which of the sets they actually want to keep
+		AnnotationSetSelector selector = new AnnotationSetSelector(setsToKeep.toArray(new AnnotationSet[0]));
+		
+		return(selector.getSelectedSets());
 	}	
 
 
@@ -242,9 +245,11 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 	private class AnnotationSetSelector extends JDialog {
 
 		private JList list;
+		private AnnotationSet [] annotationSets;
 
 		public AnnotationSetSelector (AnnotationSet [] annotationSets) {
 			super(SeqMonkApplication.getInstance(),"Select AnnotationSets to import");
+			this.annotationSets = annotationSets;
 			setModal(true);
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -267,8 +272,15 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 			setVisible(true);		
 		}
 
-		public int [] getSelectedIndices () {
-			return list.getSelectedIndices();
+		public AnnotationSet [] getSelectedSets () {
+			int [] indices =  list.getSelectedIndices();
+			AnnotationSet [] returnSets = new AnnotationSet[indices.length];
+			
+			for (int i=0;i<indices.length;i++) {
+				returnSets[i] = annotationSets[indices[i]];
+			}
+			
+			return (returnSets);
 		}
 	}
 
