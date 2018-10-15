@@ -119,7 +119,11 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 			// Now we look where to send this...
 			if (sections[0].equals("SeqMonk Data Version")) {
 				parseDataVersion(sections);
-			}				
+			}
+			else if (sections[0].equals("Genome")) {
+				parseGenome(sections,genome);
+			}
+
 			else if (sections[0].equals("Annotation")) {
 				AnnotationSet as = parseAnnotation(sections, genome);
 				
@@ -160,6 +164,46 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 		}
 	}
 
+	
+	private void parseGenome (String [] sections, Genome genome) throws SeqMonkException {
+		if (sections.length != 3) {
+			throw new SeqMonkException("Genome line didn't contain 3 sections");
+		}
+		if (! sections[0].equals("Genome")){
+			throw new SeqMonkException("First line of file was not the genome description");
+		}
+
+		// We can have multi-genome projects now, but the simple string match we do
+		// here should still work under these circumstances.  We could try to do better
+		// and say that if any of the individual sections match then we should allow the
+		// cross import since that should also work.
+		
+		
+		
+		if (!(genome.species().equals(sections[1]) && genome.assembly().equals(sections[2]))) {
+			
+			// We give them a chance to redeem themselves if this is a multi-genome and the
+			// incoming file is one of the sub-genomes
+			if (genome instanceof MultiGenome) {
+
+				Genome [] subGenomes = ((MultiGenome)genome).getSubGenomes();
+				
+				for (int s=0;s<subGenomes.length;s++) {
+										
+					if (subGenomes[s].species().equals(sections[1]) && subGenomes[s].assembly().equals(sections[2])) {
+						// That's close enough
+						return;
+					}
+				}
+				
+				
+			}
+			
+			throw new SeqMonkException("Genome versions didn't match between SeqMonk files ("+sections[1]+" "+sections[2]+" vs "+genome.species()+" "+genome.assembly()+")");
+		}	
+	}
+
+	
 	
 	/**
 	 * Parses an external set of annotations
