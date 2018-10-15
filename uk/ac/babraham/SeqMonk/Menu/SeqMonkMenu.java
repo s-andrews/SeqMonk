@@ -50,6 +50,7 @@ import uk.ac.babraham.SeqMonk.AnnotationParsers.AnnotationParserRunner;
 import uk.ac.babraham.SeqMonk.AnnotationParsers.GFF3AnnotationParser;
 import uk.ac.babraham.SeqMonk.AnnotationParsers.GenericAnnotationParser;
 import uk.ac.babraham.SeqMonk.AnnotationParsers.ProbeListAnnotationParser;
+import uk.ac.babraham.SeqMonk.AnnotationParsers.SeqMonkAnnotationReimportParser;
 import uk.ac.babraham.SeqMonk.DataParsers.ActiveProbeListParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BismarkCovFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.MethylKitFileParser;
@@ -62,7 +63,7 @@ import uk.ac.babraham.SeqMonk.DataParsers.BowtieFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.GenericSeqReadParser;
 import uk.ac.babraham.SeqMonk.DataParsers.GffFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.HiCOtherEndExtractor;
-import uk.ac.babraham.SeqMonk.DataParsers.SeqMonkReimportParser;
+import uk.ac.babraham.SeqMonk.DataParsers.SeqMonkDataReimportParser;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.HiCDataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
@@ -1420,6 +1421,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			fileImportGff.setActionCommand("annot_gff");
 			fileImportGff.addActionListener(this);
 			fileImportAnnotation.add(fileImportGff);
+			
+			JMenuItem fileImportSeqmonkAnnotation = new JMenuItem("Existing SeqMonk Project...");
+			fileImportSeqmonkAnnotation.setMnemonic(KeyEvent.VK_S);
+			fileImportSeqmonkAnnotation.setActionCommand("annot_seqmonk");
+			fileImportSeqmonkAnnotation.addActionListener(this);
+			fileImportAnnotation.add(fileImportSeqmonkAnnotation);
 
 			JMenuItem fileImportProbeList = new JMenuItem("Active Probe List");
 			fileImportProbeList.setMnemonic(KeyEvent.VK_P);
@@ -1634,7 +1641,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			application.importData(new GffFileParser(application.dataCollection()));
 		}
 		else if (action.equals("import_seqmonk")) {
-			application.importData(new SeqMonkReimportParser(application.dataCollection()));
+			application.importData(new SeqMonkDataReimportParser(application.dataCollection()));
 		}
 		else if (action.equals("import_bam")) {
 			application.importData(new BAMFileParser(application.dataCollection()));
@@ -1671,6 +1678,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		}
 		else if (action.equals("annot_gff")) {
 			AnnotationParserRunner.RunAnnotationParser(application, new GFF3AnnotationParser(application.dataCollection().genome()));
+		}
+		else if (action.equals("annot_seqmonk")) {
+			AnnotationParserRunner.RunAnnotationParser(application, new SeqMonkAnnotationReimportParser(application.dataCollection().genome()));
 		}
 		else if (action.equals("annot_generic")) {
 			AnnotationParserRunner.RunAnnotationParser(application, new GenericAnnotationParser(application.dataCollection().genome()));

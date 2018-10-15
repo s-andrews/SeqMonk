@@ -54,7 +54,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
  * another one.  It is a standard DataParser, except that it pauses after it
  * has read the list of samples to ask which ones the user wants to import.
  */
-public class SeqMonkReimportParser extends DataParser {
+public class SeqMonkDataReimportParser extends DataParser {
 
 	/** The Constant MAX_DATA_VERSION says what is the highest
 	 * version of the SeqMonk file format this parser can understand.
@@ -71,7 +71,7 @@ public class SeqMonkReimportParser extends DataParser {
 	 * 
 	 * @param application The application which we're loading this file into
 	 */
-	public SeqMonkReimportParser (DataCollection collection) {
+	public SeqMonkDataReimportParser (DataCollection collection) {
 		super(collection);
 		genome = collection.genome();
 	}	
