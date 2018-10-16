@@ -121,9 +121,7 @@ public class SegmentClusteringDialog extends JDialog {
 		}
 		
 		Arrays.sort(boundaryPoints);
-	
-		System.err.println("There are "+boundaryPoints.length+" boundary points");
-		
+			
 		List<List<ClusteredSegment>> buildingSegmentClusters = new ArrayList<List<ClusteredSegment>>();
 		
 		for (int i=0;i<=boundaryPoints.length;i++) {
