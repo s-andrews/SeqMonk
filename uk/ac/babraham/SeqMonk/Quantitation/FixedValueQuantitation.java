@@ -126,7 +126,7 @@ public class FixedValueQuantitation extends Quantitation {
 	
 	public String description () {
 		StringBuffer sb = new StringBuffer();
-		sb.append("Fixed Value Quantitation using a value of");
+		sb.append("Fixed Value Quantitation using a value of ");
 		sb.append(valueToAssignField.getText());
 		
 		return sb.toString();
