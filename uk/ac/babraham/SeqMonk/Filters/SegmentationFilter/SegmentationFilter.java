@@ -69,7 +69,7 @@ public class SegmentationFilter extends ProbeFilter {
 	private DataStore dataStore = null;
 	private static Double cutoff = 0.05;
 
-	private static boolean global = true;
+	private static boolean global = false;
 
 	private final SegmentationOptionsPanel optionsPanel;
 	
