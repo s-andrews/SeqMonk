@@ -50,10 +50,8 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
-import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressRecordDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
@@ -151,13 +149,12 @@ public class SegmentationFilter extends ProbeFilter {
 
 			// Say which p value column we're filtering on
 			if (global) {
-				template.setValue("CORRECTED", "adj.P.Val");
+				template.setValue("GLOBAL", "2");
 			}
 			else {
-				template.setValue("CORRECTED", "P.Value");
+				template.setValue("GLOBAL", "1");
 			}
 
-			template.setValue("PVALUE", ""+cutoff);
 
 			// Write the script file
 			File scriptFile = new File(tempDir.getAbsoluteFile()+"/script.r");
@@ -166,34 +163,22 @@ public class SegmentationFilter extends ProbeFilter {
 			pr.close();
 
 			// Write the count data
-			File countFile = new File(tempDir.getAbsoluteFile()+"/counts.txt");
+			File countFile = new File(tempDir.getAbsoluteFile()+"/quantitation.txt");
 
 			pr = new PrintWriter(countFile);
 
-			StringBuffer sb = new StringBuffer();
-			sb.append("probe");
-			sb.append("\t");
-			sb.append("value");
+			pr.println("value");
 
-			pr.println(sb.toString());
-
-			progressUpdated("Writing count data",0,1);
+			progressUpdated("Writing quantitation data",0,1);
 
 			
-			float value;
-
 			for (int p=0;p<probes.length;p++) {
 
 				if (p%1000 == 0) {
 					progressUpdated("Writing count data",p,probes.length);					
 				}
-				sb = new StringBuffer();
-				sb.append(p);
-				sb.append("\t");
-				value = dataStore.getValueForProbe(probes[p]);
-				sb.append(value);
 
-				pr.println(sb.toString());
+				pr.println(dataStore.getValueForProbe(probes[p]));
 			}
 
 			pr.close();
@@ -224,28 +209,26 @@ public class SegmentationFilter extends ProbeFilter {
 
 			ProbeList newList;
 
-			newList = new ProbeList(startingList,"","","FDR");
+			newList = new ProbeList(startingList,"","","Segment");
 
-			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
+			File segmentFile = new File(tempDir.getAbsolutePath()+"/segments.txt");
 
-			BufferedReader br = new BufferedReader(new FileReader(hitsFile));
+			BufferedReader br = new BufferedReader(new FileReader(segmentFile));
 
 			String line = br.readLine();
 
+			int segmentNumber = 1;
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
 
-				int probeIndex = Integer.parseInt(sections[0]);
-				float pValue;
+				int startSegment = Integer.parseInt(sections[1]) - 1;
+				int endSegment = Integer.parseInt(sections[2])-1;
 				
-				if (global) {
-					pValue = Float.parseFloat(sections[sections.length-2]);
+				for (int s=startSegment;s<=endSegment;s++) {
+					newList.addProbe(probes[s],(float)segmentNumber);
 				}
-				else {
-					pValue = Float.parseFloat(sections[sections.length-3]);
-				}
-
-				newList.addProbe(probes[probeIndex],pValue);
+				
+				segmentNumber++;
 			}
 
 			br.close();
