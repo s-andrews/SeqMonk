@@ -286,7 +286,7 @@ public class SegmentationFilter extends ProbeFilter {
 	 */
 	@Override
 	public String name() {
-		return "LIMMA Stats Filter";
+		return "Segmentation Filter";
 	}
 
 	/* (non-Javadoc)
@@ -296,25 +296,14 @@ public class SegmentationFilter extends ProbeFilter {
 	protected String listDescription() {
 		StringBuffer b = new StringBuffer();
 
-		b.append("LIMMA stats filter on probes in ");
+		b.append("Segmentation clustering on probes in ");
 		b.append(collection.probeSet().getActiveList().name());
-		b.append(" where ");
-
-//		for (int s=0;s<dataStores.length;s++) {
-//			b.append(dataStores[s].name());
-//			if (s < dataStores.length-1) {
-//				b.append(" vs ");
-//			}
-//		}
-
-		b.append(" had a significance below ");
-
-		b.append(cutoff);
+		b.append(" using data from ");
+		b.append(dataStore.name());
 
 		if (global) {
-			b.append(" after Benjamimi and Hochberg correction");
+			b.append(" using a global segmentation model");
 		}
-
 
 		b.append(". Quantitation was ");
 		if (collection.probeSet().currentQuantitation() == null) {
@@ -323,7 +312,6 @@ public class SegmentationFilter extends ProbeFilter {
 		else {
 			b.append(collection.probeSet().currentQuantitation());
 		}
-
 
 		return b.toString();
 	}
@@ -335,15 +323,14 @@ public class SegmentationFilter extends ProbeFilter {
 	protected String listName() {
 		StringBuffer b = new StringBuffer();
 
-		b.append("LIMMA stats p<");
-
-		b.append(cutoff);
+		b.append("Segmentation clustering");
 
 		if (global) {
-			b.append(" after correction");
+			b.append(" (global)");
 		}
 
-		return b.toString();	}
+		return b.toString();	
+	}
 
 	/**
 	 * The WindowedReplicateOptionsPanel.
