@@ -249,7 +249,7 @@ public class SegmentationFilter extends ProbeFilter {
 				for (int i=0;i<splitSegments[s].length;i++) {
 					for (int j=splitSegments[s][i].startIndex;j<=splitSegments[s][i].endIndex;j++) {
 						newList.addProbe(probes[j], (float)(i+1));
-						theseSegmentsList.addProbe(probes[j], splitSegments[s][j].mean);
+						theseSegmentsList.addProbe(probes[j], splitSegments[s][i].mean);
 					}
 				}
 				
