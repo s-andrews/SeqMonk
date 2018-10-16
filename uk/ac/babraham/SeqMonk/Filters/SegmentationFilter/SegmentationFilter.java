@@ -84,30 +84,6 @@ public class SegmentationFilter extends ProbeFilter {
 	public SegmentationFilter (DataCollection collection) throws SeqMonkException {
 		super(collection);
 		optionsPanel = new SegmentationOptionsPanel();
-
-		// Put out a warning if we see that we're not using all possible probes
-		// for the test.
-		if (!(startingList instanceof ProbeSet)) {
-			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>This test requires a representative set of all probes to be valid.<br>Be careful running it on a biased subset of probes</html>", "Filtered list used", JOptionPane.WARNING_MESSAGE);
-		}
-
-		// Do a quick check that the data we're being given are OK
-		ReplicateSet [] repSets = collection.getAllReplicateSets();
-		int validRepSetCount = 0;
-
-		for (int r=0;r<repSets.length;r++) {
-			if (repSets[r].isQuantitated() && repSets[r].dataStores().length>=2) {
-				++validRepSetCount;
-			}
-			else {
-				continue;
-			}
-		}
-
-		if (validRepSetCount < 2) {
-			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>We didn't find enough data to run this filter.<br>You need at least 2 replicate sets with at least 2 data stores in each to run this.</html>", "Not enough data", JOptionPane.WARNING_MESSAGE);
-		}
-
 	}
 
 

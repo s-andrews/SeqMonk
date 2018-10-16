@@ -156,6 +156,7 @@ import uk.ac.babraham.SeqMonk.Filters.LimmaFilter.LimmaFilter;
 import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionFilter;
 import uk.ac.babraham.SeqMonk.Filters.LogisticRegressionFilter.LogisticRegressionSplicingFilter;
 import uk.ac.babraham.SeqMonk.Filters.ManualCorrelation.ManualCorrelationFilter;
+import uk.ac.babraham.SeqMonk.Filters.SegmentationFilter.SegmentationFilter;
 import uk.ac.babraham.SeqMonk.Filters.Variance.VarianceIntensityDifferenceFilter;
 import uk.ac.babraham.SeqMonk.Filters.Variance.VarianceValuesFilter;
 import uk.ac.babraham.SeqMonk.Pipelines.Options.DefinePipelineOptions;
@@ -1124,6 +1125,13 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 
 
 		filterMenu.add(filterCorrelationMenu);
+		
+		JMenuItem filterSegmentation = new JMenuItem("Filter by Segmentation");
+		filterSegmentation.setActionCommand("filter_segmentation");
+		filterSegmentation.addActionListener(this);
+		filterSegmentation.setMnemonic(KeyEvent.VK_S);
+		filterMenu.add(filterSegmentation);
+		
 
 		JMenuItem filterPosition = new JMenuItem("Filter by Position...");
 		filterPosition.setActionCommand("filter_position");
@@ -2463,6 +2471,11 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 					ManualCorrelationFilter filter = new ManualCorrelationFilter(application.dataCollection());
 					new FilterOptionsDialog(application.dataCollection(),filter);
 				}
+				else if (action.equals("filter_segmentation")) {
+					SegmentationFilter filter = new SegmentationFilter(application.dataCollection());
+					new FilterOptionsDialog(application.dataCollection(),filter);
+				}
+
 				else if (action.equals("filter_position")) {
 					new FilterOptionsDialog(application.dataCollection(),new PositionFilter(application.dataCollection(),DisplayPreferences.getInstance().getCurrentChromosome(),SequenceRead.start(DisplayPreferences.getInstance().getCurrentLocation()),SequenceRead.end(DisplayPreferences.getInstance().getCurrentLocation())));
 				}
