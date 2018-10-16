@@ -7,7 +7,7 @@ seqmonk.quantitation <- read.delim("quantitation.txt")[[1]]
 library(fastseg)
 
 # Perform the analysis.
-fastseg(seqmonk.quantitation,type=%%GLOBAL%%) -> segments
+fastseg(seqmonk.quantitation,type=%%GLOBAL%%, alpha=%%ALPHA%%) -> segments
 
 # Write the segments to a file
 write.table(segments,file="segments.txt",row.names=FALSE,quote=FALSE,sep="\t")

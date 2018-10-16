@@ -57,6 +57,7 @@ import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
 import uk.ac.babraham.SeqMonk.R.RProgressListener;
 import uk.ac.babraham.SeqMonk.R.RScriptRunner;
+import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 import uk.ac.babraham.SeqMonk.Utilities.TempDirectory;
 import uk.ac.babraham.SeqMonk.Utilities.Templates.Template;
 
@@ -67,7 +68,7 @@ import uk.ac.babraham.SeqMonk.Utilities.Templates.Template;
 public class SegmentationFilter extends ProbeFilter {
 
 	private DataStore dataStore = null;
-	private static Double cutoff = 0.05;
+	private static Double alpha = 0.1;
 
 	private static boolean global = false;
 
@@ -154,6 +155,8 @@ public class SegmentationFilter extends ProbeFilter {
 			else {
 				template.setValue("GLOBAL", "1");
 			}
+			
+			template.setValue("ALPHA", alpha.toString());
 
 
 			// Write the script file
@@ -301,7 +304,7 @@ public class SegmentationFilter extends ProbeFilter {
 	public boolean isReady() {
 		if (dataStore == null) return false;
 
-		if (cutoff == null || cutoff > 1 || cutoff < 0) return false;
+		if (alpha == null || alpha > 1 || alpha < 0) return false;
 
 		return true;	
 	}
@@ -363,7 +366,7 @@ public class SegmentationFilter extends ProbeFilter {
 	private class SegmentationOptionsPanel extends JPanel implements ListSelectionListener, KeyListener, ChangeListener {
 
 		private JList dataList;
-		private JTextField cutoffField;
+		private JTextField alphaField;
 		private JCheckBox globalBox;
 
 		/**
@@ -414,14 +417,15 @@ public class SegmentationFilter extends ProbeFilter {
 			gbc.gridwidth=1;
 			gbc.gridy++;
 
-			choicePanel.add(new JLabel("P-value cutoff",JLabel.RIGHT),gbc);
+			choicePanel.add(new JLabel("Alpha Value",JLabel.RIGHT),gbc);
 
 			gbc.gridx++;
 			gbc.weightx=0.6;
 
-			cutoffField = new JTextField(cutoff.toString(),5);
-			cutoffField.addKeyListener(this);
-			choicePanel.add(cutoffField,gbc);
+			alphaField = new JTextField(alpha.toString(),5);
+			alphaField.addKeyListener(this);
+			alphaField.addKeyListener(new NumberKeyListener(true, false, 1));
+			choicePanel.add(alphaField,gbc);
 
 			gbc.gridx=0;
 			gbc.gridy++;
@@ -474,14 +478,14 @@ public class SegmentationFilter extends ProbeFilter {
 
 			JTextField f = (JTextField)ke.getSource();
 
-			if (f.equals(cutoffField)) {
-				if (f.getText().length() == 0) cutoff = null;
+			if (f.equals(alphaField)) {
+				if (f.getText().length() == 0) alpha = null;
 				else {
 					try {
-						cutoff = Double.parseDouble(cutoffField.getText());
+						alpha = Double.parseDouble(alphaField.getText());
 					}
 					catch (NumberFormatException e) {
-						cutoffField.setText(cutoffField.getText().substring(0,cutoffField.getText().length()-1));
+						alphaField.setText(alphaField.getText().substring(0,alphaField.getText().length()-1));
 					}
 				}
 			}
