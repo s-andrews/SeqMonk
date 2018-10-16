@@ -217,24 +217,49 @@ public class SegmentationFilter extends ProbeFilter {
 
 			String line = br.readLine();
 
-			int segmentNumber = 1;
+			
+			Vector<ClusteredSegment> segments = new Vector<ClusteredSegment>();
+			
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
 
 				int startSegment = Integer.parseInt(sections[1]) - 1;
 				int endSegment = Integer.parseInt(sections[2])-1;
 				
-				for (int s=startSegment;s<=endSegment;s++) {
-					newList.addProbe(probes[s],(float)segmentNumber);
-				}
+				float segmentMean = Float.parseFloat(sections[7]);
 				
-				segmentNumber++;
+				segments.add(new ClusteredSegment(startSegment, endSegment, segmentMean));
+								
 			}
 
 			br.close();
 
 			runner.cleanUp();
 
+			
+			// Now we need to pass the segments on to the clustering dialog so we 
+			// know how to split them into groups
+			SegmentClusteringDialog clusteringDialog = new SegmentClusteringDialog(segments.toArray(new ClusteredSegment[0]));
+			
+			ClusteredSegment [][] splitSegments = clusteringDialog.getClusteredSegments();
+			
+			for (int s=0;s<splitSegments.length;s++) {
+				ProbeList theseSegmentsList = new ProbeList(newList, "Segment Group "+(s+1), "Clustered Segments", "Mean");
+				
+				for (int i=0;i<splitSegments[s].length;i++) {
+					for (int j=splitSegments[s][i].startIndex;j<=splitSegments[s][i].endIndex;j++) {
+						newList.addProbe(probes[j], (float)(i+1));
+						theseSegmentsList.addProbe(probes[j], splitSegments[s][j].mean);
+					}
+				}
+				
+			}
+			
+			
+			
+			// We should also make an annotation track out of them.
+			
+			
 			filterFinished(newList);
 
 
