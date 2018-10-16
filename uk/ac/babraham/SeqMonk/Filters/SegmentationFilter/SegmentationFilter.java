@@ -332,6 +332,8 @@ public class SegmentationFilter extends ProbeFilter {
 		if (global) {
 			b.append(" using a global segmentation model");
 		}
+		
+		b.append(" with an alpha value of "+alpha);
 
 		b.append(". Quantitation was ");
 		if (collection.probeSet().currentQuantitation() == null) {
