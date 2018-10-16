@@ -8,8 +8,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -68,6 +74,8 @@ public class SegmentClusteringDialog extends JDialog {
 			}
 		});
 		
+		buttonPanel.add(boundaryButton);
+		
 		JButton clusterButton = new JButton("Cluster");
 		clusterButton.addActionListener(new ActionListener() {
 			
@@ -77,6 +85,8 @@ public class SegmentClusteringDialog extends JDialog {
 				dispose();
 			}
 		});
+		
+		buttonPanel.add(clusterButton);
 		
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		
@@ -94,7 +104,67 @@ public class SegmentClusteringDialog extends JDialog {
 	}
 	
 	public ClusteredSegment [][] getClusteredSegments () {
-		return null;
+		
+		float [] boundaryPoints = new float[boundaries.size()];
+		Iterator<DrawnBoundary> it = boundaries.iterator();
+		
+		int index = 0;
+		while (it.hasNext()) {
+			boundaryPoints[index] = it.next().value;
+			index++;
+		}
+		
+		Arrays.sort(boundaryPoints);
+	
+		System.err.println("There are "+boundaryPoints.length+" boundary points");
+		
+		List<List<ClusteredSegment>> buildingSegmentClusters = new ArrayList<List<ClusteredSegment>>();
+		
+		for (int i=0;i<=boundaryPoints.length;i++) {
+			buildingSegmentClusters.add(i, new ArrayList<ClusteredSegment>());
+		}
+		
+		// Now we go through the clustered segments assigning them to the appropriate list
+		
+		// We go through the boundary points assigning as soon as we have a mean which 
+		// is below that point
+		
+		SEGMENT: for (int s=0;s<segments.length;s++) {
+			for (int p=0;p<boundaryPoints.length;p++) {
+				if (segments[s].mean <= boundaryPoints[p]) {
+					buildingSegmentClusters.get(p).add(segments[s]);
+					continue SEGMENT;
+				}
+				
+				buildingSegmentClusters.get(boundaryPoints.length).add(segments[s]);
+			}
+		}
+		
+		// Turn the final set into an array, ignoring any empty bins
+		
+		int validBins = 0;
+		
+		for (int i=0;i<buildingSegmentClusters.size();i++) {
+			if (buildingSegmentClusters.get(i).size() > 0) validBins++;
+		}
+		
+		// Make the results array
+		ClusteredSegment [][] returnSegments = new ClusteredSegment[validBins][];
+		
+		validBins = 0;
+		for (int i=0;i<buildingSegmentClusters.size();i++) {
+			if (buildingSegmentClusters.get(i).size() == 0) continue;
+			
+			returnSegments[validBins] = new ClusteredSegment[buildingSegmentClusters.get(i).size()];
+			
+			for (int j=0;j<buildingSegmentClusters.get(i).size();j++) {
+				returnSegments[validBins][j] = buildingSegmentClusters.get(i).get(j);
+			}
+			validBins++;
+		}
+		
+		return returnSegments;
+		
 	}
 	
 
