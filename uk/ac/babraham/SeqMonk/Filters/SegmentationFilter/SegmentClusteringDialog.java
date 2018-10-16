@@ -58,6 +58,12 @@ public class SegmentClusteringDialog extends JDialog {
 			if (segments[s].mean < minValue) minValue = segments[s].mean;
 		}
 		
+		// To give us some space at the top/bottom we add 5% to both
+		float fivePercent = (maxValue-minValue)/20;
+		
+		minValue -= fivePercent;
+		maxValue += fivePercent;
+		
 		boundaries.add(new DrawnBoundary(minValue + ((maxValue-minValue)/2)));
 		
 		getContentPane().setLayout(new BorderLayout());
