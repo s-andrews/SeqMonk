@@ -114,6 +114,11 @@ public class StarWars {
 		standard_error /= Math.sqrt(standard_error);
 		standard_error /= Math.sqrt(lengthForMean);
 		
+		// Can't calculate STDERR if we only have a single value.
+		if (lengthForMean < 2) {
+			standard_error = 0;
+		}
+
 //		System.err.println("Standard Error is "+standard_error);
 		
 		
