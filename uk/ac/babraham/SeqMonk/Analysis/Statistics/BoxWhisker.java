@@ -126,7 +126,14 @@ public class BoxWhisker {
 //		System.err.println("Starting to calculate ranges for "+data.name());
 		
 		// Get the median
-		if (orderedProbes.length % 2 == 1) {
+		// Account for really small datasets
+		if (orderedProbes.length < 3) {
+			for (int i=0;i<orderedProbes.length;i++) {
+				median += data.getValueForProbe(orderedProbes[i]);
+			}
+			median /= orderedProbes.length;
+		}
+		else if (orderedProbes.length % 2 == 1) {
 			// We can just take the middle value
 			median = data.getValueForProbe(orderedProbes[orderedProbes.length/2]);
 		}
