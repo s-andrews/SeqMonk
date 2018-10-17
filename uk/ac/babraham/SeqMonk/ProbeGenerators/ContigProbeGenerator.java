@@ -50,7 +50,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;
-import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 /**
  * The Class ContigProbeGenerator makes probes based on clusters of sequence reads

@@ -46,7 +46,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadStrandType;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
-import uk.ac.babraham.SeqMonk.Utilities.LongSorter.LongSetSorter;
 
 /**
  * The Class EvenCoverageProbeGenerator makes probes of variable size to try to make the
@@ -319,39 +318,7 @@ public class EvenCoverageProbeGenerator extends ProbeGenerator implements Runnab
 		return b.toString();
 	}
 
-	/**
-	 * Gets the non redundant reads.
-	 * 
-	 * @param reads the reads
-	 * @return the non redundant reads
-	 */
-	private SequenceReadWithCount [] getNonRedundantReads (long [] reads) {
 
-		Vector<SequenceReadWithCount> keepers = new Vector<SequenceReadWithCount>();
-		SequenceReadWithCount last = null;
-
-		for (int r=0;r<reads.length;r++) {
-
-			if (! readStrandType.useRead(reads[r])) {
-				continue;
-			}
-
-			if (last == null || SequenceRead.start(last.read) != SequenceRead.start(reads[r]) || SequenceRead.end(last.read) != SequenceRead.end(reads[r])) {
-				// We need to make a new entry
-				last = new SequenceReadWithCount(reads[r],1);
-				keepers.add(last);
-			}
-			else {
-				last.count++;
-			}
-		}
-
-		if (last != null) {
-			keepers.add(last);
-		}
-
-		return keepers.toArray(new SequenceReadWithCount[0]);
-	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.Dialogs.Cancellable#cancel()
@@ -392,26 +359,4 @@ public class EvenCoverageProbeGenerator extends ProbeGenerator implements Runnab
 		isReady();
 	}
 
-	/**
-	 * The Class SequenceReadWithCount.
-	 */
-	private class SequenceReadWithCount {
-
-		/** The read. */
-		public long read;
-
-		/** The count. */
-		public int count;
-
-		/**
-		 * Instantiates a new sequence read with count.
-		 * 
-		 * @param read the read
-		 * @param count the count
-		 */
-		public SequenceReadWithCount (long read, int count) {
-			this.read = read;
-			this.count = count;
-		}
-	}
 }

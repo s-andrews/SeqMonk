@@ -44,7 +44,6 @@ import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.HeatmapPanel.Quanti
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
 import uk.ac.babraham.SeqMonk.Gradients.InvertedGradient;
-import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeListener, ActionListener {
@@ -54,7 +53,6 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 	private JComboBox gradients;
 	private JCheckBox invertGradient;
 	private JButton highlightRepSetsButton;
-	private boolean negativeScale;
 	
 	private QuantitationTrendData data;
 	
@@ -66,15 +64,6 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 		super(SeqMonkApplication.getInstance(),"Quantitation Trend Heatmap");
 
 		this.data = data;
-
-		// Work out whether we're using a pos-neg or just pos scale
-		if (data.getMinValue() < 0) {
-			negativeScale = true;
-		}
-		else if (DisplayPreferences.getInstance().getScaleType() == DisplayPreferences.SCALE_TYPE_POSITIVE_AND_NEGATIVE) {
-			negativeScale = true;
-		}
-
 
 		getContentPane().setLayout(new BorderLayout());
 		JPanel buttonPanel = new JPanel();

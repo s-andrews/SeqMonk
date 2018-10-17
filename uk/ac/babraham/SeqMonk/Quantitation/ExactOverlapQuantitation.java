@@ -37,8 +37,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.QuantitationStrandType;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Utilities.IntVector;
-import uk.ac.babraham.SeqMonk.Utilities.LongVector;
 
 /**
  * A quantitation based on the number of reads exactly overlapping each probe

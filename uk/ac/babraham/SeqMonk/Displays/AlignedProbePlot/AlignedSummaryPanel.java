@@ -362,7 +362,7 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 		// time so we can correctly set the scaling values for the colour
 		// scale
 		smoother.smooth();
-		while (smoother.running) {
+		while (smoother.running()) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {

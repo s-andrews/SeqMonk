@@ -22,8 +22,6 @@ package uk.ac.babraham.SeqMonk.Utilities;
 import java.awt.FontMetrics;
 import java.text.DecimalFormat;
 
-import javax.swing.JPanel;
-
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 
 public class AxisScale {
