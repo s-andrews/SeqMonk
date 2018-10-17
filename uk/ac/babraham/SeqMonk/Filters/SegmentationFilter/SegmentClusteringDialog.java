@@ -10,18 +10,16 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
+import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Utilities.AxisScale;
 
 /**
@@ -109,8 +107,8 @@ public class SegmentClusteringDialog extends JDialog {
 		
 	}
 	
-	public ClusteredSegment [][] getClusteredSegments () {
-		
+	public float [] getBoundaryValues () {
+
 		float [] boundaryPoints = new float[boundaries.size()];
 		Iterator<DrawnBoundary> it = boundaries.iterator();
 		
@@ -121,6 +119,13 @@ public class SegmentClusteringDialog extends JDialog {
 		}
 		
 		Arrays.sort(boundaryPoints);
+
+		return boundaryPoints;
+	}
+	
+	public ClusteredSegment [][] getClusteredSegments () {
+		
+		float [] boundaryPoints = getBoundaryValues();
 			
 		List<List<ClusteredSegment>> buildingSegmentClusters = new ArrayList<List<ClusteredSegment>>();
 		
@@ -138,10 +143,9 @@ public class SegmentClusteringDialog extends JDialog {
 				if (segments[s].mean <= boundaryPoints[p]) {
 					buildingSegmentClusters.get(p).add(segments[s]);
 					continue SEGMENT;
-				}
-				
-				buildingSegmentClusters.get(boundaryPoints.length).add(segments[s]);
+				}				
 			}
+			buildingSegmentClusters.get(boundaryPoints.length).add(segments[s]);
 		}
 		
 		// Turn the final set into an array, ignoring any empty bins
@@ -214,6 +218,7 @@ public class SegmentClusteringDialog extends JDialog {
 			
 			// Draw the mean values
 			
+			g.setColor(Color.GRAY);
 			for (int s=0;s<segments.length;s++) {
 				
 				int x = xOffset + (int)((getWidth()-(5+xOffset))*(s/(double)(segments.length-1)));
@@ -231,11 +236,26 @@ public class SegmentClusteringDialog extends JDialog {
 				int y = getY(boundary.value);
 				boundary.lastY = y;
 				
+				g.setColor(ColourScheme.REVERSE_FEATURE);
 				g.drawLine(xOffset, y, getWidth(), y);
+				
+				// We'll draw a little delete box on the right so they can remove it
+				// if they need to.
+				
+				g.setColor(Color.WHITE);
+				g.fillRect(getWidth()-14, y-6, 12, 12);
+				g.setColor(ColourScheme.REVERSE_FEATURE);
+				g.drawRect(getWidth()-14, y-6, 12, 12);
+				
+				g.setColor(ColourScheme.FORWARD_FEATURE);
+				g.drawLine(getWidth()-12, y-4, getWidth()-4, y+4);
+				g.drawLine(getWidth()-12, y+4, getWidth()-4, y-4);
+				
+				
 			}
 			
 			if (selectedBoundary != null) {
-				g.setColor(Color.RED);
+				g.setColor(ColourScheme.FORWARD_FEATURE);
 				int y = getY(selectedBoundary.value);
 				selectedBoundary.lastY = y;
 				g.drawLine(xOffset,y,getWidth(),y);
@@ -274,20 +294,12 @@ public class SegmentClusteringDialog extends JDialog {
 
 
 		@Override
-		public void mouseClicked(MouseEvent e) {}
+		public void mouseClicked(MouseEvent me) {
 
-
-		@Override
-		public void mouseEntered(MouseEvent e) {}
-
-
-		@Override
-		public void mouseExited(MouseEvent e) {}
-
-
-		@Override
-		public void mousePressed(MouseEvent me) {
-			// Find the closest bounary
+			// See if they're trying to remove a boundary
+			if (me.getX() < getWidth()-14) return;
+			
+			// Find the closest boundary
 			DrawnBoundary closestBoundary = null;
 			int distance = getHeight();
 			
@@ -300,12 +312,50 @@ public class SegmentClusteringDialog extends JDialog {
 					closestBoundary = b;
 					distance = thisDistance;
 				}
-				
-				if (distance <= 3) {
-					selectedBoundary = closestBoundary;
-					repaint();
+								
+			}
+			if (distance <= 3) {
+				boundaries.remove(closestBoundary);
+				repaint();
+			}
+
+
+		}
+
+
+		@Override
+		public void mouseEntered(MouseEvent e) {}
+
+
+		@Override
+		public void mouseExited(MouseEvent e) {}
+
+
+		@Override
+		public void mousePressed(MouseEvent me) {
+			
+			// Ignore if we're further right than width-14 as they'd
+			// be clicking on a close button.
+			if (me.getX() > getWidth()-14) return;
+			
+			// Find the closest boundary
+			DrawnBoundary closestBoundary = null;
+			int distance = getHeight();
+			
+			Iterator<DrawnBoundary> it = boundaries.iterator();
+			
+			while (it.hasNext()) {
+				DrawnBoundary b = it.next();
+				int thisDistance = Math.abs(me.getY()-b.lastY);
+				if (thisDistance < distance) {
+					closestBoundary = b;
+					distance = thisDistance;
 				}
-				
+								
+			}
+			if (distance <= 3) {
+				selectedBoundary = closestBoundary;
+				repaint();
 			}
 			
 		}

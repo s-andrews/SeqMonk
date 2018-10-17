@@ -148,7 +148,6 @@ public class SegmentationFilter extends ProbeFilter {
 			// Substitute in the variables we need to change
 			template.setValue("WORKING", tempDir.getAbsolutePath().replace("\\", "/"));
 
-			// Say which p value column we're filtering on
 			if (global) {
 				template.setValue("GLOBAL", "2");
 			}
@@ -245,9 +244,22 @@ public class SegmentationFilter extends ProbeFilter {
 			SegmentClusteringDialog clusteringDialog = new SegmentClusteringDialog(segments.toArray(new ClusteredSegment[0]));
 			
 			ClusteredSegment [][] splitSegments = clusteringDialog.getClusteredSegments();
+			float [] boundaryPoints = clusteringDialog.getBoundaryValues();
 			
 			for (int s=0;s<splitSegments.length;s++) {
-				ProbeList theseSegmentsList = new ProbeList(newList, "Segment Group "+(s+1), "Clustered Segments", "Mean");
+				
+				String description;
+				if (s==0) {
+					description = "Segments with a mean below "+boundaryPoints[0];
+				}
+				else if (s==splitSegments.length-1) {
+					description = "Segments with a mean above "+boundaryPoints[boundaryPoints.length-1];
+				}
+				else {
+					description = "Segments with a mean between "+boundaryPoints[s-1]+" and "+boundaryPoints[s];
+				}
+				
+				ProbeList theseSegmentsList = new ProbeList(newList, "Segment Group "+(s+1), description, "Mean");
 				
 				for (int i=0;i<splitSegments[s].length;i++) {
 					for (int j=splitSegments[s][i].startIndex;j<=splitSegments[s][i].endIndex;j++) {
