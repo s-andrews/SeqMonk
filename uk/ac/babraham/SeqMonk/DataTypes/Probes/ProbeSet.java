@@ -22,8 +22,6 @@ package uk.ac.babraham.SeqMonk.DataTypes.Probes;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
-
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 

@@ -42,8 +42,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.commons.math3.stat.descriptive.moment.VectorialCovariance;
-
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.Displays.ManualGenomeBuilder.ManualGenomeBuilderDialog;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;

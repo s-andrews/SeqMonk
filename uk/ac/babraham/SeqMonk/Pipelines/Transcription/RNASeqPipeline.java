@@ -716,7 +716,7 @@ public class RNASeqPipeline extends Pipeline {
 			
 			RNASeqParametersModel model = new RNASeqParametersModel(data, dna, dup);
 			
-			ReportTableDialog report = new ReportTableDialog(SeqMonkApplication.getInstance(),new Report(null,null) {
+			new ReportTableDialog(SeqMonkApplication.getInstance(),new Report(null,null) {
 				
 				@Override
 				public void run() {}

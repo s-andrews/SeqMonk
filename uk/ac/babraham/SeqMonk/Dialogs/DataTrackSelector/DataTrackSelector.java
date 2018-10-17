@@ -29,7 +29,6 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Vector;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;

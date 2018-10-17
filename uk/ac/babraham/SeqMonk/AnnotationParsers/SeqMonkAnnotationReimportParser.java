@@ -28,30 +28,23 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
-import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
-import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
-import uk.ac.babraham.SeqMonk.DataTypes.PairedDataSet;
-import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Genome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.MultiGenome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.SplitLocation;
-import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.SeqMonkFileFilter;
 
 /**

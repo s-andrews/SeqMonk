@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;

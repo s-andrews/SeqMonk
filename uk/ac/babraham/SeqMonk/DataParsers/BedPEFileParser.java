@@ -63,7 +63,7 @@ public class BedPEFileParser extends DataParser {
 	
 //		System.err.println("Started parsing BED files");
 		
-		int extendBy = prefs.extendReads();
+//		int extendBy = prefs.extendReads();
 		
 		try {
 			
