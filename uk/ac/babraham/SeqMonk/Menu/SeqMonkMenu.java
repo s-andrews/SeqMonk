@@ -81,6 +81,7 @@ import uk.ac.babraham.SeqMonk.Dialogs.LicenseDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ListOverlapsDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProbeListSelectorDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetEditor;
+import uk.ac.babraham.SeqMonk.Dialogs.AnnotationSetEditor.AnnotationSetEditor;
 import uk.ac.babraham.SeqMonk.Dialogs.DataSetEditor.DataSetEditor;
 import uk.ac.babraham.SeqMonk.Dialogs.DataTrackSelector.DataTrackSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.Filters.FilterOptionsDialog;
@@ -445,6 +446,14 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		dataAutoCreateGroups.addActionListener(this);
 		dataAutoCreateGroups.setMnemonic(KeyEvent.VK_A);
 		dataMenu.add(dataAutoCreateGroups);
+
+		dataMenu.addSeparator();
+		
+		JMenuItem dataAnnotations = new JMenuItem("Edit Annotation Sets...");
+		dataAnnotations.setActionCommand("edit_annotations");
+		dataAnnotations.setMnemonic(KeyEvent.VK_A);
+		dataAnnotations.addActionListener(this);
+		dataMenu.add(dataAnnotations);
 
 
 		add(dataMenu);
@@ -2320,6 +2329,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		}
 		else if (action.equals("edit_samples")) {
 			new DataSetEditor(application.dataCollection());
+		}
+		else if (action.equals("edit_annotations")) {
+			new AnnotationSetEditor(application.dataCollection());
 		}
 		else if (action.equals("save")) {
 			application.saveProject();
