@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<title>Segmentation Filter</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Segmentation Filter</h1>
+<p>
+The segmentation filter is useful in cases where you have an existing running quantitation
+of your genome, but you can see spatially defined regions with consistently different 
+quantitated values.  This could be something common such as looking for copy number 
+variation in genomic data, or could be for blocks of enrichment in ChIP, or blocks of
+methylation in BS-Seq.
+</p>
+
+<p>
+The aim of the filter is to divide your existing probes into groups which follow a consistent
+level of quantitation.  Furthermore, the blocks of probes can then be clustered to associate
+blocks which have similar mean levels of quantitation.
+</p>
+
+<p>
+The filter itself uses the fastseg BioConductor package to do the segmentation followed by
+a custom grouping based on mean values.
+</p>
+
+
+<h2>Options</h2>
+<ol>
+<li>You must select a single data store whose data will be used to direct the segmentation</li>
+<li>You can chose an &quot;alpha&quot; value - this is a value between 0 and 1 and 
+determines the propensity of the algorithm to start a new segment. Lower values will tend to
+produce larger segments, higher values will produce smaller segments.  No segment will contain
+fewer than 4 probes, regardless of the alpha value</li>
+<li>You can choose whether the segments are defined relative to a change to the previous 
+quantitation (those to the left of the current position), or by setting the global option you
+can add a constraint that they must also be different to the overall distribution of global values</li> 
+<li>After the initial segmentation you will be shown a graph showing the mean quantitations for
+the segments defined.  On this graph you can add, remove and move break points to say how you 
+want the segments split into subgroups.  In addition to the overall list of segments (which will
+always contain all probes, but with an annotated value to say which segment they fall into) you
+will also get a probe list for each sub-group defined by the split points set in the second 
+window.</li>
+
+
+</ol>
+
+
+</body>
+</html>
