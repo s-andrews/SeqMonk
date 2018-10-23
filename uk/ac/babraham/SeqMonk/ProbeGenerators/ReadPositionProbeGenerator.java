@@ -272,6 +272,7 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 		Vector<Probe> newProbes = new Vector<Probe>();
 
 		for (int c=0;c<chromosomes.length;c++) {
+
 			// Time for an update
 			updateGenerationProgress("Processed "+c+" chromosomes", c, chromosomes.length);
 
@@ -281,10 +282,7 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 
 			ReadsWithCounts [] rawReads = new ReadsWithCounts[0];
 
-
-
 			
-			// TODO: FIX THIS - NOT WORKING AT THE MOMENT
 			if (limitWithinRegion) {
 
 				// If we're limiting by region we need to get a set of probes which we can merge
@@ -343,7 +341,7 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 				int currentStrand = 0;
 
 				for (int r=0;r<reads.length;r++) {
-
+					
 					// Are we ignoring this read
 					if (!readStrandType.useRead(reads[r])) continue;
 
@@ -375,6 +373,13 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 						++currentPositionCount;
 					}
 
+				}
+				
+				// We might get to the end of a chromosome with exactly the number of reads we
+				// need to make a new probe, so we need to check for that.  Any reads left over
+				// will be ignored.
+				if (currentPositionCount == readsPerWindow) {
+					newProbes.add(new Probe(chromosomes[c], currentStart,currentEnd,currentStrand));
 				}
 
 
