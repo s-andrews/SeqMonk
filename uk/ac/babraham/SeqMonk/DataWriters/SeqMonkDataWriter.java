@@ -199,7 +199,12 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 			BufferedOutputStream bos;
 			
 			if (SeqMonkPreferences.getInstance().compressOutput()) {
-				bos = new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(tempFile),2048));
+				GZIPOutputStream gos = new GZIPOutputStream(new FileOutputStream(tempFile)) {
+					{
+						this.def.setLevel(1);
+					}
+				};
+				bos = new BufferedOutputStream(gos);
 			}
 			else {
 				bos = new BufferedOutputStream(new FileOutputStream(tempFile));
