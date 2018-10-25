@@ -116,7 +116,39 @@ public class VarianceIntensityDifferenceFilter extends ProbeFilter {
 		int varianceType = optionsPanel.getVarianceMeasure();
 		
 		Probe [] probes = startingList.getAllProbes();
+		
+		// We need to remove from the starting list any probes which have null values
+		// in any of the stores we're using, since we can't calculate variance on 
+		// probes with missing data.
+		
+		Vector<Probe> keepers = new Vector<Probe>();
+		
+		PROBE: for (int p=0;p<probes.length;p++) {
+			for (int r=0;r<repSetsToUse.length;r++) {
+				try {
+					if (Float.isNaN(repSetsToUse[r].getValueForProbe(probes[p]))) continue PROBE ;
+				}
+				catch (SeqMonkException sme) {
+					continue PROBE;
+				}
+			}
+			
+			keepers.add(probes[p]);
+		}
+		
+		
+		if (keepers.size() != probes.length) {
+			
+			System.err.println("Removed dodgy probes");
+			progressWarningReceived(new SeqMonkException("Excluded "+(probes.length - keepers.size())+" probes which contained null values"));
+			
+			probes = keepers.toArray(new Probe[0]);
+		}
+		
 
+		keepers = null;
+		
+		
 		// We'll pull the number of probes to sample from the preferences if they've changed it
 		
 		Integer updatedProbesPerSet = optionsPanel.probesPerSet();
