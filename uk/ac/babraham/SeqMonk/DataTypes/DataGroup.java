@@ -36,6 +36,10 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	private DataSet [] dataSets;
 
 	
+	private ReadsWithCounts cachedReadsWithCounts = null;
+	private Chromosome lastUsedChromosome = null;
+
+	
 	/**
 	 * Instantiates a new data group.
 	 * 
@@ -63,6 +67,11 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	 * @param sets the new data sets
 	 */
 	public void setDataSets (DataSet [] sets) {
+		
+		// Reset caches, since they're not valid any more
+		lastUsedChromosome = null;
+		cachedReadsWithCounts = null;
+
 		dataSets = sets;
 		if (collection() != null) {
 			collection().dataGroupSamplesChanged(this);
@@ -102,6 +111,11 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	public void removeDataSet (DataSet s) {
 		if (! containsDataSet(s)) return;
 		
+		// Reset caches, since they're not valid any more
+		lastUsedChromosome = null;
+		cachedReadsWithCounts = null;
+
+		
 		DataSet [] newSet = new DataSet[dataSets.length-1];
 		int j=0;
 		for (int i=0;i<dataSets.length;i++) {
@@ -140,6 +154,10 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	 */
 	public ReadsWithCounts getReadsForChromosome(Chromosome c) {
 		
+		if (lastUsedChromosome != null && lastUsedChromosome == c) {
+			return cachedReadsWithCounts;
+		}
+		
 		ReadsWithCounts [] readsFromAllDataSets = new ReadsWithCounts[dataSets.length];
 
 //		int totalCount = 0;
@@ -148,7 +166,10 @@ public class DataGroup extends DataStore implements HiCDataStore {
 			readsFromAllDataSets[i] = dataSets[i].getReadsForChromosome(c);
 		}
 		
-		return new ReadsWithCounts(readsFromAllDataSets);
+		cachedReadsWithCounts =  new ReadsWithCounts(readsFromAllDataSets);
+		lastUsedChromosome = c;
+		
+		return(cachedReadsWithCounts);
 		
 	}
 

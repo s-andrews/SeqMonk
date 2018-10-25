@@ -39,6 +39,9 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 
 	/** The data stores. */
 	private DataStore [] dataStores;
+	
+	private ReadsWithCounts cachedReadsWithCounts = null;
+	private Chromosome lastUsedChromosome = null;
 
 	
 	/**
@@ -75,6 +78,12 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 				throw new IllegalStateException("Can't add a replicate set to another replicate set");
 			}
 		}
+		
+		// Reset caches, since they're not valid any more
+		lastUsedChromosome = null;
+		cachedReadsWithCounts = null;
+
+		
 		dataStores = stores;
 		if (collection() != null) {
 			collection().replicateSetStoresChanged(this);
@@ -114,6 +123,11 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	public void removeDataStore (DataStore s) {
 		if (! containsDataStore(s)) return;
 		
+		// Reset caches, since they're not valid any more
+		lastUsedChromosome = null;
+		cachedReadsWithCounts = null;
+		
+		
 		DataStore [] newSet = new DataStore[dataStores.length-1];
 		int j=0;
 		for (int i=0;i<dataStores.length;i++) {
@@ -144,13 +158,20 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadsForChromsome(uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome)
 	 */
 	public ReadsWithCounts getReadsForChromosome(Chromosome c) {
+		
+		if (lastUsedChromosome != null && lastUsedChromosome == c) {
+			return cachedReadsWithCounts;
+		}
+		
 		ReadsWithCounts [] readsFromAllChrs = new ReadsWithCounts[dataStores.length];
 		
 		for (int i=0;i<dataStores.length;i++) {
 			readsFromAllChrs[i] = dataStores[i].getReadsForChromosome(c);
 		}
 		
-		return new ReadsWithCounts(readsFromAllChrs);
+		cachedReadsWithCounts =  new ReadsWithCounts(readsFromAllChrs);
+		lastUsedChromosome = c;
+		return (cachedReadsWithCounts);
 	}
 
 	/* (non-Javadoc)
