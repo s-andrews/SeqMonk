@@ -176,8 +176,8 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getTotalReadCount()
 	 */
-	public int getTotalReadCount() {
-		int count = 0;
+	public long getTotalReadCount() {
+		long count = 0;
 		for (int i=0;i<dataSets.length;i++) {
 			count += dataSets[i].getTotalReadCount();
 		}
@@ -187,8 +187,8 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadCountForStrand()
 	 */
-	public int getReadCountForStrand(int strand) {
-		int count = 0;
+	public long getReadCountForStrand(int strand) {
+		long count = 0;
 		for (int i=0;i<dataSets.length;i++) {
 			count += dataSets[i].getReadCountForStrand(strand);
 		}
@@ -225,7 +225,7 @@ public class DataGroup extends DataStore implements HiCDataStore {
 		return min;
 	}
 
-	public int getTotalPairCount () {
+	public long getTotalPairCount () {
 		return getTotalReadCount()/2;
 	}
 	
@@ -344,8 +344,8 @@ public class DataGroup extends DataStore implements HiCDataStore {
 		return total;
 	}
 
-	public int getCisCount() {
-		int total = 0;
+	public long getCisCount() {
+		long total = 0;
 		for (int i=0;i<dataSets.length;i++) {
 			if (dataSets[i] instanceof HiCDataStore) {
 				total += ((HiCDataStore)dataSets[i]).getCisCount();
@@ -354,8 +354,8 @@ public class DataGroup extends DataStore implements HiCDataStore {
 		return total;
 	}
 
-	public int getTransCount() {
-		int total = 0;
+	public long getTransCount() {
+		long total = 0;
 		for (int i=0;i<dataSets.length;i++) {
 			if (dataSets[i] instanceof HiCDataStore) {
 				total += ((HiCDataStore)dataSets[i]).getTransCount();

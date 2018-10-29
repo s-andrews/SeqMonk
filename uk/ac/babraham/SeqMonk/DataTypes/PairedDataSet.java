@@ -78,8 +78,8 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 	private Hashtable<Chromosome, NonThreadSafeIntCounter> cisChromosomeCounts = new Hashtable<Chromosome, NonThreadSafeIntCounter>();
 	private Hashtable<Chromosome, NonThreadSafeIntCounter> transChromosomeCounts = new Hashtable<Chromosome, NonThreadSafeIntCounter>();
 
-	private int cisCount = 0;
-	private int transCount = 0;
+	private long cisCount = 0;
+	private long transCount = 0;
 
 	/** A flag to say if we've optimised this dataset */
 	private boolean isFinalised = false;
@@ -134,11 +134,11 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 		return true;
 	}
 
-	public int getTotalReadCount () {
+	public long getTotalReadCount () {
 		return cisCount+transCount;
 	}
 	
-	public int getTotalPairCount () {
+	public long getTotalPairCount () {
 		return getTotalReadCount()/2;
 	}
 
@@ -697,7 +697,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 	 * (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.HiCDataStore#getCisCount()
 	 */
-	public int getCisCount() {
+	public long getCisCount() {
 		return cisCount;
 	}
 
@@ -705,7 +705,7 @@ public class PairedDataSet extends DataSet implements HiCDataStore {
 	 * (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.HiCDataStore#getTransCount()
 	 */
-	public int getTransCount() {
+	public long getTransCount() {
 		return transCount;
 	}
 	

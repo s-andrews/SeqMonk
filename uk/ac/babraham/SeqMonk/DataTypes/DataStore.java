@@ -113,7 +113,7 @@ public abstract class DataStore implements Comparable<DataStore>{
 	 * 
 	 * @return the total read count
 	 */
-	public abstract int getTotalReadCount();
+	public abstract long getTotalReadCount();
 	
 	/**
 	 * Gets the total read count for a particular strand.
@@ -121,7 +121,7 @@ public abstract class DataStore implements Comparable<DataStore>{
 	 * @param strand the strand requested (FORWARD,REVERSE or UNKNOWN)
 	 * @return the total read count for the specified strand
 	 */
-	public abstract int getReadCountForStrand(int strand);
+	public abstract long getReadCountForStrand(int strand);
 	
 	/**
 	 * Gets the total read length.

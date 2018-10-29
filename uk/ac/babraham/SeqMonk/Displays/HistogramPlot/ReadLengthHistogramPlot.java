@@ -97,19 +97,28 @@ public class ReadLengthHistogramPlot extends JDialog implements ActionListener {
 	 * @return the read lengths
 	 */
 	private float [] getReadLengths (DataStore d) {
-		float [] data = new float[d.getTotalReadCount()];
 		
+		// TODO: This is horribly inefficient, and kludged we should do better.
+		
+		float [] data;
+		if (d.getTotalReadCount() < 2000000000l) {
+			data = new float[(int)d.getTotalReadCount()];
+		}
+		else {
+			data = new float[2000000000];
+		}
 		int index = 0;
 		
 		Chromosome [] chrs = d.collection().genome().getAllChromosomes();
 
-		for (int c=0;c<chrs.length;c++) {
+		CHR: for (int c=0;c<chrs.length;c++) {
 			ReadsWithCounts reads = d.getReadsForChromosome(chrs[c]);
 
 			for (int r=0;r<reads.reads.length;r++) {
 				for (int ct=0;ct<reads.counts[r];ct++) {
 					data[index] = SequenceRead.length(reads.reads[r]);
 					++index;
+					if (index == data.length) break CHR;
 				}
 			}
 		}

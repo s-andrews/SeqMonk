@@ -167,16 +167,16 @@ public class DataStoreSummaryReport extends Report {
 		public DataStore store;
 		
 		/** The total read count. */
-		public int totalReads;
+		public long totalReads;
 		
 		/** The forward read count. */
-		public int forwardReads;
+		public long forwardReads;
 		
 		/** The reverse read count. */
-		public int reverseReads;
+		public long reverseReads;
 		
 		/** The unknown read count. */
-		public int unknownReads;
+		public long unknownReads;
 		
 		/** The total length of all reads in bases */
 		public long totalReadLength;
@@ -267,9 +267,9 @@ public class DataStoreSummaryReport extends Report {
 		public Class getColumnClass (int c) {
 			switch (c) {
 			case 0: return String.class;
-			case 1: return Integer.class;
-			case 2: return Integer.class;
-			case 3: return Integer.class;
+			case 1: return Long.class;
+			case 2: return Long.class;
+			case 3: return Long.class;
 			case 4: return Integer.class;
 			case 5: return Double.class;
 			case 6: return Long.class;

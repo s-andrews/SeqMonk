@@ -64,12 +64,12 @@ public class ProbeGeneratorUtilities {
 		}
 		
 		
-		int minCount = 0;
+		long minCount = 0;
 		
 		long genomeSize = collection.genome().getTotalGenomeLength();
 			
 		for (int i=0;i<data.length;i++) {
-			int count = data[i].getTotalReadCount();
+			long count = data[i].getTotalReadCount();
 			
 			// Don't include stores with no data at all
 			if (count == 0) continue;

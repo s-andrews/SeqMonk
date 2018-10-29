@@ -164,7 +164,7 @@ public class VisibleStoresParser extends DataParser {
 
 			if (downsample) {
 				// Work out the probability for this sample
-				int realReadCount = visibleStores[s].getTotalReadCount();
+				long realReadCount = visibleStores[s].getTotalReadCount();
 				downsampleProbabilty = ((double)downsampleTarget) / realReadCount;
 			}
 

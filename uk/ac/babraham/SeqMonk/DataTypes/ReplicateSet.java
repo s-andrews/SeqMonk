@@ -177,23 +177,23 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getTotalReadCount()
 	 */
-	public int getTotalReadCount() {
-		int count = 0;
+	public long getTotalReadCount() {
+		long count = 0;
 		for (int i=0;i<dataStores.length;i++) {
 			count += dataStores[i].getTotalReadCount();
 		}
 		return count;
 	}
 	
-	public int getTotalPairCount () {
+	public long getTotalPairCount () {
 		return getTotalReadCount()/2;
 	}
 	
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadCountForStrand()
 	 */
-	public int getReadCountForStrand(int strand) {
-		int count = 0;
+	public long getReadCountForStrand(int strand) {
+		long count = 0;
 		for (int i=0;i<dataStores.length;i++) {
 			count += dataStores[i].getReadCountForStrand(strand);
 		}
@@ -478,8 +478,8 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 		return total;
 	}
 
-	public int getCisCount() {
-		int total = 0;
+	public long getCisCount() {
+		long total = 0;
 		for (int i=0;i<dataStores.length;i++) {
 			if (dataStores[i] instanceof HiCDataStore) {
 				total += ((HiCDataStore)dataStores[i]).getCisCount();
@@ -488,8 +488,8 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 		return total;
 	}
 
-	public int getTransCount() {
-		int total = 0;
+	public long getTransCount() {
+		long total = 0;
 		for (int i=0;i<dataStores.length;i++) {
 			if (dataStores[i] instanceof HiCDataStore) {
 				total += ((HiCDataStore)dataStores[i]).getTransCount();

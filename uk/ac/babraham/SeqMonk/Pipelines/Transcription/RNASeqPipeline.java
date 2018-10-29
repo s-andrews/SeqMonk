@@ -395,7 +395,7 @@ public class RNASeqPipeline extends Pipeline {
 		// If we're correcting for DNA contamination we need to work out the average density of
 		// reads in intergenic regions
 		float [] dnaDensityPerKb = new float[data.length];
-		int [] correctedTotalCounts = new int[data.length];
+		long [] correctedTotalCounts = new long[data.length];
 
 		if (correctDNAContamination) {
 			// We need to make interstitial probes to the set we already have, ignoring those at the end of chromosomes
@@ -439,8 +439,8 @@ public class RNASeqPipeline extends Pipeline {
 
 			// Work out adjusted total counts having subtracted the DNA contamination
 			for (int d=0;d<data.length;d++) {
-				int predictedContamination = (int)(dnaDensityPerKb[d]*(SeqMonkApplication.getInstance().dataCollection().genome().getTotalGenomeLength()/1000));
-				int correctedTotalReadCount = data[d].getTotalReadCount() - predictedContamination;
+				long predictedContamination = (long)(dnaDensityPerKb[d]*(SeqMonkApplication.getInstance().dataCollection().genome().getTotalGenomeLength()/1000));
+				long correctedTotalReadCount = data[d].getTotalReadCount() - predictedContamination;
 
 				correctedTotalCounts[d] = correctedTotalReadCount;
 			}

@@ -997,6 +997,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		ArrayList<DataStore> storesToAdd = new ArrayList<DataStore>();
 		
 		for (int i=0;i<newData.length;i++) {
+			
+			System.err.println("Adding new data with read count "+newData[i].getTotalReadCount());
+			
 			if (newData[i].getTotalReadCount() > 0) {
 				dataCollection.addDataSet(newData[i]);
 				storesToAdd.add(newData[i]);
@@ -1118,6 +1121,8 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.ProgressListener#progressComplete(java.lang.String, java.lang.Object)
 	 */
 	public void progressComplete(String command, Object result) {
+		
+		System.err.println("Progress complete called with command "+command+" and data "+result);
 
 		// Many different operations can call this method and our actions
 		// depend on who called us and what they sent.

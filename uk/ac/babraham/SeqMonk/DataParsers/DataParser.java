@@ -252,6 +252,7 @@ public abstract class DataParser implements Runnable, Cancellable {
 	 * @param newData An array of completed dataSets.  
 	 */
 	protected void processingFinished(DataSet [] newData) {
+		System.err.println("Finished processing data with "+newData.length+" data sets in it");
 		Iterator<ProgressListener> i = listeners.iterator();
 		while (i.hasNext()) {
 			i.next().progressComplete("datasets_loaded", newData);

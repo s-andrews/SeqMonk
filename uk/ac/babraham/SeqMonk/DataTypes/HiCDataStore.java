@@ -62,7 +62,7 @@ public interface HiCDataStore {
 	 * Returns the total number of hiC pairs in this data.  Should be half the
 	 * number of reads
 	 */
-	public int getTotalPairCount ();
+	public long getTotalPairCount ();
 	
 	public float getCorrectionForLength(Chromosome c, int minDist, int maxDist);
 	
@@ -89,11 +89,11 @@ public interface HiCDataStore {
 	 * 
 	 * @return
 	 */
-	public int getCisCount();
+	public long getCisCount();
 	
 	/**
 	 * Gets the total number of reads in trans in the whole genome
 	 * @return
 	 */
-	public int getTransCount();
+	public long getTransCount();
 }

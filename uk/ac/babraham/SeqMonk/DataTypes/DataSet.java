@@ -89,12 +89,12 @@ public class DataSet extends DataStore implements Runnable {
 	/** We cache the total read count to save having to reload
 	 * every chromosome just to get the read count
 	 */
-	protected ThreadSafeIntCounter totalReadCount = new ThreadSafeIntCounter();
+	protected ThreadSafeLongCounter totalReadCount = new ThreadSafeLongCounter();
 
 	/** We cache the forward read count to save having to reload
 	 * every chromosome just to get the read count
 	 */
-	protected ThreadSafeIntCounter forwardReadCount = new ThreadSafeIntCounter();
+	protected ThreadSafeLongCounter forwardReadCount = new ThreadSafeLongCounter();
 
 	/**
 	 * We cache the min and max read lengths so we can quickly access these
@@ -107,7 +107,7 @@ public class DataSet extends DataStore implements Runnable {
 	/** We cache the reverse read count to save having to reload
 	 * every chromosome just to get the read count
 	 */
-	protected ThreadSafeIntCounter reverseReadCount = new ThreadSafeIntCounter();
+	protected ThreadSafeLongCounter reverseReadCount = new ThreadSafeLongCounter();
 
 
 	/** We cache the unknown read count to save having to reload
@@ -553,7 +553,7 @@ public class DataSet extends DataStore implements Runnable {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getTotalReadCount()
 	 */
-	public int getTotalReadCount() {
+	public long getTotalReadCount() {
 
 		if (! isFinalised) finalise();
 
@@ -571,7 +571,7 @@ public class DataSet extends DataStore implements Runnable {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#getReadCountForStrand(int strand)
 	 */
-	public int getReadCountForStrand (int strand) {
+	public long getReadCountForStrand (int strand) {
 
 		if (! isFinalised) finalise();
 
