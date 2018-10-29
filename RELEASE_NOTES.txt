@@ -1,3 +1,42 @@
+RELEASE NOTES FOR SeqMonk v1.43.0
+---------------------------------
+This release adds some interesting new functionality for segregating 
+quantitation, and has some speed improvements as well as fixing some
+bugs.
+
+Main changes were:
+
+- Fixed a bug which broke data imports in Bed and BedPE format
+
+- Added drawing optimisation to the chromosome view to make it more 
+  efficient displaying tracks with very high coverage
+  
+- Sped up the operation of DataGroups and ReplicateSets when collating
+  raw reads
+  
+- Added a new intersect lists filter to provide more filtering options
+  when combining lists together
+  
+- Changed the order of operations when saving files to reduce the 
+  chances of data loss if something odd happens to the filesystem 
+  whilst saving
+  
+- Improved the efficiency of the read position probe generator
+
+- Added a segmentation filter to split quantitations into physically
+  connected groups
+  
+- Added the ability to cross import annotation tracks between projects
+
+- Added an annotation editor to make it easy to rename or delete large
+  batches of annotation quickly
+  
+- Reduced the compression when saving to make it quicker
+
+- Fixed a crash in the variance intensity difference filter if null
+  quantitations were present
+
+
 RELEASE NOTES FOR SeqMonk v1.42.1
 ---------------------------------
 This release was an opportunity for a general cleanup of a lot of cosmetic
