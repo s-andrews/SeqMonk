@@ -1122,8 +1122,6 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void progressComplete(String command, Object result) {
 		
-		System.err.println("Progress complete called with command "+command+" and data "+result);
-
 		// Many different operations can call this method and our actions
 		// depend on who called us and what they sent.
 		
