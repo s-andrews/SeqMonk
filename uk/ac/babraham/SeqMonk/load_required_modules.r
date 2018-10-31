@@ -13,6 +13,7 @@ install.packages("Rtsne", repos="http://cloud.r-project.org")
 biocLite()
 biocLite("DESeq2")
 biocLite("edgeR")
+biocLite("fastseg")
 
 # NB we don't need to explicity install limma as it's a dependency
 # of EdgeR.  If this changes then we'd need to add it.
@@ -24,4 +25,5 @@ library("edgeR")
 library("Rtsne")
 library("limma")
 library("statmod")
+library("fastseg")
 
