@@ -199,16 +199,17 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 			BufferedOutputStream bos;
 			
 			if (SeqMonkPreferences.getInstance().compressOutput()) {
-				GZIPOutputStream gos = new GZIPOutputStream(new FileOutputStream(tempFile)) {
+				GZIPOutputStream gos = new GZIPOutputStream(new FileOutputStream(tempFile),65536) {
 					{
 						this.def.setLevel(1);
 					}
 				};
-				bos = new BufferedOutputStream(gos);
+				bos = new BufferedOutputStream(gos,65536);
 			}
 			else {
-				bos = new BufferedOutputStream(new FileOutputStream(tempFile));
+				bos = new BufferedOutputStream(new FileOutputStream(tempFile),65536);
 			}			
+			
 			PrintStream p = new PrintStream(bos);
 			
 			printDataVersion(p);
@@ -271,8 +272,8 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 			// this might be from virus checkers getting in the way.  Either way we can be a bit safer about
 			// how we do the final renaming.
 			
-			// We used to just delete the original data, and then rename the temp file to the orignal name
-			// but we can be safer if we rename the original to a temp file, rename the temp to the orignal
+			// We used to just delete the original data, and then rename the temp file to the original name
+			// but we can be safer if we rename the original to a temp file, rename the temp to the original
 			// name, and then delete the original temp.
 
 			File originalTempFile = null;
@@ -526,11 +527,12 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 
 				}
 
-				p.println(reads.reads[j]+"\t"+reads.counts[j]);
+				
+				p.print(reads.reads[j]+"\t"+reads.counts[j]+"\n");
 			}			
 		}
 		// Print a blank line after the last chromosome
-		p.println("");
+		p.print("\n");
 
 
 		return true;
