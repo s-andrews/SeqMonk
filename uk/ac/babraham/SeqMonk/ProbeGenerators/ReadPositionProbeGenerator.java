@@ -98,7 +98,7 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 		readStrandType.setIgnoreDuplicates(false);
 
 		ignoreStrand = ignoreStrandBox.isSelected();
-
+		
 		Thread t = new Thread(this);
 		cancel = false;
 		t.start();
@@ -228,14 +228,14 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 		try {
 			minCount = Integer.parseInt(minCountField.getText());
 			readsPerWindow = Integer.parseInt(readsPerWindowField.getText());
-			if (readsPerWindow > 1) {
-				ignoreStrand = true;
-				ignoreStrandBox.setEnabled(false);
-			}
-			else {
-				ignoreStrand = ignoreStrandBox.isSelected();
-				ignoreStrandBox.setEnabled(true);
-			}
+//			if (readsPerWindow > 1) {
+//				ignoreStrand = true;
+//				ignoreStrandBox.setEnabled(false);
+//			}
+//			else {
+//				ignoreStrand = ignoreStrandBox.isSelected();
+//				ignoreStrandBox.setEnabled(true);
+//			}
 
 			limitWithinRegion = designWithinExistingBox.isSelected();
 
@@ -339,14 +339,35 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 				int currentEnd = 0;
 				int currentPositionCount = 0;
 				int currentStrand = 0;
+				long lastUsed = 0;
 
 				for (int r=0;r<reads.length;r++) {
 					
 					// Are we ignoring this read
-					if (!readStrandType.useRead(reads[r])) continue;
+					if (!readStrandType.useRead(reads[r])) {
+						lastUsed = 0;
+						continue;
+					}
 
 					// Do we have enough data
-					if (counts[r] < minCount) continue;
+					if (counts[r] < minCount) {
+						lastUsed = 0;
+						continue;
+					}
+					
+					
+					// Have we already looked at this position 
+					// if we're ignoring the strand
+					
+					if (ignoreStrand && lastUsed != 0) {
+						if (SequenceRead.start(lastUsed) == SequenceRead.start(reads[r]) && SequenceRead.end(lastUsed) == SequenceRead.end(reads[r])) {
+							lastUsed = 0;
+							continue;
+						}
+					}
+					
+					lastUsed = reads[r];
+
 
 					// Do we make a probe from the existing data
 					if (currentPositionCount == 0 || currentPositionCount == readsPerWindow) {
@@ -359,7 +380,7 @@ public class ReadPositionProbeGenerator extends ProbeGenerator implements Runnab
 						currentStrand = SequenceRead.strand(reads[r]);
 						currentPositionCount = 1;
 
-						if (ignoreStrand) {
+						if (ignoreStrand || readsPerWindow > 1) {
 							currentStrand = Location.UNKNOWN;
 						}
 					}
