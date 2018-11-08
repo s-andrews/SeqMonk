@@ -75,6 +75,8 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 	/** The used model. */
 	private DataStoreListModel usedModel = new DataStoreListModel();
 	
+	private JLabel displayedStoresLabel = null;
+	
 	/** The used list. */
 	private JList usedList;
 	
@@ -205,7 +207,8 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 
 		JPanel usedPanel = new JPanel();
 		usedPanel.setLayout(new BorderLayout());
-		usedPanel.add(new JLabel("Displayed Tracks",JLabel.CENTER),BorderLayout.NORTH);
+		displayedStoresLabel = new JLabel("Displayed Tracks ("+usedModel.getSize()+")",JLabel.CENTER);
+		usedPanel.add(displayedStoresLabel,BorderLayout.NORTH);
 		usedList = new JList(usedModel);
 		usedList.addListSelectionListener(this);
 		usedList.setCellRenderer(renderer);
@@ -264,6 +267,7 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 		availableReplicatesModel.removeElements(drawnReplicates.toArray(new DataStore[0]));
 		
 		usedModel.addElements(drawnStores);
+		displayedStoresLabel.setText("Displayed Tracks ("+usedModel.getSize()+")");
 		
 		setVisible(true);
 		
@@ -321,6 +325,8 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			usedModel.addElements(adds);
 			availableReplicatesModel.removeElements(adds);
 			availableReplicateList.setSelectedIndices(new int[0]);
+			
+			displayedStoresLabel.setText("Displayed Tracks ("+usedModel.getSize()+")");
 
 		}
 		else if (c.equals("remove")) {
@@ -361,6 +367,8 @@ public class DataTrackSelector extends JDialog implements ActionListener, ListSe
 			availableSetList.setSelectedIndices(new int[0]);
 			availableGroupList.setSelectedIndices(new int[0]);
 			availableReplicateList.setSelectedIndices(new int[0]);
+			
+			displayedStoresLabel.setText("Displayed Tracks ("+usedModel.getSize()+")");
 
 		}
 		else if (c.equals("up")) {
