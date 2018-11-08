@@ -73,7 +73,7 @@ public class PCADataCalculator implements Runnable, PCASource {
 		this.stores = validStores.toArray(new DataStore[0]);
 		
 		if (this.stores.length <= 2) {
-			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Can't run PCA - you need at least 2 visible, quantitated data stores to run this.","Can't run PCA",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "Can't run PCA - you need at least 3 visible, quantitated data stores to run this.","Can't run PCA",JOptionPane.ERROR_MESSAGE);
 			pd.progressCancelled();
 			return;
 		}
@@ -216,7 +216,12 @@ public class PCADataCalculator implements Runnable, PCASource {
 
 			// Now convert to percentages
 			for (int v=0;v<variances.length;v++) {
-				variances[v] = (variances[v]/varianceTotal)*100;
+				
+				// It's possible that there isn't any variance so check for this
+				// and just leave it alone if not so we don't get NaN values
+				if (varianceTotal > 0) {
+					variances[v] = (variances[v]/varianceTotal)*100;
+				}
 			}
 			
 			
@@ -286,7 +291,6 @@ public class PCADataCalculator implements Runnable, PCASource {
 	
 		pd.progressComplete("pca_analysis", this);
 		
-		// TODO: Open the graph of variances and PCA results
 		new PCAScatterPlotDialog(this);
 		new PCAVarianceDialog(this);
 		

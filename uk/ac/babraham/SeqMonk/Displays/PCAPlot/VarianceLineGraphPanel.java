@@ -48,7 +48,11 @@ public class VarianceLineGraphPanel extends JPanel {
 	public VarianceLineGraphPanel (float [] values) {
 		this.values = values;
 		this.usedMax = values[0];
-		this.usedMin = 0;		
+		this.usedMin = 0;
+		
+		// In case there is no variance between the samples set an artificial 
+		// range so we don't trigger a crash
+		if (usedMax == 0) usedMax = 1;		
 	}
 
 	public void setSelectedIndex (int index) {
