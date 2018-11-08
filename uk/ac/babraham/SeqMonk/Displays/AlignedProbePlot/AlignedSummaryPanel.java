@@ -22,6 +22,7 @@ package uk.ac.babraham.SeqMonk.Displays.AlignedProbePlot;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -151,6 +152,29 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 		if (l != null && listeners.contains(l)) {
 			listeners.remove(l);
 		}
+	}
+	
+	public void writeData (PrintWriter pr) {
+		if (smoothedCounts == null) return;
+		
+		
+		for (int p=0;p<smoothedCounts.length;p++) {
+			StringBuffer sb = new StringBuffer();
+			sb.append(store.name());
+			sb.append("\t");
+			sb.append(list.name());
+			sb.append("\t");
+			sb.append(probes[p].name());
+			sb.append("\t");
+			
+			for (int i=0;i<smoothedCounts[p].length;i++) {
+				sb.append("\t");
+				sb.append(smoothedCounts[p][i]);
+			}
+			
+			pr.println(sb.toString());			
+		}
+		
 	}
 
 
@@ -385,17 +409,22 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 
 			// If there's no defined sort order we simply order the counts from the highest to the lowest
 
-			Arrays.sort(rawCounts,new Comparator<int []>() {
+			sortOrder = new Integer[rawCounts.length];
+			for (int i=0;i<rawCounts.length;i++) {
+				sortOrder[i] = i;
+			}
+			
+			Arrays.sort(sortOrder,new Comparator<Integer>() {
 
-				public int compare(int[] o1, int[] o2) {
+				public int compare(Integer o1, Integer o2) {
 					int sumo1 = 0;
-					for (int i=0;i<o1.length;i++) {
-						sumo1 += o1[i];
+					for (int i=0;i<rawCounts[o1].length;i++) {
+						sumo1 += rawCounts[o1][i];
 					}
 
 					int sumo2 = 0;
-					for (int i=0;i<o2.length;i++) {
-						sumo2 += o2[i];
+					for (int i=0;i<rawCounts[o2].length;i++) {
+						sumo2 += rawCounts[o2][i];
 					}
 
 					return sumo2 - sumo1;
@@ -403,15 +432,19 @@ public class AlignedSummaryPanel extends JPanel implements Runnable, Cancellable
 
 			});
 		}
-		else {
-			// We take the defined order we've been given
-			int [][] orderedCounts = new int[rawCounts.length][];
-			for (int i=0;i<orderedCounts.length;i++) {
-				orderedCounts[i] = rawCounts[sortOrder[i]];
-			}
 
-			rawCounts = orderedCounts;
+		// We now apply the defined order we've been given, or have just calculated
+		// We also apply this to the probes so we know what ended up where
+		int [][] orderedCounts = new int[rawCounts.length][];
+		Probe [] orderedProbes = new Probe[probes.length];
+		for (int i=0;i<orderedCounts.length;i++) {
+			orderedCounts[i] = rawCounts[sortOrder[i]];
+			orderedProbes[i] = probes[sortOrder[i]];
 		}
+		
+		rawCounts = orderedCounts;
+		probes = orderedProbes;
+		
 
 
 

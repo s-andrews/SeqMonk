@@ -24,11 +24,16 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Comparator;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -44,6 +49,8 @@ import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
+import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 /**
@@ -193,6 +200,13 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 		saveImageButton.addActionListener(this);
 		buttonPanel.add(saveImageButton);
 
+		
+		JButton saveDataButton = new JButton("Export Data");
+		saveDataButton.setActionCommand("save_data");
+		saveDataButton.addActionListener(this);
+		buttonPanel.add(saveDataButton);
+
+		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
 		setSize(Math.min(150+(200*stores.length), 800),700);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
@@ -216,6 +230,53 @@ public class AlignedSummaryDialog extends JDialog implements ActionListener, Cha
 		else if (ae.getActionCommand().equals("save_image")){
 			ImageSaver.saveImage(summaryPanelsPlusScaleBar);
 		}
+		else if (ae.getActionCommand().equals("save_data")){
+			
+			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+			chooser.setMultiSelectionEnabled(false);
+			chooser.setFileFilter(new TxtFileFilter());
+			
+			int result = chooser.showSaveDialog(this);
+			if (result == JFileChooser.CANCEL_OPTION) return;
+
+			File file = chooser.getSelectedFile();
+			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+			
+			if (file.isDirectory()) return;
+
+			if (! file.getPath().toLowerCase().endsWith(".txt")) {
+				file = new File(file.getPath()+".txt");
+			}
+			
+			// Check if we're stepping on anyone's toes...
+			if (file.exists()) {
+				int answer = JOptionPane.showOptionDialog(this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+
+				if (answer > 0) {
+					return;
+				}
+			}
+
+			try {					
+				PrintWriter pr = new PrintWriter(file);
+				
+				pr.println("Store\tList\tProbe\tCounts...");
+				
+				for (int i=0;i<summaryPanels.length;i++) {
+					summaryPanels[i].writeData(pr);
+				}
+				
+				pr.close();
+
+			}
+
+			catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+
+		}
+
+		
 	}
 
 	/* (non-Javadoc)
