@@ -23,11 +23,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -42,6 +46,11 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.CoreAnnotationSet;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
+import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.BEDFileFilter;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 
 /**
  * The Class DataSetEditor allows the editing and deleting data sets
@@ -65,6 +74,9 @@ public class AnnotationSetEditor extends JDialog implements ActionListener, List
 
 	/** The replace button. */
 	private JButton replaceButton;
+	
+	/** The export button. */
+	private JButton exportButton;
 	
 	
 	/**
@@ -129,7 +141,15 @@ public class AnnotationSetEditor extends JDialog implements ActionListener, List
 		replaceButton.setEnabled(false);
 		samplePanel.add(replaceButton,gc);
 
-				
+		gc.gridy++;
+		exportButton = new JButton("Export as BED");
+		exportButton.setActionCommand("export");
+		exportButton.addActionListener(this);
+		exportButton.setEnabled(false);
+		samplePanel.add(exportButton,gc);
+
+		
+		
 		getContentPane().add(samplePanel,c);
 
 		c.gridx++;
@@ -239,7 +259,76 @@ public class AnnotationSetEditor extends JDialog implements ActionListener, List
 				as[i].delete();
 			}
 		}
-		
+
+		else if (c.equals("export")) {
+			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+			chooser.setMultiSelectionEnabled(false);
+			chooser.setFileFilter(new BEDFileFilter());
+			
+			int result = chooser.showSaveDialog(this);
+			if (result == JFileChooser.CANCEL_OPTION) return;
+
+			File file = chooser.getSelectedFile();
+			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+			
+			if (file.isDirectory()) return;
+
+			if (! (file.getPath().toLowerCase().endsWith(".txt") || file.getPath().toLowerCase().endsWith(".bed"))) {
+				file = new File(file.getPath()+".bed");
+			}
+			
+			// Check if we're stepping on anyone's toes...
+			if (file.exists()) {
+				int answer = JOptionPane.showOptionDialog(this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+
+				if (answer > 0) {
+					return;
+				}
+			}
+
+			try {					
+				PrintWriter pr = new PrintWriter(file);
+
+				Object [] o = annotationSetList.getSelectedValues();
+
+				for (int a=0;a<o.length;a++) {
+					AnnotationSet as = (AnnotationSet)o[a];
+					
+					Feature [] features = as.getAllFeatures();
+					
+					for (int f=0;f<features.length;f++) {
+						StringBuffer sb = new StringBuffer();
+						sb.append(features[f].chromosomeName());
+						sb.append("\t");
+						sb.append(features[f].location().start());
+						sb.append("\t");
+						sb.append(features[f].location().end());
+						sb.append("\t");
+						sb.append(features[f].type());
+						sb.append("\t");
+						sb.append("100");
+						sb.append("\t");
+						if (features[f].location().strand() == Location.FORWARD) sb.append("+");
+						else if (features[f].location().strand() == Location.REVERSE) sb.append("-");
+						else sb.append(".");
+
+						pr.println(sb.toString());
+						
+					}
+					
+				}
+				
+				
+				pr.close();
+
+			}
+
+			catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+
+			
+		}
 		else if (c.equals("close")) {
 			setVisible(false);
 			dispose();
@@ -253,10 +342,12 @@ public class AnnotationSetEditor extends JDialog implements ActionListener, List
 		if (annotationSetList.getSelectedValues().length > 0) {
 			deleteButton.setEnabled(true);
 			replaceButton.setEnabled(true);
+			exportButton.setEnabled(true);
 		}
 		else {
 			deleteButton.setEnabled(false);
 			replaceButton.setEnabled(false);
+			exportButton.setEnabled(false);
 		}
 		
 		if (annotationSetList.getSelectedValues().length == 1) {
