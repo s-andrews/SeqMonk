@@ -375,7 +375,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			POSITION: for (int r=0;r<rwc.reads.length;r++) {
 
 				long read = rwc.reads[r];
-				
+
 				// There's never any point in checking more reads for the same
 				// position than the number of slots, so we can optimise this a
 				// bit.
@@ -421,18 +421,18 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			// If we're using split mode then reads of unknown strand go
 			// in the middle line.  Forward reads go above that and reverse
 			// reads go below.
-			
+
 			int nextPossibleSlot = 0;
-			
+
 			POSITION: for (int r=0;r<rwc.reads.length;r++) {
 
 				long read = rwc.reads[r];
-				
-				
+
+
 				// Only check up to half the slot count reads, since we
 				// can't possibly place the same read more times than that
 				READ: for (int c=0;c<Math.min(rwc.counts[r],(slotCount/2)+1);c++) {
-					
+
 					if (nextPossibleSlot != 0) {
 						// See if we can quickly skip this read
 						if (nextPossibleSlot > SequenceRead.start(reads[r])) {
@@ -444,7 +444,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 						}
 					}
 
-					
+
 					int startSlot = 0;
 					int interval = slotCount;
 					if (SequenceRead.strand(read) == Location.FORWARD) {
@@ -469,21 +469,21 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 					// In this case we just don't draw them in this
 					// display.  That just means we don't add them
 					// to anything.
-				
+
 					// Now set the nextPossibleSlot value so we can 
 					// skip stuff quickly in future
 					for (int s=0;s<slotCount;s++) {
 						if (lastBase[s] < nextPossibleSlot) nextPossibleSlot = lastBase[s];
 					}
 
-					
+
 				}
 			}
 		}
-		
+
 		reads = drawableReads.toArray();
 		slotValues = drawableSlotValues.toArray();
-		
+
 	}
 
 	private int [][] getHiCPixelCounts () {
@@ -924,25 +924,27 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 		//		System.out.println("Drew "+drawnReads.size()+" reads");
 
-		// Draw a line across the bottom of the display
-		g.setColor(Color.LIGHT_GRAY);
-		g.drawLine(x, height-1, x+width, height-1);
+		// Draw a line across the bottom of the display if there is space
+		if (getHeight()>=5) {
+			g.setColor(Color.LIGHT_GRAY);
+			g.drawLine(x, height-1, x+width, height-1);
 
-		// If we're the active data store then surround us in red
 
-		// This can fail if the viewer is being destroyed (viewer returns null)
-		// so catch this
-		try {
-			if (viewer.application().dataCollection().getActiveDataStore() == data || (enclosingSet != null && viewer.application().dataCollection().getActiveDataStore() == enclosingSet)) {
-				g.setColor(Color.RED);
-				g.drawLine(x, height-2, x+width, height-2);
-				g.drawLine(x, height-1, x+width, height-1);
-				g.drawLine(x, 0, x+width, 0);
-				g.drawLine(x, 1, x+width, 1);
+			// If we're the active data store then surround us in red
+
+			// This can fail if the viewer is being destroyed (viewer returns null)
+			// so catch this
+			try {
+				if (viewer.application().dataCollection().getActiveDataStore() == data || (enclosingSet != null && viewer.application().dataCollection().getActiveDataStore() == enclosingSet)) {
+					g.setColor(Color.RED);
+					g.drawLine(x, height-2, x+width, height-2);
+					g.drawLine(x, height-1, x+width, height-1);
+					g.drawLine(x, 0, x+width, 0);
+					g.drawLine(x, 1, x+width, 1);
+				}
 			}
+			catch (NullPointerException npe) {}
 		}
-		catch (NullPointerException npe) {}
-
 
 		String name = data.name();
 
