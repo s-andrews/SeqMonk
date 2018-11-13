@@ -34,6 +34,7 @@ import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
@@ -137,6 +138,14 @@ public class FeatureFilter extends ProbeFilter {
 		// filter.  We'll split these by chromosome at a later date but we
 		// have to get them as a set to start with.
 		Probe [] probesToMatch = options.featurePositions.getProbes();
+		
+		// Do a sanity check that there's actually something here to work with
+		
+		if (probesToMatch.length == 0) {
+			JOptionPane.showMessageDialog(options, "Your feature settings gave nothing to match against, making the matching a somewhat academic exercise", "No point continuing", JOptionPane.WARNING_MESSAGE);
+			progressCancelled();
+			return;
+		}
 		
 		
 		// This is the set of passing probes we're going to build up.
