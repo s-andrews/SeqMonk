@@ -113,9 +113,9 @@ public class RandomFilter extends ProbeFilter {
 					newList.addProbe(probes[j], null);
 				}
 				else {
-					currentList.addProbe(probes[j], currentList.getValueForProbe(probes[j]));
+					currentList.addProbe(probes[j], currentList.getValuesForProbe(probes[j]));
 					if (!seenProbes.contains(probes[j])) {
-						newList.addProbe(probes[j], currentList.getValueForProbe(probes[j]));
+						newList.addProbe(probes[j], currentList.getValuesForProbe(probes[j]));
 						seenProbes.add(probes[j]);
 					}
 				}

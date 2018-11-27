@@ -328,7 +328,7 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 			Enumeration<Probe> e = probes.elements();
 			while (e.hasMoreElements()) {
 				Probe p = e.nextElement();
-				Float d = list.getValueForProbe(p);
+				Float d = list.getValuesForProbe(p);
 				if (d != null) {
 					value += d.doubleValue();
 					++count;

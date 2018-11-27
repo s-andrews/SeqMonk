@@ -406,7 +406,7 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param p the p
 	 * @return the value for probe
 	 */
-	public float [] getValueForProbe (Probe p) {
+	public float [] getValuesForProbe (Probe p) {
 		if (probeList.containsKey(p)) {
 			return probeList.get(p);
 		}
@@ -420,7 +420,7 @@ public class ProbeList implements Comparable<ProbeList> {
 			return "";
 		}
 		
-		float [] values = getValueForProbe(p);
+		float [] values = getValuesForProbe(p);
 		if (values == null || values.length == 0) return "null";
 		
 		StringBuffer sb = new StringBuffer();

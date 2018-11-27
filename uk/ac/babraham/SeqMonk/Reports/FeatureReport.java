@@ -218,7 +218,7 @@ public class FeatureReport extends Report {
 			Enumeration<Probe> e = probes.elements();
 			while (e.hasMoreElements()) {
 				Probe p = e.nextElement();
-				Float d = list.getValueForProbe(p);
+				Float d = list.getValuesForProbe(p);
 				if (d != null) {
 					value += d.doubleValue();
 					++count;

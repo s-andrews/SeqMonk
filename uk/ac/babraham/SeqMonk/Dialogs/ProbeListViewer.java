@@ -117,7 +117,7 @@ public class ProbeListViewer extends JDialog implements MouseListener, ActionLis
 			rowData[i][2] = new Integer(probes[i].start());
 			rowData[i][3] = new Integer(probes[i].end());
 			for (int j=0;j<valueNames.length;j++) {
-				rowData[i][4+j] = list.getValueForProbe(probes[i])[j];
+				rowData[i][4+j] = list.getValuesForProbe(probes[i])[j];
 			}
 		}
 

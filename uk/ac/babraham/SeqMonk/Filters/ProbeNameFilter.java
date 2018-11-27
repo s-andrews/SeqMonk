@@ -149,7 +149,7 @@ public class ProbeNameFilter extends ProbeFilter {
 			}
 
 			if (queryStrings.contains(name)) {
-				passedProbes.addProbe(probes[p], startingList.getValueForProbe(probes[p]));						
+				passedProbes.addProbe(probes[p], startingList.getValuesForProbe(probes[p]));						
 			}
 			else {
 //				System.err.println("No match for "+name);

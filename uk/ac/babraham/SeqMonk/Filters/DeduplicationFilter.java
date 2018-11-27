@@ -144,12 +144,12 @@ public class DeduplicationFilter extends ProbeFilter {
 					else {
 						// TODO: Fix this so they either specify a value, and allow us to cope if there isn't one.
 						if (useHighest) {
-							if (startingList.getValueForProbe(probes[p])[0] > startingList.getValueForProbe(probePrefixes.get(prefix))[0]) {
+							if (startingList.getValuesForProbe(probes[p])[0] > startingList.getValuesForProbe(probePrefixes.get(prefix))[0]) {
 								probePrefixes.put(prefix, probes[p]);
 							}
 						}
 						else {
-							if (startingList.getValueForProbe(probes[p])[0] < startingList.getValueForProbe(probePrefixes.get(prefix))[0]) {
+							if (startingList.getValuesForProbe(probes[p])[0] < startingList.getValuesForProbe(probePrefixes.get(prefix))[0]) {
 							probePrefixes.put(prefix, probes[p]);
 							}
 						}
@@ -197,12 +197,12 @@ public class DeduplicationFilter extends ProbeFilter {
 								}
 								else {
 									if (useHighest) {
-										if (startingList.getValueForProbe(probes[p])[0] > startingList.getValueForProbe(lastValidProbe)[0]) {
+										if (startingList.getValuesForProbe(probes[p])[0] > startingList.getValuesForProbe(lastValidProbe)[0]) {
 											lastValidProbe = probes[p];
 										}
 									}
 									else {
-										if (startingList.getValueForProbe(probes[p])[0] < startingList.getValueForProbe(lastValidProbe)[0]) {
+										if (startingList.getValuesForProbe(probes[p])[0] < startingList.getValuesForProbe(lastValidProbe)[0]) {
 											lastValidProbe = probes[p];
 										}
 									}
@@ -217,7 +217,7 @@ public class DeduplicationFilter extends ProbeFilter {
 					// We'd normally keep the last overlap, unless we're discarding duplicates and the
 					// last probe was overlapped.
 					if (!(discardDuplicates & lastValidWasOverlapped)) {
-						newList.addProbe(lastValidProbe, startingList.getValueForProbe(lastValidProbe));
+						newList.addProbe(lastValidProbe, startingList.getValuesForProbe(lastValidProbe));
 					}
 
 					lastValidProbe = probes[p];
@@ -231,7 +231,7 @@ public class DeduplicationFilter extends ProbeFilter {
 		
 		// Add the last stored probe
 		if (lastValidProbe != null) {
-			newList.addProbe(lastValidProbe, startingList.getValueForProbe(lastValidProbe));
+			newList.addProbe(lastValidProbe, startingList.getValuesForProbe(lastValidProbe));
 		}
 
 		
@@ -243,7 +243,7 @@ public class DeduplicationFilter extends ProbeFilter {
 					continue;
 				}
 				Probe p = probePrefixes.get(prefix);
-				newList.addProbe(p, startingList.getValueForProbe(p));
+				newList.addProbe(p, startingList.getValuesForProbe(p));
 			}
 		}
 

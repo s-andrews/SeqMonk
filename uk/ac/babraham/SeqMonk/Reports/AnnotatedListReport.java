@@ -598,7 +598,7 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 				return "";
 
 			case 5:
-				if (list != null) return list.getValueForProbe(data[r].probe);
+				if (list != null) return list.getValuesForProbe(data[r].probe);
 				else return new Double(Double.NaN);
 
 			case 6:

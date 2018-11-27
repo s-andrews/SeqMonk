@@ -153,7 +153,7 @@ public class FeatureNameFilter extends ProbeFilter {
 				}
 					
 				if (featureNames.contains(name)) {
-					passedProbes.addProbe(probes[p], startingList.getValueForProbe(probes[p]));						
+					passedProbes.addProbe(probes[p], startingList.getValuesForProbe(probes[p]));						
 				}
 			}
 		}
