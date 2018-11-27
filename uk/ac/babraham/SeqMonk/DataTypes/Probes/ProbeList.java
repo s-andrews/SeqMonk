@@ -421,7 +421,7 @@ public class ProbeList implements Comparable<ProbeList> {
 		}
 		
 		float [] values = getValueForProbe(p);
-		if (values == null || values.length == 0) return "";
+		if (values == null || values.length == 0) return "null";
 		
 		StringBuffer sb = new StringBuffer();
 		

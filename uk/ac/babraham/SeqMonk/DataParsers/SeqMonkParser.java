@@ -70,7 +70,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	 * If the file to be loaded has a version higher than this then
 	 * the parser won't attempt to load it. */
 	
-	public static final int MAX_DATA_VERSION = 18;
+	public static final int MAX_DATA_VERSION = 19;
 
 	private SeqMonkApplication application;
 	private FileInputStream fis;
@@ -1303,7 +1303,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 				}
 			}
 			else {
-				lists[i] = new ProbeList(linkage[Integer.parseInt(listSections[0])-1],listSections[1],listSections[3],listSections[2]);
+				lists[i] = new ProbeList(linkage[Integer.parseInt(listSections[0])-1],listSections[1],listSections[3],listSections[2].split("%%"));
 				if (listSections.length > 4) {
 					lists[i].setComments(listSections[4].replaceAll("`", "\n"));	
 				}
@@ -1349,11 +1349,16 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 
 			for (int j=0;j<lists.length;j++) {
 				if (sections[j+1].length()>0) {
-					if (sections[j+1].equals("NaN")) {
+					if (sections[j+1].equals("null")) {
 						lists[j].addProbe(p,null);						
 					}
 					else {
-						lists[j].addProbe(p,new Float(Float.parseFloat(sections[j+1])));
+						String [] valueStrings = sections[j+1].split(",");
+						float [] values = new float[valueStrings.length];
+						for (int x=0;x<valueStrings.length;x++) {
+							values[x] = Float.parseFloat(valueStrings[x]);
+						}
+						lists[j].addProbe(p,values);
 					}
 				}
 			}
