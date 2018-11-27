@@ -84,6 +84,16 @@ public class ProbeList implements Comparable<ProbeList> {
 		}
 		
 		this.name = name;
+		
+		// Because of the way we save value names we can't allow a double percent sign (%%) to
+		// be in them, so we need to make sure this is removed.
+		
+		for (int i=0;i<valueNames.length;i++) {
+			while (valueNames[i].contains("%%")){
+				valueNames[i] = valueNames[i].replace("%%", "%");
+			}
+		}
+		
 		this.valueNames = valueNames;
 		this.description = description;
 		probeListAdded(this);
@@ -376,6 +386,20 @@ public class ProbeList implements Comparable<ProbeList> {
 		return valueNames;
 	}
 	
+	public String getConcatenatedValueNames() {
+		if (valueNames == null || valueNames.length == 0) return "";
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append(valueNames[0]);
+		for (int i=1;i<valueNames.length;i++) {
+			sb.append("%%");
+			sb.append(valueNames[i]);
+		}
+		
+		return (sb.toString());
+	}
+	
 	/**
 	 * Gets the value for probe.
 	 * 
@@ -389,6 +413,27 @@ public class ProbeList implements Comparable<ProbeList> {
 			
 		return null;
 	}
+	
+	public String getConcatenatedValuesForProbe(Probe p) {
+
+		if (!probeList.containsKey(p)) {
+			return "";
+		}
+		
+		float [] values = getValueForProbe(p);
+		if (values == null || values.length == 0) return "";
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append(values[0]);
+		for (int i=1;i<values.length;i++) {
+			sb.append(",");
+			sb.append(values[i]);
+		}
+		
+		return (sb.toString());
+	}
+
 	
 	
 	/* (non-Javadoc)
