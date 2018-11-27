@@ -101,7 +101,7 @@ public class ManualCorrelationFilter extends ProbeFilter {
 		ProbeList [] newLists = new ProbeList [profiles.length];
 		
 		if (newLists.length > 1) {
-			parentList = new ProbeList(startingList,"Filtered Probes","",null);
+			parentList = new ProbeList(startingList,"Filtered Probes","",new String[0]);
 			for (int p=0;p<newLists.length;p++) {
 				newLists[p] = new ProbeList(parentList,listName()+" "+(p+1),listDescription(),"R-value");
 			}

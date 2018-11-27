@@ -100,7 +100,7 @@ public class WindowedValuesFilter extends ProbeFilter {
 	@Override
 	protected void generateProbeList() {
 
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",null);
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String[0]);
 
 		Chromosome [] chromosomes = collection.genome().getAllChromosomes();
 

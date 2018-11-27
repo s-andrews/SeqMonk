@@ -98,7 +98,7 @@ public class ProbeNameFilter extends ProbeFilter {
 		stripTranscript = optionsPanel.stripTranscriptBox.isSelected();
 		caseInsensitive = optionsPanel.caseInsensitiveBox.isSelected();
 
-		ProbeList passedProbes = new ProbeList(startingList,"","",startingList.getValueName());
+		ProbeList passedProbes = new ProbeList(startingList,"","",startingList.getValueNames());
 
 		// We start by building a list of query strings we're going to
 		// check against.

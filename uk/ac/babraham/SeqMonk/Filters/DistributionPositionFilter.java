@@ -91,7 +91,7 @@ public class DistributionPositionFilter extends ProbeFilter {
 		
 		
 		Probe [] probes = startingList.getAllProbes();
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",null);
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String[0]);
 		
 		// Convert the %values into actual probe distribution positions.
 		Integer upperProbeLimit = null;

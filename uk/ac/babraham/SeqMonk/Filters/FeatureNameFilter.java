@@ -97,7 +97,7 @@ public class FeatureNameFilter extends ProbeFilter {
 		stripSuffixes = optionsPanel.stripSuffixesBox.isSelected();
 		stripTranscriptSuffixes = optionsPanel.stripTranscriptSuffixesBox.isSelected();
 		
-		ProbeList passedProbes = new ProbeList(startingList,"","",startingList.getValueName());
+		ProbeList passedProbes = new ProbeList(startingList,"","",startingList.getValueNames());
 				
 		// Since we're going to be making the annotations on the
 		// basis of position we should go through all probes one

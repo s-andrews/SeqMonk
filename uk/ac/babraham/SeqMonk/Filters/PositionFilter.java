@@ -96,7 +96,7 @@ public class PositionFilter extends ProbeFilter {
 	 */
 	@Override
 	protected void generateProbeList() {
-		ProbeList newList = new ProbeList(startingList,"","",null);
+		ProbeList newList = new ProbeList(startingList,"","",new String[0]);
 		
 		Probe [] probes = startingList.getAllProbes();
 		

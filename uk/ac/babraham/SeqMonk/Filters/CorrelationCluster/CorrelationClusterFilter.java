@@ -87,7 +87,7 @@ public class CorrelationClusterFilter extends ProbeFilter {
 //		System.out.println("Data store size="+stores.length+" lower="+lowerLimit+" upper="+upperLimit+" type="+limitType+" chosen="+chosenNumber);
 		
 		Probe [] probes = startingList.getAllProbes();
-		ProbeList newList = new ProbeList(startingList,"Correlation Cluster","",null);
+		ProbeList newList = new ProbeList(startingList,"Correlation Cluster","",new String[0]);
 		
 		Vector<CorrelationCluster>clusters = new Vector<CorrelationCluster>();
 		
@@ -138,7 +138,7 @@ public class CorrelationClusterFilter extends ProbeFilter {
 			if (allClusters[c].size() >= minSize) {
 				Probe [] clusterProbes = allClusters[c].getProbes();
 				
-				ProbeList clusterList = new ProbeList(newList, "Group"+(c+1), "Correlated Probes", null);
+				ProbeList clusterList = new ProbeList(newList, "Group"+(c+1), "Correlated Probes", new String[0]);
 				
 				for (int p=0;p<clusterProbes.length;p++) {
 					newList.addProbe(clusterProbes[p], null);

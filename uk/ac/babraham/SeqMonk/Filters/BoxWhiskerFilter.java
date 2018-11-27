@@ -258,7 +258,7 @@ public class BoxWhiskerFilter extends ProbeFilter {
 	 */
 	protected void generateProbeList () {
 		
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",null);
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String[0]);
 	
 		Hashtable<Probe, Integer> hitCounts = new Hashtable<Probe, Integer>();
 	

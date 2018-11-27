@@ -149,7 +149,7 @@ public class FeatureFilter extends ProbeFilter {
 		
 		
 		// This is the set of passing probes we're going to build up.
-		ProbeList passedProbes = new ProbeList(startingList,"","",null);
+		ProbeList passedProbes = new ProbeList(startingList,"","",new String[0]);
 		
 		
 		// We need to know how far beyond the feature we might need to look

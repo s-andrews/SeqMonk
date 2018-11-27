@@ -142,7 +142,7 @@ public class HeatmapMatrix implements Runnable, Cancellable {
 		ProbeList commonList = findCommonProbeListParent();
 
 		// TODO: Get a better name
-		ProbeList allProbesList = new ProbeList(commonList, "Filtered HiC hits", "HiC hits"+commonList, null);
+		ProbeList allProbesList = new ProbeList(commonList, "Filtered HiC hits", "HiC hits"+commonList, new String[0]);
 
 		HashSet<Probe>allClusterProbes = new HashSet<Probe>();
 
@@ -171,7 +171,7 @@ public class HeatmapMatrix implements Runnable, Cancellable {
 
 		ProbeList commonList = findCommonProbeListParent();
 
-		ProbeList allClusterList = new ProbeList(commonList, "HiC Clusters", "HiC Clusters with R > "+commonList, null);
+		ProbeList allClusterList = new ProbeList(commonList, "HiC Clusters", "HiC Clusters with R > "+commonList, new String[0]);
 
 		HashSet<Probe>allClusterProbes = new HashSet<Probe>();
 

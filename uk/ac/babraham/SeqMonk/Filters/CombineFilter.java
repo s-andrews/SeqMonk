@@ -99,10 +99,10 @@ public class CombineFilter extends ProbeFilter {
 		ProbeList newList;
 		
 		if (combineType == OR && firstList.parent() == secondList.parent()) {
-			newList= new ProbeList(firstList.parent(),"","",null);
+			newList= new ProbeList(firstList.parent(),"","",new String[0]);
 		}
 		else {
-			newList= new ProbeList(firstList,"","",null);			
+			newList= new ProbeList(firstList,"","",new String[0]);			
 		}
 		
 		Probe [] firstListProbes = firstList.getAllProbes();
