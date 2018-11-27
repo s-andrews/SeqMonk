@@ -56,7 +56,7 @@ public class ProbeSet extends ProbeList{
 	 * @param probes the probes
 	 */
 	public ProbeSet (String description, Probe [] probes) {
-		super(null,"All Probes",description,null);
+		super(null,"All Probes",description,new String[0]);
 		setProbes(probes);
 	}
 
@@ -73,7 +73,7 @@ public class ProbeSet extends ProbeList{
 		 * we'd go back to sort out this requirement by changing the SeqMonk
 		 * file format, but for now we're stuck with this work round
 		 */
-		super(null,"All Probes",description,null);
+		super(null,"All Probes",description,new String[0]);
 		expectedTotalCount = expectedSize;
 	}
 

@@ -276,7 +276,7 @@ public class EdgeRFilter extends ProbeFilter {
 			
 			ProbeList newList;
 			
-			newList = new ProbeList(startingList,"","","FDR");
+			newList = new ProbeList(startingList,"","",new String[]{"FDR"});
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 			
@@ -290,7 +290,7 @@ public class EdgeRFilter extends ProbeFilter {
 				int probeIndex = Integer.parseInt(sections[0]);
 				float pValue = Float.parseFloat(sections[sections.length-1]);
 				
-				newList.addProbe(probes[probeIndex],pValue);
+				newList.addProbe(probes[probeIndex],new float [] {pValue});
 			}
 			
 			br.close();

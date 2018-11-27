@@ -389,10 +389,10 @@ public class EdgeRForRevFilter extends ProbeFilter {
 			ProbeList newList;
 
 			if (multiTest) {
-				newList = new ProbeList(startingList,"","","FDR");
+				newList = new ProbeList(startingList,"","",new String[] {"FDR"});
 			}
 			else {
-				newList = new ProbeList(startingList,"","","p-value");
+				newList = new ProbeList(startingList,"","",new String [] {"p-value"});
 			}
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
@@ -409,7 +409,7 @@ public class EdgeRForRevFilter extends ProbeFilter {
 				int probeIndex = Integer.parseInt(indexSections[indexSections.length-1]);
 				float pValue = Float.parseFloat(sections[sections.length-1]);
 
-				newList.addProbe(probes[probeIndex],pValue);
+				newList.addProbe(probes[probeIndex],new float [] {pValue});
 			}
 
 			br.close();

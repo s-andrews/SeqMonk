@@ -71,6 +71,11 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param description the description
 	 * @param valueName the value name
 	 */
+
+	public ProbeList (ProbeList parent, String name, String description, String valueName) {
+		this(parent,name,description,new String[]{valueName});
+	}
+	
 	public ProbeList (ProbeList parent, String name, String description, String [] valueNames) {
 		this.parent = parent;
 		
@@ -223,6 +228,10 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param p the p
 	 * @param value the value
 	 */
+
+	public synchronized void addProbe (Probe p, float value) {
+		addProbe(p, new float [] {value});
+	}
 	public synchronized void addProbe (Probe p, float [] values) {
 		
 		if (values!=null) {

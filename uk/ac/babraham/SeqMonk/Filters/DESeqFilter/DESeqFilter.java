@@ -281,7 +281,7 @@ public class DESeqFilter extends ProbeFilter {
 
 			ProbeList newList;
 
-			newList = new ProbeList(startingList,"","","FDR");
+			newList = new ProbeList(startingList,"","",new String[] {"P-value","FDR","Fold Change"});
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 
@@ -292,10 +292,13 @@ public class DESeqFilter extends ProbeFilter {
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
 
+				
+				// TODO: FIX THIS - need to check the actual format and rewrite accordingly
 				int probeIndex = Integer.parseInt(sections[0]);
 				float pValue = Float.parseFloat(sections[sections.length-1]);
-
-				newList.addProbe(probes[probeIndex],pValue);
+				float qValue = Float.parseFloat(sections[sections.length-2]);
+				float foldChange = Float.parseFloat(sections[sections.length-3]);
+				newList.addProbe(probes[probeIndex],new float[]{pValue,qValue,foldChange});
 			}
 
 			br.close();
