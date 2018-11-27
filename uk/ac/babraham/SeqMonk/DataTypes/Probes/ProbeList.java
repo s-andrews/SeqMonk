@@ -35,7 +35,7 @@ public class ProbeList implements Comparable<ProbeList> {
 	// gets out of hand when we have too many probes as the hash memory usage
 	// goes through the roof.
 	/** The probe list. */
-	private Hashtable<Probe, Float> probeList = new Hashtable<Probe, Float>();
+	private Hashtable<Probe, float []> probeList = new Hashtable<Probe, float []>();
 
 	// This vector stores all of the probes currently in the list and keeps
 	// them sorted for convenience.
@@ -55,7 +55,7 @@ public class ProbeList implements Comparable<ProbeList> {
 	private String comments = "";
 	
 	/** The value name. */
-	private String valueName;
+	private String [] valueNames;
 	
 	/** The parent. */
 	private ProbeList parent;
@@ -71,7 +71,7 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param description the description
 	 * @param valueName the value name
 	 */
-	public ProbeList (ProbeList parent, String name, String description, String valueName) {
+	public ProbeList (ProbeList parent, String name, String description, String [] valueNames) {
 		this.parent = parent;
 		
 		if (parent != null) {
@@ -79,7 +79,7 @@ public class ProbeList implements Comparable<ProbeList> {
 		}
 		
 		this.name = name;
-		this.valueName = valueName;
+		this.valueNames = valueNames;
 		this.description = description;
 		probeListAdded(this);
 	}
@@ -223,10 +223,14 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param p the p
 	 * @param value the value
 	 */
-	public synchronized void addProbe (Probe p, Float value) {
+	public synchronized void addProbe (Probe p, float [] values) {
 		
-		if (value!=null)
-			probeList.put(p,value);
+		if (values!=null) {
+			if (values.length != valueNames.length) {
+				throw new IllegalStateException("Added probe "+p.name()+" to list "+name()+" with "+values.length+" values, but "+valueNames.length+" names were declared");
+			}
+			probeList.put(p,values);
+		}
 		sortedProbes.add(p);
 		
 		isSorted = false;
@@ -356,11 +360,11 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * 
 	 * @return the value name
 	 */
-	public String getValueName () {
-		if (valueName == null) {
-			return "No value";
+	public String [] getValueNames () {
+		if (valueNames == null) {
+			return new String [] {};
 		}
-		return valueName;
+		return valueNames;
 	}
 	
 	/**
@@ -369,12 +373,12 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param p the p
 	 * @return the value for probe
 	 */
-	public Float getValueForProbe (Probe p) {
+	public float [] getValueForProbe (Probe p) {
 		if (probeList.containsKey(p)) {
 			return probeList.get(p);
 		}
 			
-		return Float.NaN;
+		return null;
 	}
 	
 	

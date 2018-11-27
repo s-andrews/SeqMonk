@@ -80,7 +80,7 @@ public class ProbeSet extends ProbeList{
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#addProbe(uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe, java.lang.Double)
 	 */
-	public void addProbe (Probe p, Float value) {
+	public void addProbe (Probe p, float [] values) {
 
 		/**
 		 * This method is only used by the SeqMonk parser.  All other probe
@@ -94,7 +94,7 @@ public class ProbeSet extends ProbeList{
 
 		// Call the super method so we can still be treated like a
 		// normal probe list
-		super.addProbe(p, value);
+		super.addProbe(p, values);
 	}
 
 	public void setCollection (DataCollection collection) {

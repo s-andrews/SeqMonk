@@ -220,11 +220,11 @@ public class HeatmapMatrix implements Runnable, Cancellable {
 
 			if (nonRedCount < minClusterSize) continue; // There aren't enough different probes to keep this set.
 
-			ProbeList thisList = new ProbeList(allClusterList, "Cluster "+(subListIndex+1), "HiC cluster list number "+(subListIndex+1), "R-value");
+			ProbeList thisList = new ProbeList(allClusterList, "Cluster "+(subListIndex+1), "HiC cluster list number "+(subListIndex+1), new String [] {"R-value"});
 
 			float rValue = connectedClusters[subListIndex].rValue();
 
-			thisList.addProbe(theseProbes[0], rValue);
+			thisList.addProbe(theseProbes[0], new float[]{rValue});
 			if (! allClusterProbes.contains(theseProbes[0])) {
 				allClusterList.addProbe(theseProbes[0],null);
 				allClusterProbes.add(theseProbes[0]);
@@ -232,7 +232,7 @@ public class HeatmapMatrix implements Runnable, Cancellable {
 
 			for (int i=1;i<theseProbes.length;i++) {
 				if (theseProbes[i] == theseProbes[i-1]) continue;
-				thisList.addProbe(theseProbes[i], rValue);
+				thisList.addProbe(theseProbes[i], new float[]{rValue});
 				if (allClusterProbes.contains(theseProbes[i])) {
 					continue;
 				}
