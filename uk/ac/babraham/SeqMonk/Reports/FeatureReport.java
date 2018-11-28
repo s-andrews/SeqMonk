@@ -386,7 +386,7 @@ public class FeatureReport extends Report {
 					catch (SeqMonkException e) {}
 				}
 				
-				if ((c-10) % 2 == 0) {
+				if ((c-(9+list.getValueNames().length)) % 2 == 0) {
 					return new Float(SimpleStats.mean(values));
 				}
 				else {
