@@ -526,7 +526,7 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 13+stores.length;
+			return 12+list.getValueNames().length+stores.length;
 		}
 
 		/* (non-Javadoc)
@@ -539,15 +539,19 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 			case 2: return "Start";
 			case 3: return "End";
 			case 4: return "Probe Strand";
-			case 5: if (list != null)return list.getValueName(); else return "No value";
-			case 6: return "Feature";
-			case 7: return "ID";
-			case 8: return "Description";
-			case 9: return "Feature Strand";
-			case 10: return "Type";
-			case 11: return "Feature Orientation";
-			case 12: return "Distance";
-			default: return stores[c-13].name();
+			case 5: return "Feature";
+			case 6: return "ID";
+			case 7: return "Description";
+			case 8: return "Feature Strand";
+			case 9: return "Type";
+			case 10: return "Feature Orientation";
+			case 11: return "Distance";
+			default: 
+				if (c < 12 + list.getValueNames().length) {
+					return list.getValueNames()[c-12];
+				}
+				
+				return stores[c-(12+list.getValueNames().length)].name();
 			}
 		}
 
@@ -562,15 +566,14 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 			case 2: return Integer.class;
 			case 3: return Integer.class;
 			case 4: return String.class;
-			case 5: return Double.class;
-			case 6: return Object.class;
+			case 5: return Object.class;
+			case 6: return String.class;
 			case 7: return String.class;
 			case 8: return String.class;
 			case 9: return String.class;
 			case 10: return String.class;
-			case 11: return String.class;
-			case 12: return Integer.class;
-			default: return Float.class;
+			case 11: return Integer.class;
+			default: return Double.class;
 			}
 		}
 
@@ -598,46 +601,51 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 				return "";
 
 			case 5:
-				if (list != null) return list.getValuesForProbe(data[r].probe);
-				else return new Double(Double.NaN);
-
-			case 6:
 				return data[r].feature;
 
-			case 7:
+			case 6:
 				if (data[r].feature != null)
 					return data[r].feature.id();
 				else 
 					return "";
 
-			case 8:
+			case 7:
 				if (data[r].feature != null)
 					return data[r].feature.description();
 				else 
 					return "";
 				
-			case 9:
+			case 8:
 				if (data[r].feature == null) return "";
 				if (data[r].feature.location().strand() == Location.FORWARD) return "+";
 				if (data[r].feature.location().strand() == Location.REVERSE) return "-";
 				return "";
 
 
-			case 10:
+			case 9:
 				if (data[r].feature != null) 
 					return data[r].feature.type();
 				else 
 					return "";
 
-			case 11:
+			case 10:
 				return data[r].orientation;
 
-			case 12:
+			case 11:
 				return new Integer(data[r].distance);
 
 			default:
+				if (c < 12 + list.getValueNames().length) {
+					if (list.getValuesForProbe(data[r].probe) == null) {
+						return Double.NaN;
+					}
+					else {
+						return list.getValuesForProbe(data[r].probe)[c-12];
+					}
+				}
+				
 				try {
-					return new Float(stores[c-13].getValueForProbe(data[r].probe));
+					return new Float(stores[c-(12+list.getValueNames().length)].getValueForProbe(data[r].probe));
 				} 
 				catch (SeqMonkException e) {
 					return null;
