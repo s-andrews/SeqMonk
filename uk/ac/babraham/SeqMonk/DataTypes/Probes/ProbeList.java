@@ -94,6 +94,13 @@ public class ProbeList implements Comparable<ProbeList> {
 			}
 		}
 		
+		// For legacy reasons we might have an empty annotation set with 
+		// a name of "No value".  We can treat this as if it were null
+		// under the newer more flexible annotation system.
+		if (valueNames.length==1 && valueNames[0].equals("No value")) {
+			valueNames = null;
+		}
+		
 		this.valueNames = valueNames;
 		this.description = description;
 		probeListAdded(this);
@@ -243,6 +250,12 @@ public class ProbeList implements Comparable<ProbeList> {
 		addProbe(p, new float [] {value});
 	}
 	public synchronized void addProbe (Probe p, float [] values) {
+		
+		// Cope with older data where we used to just include a NaN value
+		// if there was nothing to report.
+		if (values != null && values.length == 1 && Float.isNaN(values[0])) {
+			values = null;
+		}
 		
 		if (values!=null) {
 			if (values.length != valueNames.length) {
