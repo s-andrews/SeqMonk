@@ -183,16 +183,33 @@ public class DataSetEditor extends JDialog implements ActionListener, ListSelect
 
 		if (c.equals("rename_dataset")) {
 			
-			DataSet s = (DataSet)dataSetList.getSelectedValue();
-			String dataSetName=null;
-			while (true) {
-				dataSetName = (String)JOptionPane.showInputDialog(this,"Enter DataSet name","DataSet Name",JOptionPane.QUESTION_MESSAGE,null,null,s.name());
-				if (dataSetName == null) return; // They cancelled
+			if (dataSetList.getSelectedIndices().length > 1) {
+				Object [] o = dataSetList.getSelectedValues();
+				DataSet [] sets = new DataSet[o.length];
+				for (int i=0;i<o.length;i++) {
+					sets[i] = (DataSet)o[i];
+				}
 				
-				if (dataSetName.length()>0) break;
+				new MultiDataSetRenameDialog(sets);
+				
+				int [] indices = dataSetList.getSelectedIndices();
+				
+				for (int i=0;i<indices.length;i++) {
+					dataSetModel.setElementAt(sets[i],indices[i]);
+				}
 			}
-			s.setName(dataSetName);
-			dataSetModel.setElementAt(s,dataSetList.getSelectedIndex());
+			else {
+				DataSet s = (DataSet)dataSetList.getSelectedValue();
+				String dataSetName=null;
+				while (true) {
+					dataSetName = (String)JOptionPane.showInputDialog(this,"Enter DataSet name","DataSet Name",JOptionPane.QUESTION_MESSAGE,null,null,s.name());
+					if (dataSetName == null) return; // They cancelled
+					
+					if (dataSetName.length()>0) break;
+				}
+				s.setName(dataSetName);
+				dataSetModel.setElementAt(s,dataSetList.getSelectedIndex());
+			}
 		}
 		
 		else if (c.equals("replace")) {
@@ -308,17 +325,12 @@ public class DataSetEditor extends JDialog implements ActionListener, ListSelect
 			deleteButton.setEnabled(true);
 			replaceButton.setEnabled(true);
 			resetButton.setEnabled(true);
+			renameButton.setEnabled(true);
 		}
 		else {
 			deleteButton.setEnabled(false);
 			replaceButton.setEnabled(false);
 			resetButton.setEnabled(false);
-		}
-		
-		if (dataSetList.getSelectedValues().length == 1) {
-			renameButton.setEnabled(true);
-		}
-		else {
 			renameButton.setEnabled(false);
 		}
 	}
