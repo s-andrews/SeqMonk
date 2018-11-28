@@ -501,7 +501,7 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 		double minDiff = Math.min(diffStart, diffEnd);
 		double maxDiff = Math.max(diffStart, diffEnd);
 
-		ProbeList list = new ProbeList(probeList,"Difference between "+df.format(minDiff)+" and "+df.format(maxDiff),"Difference between "+xStore.name()+" and "+yStore.name()+" was between "+df.format(minDiff)+" and "+df.format(maxDiff),null);
+		ProbeList list = new ProbeList(probeList,"Difference between "+df.format(minDiff)+" and "+df.format(maxDiff),"Difference between "+xStore.name()+" and "+yStore.name()+" was between "+df.format(minDiff)+" and "+df.format(maxDiff),new String[0]);
 
 		if (madeSelection) {
 

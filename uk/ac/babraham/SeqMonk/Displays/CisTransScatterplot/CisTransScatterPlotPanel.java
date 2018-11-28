@@ -404,7 +404,7 @@ public class CisTransScatterPlotPanel extends JPanel implements Runnable, MouseM
 		double minDiff = Math.min(diffStart, diffEnd);
 		double maxDiff = Math.max(diffStart, diffEnd);
 
-		ProbeList list = new ProbeList(probeList,"Difference between "+df.format(minDiff)+" and "+df.format(maxDiff),"Cis/Trans difference in "+store.name()+" between "+df.format(minDiff)+" and "+df.format(maxDiff),null);
+		ProbeList list = new ProbeList(probeList,"Difference between "+df.format(minDiff)+" and "+df.format(maxDiff),"Cis/Trans difference in "+store.name()+" between "+df.format(minDiff)+" and "+df.format(maxDiff),new String[0]);
 
 		if (madeSelection) {
 
