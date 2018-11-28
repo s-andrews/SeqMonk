@@ -97,7 +97,7 @@ public class ProbeList implements Comparable<ProbeList> {
 		// For legacy reasons we might have an empty annotation set with 
 		// a name of "No value".  We can treat this as if it were null
 		// under the newer more flexible annotation system.
-		if (valueNames.length==1 && valueNames[0].equals("No value")) {
+		if (valueNames.length==1 && (valueNames[0].equals("No value") || valueNames[0].equals(""))) {
 			valueNames = null;
 		}
 		
@@ -430,7 +430,7 @@ public class ProbeList implements Comparable<ProbeList> {
 	public String getConcatenatedValuesForProbe(Probe p) {
 
 		if (!probeList.containsKey(p)) {
-			return "";
+			return "null";
 		}
 		
 		float [] values = getValuesForProbe(p);

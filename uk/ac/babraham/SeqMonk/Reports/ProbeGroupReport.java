@@ -435,7 +435,7 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 7+(stores.length*2);
+			return 6+list.getValueNames().length+(stores.length*2);
 		}
 
 		/* (non-Javadoc)
@@ -457,7 +457,7 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 					return "Mean "+stores[(c-(6+list.getValueNames().length))/2].name();
 				}
 				else {
-					return "StDev "+stores[(c-(list.getValueNames().length))/2].name();					
+					return "StDev "+stores[(c-(7+list.getValueNames().length))/2].name();					
 				}
 				
 			}
@@ -507,19 +507,19 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 				Probe [] theseProbes = data[r].probes();
 				
 				if (c < 6+list.getValueNames().length) {
-					return(data[r].getAnnotationValues()[c-(6+list.getValueNames().length)]);
+					return(data[r].getAnnotationValues()[c-6]);
 				}
 
 				
 				double [] values = new double [theseProbes.length];
 				for (int i=0;i<theseProbes.length;i++) {
 					try {
-						values[i] = stores[(c-(7+list.getValueNames().length))/2].getValueForProbe(theseProbes[i]);
+						values[i] = stores[(c-(6+list.getValueNames().length))/2].getValueForProbe(theseProbes[i]);
 					} 
 					catch (SeqMonkException e) {}
 				}
 				
-				if ((c-(7+list.getValueNames().length)) % 2 == 0) {
+				if ((c-(6+list.getValueNames().length)) % 2 == 0) {
 					return new Float(SimpleStats.mean(values));
 				}
 				else {

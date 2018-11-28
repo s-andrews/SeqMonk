@@ -281,7 +281,7 @@ public class FeatureReport extends Report {
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 10+(stores.length*2);
+			return 9+list.getValueNames().length+(stores.length*2);
 		}
 
 		/* (non-Javadoc)
@@ -299,7 +299,6 @@ public class FeatureReport extends Report {
 			case 7: return "No. Sublocations";
 			case 8: return "No. Probes";
 			default:
-				System.err.println("Index is "+c+" values is "+list.getValueNames().length+" stores is "+stores.length);
 				if (c < 9+list.getValueNames().length) {
 					return(list.getValueNames()[c-9]);
 				}
