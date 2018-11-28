@@ -211,24 +211,29 @@ public class FeatureReport extends Report {
 		 * 
 		 * @return The average probe list value for all probes associated with this feature.
 		 */
-		public Double getAnnotationValue () {
-			double value = 0;
+		public double [] getAnnotationValues () {
+			double [] value = new double[list.getValueNames().length];
 			int count = 0;
 			
 			Enumeration<Probe> e = probes.elements();
 			while (e.hasMoreElements()) {
 				Probe p = e.nextElement();
-				Float d = list.getValuesForProbe(p);
+				float [] d = list.getValuesForProbe(p);
 				if (d != null) {
-					value += d.doubleValue();
+					for (int i=0;i<d.length;i++) {
+						value[i] += d[i];
+					}
 					++count;
 				}
 			}
 			if (count > 0) {
-				return new Double(value/count);
+				for (int i=0;i<value.length;i++) {
+					value[i] /= count;
+				}
+				return value;
 			}
 			else {
-				return new Double(Double.NaN);
+				return null;
 			}
 		}
 				
@@ -288,18 +293,21 @@ public class FeatureReport extends Report {
 			case 1: return "Start";
 			case 2: return "End";
 			case 3: return "Strand";
-			case 4: if (list != null)return "Average "+list.getValueName(); else return "No value";
-			case 5: return "Feature";
-			case 6: return "ID";
-			case 7: return "Description";
-			case 8: return "No. Sublocations";
-			case 9: return "No. Probes";
-			default: 
-				if ((c-10) % 2 == 0) {
-					return "Mean "+stores[(c-9)/2].name();
+			case 4: return "Feature";
+			case 5: return "ID";
+			case 6: return "Description";
+			case 7: return "No. Sublocations";
+			case 8: return "No. Probes";
+			default:
+				System.err.println("Index is "+c+" values is "+list.getValueNames().length+" stores is "+stores.length);
+				if (c < 9+list.getValueNames().length) {
+					return(list.getValueNames()[c-9]);
+				}
+				if ((c-(9+list.getValueNames().length)) % 2 == 0) {
+					return "Mean "+stores[(c-(8+list.getValueNames().length))/2].name();
 				}
 				else {
-					return "StDev "+stores[(c-10)/2].name();					
+					return "StDev "+stores[(c-(9+list.getValueNames().length))/2].name();					
 				}
 			}
 		}
@@ -314,12 +322,11 @@ public class FeatureReport extends Report {
 			case 1: return Integer.class;
 			case 2: return Integer.class;
 			case 3: return String.class;
-			case 4: return Float.class;
+			case 4: return String.class;
 			case 5: return String.class;
 			case 6: return String.class;
-			case 7: return String.class;
+			case 7: return Integer.class;
 			case 8: return Integer.class;
-			case 9: return Integer.class;
 			default: return Float.class;
 			}
 		}
@@ -344,35 +351,37 @@ public class FeatureReport extends Report {
 				if (data[r].feature().location().strand() == Location.UNKNOWN) return "";
 			
 			case 4:
-				return data[r].getAnnotationValue();
-
-			case 5:
 				return data[r].feature().name();
 
-			case 6:
+			case 5:
 				return data[r].feature().id();
 	
-			case 7:
+			case 6:
 				return data[r].feature().description();
 
-			case 8:
+			case 7:
 				if (data[r].feature().location() instanceof SplitLocation) {
 					return ((SplitLocation)data[r].feature().location()).subLocations().length;					
 				}
 				return 1;
 
 				
-			case 9:
+			case 8:
 				return new Integer(data[r].numberOfProbes());
 			
 				
 			default:
-				
 				Probe [] theseProbes = data[r].probes();
+				
+				if (c < 9+list.getValueNames().length) {
+					return(data[r].getAnnotationValues()[c-(8+list.getValueNames().length)]);
+				}
+
+				
 				double [] values = new double [theseProbes.length];
 				for (int i=0;i<theseProbes.length;i++) {
 					try {
-						values[i] = stores[(c-10)/2].getValueForProbe(theseProbes[i]);
+						values[i] = stores[(c-(9+list.getValueNames().length))/2].getValueForProbe(theseProbes[i]);
 					} 
 					catch (SeqMonkException e) {}
 				}

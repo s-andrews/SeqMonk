@@ -27,7 +27,7 @@ import java.util.Vector;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 
 /**
- * The Class ProbeList stores as set of probes and associated quantiation values
+ * The Class ProbeList stores as set of probes and associated quantitation values
  */
 public class ProbeList implements Comparable<ProbeList> {
 	
