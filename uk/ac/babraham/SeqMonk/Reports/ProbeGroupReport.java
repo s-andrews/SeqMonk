@@ -316,29 +316,35 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 			return end;
 		}
 		
+		
 		/**
 		 * Gets the annotation value.
 		 * 
-		 * @return The average probe list value for all probes in this set.
+		 * @return The average probe list value for all probes associated with this feature.
 		 */
-		public Double getAnnotationValue () {
-			double value = 0;
+		public double [] getAnnotationValues () {
+			double [] value = new double[list.getValueNames().length];
 			int count = 0;
 			
 			Enumeration<Probe> e = probes.elements();
 			while (e.hasMoreElements()) {
 				Probe p = e.nextElement();
-				Float d = list.getValueForProbe(p);
+				float [] d = list.getValuesForProbe(p);
 				if (d != null) {
-					value += d.doubleValue();
+					for (int i=0;i<d.length;i++) {
+						value[i] += d[i];
+					}
 					++count;
 				}
 			}
 			if (count > 0) {
-				return new Double(value/count);
+				for (int i=0;i<value.length;i++) {
+					value[i] /= count;
+				}
+				return value;
 			}
 			else {
-				return new Double(Double.NaN);
+				return null;
 			}
 		}
 		
@@ -429,7 +435,7 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 7+(stores.length*2);
+			return 6+list.getValueNames().length+(stores.length*2);
 		}
 
 		/* (non-Javadoc)
@@ -440,16 +446,18 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 			case 0: return "Chr";
 			case 1: return "Start";
 			case 2: return "End";
-			case 3: if (list != null)return "Average "+list.getValueName(); else return "No value";
-			case 4: return "No. Probes";
-			case 5: return "Features";
-			case 6: return "Descriptions";
+			case 3: return "No. Probes";
+			case 4: return "Features";
+			case 5: return "Descriptions";
 			default: 
-				if ((c-7) % 2 == 0) {
-					return "Mean "+stores[(c-7)/2].name();
+				if (c < 6+list.getValueNames().length) {
+					return list.getValueNames()[c-6];
+				}
+				if ((c-(6+list.getValueNames().length)) % 2 == 0) {
+					return "Mean "+stores[(c-(6+list.getValueNames().length))/2].name();
 				}
 				else {
-					return "StDev "+stores[(c-7)/2].name();					
+					return "StDev "+stores[(c-(7+list.getValueNames().length))/2].name();					
 				}
 				
 			}
@@ -464,11 +472,10 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 			case 0: return String.class;
 			case 1: return Integer.class;
 			case 2: return Integer.class;
-			case 3: return Float.class;
-			case 4: return Integer.class;
+			case 3: return Integer.class;
+			case 4: return String.class;
 			case 5: return String.class;
-			case 6: return String.class;
-			default: return Float.class;
+			default: return Double.class;
 			}
 		}
 		
@@ -487,33 +494,38 @@ public class ProbeGroupReport extends Report implements KeyListener, ItemListene
 				return new Integer(data[r].end());
 				
 			case 3:
-				return data[r].getAnnotationValue();
-
-			case 4:
 				return new Integer(data[r].numberOfProbes());
 				
-			case 5:
+			case 4:
 				return data[r].featureNames();
 				
-			case 6:
+			case 5:
 				return data[r].featureDescriptions();
 				
 			default:
+				
 				Probe [] theseProbes = data[r].probes();
+				
+				if (c < 6+list.getValueNames().length) {
+					return(data[r].getAnnotationValues()[c-6]);
+				}
+
+				
 				double [] values = new double [theseProbes.length];
 				for (int i=0;i<theseProbes.length;i++) {
 					try {
-						values[i] = stores[(c-7)/2].getValueForProbe(theseProbes[i]);
+						values[i] = stores[(c-(6+list.getValueNames().length))/2].getValueForProbe(theseProbes[i]);
 					} 
 					catch (SeqMonkException e) {}
 				}
 				
-				if ((c-7) % 2 == 0) {
+				if ((c-(6+list.getValueNames().length)) % 2 == 0) {
 					return new Float(SimpleStats.mean(values));
 				}
 				else {
 					return new Float(SimpleStats.stdev(values));					
 				}
+
 			}
 		}
 		

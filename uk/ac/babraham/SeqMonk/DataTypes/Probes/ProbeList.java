@@ -27,7 +27,7 @@ import java.util.Vector;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 
 /**
- * The Class ProbeList stores as set of probes and associated quantiation values
+ * The Class ProbeList stores as set of probes and associated quantitation values
  */
 public class ProbeList implements Comparable<ProbeList> {
 	
@@ -35,7 +35,7 @@ public class ProbeList implements Comparable<ProbeList> {
 	// gets out of hand when we have too many probes as the hash memory usage
 	// goes through the roof.
 	/** The probe list. */
-	private Hashtable<Probe, Float> probeList = new Hashtable<Probe, Float>();
+	private Hashtable<Probe, float []> probeList = new Hashtable<Probe, float []>();
 
 	// This vector stores all of the probes currently in the list and keeps
 	// them sorted for convenience.
@@ -55,7 +55,7 @@ public class ProbeList implements Comparable<ProbeList> {
 	private String comments = "";
 	
 	/** The value name. */
-	private String valueName;
+	private String [] valueNames;
 	
 	/** The parent. */
 	private ProbeList parent;
@@ -71,7 +71,12 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param description the description
 	 * @param valueName the value name
 	 */
+
 	public ProbeList (ProbeList parent, String name, String description, String valueName) {
+		this(parent,name,description,new String[]{valueName});
+	}
+	
+	public ProbeList (ProbeList parent, String name, String description, String [] valueNames) {
 		this.parent = parent;
 		
 		if (parent != null) {
@@ -79,7 +84,24 @@ public class ProbeList implements Comparable<ProbeList> {
 		}
 		
 		this.name = name;
-		this.valueName = valueName;
+		
+		// Because of the way we save value names we can't allow a double percent sign (%%) to
+		// be in them, so we need to make sure this is removed.
+		
+		for (int i=0;i<valueNames.length;i++) {
+			while (valueNames[i].contains("%%")){
+				valueNames[i] = valueNames[i].replace("%%", "%");
+			}
+		}
+		
+		// For legacy reasons we might have an empty annotation set with 
+		// a name of "No value".  We can treat this as if it were null
+		// under the newer more flexible annotation system.
+		if (valueNames.length==1 && (valueNames[0].equals("No value") || valueNames[0].equals(""))) {
+			valueNames = null;
+		}
+		
+		this.valueNames = valueNames;
 		this.description = description;
 		probeListAdded(this);
 	}
@@ -223,10 +245,24 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param p the p
 	 * @param value the value
 	 */
-	public synchronized void addProbe (Probe p, Float value) {
+
+	public synchronized void addProbe (Probe p, float value) {
+		addProbe(p, new float [] {value});
+	}
+	public synchronized void addProbe (Probe p, float [] values) {
 		
-		if (value!=null)
-			probeList.put(p,value);
+		// Cope with older data where we used to just include a NaN value
+		// if there was nothing to report.
+		if (values != null && values.length == 1 && Float.isNaN(values[0])) {
+			values = null;
+		}
+		
+		if (values!=null) {
+			if (values.length != valueNames.length) {
+				throw new IllegalStateException("Added probe "+p.name()+" to list "+name()+" with "+values.length+" values, but "+valueNames.length+" names were declared");
+			}
+			probeList.put(p,values);
+		}
 		sortedProbes.add(p);
 		
 		isSorted = false;
@@ -356,11 +392,25 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * 
 	 * @return the value name
 	 */
-	public String getValueName () {
-		if (valueName == null) {
-			return "No value";
+	public String [] getValueNames () {
+		if (valueNames == null) {
+			return new String [] {};
 		}
-		return valueName;
+		return valueNames;
+	}
+	
+	public String getConcatenatedValueNames() {
+		if (valueNames == null || valueNames.length == 0) return "";
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append(valueNames[0]);
+		for (int i=1;i<valueNames.length;i++) {
+			sb.append("%%");
+			sb.append(valueNames[i]);
+		}
+		
+		return (sb.toString());
 	}
 	
 	/**
@@ -369,13 +419,34 @@ public class ProbeList implements Comparable<ProbeList> {
 	 * @param p the p
 	 * @return the value for probe
 	 */
-	public Float getValueForProbe (Probe p) {
+	public float [] getValuesForProbe (Probe p) {
 		if (probeList.containsKey(p)) {
 			return probeList.get(p);
 		}
 			
-		return Float.NaN;
+		return null;
 	}
+	
+	public String getConcatenatedValuesForProbe(Probe p) {
+
+		if (!probeList.containsKey(p)) {
+			return "null";
+		}
+		
+		float [] values = getValuesForProbe(p);
+		if (values == null || values.length == 0) return "null";
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append(values[0]);
+		for (int i=1;i<values.length;i++) {
+			sb.append(",");
+			sb.append(values[i]);
+		}
+		
+		return (sb.toString());
+	}
+
 	
 	
 	/* (non-Javadoc)

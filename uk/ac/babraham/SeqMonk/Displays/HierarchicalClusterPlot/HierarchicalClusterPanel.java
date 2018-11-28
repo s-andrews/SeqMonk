@@ -149,7 +149,7 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 	
 	public ProbeList saveClusters (int minClusterSize) {
 		
-		ProbeList allClusterList = new ProbeList(probeList, "Hierarchical Clusters", "Hierarchical Clusters with R > "+rValue, null);
+		ProbeList allClusterList = new ProbeList(probeList, "Hierarchical Clusters", "Hierarchical Clusters with R > "+rValue, new String[0]);
 				
 		// Now we need to work our way through the connected clusters
 		// to make the appropriate sub-lists

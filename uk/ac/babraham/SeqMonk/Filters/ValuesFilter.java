@@ -89,7 +89,7 @@ public class ValuesFilter extends ProbeFilter {
 //		System.out.println("Data store size="+stores.length+" lower="+lowerLimit+" upper="+upperLimit+" type="+limitType+" chosen="+chosenNumber);
 		
 		Probe [] probes = startingList.getAllProbes();
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",null);
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String[0]);
 		
 		for (int p=0;p<probes.length;p++) {
 			

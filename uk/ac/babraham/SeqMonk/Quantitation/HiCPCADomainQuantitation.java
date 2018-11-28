@@ -159,7 +159,7 @@ public class HiCPCADomainQuantitation extends Quantitation implements ProgressLi
 				continue;
 			}
 
-			ProbeList thisChrProbes = new ProbeList(application.dataCollection().probeSet(), chromosomes[c].name(), "", null);
+			ProbeList thisChrProbes = new ProbeList(application.dataCollection().probeSet(), chromosomes[c].name(), "", new String[0]);
 
 			for (int p=0;p<probes.length;p++) {
 				thisChrProbes.addProbe(probes[p], 0f);

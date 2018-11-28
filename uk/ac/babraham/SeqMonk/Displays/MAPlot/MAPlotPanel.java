@@ -497,7 +497,7 @@ public class MAPlotPanel extends JPanel implements Runnable, MouseMotionListener
 		double minY = Math.min(ySelectionStart, ySelectionEnd);
 		double maxY = Math.max(ySelectionStart, ySelectionEnd);
 
-		ProbeList list = new ProbeList(probeList,"Difference between "+df.format(minY)+" and "+df.format(maxY),"Difference between "+xStore.name()+" and "+yStore.name()+" was between "+df.format(minY)+" and "+df.format(maxY),null);
+		ProbeList list = new ProbeList(probeList,"Difference between "+df.format(minY)+" and "+df.format(maxY),"Difference between "+xStore.name()+" and "+yStore.name()+" was between "+df.format(minY)+" and "+df.format(maxY),new String[0]);
 
 		if (madeSelection) {
 

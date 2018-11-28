@@ -281,7 +281,7 @@ public class DESeqFilter extends ProbeFilter {
 
 			ProbeList newList;
 
-			newList = new ProbeList(startingList,"","","FDR");
+			newList = new ProbeList(startingList,"","",new String[] {"P-value","FDR","Log2 Fold Change"});
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 
@@ -291,11 +291,12 @@ public class DESeqFilter extends ProbeFilter {
 
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
-
+				
 				int probeIndex = Integer.parseInt(sections[0]);
-				float pValue = Float.parseFloat(sections[sections.length-1]);
-
-				newList.addProbe(probes[probeIndex],pValue);
+				float pValue = Float.parseFloat(sections[5]);
+				float qValue = Float.parseFloat(sections[6]);
+				float foldChange = Float.parseFloat(sections[2]);
+				newList.addProbe(probes[probeIndex],new float[]{pValue,qValue,foldChange});
 			}
 
 			br.close();

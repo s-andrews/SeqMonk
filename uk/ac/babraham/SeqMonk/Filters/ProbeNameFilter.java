@@ -98,7 +98,7 @@ public class ProbeNameFilter extends ProbeFilter {
 		stripTranscript = optionsPanel.stripTranscriptBox.isSelected();
 		caseInsensitive = optionsPanel.caseInsensitiveBox.isSelected();
 
-		ProbeList passedProbes = new ProbeList(startingList,"","",startingList.getValueName());
+		ProbeList passedProbes = new ProbeList(startingList,"","",startingList.getValueNames());
 
 		// We start by building a list of query strings we're going to
 		// check against.
@@ -149,7 +149,7 @@ public class ProbeNameFilter extends ProbeFilter {
 			}
 
 			if (queryStrings.contains(name)) {
-				passedProbes.addProbe(probes[p], startingList.getValueForProbe(probes[p]));						
+				passedProbes.addProbe(probes[p], startingList.getValuesForProbe(probes[p]));						
 			}
 			else {
 //				System.err.println("No match for "+name);

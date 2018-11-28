@@ -56,7 +56,7 @@ public class ProbeSet extends ProbeList{
 	 * @param probes the probes
 	 */
 	public ProbeSet (String description, Probe [] probes) {
-		super(null,"All Probes",description,null);
+		super(null,"All Probes",description,new String[0]);
 		setProbes(probes);
 	}
 
@@ -73,14 +73,14 @@ public class ProbeSet extends ProbeList{
 		 * we'd go back to sort out this requirement by changing the SeqMonk
 		 * file format, but for now we're stuck with this work round
 		 */
-		super(null,"All Probes",description,null);
+		super(null,"All Probes",description,new String[0]);
 		expectedTotalCount = expectedSize;
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList#addProbe(uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe, java.lang.Double)
 	 */
-	public void addProbe (Probe p, Float value) {
+	public void addProbe (Probe p, float [] values) {
 
 		/**
 		 * This method is only used by the SeqMonk parser.  All other probe
@@ -94,7 +94,7 @@ public class ProbeSet extends ProbeList{
 
 		// Call the super method so we can still be treated like a
 		// normal probe list
-		super.addProbe(p, value);
+		super.addProbe(p, values);
 	}
 
 	public void setCollection (DataCollection collection) {

@@ -52,7 +52,15 @@ public class CrashReporter {
 			
 		}
 		else {
-			new CrashReporterDialog(e);
+			// In case the crash reporter causes an issue, don't trigger 
+			// recursive crashes.
+			try {
+				new CrashReporterDialog(e);
+			}
+			catch (Exception er) {
+				e.printStackTrace();
+				er.printStackTrace();
+			}
 		}
 		
 		

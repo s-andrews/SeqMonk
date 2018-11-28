@@ -32,7 +32,13 @@ public class ErrorCatcher implements Thread.UncaughtExceptionHandler {
 	 * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread, java.lang.Throwable)
 	 */
 	public void uncaughtException(Thread thread, Throwable t) {
-		new CrashReporter(t);		
+		try {
+			new CrashReporter(t);
+		}
+		catch (Exception ex) {
+			t.printStackTrace();
+			ex.printStackTrace();
+		}
 	}
 	
 }

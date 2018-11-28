@@ -81,8 +81,28 @@ public class ProbeListViewer extends JDialog implements MouseListener, ActionLis
 		description.setWrapStyleWord(true);
 		getContentPane().add(new JScrollPane(description,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.NORTH);
 		
-		String [] headers = new String [] {"Probe","Chr","Start","End",list.getValueName()};
-		Class [] classes = new Class [] {String.class,String.class,Integer.class,Integer.class,Double.class};
+		String [] valueNames = list.getValueNames();
+		
+		String [] headers = new String [4+valueNames.length];
+		headers[0] = "Probe";
+		headers[1] = "Chr";
+		headers[2] = "Start";
+		headers[3] = "End";
+		
+		for (int i=0;i<valueNames.length;i++) {
+			headers[4+i] = valueNames[i];
+		}
+		
+		
+		Class [] classes = new Class [4+valueNames.length];
+		classes[0] = String.class;
+		classes[1] = String.class;
+		classes[2] = Integer.class;
+		classes[3] = Integer.class;
+		
+		for (int i=0;i<valueNames.length;i++) {
+			classes[4+i] = Double.class;
+		}
 		
 		Object [][] rowData = new Object [probes.length][headers.length];
 		
@@ -96,7 +116,9 @@ public class ProbeListViewer extends JDialog implements MouseListener, ActionLis
 			}
 			rowData[i][2] = new Integer(probes[i].start());
 			rowData[i][3] = new Integer(probes[i].end());
-			rowData[i][4] = list.getValueForProbe(probes[i]);
+			for (int j=0;j<valueNames.length;j++) {
+				rowData[i][4+j] = list.getValuesForProbe(probes[i])[j];
+			}
 		}
 
 		TableSorter sorter = new TableSorter(new ProbeTableModel(rowData,headers,classes));

@@ -59,7 +59,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 	
 	// THIS VALUE IS IMPORTANT!!!
 	/** The Constant DATA_VERSION. */
-	public static final int DATA_VERSION = 18;
+	public static final int DATA_VERSION = 19;
 	
 	// If you make ANY changes to the format written by this class
 	// you MUST increment this value to stop older parsers from
@@ -779,7 +779,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 				
 		for (int i=1;i<lists.length;i++) {
 			String listComments = lists[i].comments().replaceAll("[\\r\\n]", "`");
-			p.println(getListDepth(lists[i])+"\t"+lists[i].name()+"\t"+lists[i].getValueName()+"\t"+lists[i].description()+"\t"+listComments);
+			p.println(getListDepth(lists[i])+"\t"+lists[i].name()+"\t"+lists[i].getConcatenatedValueNames()+"\t"+lists[i].description()+"\t"+listComments);
 		}
 		
 		//Put out the number of probes
@@ -810,7 +810,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 				// probe is the next one in this list then we print out the
 				// value it has associated with it.
 				if (orderedProbeIndices[j] < orderedProbes[j].length && orderedProbes[j][orderedProbeIndices[j]] == probes[i]) {
-					b.append(lists[j].getValueForProbe(probes[i]));
+					b.append(lists[j].getConcatenatedValuesForProbe(probes[i]));
 					orderedProbeIndices[j]++;
 				}
 			}
