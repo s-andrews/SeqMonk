@@ -18,7 +18,7 @@ test.results <- exactTest(edger.data)
 
 corrected.results <- topTags(test.results,n=nrow(test.results$table))
 
-write.table(corrected.results$table[corrected.results$table$%%CORRECTED%% < %%PVALUE%%,],file="hits.txt",row.names=TRUE,col.names=NA,quote=FALSE,sep="\t")
+write.table(corrected.results$table[corrected.results$table$%%CORRECTED%% <= %%PVALUE%%,],file="hits.txt",row.names=TRUE,col.names=NA,quote=FALSE,sep="\t")
 
 
 
