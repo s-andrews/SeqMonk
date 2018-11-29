@@ -1,3 +1,51 @@
+RELEASE NOTES FOR SeqMonk v1.44.0
+---------------------------------
+This release makes a major change in the way that probe lists annotations
+are handled to make them much more flexible. It also introduces some
+new filtering, visualisation and reporting options as well as fixing
+a bug in the read position probe generator.
+
+Major changes are:
+
+- Probe lists can now record multiple named attributes (and can have
+  no attribute at all).  This means that a statistical filter can now
+  record a p-value, q-value and fold change all together in the same 
+  list for example.
+  
+- Added a probe list annotation value filter to allow for additional
+  filtering based on the contents of a probe lists annotations.
+  
+- Updated the DESeq and EdgeR filters to record p-value,q-value and 
+  log2 fold change.
+  
+- Added a volcano plot to visualise hits for statistical search 
+  result lists.  Works for DESeq and EdgeR at the moment and will
+  support more tests in future.
+  
+- Added an option to do bulk renaming of data stores to the DataSet
+  editor
+  
+- Improved the layout of data tracks when there are a lot of them
+
+- Added a track number to the data track selector
+
+- Fixed a bug in the read position probe generator which meant that
+  reads on different strands were counted separately even if the 
+  ignore strand option was selected
+  
+- Added fastseg to the R package requirements to make sure its there
+  for people using the segmentation tool
+  
+- Made changes to improve the speed of project saving
+
+- Fixed a crash in the PCA plot when the data contains no variance
+
+- Added an option to export annotation tracks as a BED file
+
+- Added a match by name option to the feature report
+
+
+
 RELEASE NOTES FOR SeqMonk v1.43.0
 ---------------------------------
 This release adds some interesting new functionality for segregating 
