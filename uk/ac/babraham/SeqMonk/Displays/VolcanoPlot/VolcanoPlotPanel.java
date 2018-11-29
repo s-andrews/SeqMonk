@@ -590,10 +590,8 @@ public class VolcanoPlotPanel extends JPanel implements Runnable, MouseMotionLis
 
 			if (!(Float.isNaN(yData[p]) || Float.isInfinite(yData[p]))) {
 				if (yData[p]<minValueY) minValueY = yData[p];
-				if (yData[p]>maxValueY) {
-					System.err.println("Increased maxy from "+maxValueY+" to "+yData[p]);
+				if (yData[p]>maxValueY) 
 					maxValueY = yData[p];
-				}
 			}
 		}
 
