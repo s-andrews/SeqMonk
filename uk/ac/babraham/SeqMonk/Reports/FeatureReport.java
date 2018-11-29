@@ -97,7 +97,7 @@ public class FeatureReport extends Report {
 		JPanel choicePanel2 = new JPanel();
 		
 		choicePanel2.add(new JLabel("With "));
-		overlapType = new JComboBox(new String [] {"any overlapping","exactly overlapping"});
+		overlapType = new JComboBox(new String [] {"any overlapping","exactly overlapping","name matched"});
 		choicePanel2.add(overlapType);
 		choicePanel2.add(new JLabel(" probes"));
 		optionsPanel.add(choicePanel2);
@@ -156,9 +156,19 @@ public class FeatureReport extends Report {
 		 * @param p The probe to add
 		 * @param onlyExactOverlaps Whether the probes position must match exactly with that of the feature (or its sublocation) or can just overlap it.
 		 */
-		public void addProbe (Probe p, boolean onlyExactOverlaps) {
+		public void addProbe (Probe p, boolean onlyExactOverlaps, boolean onlyName, String noextension, String notranscript) {
+
+			if (onlyName) {
+				
+				if (!p.chromosome().name().equals(feature.chromosomeName()))return; // They have to be on the same chr
+				
+				if (feature.name().equals(p.name())  || feature.name().equals(noextension) || feature.name().equals(notranscript)) {
+					probes.add(p);
+				}
+
+			}
 			
-			if (onlyExactOverlaps) {
+			else if (onlyExactOverlaps) {
 				// Check if it is enclosed
 				if (p.start()<feature.location().start() || p.end()>feature.location().end()) {
 					// It's not contained in this feature
@@ -451,7 +461,14 @@ public class FeatureReport extends Report {
 		if (((String)(overlapType.getSelectedItem())).equals("exactly overlapping")) {
 			onlyExactOverlaps = true;
 		}
-									
+
+		// Check if we're only interested in name matches
+		boolean onlyNameMatched = false;
+		if (((String)(overlapType.getSelectedItem())).equals("name matched")) {
+			onlyNameMatched = true;
+		}
+
+		
 		Vector<FeatureAnnotation> annotations = new Vector<FeatureAnnotation>();
 		
 		// Since we're going to be making the annotations on the
@@ -491,8 +508,16 @@ public class FeatureReport extends Report {
 						return;
 					}
 					
+					String noextension = null;
+					String notranscript = null;
+					
+					if (onlyNameMatched) {
+						noextension = probes[p].name().replaceFirst("_upstream$", "").replaceAll("_downstream$", "").replaceAll("_gene$", "");
+						notranscript = noextension.replaceAll("-\\d\\d\\d$", "");
+
+					}
 					// This method will silently reject any probes it doesn't like
-					thisChrFeatureAnnotations[f].addProbe(probes[p],onlyExactOverlaps);
+					thisChrFeatureAnnotations[f].addProbe(probes[p],onlyExactOverlaps,onlyNameMatched,noextension,notranscript);
 				}
 			}
 			
