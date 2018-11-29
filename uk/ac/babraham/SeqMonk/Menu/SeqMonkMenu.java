@@ -137,6 +137,7 @@ import uk.ac.babraham.SeqMonk.Filters.FeatureNameFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityDifferenceFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityReplicateFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntersectListsFilter;
+import uk.ac.babraham.SeqMonk.Filters.ListAnnotationValuesFilter;
 import uk.ac.babraham.SeqMonk.Filters.MonteCarloFilter;
 import uk.ac.babraham.SeqMonk.Filters.PositionFilter;
 import uk.ac.babraham.SeqMonk.Filters.ProbeLengthFilter;
@@ -897,6 +898,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		filterValuesP.addActionListener(this);
 		filterValuesP.setMnemonic(KeyEvent.VK_P);
 		filterValuesMenu.add(filterValuesP);
+
+		JMenuItem filterListAnotValue = new JMenuItem("List annotation value...");
+		filterListAnotValue.setActionCommand("filter_values_list_annotation");
+		filterListAnotValue.addActionListener(this);
+		filterListAnotValue.setMnemonic(KeyEvent.VK_A);
+		filterValuesMenu.add(filterListAnotValue);
 
 
 		filterMenu.add(filterValuesMenu);
@@ -2416,6 +2423,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				}
 				else if (action.equals("filter_values_distribution")) {
 					new FilterOptionsDialog(application.dataCollection(),new DistributionPositionFilter(application.dataCollection()));
+				}
+				else if (action.equals("filter_values_list_annotation")) {
+					new FilterOptionsDialog(application.dataCollection(),new ListAnnotationValuesFilter(application.dataCollection()));
 				}
 				else if (action.equals("filter_diffs_individual")) {
 					new FilterOptionsDialog(application.dataCollection(), new DifferencesFilter(application.dataCollection()));
