@@ -95,6 +95,7 @@ import uk.ac.babraham.SeqMonk.Displays.StarWars.MultiStarWarsDialog;
 import uk.ac.babraham.SeqMonk.Displays.StrandBias.StrandBiasPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.TsneDataStorePlot.TsneOptionsDialog;
 import uk.ac.babraham.SeqMonk.Displays.VariancePlot.VariancePlotDialog;
+import uk.ac.babraham.SeqMonk.Displays.VolcanoPlot.VolcanoPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.CisTransScatterplot.CisTransScatterPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix.CorrelationMatrix;
 import uk.ac.babraham.SeqMonk.Displays.CumulativeDistribution.CumulativeDistributionDialog;
@@ -823,6 +824,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		viewMAPlot.addActionListener(this);
 		plotsMenu.add(viewMAPlot);
 
+		JMenuItem viewVolcanoPlot = new JMenuItem("Volcano Plot...");
+		viewVolcanoPlot.setActionCommand("view_volcano_plot");
+		viewVolcanoPlot.setMnemonic(KeyEvent.VK_V);
+		viewVolcanoPlot.addActionListener(this);
+		plotsMenu.add(viewVolcanoPlot);
+		
 		JMenuItem plotDuplication = new JMenuItem("Duplication Plot...");
 		plotDuplication.setActionCommand("plot_duplication");
 		plotDuplication.setMnemonic(KeyEvent.VK_D);
@@ -2239,7 +2246,16 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			else {
 				new MAPlotDialog(application.dataCollection());
 			}
-		}	
+		}
+		
+		else if (action.equals("view_volcano_plot")) {
+			if (! (application.dataCollection().probeSet().getActiveList().getValueNames().length>=2)) {
+				JOptionPane.showMessageDialog(application, "You need to select a statistical result list to draw this plot","Not a stats result...",JOptionPane.INFORMATION_MESSAGE);
+			}
+			else {
+				new VolcanoPlotDialog(application.dataCollection());
+			}
+		}
 
 		else if (action.equals("view_line_graph")) {
 			if (! application.dataCollection().isQuantitated()) {
