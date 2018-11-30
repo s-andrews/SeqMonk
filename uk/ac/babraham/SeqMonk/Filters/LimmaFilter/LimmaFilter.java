@@ -293,7 +293,7 @@ public class LimmaFilter extends ProbeFilter {
 
 			ProbeList newList;
 
-			newList = new ProbeList(startingList,"","","FDR");
+			newList = new ProbeList(startingList,"","",new String[]{"P-value","FDR","Log2 Fold Change"});
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 
@@ -305,16 +305,12 @@ public class LimmaFilter extends ProbeFilter {
 				String [] sections = line.split("\t");
 
 				int probeIndex = Integer.parseInt(sections[0]);
-				float pValue;
+				float pValue = Float.parseFloat(sections[4]);
+				float qValue = Float.parseFloat(sections[5]);
+				float foldChange = Float.parseFloat(sections[1]);
 				
-				if (multiTest) {
-					pValue = Float.parseFloat(sections[sections.length-2]);
-				}
-				else {
-					pValue = Float.parseFloat(sections[sections.length-3]);
-				}
 
-				newList.addProbe(probes[probeIndex],pValue);
+				newList.addProbe(probes[probeIndex],new float [] {pValue,qValue,foldChange});
 			}
 
 			br.close();
