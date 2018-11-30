@@ -26,7 +26,7 @@ logistic.regression <- function (x) {
 
   return (c(
     (coef(summary(fit))["groupto", "Pr(>|z|)"]),
-    mean(percentages[1,] - percentages[2,]))
+    mean(percentages[1,] - percentages[2,],na.rm=TRUE))
   );
   
 }

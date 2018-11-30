@@ -372,14 +372,7 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 
 			// We can now parse the results and put the hits into a new probe list
 
-			ProbeList newList;
-
-			if (multiTest) {
-				newList = new ProbeList(startingList,"","","FDR");
-			}
-			else {
-				newList = new ProbeList(startingList,"","","p-value");
-			}
+			ProbeList newList = new ProbeList(startingList,"","",new String [] {"P-value","FDR","Difference"});
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 
@@ -390,35 +383,35 @@ public class LogisticRegressionSplicingFilter extends ProbeFilter {
 			// In case the same probe is found multiple times we'll cache the p-values
 			// we see and report the best one.
 			
-			HashMap<Probe, Float> cachedHits = new HashMap<Probe, Float>();
+			HashMap<Probe, float[]> cachedHits = new HashMap<Probe, float[]>();
 			
 
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
 
-				String [] indexSections = sections[0].split("\\.");
-
-				int probeIndex = Integer.parseInt(indexSections[indexSections.length-1]);
-				float pValue = Float.parseFloat(sections[sections.length-1]);
+				int probeIndex = Integer.parseInt(sections[0]);
+				float pValue = Float.parseFloat(sections[1]);
+				float qValue = Float.parseFloat(sections[3]);
+				float diff = Float.parseFloat(sections[2]);
 
 				// TODO: Work out what to do if the same probe is found multiple times
 				
 				if (! cachedHits.containsKey(pairs[probeIndex].probe1)) {
-					cachedHits.put(pairs[probeIndex].probe1, pValue);
+					cachedHits.put(pairs[probeIndex].probe1, new float[]{pValue,qValue,diff});
 				}
 
 				if (! cachedHits.containsKey(pairs[probeIndex].probe2)) {
-					cachedHits.put(pairs[probeIndex].probe2, pValue);
+					cachedHits.put(pairs[probeIndex].probe2, new float[]{pValue,qValue,diff});
 				}
 
 				
 				// See if the pvalue we've got is better than the one we're storing
-				if (pValue < cachedHits.get(pairs[probeIndex].probe1)) {
-					cachedHits.put(pairs[probeIndex].probe1, pValue);
+				if (pValue < cachedHits.get(pairs[probeIndex].probe1)[0]) {
+					cachedHits.put(pairs[probeIndex].probe1, new float[]{pValue,qValue,diff});
 				}
 
-				if (pValue < cachedHits.get(pairs[probeIndex].probe2)) {
-					cachedHits.put(pairs[probeIndex].probe2, pValue);
+				if (pValue < cachedHits.get(pairs[probeIndex].probe2)[0]) {
+					cachedHits.put(pairs[probeIndex].probe2, new float[]{pValue,qValue,diff});
 				}
 				
 			}
