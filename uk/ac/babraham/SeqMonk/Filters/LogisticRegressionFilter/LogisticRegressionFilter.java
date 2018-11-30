@@ -46,7 +46,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
-import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
@@ -259,16 +258,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				// Check to see we meet the requirements for the min amount of information
 				// and the min diff.
 
-				int totalFromMeth = 0;
-				int totalFrom = 0;
-				int totalToMeth = 0;
-				int totalTo = 0;
-
 				int validFrom = 0;
 				for (int i=0;i<fromStores.length;i++) {
-					totalFromMeth += fromMethCounts[i];
-					totalFrom += fromMethCounts[i];
-					totalFrom += fromUnmethCounts[i];
 					if (fromMethCounts[i] + fromUnmethCounts[i] >= minObservations) {
 						++validFrom;
 					}
@@ -276,9 +267,6 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 				int validTo = 0;
 				for (int i=0;i<toStores.length;i++) {
-					totalToMeth += toMethCounts[i];
-					totalTo += toMethCounts[i];
-					totalTo += toUnmethCounts[i];
 					if (toMethCounts[i] + toUnmethCounts[i] >= minObservations) {
 						++validTo;
 					}
@@ -386,14 +374,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 			// We can now parse the results and put the hits into a new probe list
 
-			ProbeList newList;
-
-			if (multiTest) {
-				newList = new ProbeList(startingList,"","","FDR");
-			}
-			else {
-				newList = new ProbeList(startingList,"","","p-value");
-			}
+			ProbeList newList = new ProbeList(startingList,"","",new String [] {"P-value","FDR","Difference"});
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 
@@ -404,12 +385,12 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
 
-				String [] indexSections = sections[0].split("\\.");
+				int probeIndex = Integer.parseInt(sections[0]);
+				float pValue = Float.parseFloat(sections[1]);
+				float qValue = Float.parseFloat(sections[3]);
+				float diff = Float.parseFloat(sections[2]);
 
-				int probeIndex = Integer.parseInt(indexSections[indexSections.length-1]);
-				float pValue = Float.parseFloat(sections[sections.length-1]);
-
-				newList.addProbe(probes[probeIndex],pValue);
+				newList.addProbe(probes[probeIndex],new float[]{pValue,qValue,diff});
 			}
 
 			br.close();

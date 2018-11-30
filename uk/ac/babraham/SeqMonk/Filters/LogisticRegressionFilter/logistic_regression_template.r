@@ -2,13 +2,18 @@ setwd("%%WORKING%%")
 
 list.files(pattern = "data_chr") -> data.files
 
+# Do a sanity check that there is data in every file
+# and remove any empty ones
+
+data.files[sapply(data.files,function(x)nrow(read.delim(x,nrows = 2))==2)] -> data.files
+
 process.file <- function(x) {
   
   print (paste("Processing ",x))
   
   read.delim(x,colClasses = c("character", "factor", "factor", "factor", "numeric")) -> data
   
-  return(unlist(as.list(by(data,data$id,logistic.regression))))
+  return(do.call("rbind",(by(data,data$id,logistic.regression))))
   
 }
 
@@ -16,10 +21,14 @@ logistic.regression <- function (x) {
   
   fit <- glm(state ~ group+replicate, weights = count, data = x, family = binomial)
   
-  #return (coef(summary(fit))[2,4])
-  return(coef(summary(fit))["groupto", "Pr(>|z|)"])
-  
+  rbind(by(x,x[,c("group","replicate")],function(y)y$count[1]/sum(y$count)*100)) -> percentages
 
+
+  return (c(
+    (coef(summary(fit))["groupto", "Pr(>|z|)"]),
+    mean(percentages[1,] - percentages[2,]))
+  );
+  
 }
 
 ## WARNING ##
@@ -27,21 +36,17 @@ logistic.regression <- function (x) {
 
 ## We do around 250 models/sec ##
 
-unlist(sapply(data.files,process.file)) -> regression.results
+as.data.frame(do.call("rbind",lapply(data.files,process.file))) -> regression.results
 
-# If there's only one input file then we get a matrix with no names, so we need
-# to copy in the rownames as this is what we actually need.
+colnames(regression.results) <- c("P-value","Difference")
 
-if (any(is.null(names(regression.results)))) {
-  names(regression.results) <- rownames(regression.results)
-} 
+p.adjust(regression.results$`P-value`,method = "fdr", n=%%CORRECTCOUNT%%) -> regression.results$FDR
 
 if (%%MULTITEST%%) {
-	p.adjust(regression.results,method = "fdr", n=%%CORRECTCOUNT%%) -> regression.results
+  regression.results[regression.results$FDR < %%PVALUE%%,] -> regression.results
+}else {
+  regression.results[regression.results$`P-value` < %%PVALUE%%,] -> regression.results
 }
 
-names(regression.results)[regression.results < %%PVALUE%%] -> hit.ids
-regression.results[regression.results < %%PVALUE%%] -> p.values
-
 # Write the hit names to a file
-write.table(data.frame(id=hit.ids,p.value=p.values),file="hits.txt",row.names=FALSE,quote=FALSE,sep="\t")
+write.table(regression.results,file="hits.txt",row.names=TRUE,quote=FALSE,sep="\t")
