@@ -27,6 +27,7 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 	@Override
 	public void layoutContainer(Container c) {
 
+		System.err.println("Layout called");
 		/*
 		 * The process will be
 		 * 
@@ -56,7 +57,7 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 				setLayout(0,width,height);
 			}
 			else {
-				setLayout(totalAvailableHeight-fixedHeight/annotationTracks.size(),width,height);
+				setLayout((totalAvailableHeight-fixedHeight)/annotationTracks.size(),width,height);
 			}
 			
 			return;
@@ -118,6 +119,7 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 			else {
 				c.setLocation(0, lastYEnd);
 				c.setBounds(0, lastYEnd, width, yEnd-lastYEnd);
+				System.err.println("Drawing reads "+i+" from "+lastYEnd+" with height "+(yEnd-lastYEnd));
 				lastYEnd = yEnd;
 			}
 		}
@@ -177,6 +179,7 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 
 	@Override
 	public void invalidateLayout(Container c) {
+		System.err.println("Invalidate called");
 		layoutContainer(c);
 	}
 

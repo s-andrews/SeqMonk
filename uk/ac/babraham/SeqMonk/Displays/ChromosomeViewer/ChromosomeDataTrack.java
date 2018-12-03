@@ -672,6 +672,8 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 	 */
 	public void paint (Graphics g) {
 		super.paint(g);
+		
+		if (getHeight() == 0) return;
 
 		if (useAntiAliasing && g instanceof Graphics2D) {
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
