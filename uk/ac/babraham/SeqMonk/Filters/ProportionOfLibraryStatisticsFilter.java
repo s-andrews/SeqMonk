@@ -123,7 +123,7 @@ public class ProportionOfLibraryStatisticsFilter extends ProbeFilter {
 
 		// We'll pull the number of probes to sample from the preferences if they've changed it
 
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","","Diff p-value");
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String [] {"P-value","FDR","Difference"});
 
 		// We'll build up a set of p-values as we go along
 		ProbeTTestValue [] lowestPValues = new ProbeTTestValue[probes.length];
