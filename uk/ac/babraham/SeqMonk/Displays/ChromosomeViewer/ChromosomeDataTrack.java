@@ -263,7 +263,14 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			// Nothing to do.
 			return;
 		}
-
+		
+		// We can also skip most of this if the height isn't the same, but the number of slots 
+		// doesn't change.
+		boolean checkSlotCount = false;
+		if (DisplayPreferences.getInstance().getReadDisplay() == lastSplitMode && thisReadDensity == lastReadDensity && drawProbes == lastDrawProbes) {
+			checkSlotCount = true;
+		}
+		
 		// Cache the values so we might be able to skip this next time.
 		height = getHeight();
 		lastReadDensity = thisReadDensity;
@@ -315,7 +322,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 		int slotCount = (((height/(2*halfHeightCorrection))/(readHeight+readSpace))*2)-1;
 		if (slotCount < 1) slotCount = 1;
-
+		
 		slotYValues = new int [slotCount];
 
 		//		System.err.println("There will be "+slotYValues.length+" slots");
@@ -335,6 +342,13 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			}
 		}
 
+		// See if we can bail out at this point with the same reads in the same
+		// slots (even though the slots might have moved slightly)
+		
+		if (checkSlotCount && slotCount == lastReadXEnds.length) {
+			return;
+		}
+		
 		// We now need to assign each probe to a slot
 
 		// We're going to go back to the original source for the reads.  That way we only need to keep 
