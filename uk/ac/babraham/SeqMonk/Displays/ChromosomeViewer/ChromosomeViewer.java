@@ -108,7 +108,7 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 		add(titleLabel,BorderLayout.NORTH);
 
 		featurePanel = new JPanel();
-		featurePanel.setLayout(new GridBagLayout());
+		featurePanel.setLayout(new ChromosomeViewerLayout());
 
 		add(featurePanel,BorderLayout.CENTER);
 		addMouseWheelListener(this);
@@ -265,33 +265,22 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 		}
 
 		featurePanel.removeAll();
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx=0;
-		c.gridy=0;
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1;
-		c.weighty = 0.001;
 
 		Enumeration<ChromosomeFeatureTrack> e = featureTracks.elements();
 		while (e.hasMoreElements()) {
-			featurePanel.add(e.nextElement(),c);
-			c.gridy++;
+			featurePanel.add(e.nextElement(),ChromosomeViewerLayout.ANNOTATION_TRACK);
 		}
 
 		// We weight the data tracks way more heavily than the feature tracks since the feature tracks
 		// have a preferred size which we don't need to exceed but the data tracks should take up whatever
 		// is left.
-		c.weighty = 0.6;
 		Enumeration<ChromosomeDataTrack> e2 = dataTracks.elements();
 		while (e2.hasMoreElements()) {
-			featurePanel.add(e2.nextElement(),c);
-			c.gridy++;
+			featurePanel.add(e2.nextElement(),ChromosomeViewerLayout.DATA_TRACK);
 		}
 
 		// Finally add a scale track, which we weigh very lightly
-		c.weighty=0.00001;
-		featurePanel.add(new ChromosomeScaleTrack(this),c);
-		c.gridy++;
+		featurePanel.add(new ChromosomeScaleTrack(this),ChromosomeViewerLayout.FIXED_HEIGHT);
 
 		featurePanel.validate();
 		featurePanel.repaint();
