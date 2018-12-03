@@ -215,14 +215,7 @@ public class BinomialFilterForRev extends ProbeFilter {
 
 		applyMultipleTestingCorrection = options.multiTestBox.isSelected();
 
-		ProbeList newList;
-		
-		if (applyMultipleTestingCorrection) {
-			newList = new ProbeList(startingList,"Filtered Probes","","Q-value");
-		}
-		else {
-			newList = new ProbeList(startingList,"Filtered Probes","","P-value");			
-		}
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String [] {"P-value","FDR","Difference"});
 
 		Probe [] probes = startingList.getAllProbes();
 		
@@ -355,13 +348,15 @@ public class BinomialFilterForRev extends ProbeFilter {
 			// Now perform the Binomial test.
 
 			double pValue = bt.binomialTest(forCount+revCount, forCount, worseCaseExpectedPercent/100d, hypothesis);
+			
+			double diff = ((forCount / (double)(forCount+revCount))*100)-worseCaseExpectedPercent;
 
 			if (seenLower && seenHigher) pValue = 0.5; // Our confidence range spanned the actual value we had so we can't be significant
 			
 //			System.err.println("P value is "+pValue);
 			
 			// Store this as a potential hit (after correcting p-values later)
-			hits.add(new ProbeTTestValue(probes[p], pValue));
+			hits.add(new ProbeTTestValue(probes[p], pValue,diff));
 
 		}
 
@@ -369,21 +364,17 @@ public class BinomialFilterForRev extends ProbeFilter {
 		
 		ProbeTTestValue [] rawHits = hits.toArray(new ProbeTTestValue[0]);
 		
-		if (applyMultipleTestingCorrection) {
-			
-//			System.err.println("Correcting for "+rawHits.length+" tests");
-			BenjHochFDR.calculateQValues(rawHits);
-		}
+		BenjHochFDR.calculateQValues(rawHits);
 		
 		for (int h=0;h<rawHits.length;h++) {
 			if (applyMultipleTestingCorrection) {
 				if (rawHits[h].q < stringency) {
-					newList.addProbe(rawHits[h].probe,(float)rawHits[h].q);
+					newList.addProbe(rawHits[h].probe,new float[]{(float)rawHits[h].p,(float)rawHits[h].q,(float)rawHits[h].diff});
 				}
 			}
 			else {
 				if (rawHits[h].p < stringency) {
-					newList.addProbe(rawHits[h].probe,(float)rawHits[h].p);
+					newList.addProbe(rawHits[h].probe,new float[]{(float)rawHits[h].p,(float)rawHits[h].q,(float)rawHits[h].diff});
 				}
 			}
 		}
