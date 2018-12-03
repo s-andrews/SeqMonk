@@ -34,15 +34,21 @@ public class IndexTTestValue implements Comparable<IndexTTestValue> {
 	/** The q. */
 	public double q;
 	
+	/** The difference **/
+	public double diff;
+
+	
+	
 	/**
 	 * Instantiates a new probe t test value.
 	 * 
 	 * @param probe the probe
 	 * @param p the p
 	 */
-	public IndexTTestValue (int index, double p) {
+	public IndexTTestValue (int index, double p, double diff) {
 		this.index = index;
 		this.p = p;
+		this.diff = diff;
 	}
 
 	/* (non-Javadoc)

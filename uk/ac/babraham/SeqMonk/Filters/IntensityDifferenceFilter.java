@@ -120,13 +120,10 @@ public class IntensityDifferenceFilter extends ProbeFilter {
 		Integer updatedProbesPerSet = optionsPanel.probesPerSet();
 		if (updatedProbesPerSet != null) probesPerSet = updatedProbesPerSet;
 
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","","Diff p-value");
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String[] {"P-value","FDR","Z-score diff"});
 
 		// We'll build up a set of p-values as we go along
-		float [] lowestPValues = new float[probes.length];
-		for (int p=0;p<lowestPValues.length;p++) {
-			lowestPValues[p] = 1;
-		}
+		IndexTTestValue [] lowestPValues = new IndexTTestValue[probes.length];
 
 		// This is going to be the temporary array we populate with the set of
 		// differences we are going to analyse.
@@ -225,7 +222,7 @@ public class IntensityDifferenceFilter extends ProbeFilter {
 					double stdev = SimpleStats.stdev(currentDiffSet,mean);
 
 					if (stdev == 0) {
-						currentPValues[indices[i]] = new IndexTTestValue(indices[i], 1);
+						currentPValues[indices[i]] = new IndexTTestValue(indices[i], 1, 0);
 						continue;
 					}
 					
@@ -243,7 +240,7 @@ public class IntensityDifferenceFilter extends ProbeFilter {
 						significance = 1-nd.cumulativeProbability(diff);
 					}
 					
-					currentPValues[indices[i]] = new IndexTTestValue(indices[i], significance);
+					currentPValues[indices[i]] = new IndexTTestValue(indices[i], significance,diff/stdev);
 
 				}
 				catch (SeqMonkException sme) {
@@ -253,25 +250,19 @@ public class IntensityDifferenceFilter extends ProbeFilter {
 
 			}
 			
-			// We now need to correct the set of pValues
-			if (applyMultipleTestingCorrection) {
-				BenjHochFDR.calculateQValues(currentPValues);
-			}
+			// We now need to correct the set of pValues, we'll do this 
+			// even if we're not filtering against the corrected value
+			BenjHochFDR.calculateQValues(currentPValues);
 			
 			// Finally we compare these pValues to the lowest ones we have from
 			// the combined set
-			if (applyMultipleTestingCorrection) {
-				for (int i=0;i<currentPValues.length;i++) {
-					if (currentPValues[i].q < lowestPValues[currentPValues[i].index]) {
-						lowestPValues[currentPValues[i].index] = (float)currentPValues[i].q;
-					}
+			for (int i=0;i<currentPValues.length;i++) {
+				if (lowestPValues[currentPValues[i].index] == null) {
+					lowestPValues[currentPValues[i].index] = currentPValues[i];
+					continue;
 				}
-			}
-			else {
-				for (int i=0;i<currentPValues.length;i++) {
-					if (currentPValues[i].p < lowestPValues[currentPValues[i].index]) {
-						lowestPValues[currentPValues[i].index] = (float)currentPValues[i].p;
-					}
+				if (currentPValues[i].p < lowestPValues[currentPValues[i].index].p) {
+					lowestPValues[currentPValues[i].index] = currentPValues[i];
 				}
 			}
 		}
@@ -281,8 +272,15 @@ public class IntensityDifferenceFilter extends ProbeFilter {
 		// Now we can go through the lowest P-value set and see if any of them
 		// pass the filter.
 		for (int i=0;i<lowestPValues.length;i++) {
-			if (lowestPValues[i] < pValueLimit) {
-				newList.addProbe(probes[i],lowestPValues[i]);
+			if (applyMultipleTestingCorrection) {
+				if (lowestPValues[i].q < pValueLimit) {
+					newList.addProbe(probes[i],new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
+				}				
+			}
+			else {
+				if (lowestPValues[i].p < pValueLimit) {
+					newList.addProbe(probes[i],new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
+				}
 			}
 		}
 
