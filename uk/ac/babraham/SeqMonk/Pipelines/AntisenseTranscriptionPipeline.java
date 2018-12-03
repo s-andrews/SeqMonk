@@ -215,9 +215,6 @@ public class AntisenseTranscriptionPipeline extends Pipeline {
 																				
 					if (antisenseReads == 0) thisPValue = 1;
 
-					// We have to add all results at this stage so we don't mess up the multiple 
-					// testing correction later on.
-					significantProbes.get(d).add(new ProbeTTestValue(thisChrProbes[p], thisPValue));
 					
 					double expected = ((senseReads+antisenseReads)*antisenseProbability[d]);
 
@@ -231,6 +228,9 @@ public class AntisenseTranscriptionPipeline extends Pipeline {
 
 					data[d].setValueForProbe(thisChrProbes[p], obsExp);
 
+					// We have to add all results at this stage so we don't mess up the multiple 
+					// testing correction later on.
+					significantProbes.get(d).add(new ProbeTTestValue(thisChrProbes[p], thisPValue,obsExp));
 				}
 
 			}
