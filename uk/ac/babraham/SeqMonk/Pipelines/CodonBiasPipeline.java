@@ -310,7 +310,7 @@ public class CodonBiasPipeline extends Pipeline {
 		
 					// We have to add all results at this stage so we don't mess up the multiple 
 					// testing correction later on.
-					significantProbes.get(d).add(new ProbeTTestValue(allProbes[probeCounter], thisPValue));
+					significantProbes.get(d).add(new ProbeTTestValue(allProbes[probeCounter], thisPValue,0));
 					
 					
 					float percentageCount; 
