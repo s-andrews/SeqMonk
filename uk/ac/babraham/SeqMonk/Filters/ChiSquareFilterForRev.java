@@ -262,15 +262,7 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 			
 		}
 
-		ProbeList newList;
-		
-		if (applyMultipleTestingCorrection) {
-			newList = new ProbeList(startingList,"Filtered Probes","","Q-value");
-		}
-		else {
-			newList = new ProbeList(startingList,"Filtered Probes","","P-value");			
-		}
-
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String [] {"P-value","FDR","Difference"});
 
 		int [][] forRevCounts = new int[stores.length][2];
 		
@@ -348,7 +340,7 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 			
 			double pValue = ChiSquareTest.chiSquarePvalue(forRevCounts);
 			// Store this as a potential hit (after correcting p-values later)
-			hits.add(new ProbeTTestValue(probes[p], pValue));
+			hits.add(new ProbeTTestValue(probes[p], pValue,maxPercent-minPercent));
 
 		}
 
@@ -356,19 +348,17 @@ public class ChiSquareFilterForRev extends ProbeFilter {
 		
 		ProbeTTestValue [] rawHits = hits.toArray(new ProbeTTestValue[0]);
 		
-		if (applyMultipleTestingCorrection) {
-			BenjHochFDR.calculateQValues(rawHits);
-		}
+		BenjHochFDR.calculateQValues(rawHits);
 		
 		for (int h=0;h<rawHits.length;h++) {
 			if (applyMultipleTestingCorrection) {
 				if (rawHits[h].q < stringency) {
-					newList.addProbe(rawHits[h].probe,(float)rawHits[h].q);
+					newList.addProbe(rawHits[h].probe,new float []{(float)rawHits[h].p,(float)rawHits[h].q,(float)rawHits[h].diff});
 				}
 			}
 			else {
 				if (rawHits[h].p < stringency) {
-					newList.addProbe(rawHits[h].probe,(float)rawHits[h].p);
+					newList.addProbe(rawHits[h].probe,new float []{(float)rawHits[h].p,(float)rawHits[h].q,(float)rawHits[h].diff});
 				}
 			}
 		}
