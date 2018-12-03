@@ -80,9 +80,6 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 	/** The probes. */
 	private Probe [] probes;
 
-	/** The x. */
-	private int x;
-
 	/** The width. */
 	private int width;
 
@@ -674,7 +671,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		super.paint(g);
 		
 		if (getHeight() == 0) return;
-
+		
 		if (useAntiAliasing && g instanceof Graphics2D) {
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
@@ -741,7 +738,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			g.setColor(ColourScheme.DATA_BACKGROUND_ODD);
 		}
 
-		g.fillRect(x,0,width,height);
+		g.fillRect(0,0,width,height);
 
 		// If we're in the middle of making a selection then highlight the
 		// selected part of the display in green.
@@ -768,10 +765,10 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				if (showNegative) {
 					g.setColor(Color.LIGHT_GRAY);
 					if (drawReads) {
-						g.drawLine(x, (height*3)/4, x+width, (height*3)/4);
+						g.drawLine(0, (height*3)/4, width, (height*3)/4);
 					}
 					else {
-						g.drawLine(x, height/2, x+width, height/2);					
+						g.drawLine(0, height/2, width, height/2);					
 					}
 				}
 
@@ -801,10 +798,10 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				// This DataStore isn't quantitated
 				g.setColor(Color.GRAY);
 				if (displayMode == DisplayPreferences.DISPLAY_MODE_QUANTITATION_ONLY) {
-					g.drawString("DataStore Not Quantitated", x+((width/2)-20), (getHeight()/2)-2);
+					g.drawString("DataStore Not Quantitated", ((width/2)-20), (getHeight()/2)-2);
 				}
 				else {
-					g.drawString("DataStore Not Quantitated", x+((width/2)-20), ((getHeight()*3)/4)-2);					
+					g.drawString("DataStore Not Quantitated", ((width/2)-20), ((getHeight()*3)/4)-2);					
 				}
 			}
 		}
@@ -914,12 +911,12 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 			if (foundSomething && ! drawnSomthing) {
 				g.setColor(Color.GRAY);
-				g.drawString("Lower the data zoom level to see HiC interactions", x+((width/2)-100), ((getHeight()*3)/4)-2);					
+				g.drawString("Lower the data zoom level to see HiC interactions", ((width/2)-100), ((getHeight()*3)/4)-2);					
 
 			}
 			if (drawnCount >= 10000 && maxValue < 2) {
 				g.setColor(Color.DARK_GRAY);
-				g.drawString("Increase the data zoom level to filter HiC interactions", x+((width/2)-100), ((getHeight()*3)/4)-2);									
+				g.drawString("Increase the data zoom level to filter HiC interactions", ((width/2)-100), ((getHeight()*3)/4)-2);									
 			}
 
 		}
@@ -927,9 +924,9 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		//		System.out.println("Drew "+drawnReads.size()+" reads");
 
 		// Draw a line across the bottom of the display if there is space
-		if (getHeight()>=5) {
+		if (getHeight()>=10) {
 			g.setColor(Color.LIGHT_GRAY);
-			g.drawLine(x, height-1, x+width, height-1);
+			g.drawLine(0, height-1, width, height-1);
 
 
 			// If we're the active data store then surround us in red
@@ -939,10 +936,10 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			try {
 				if (viewer.application().dataCollection().getActiveDataStore() == data || (enclosingSet != null && viewer.application().dataCollection().getActiveDataStore() == enclosingSet)) {
 					g.setColor(Color.RED);
-					g.drawLine(x, height-2, x+width, height-2);
-					g.drawLine(x, height-1, x+width, height-1);
-					g.drawLine(x, 0, x+width, 0);
-					g.drawLine(x, 1, x+width, 1);
+					g.drawLine(0, height-2, width, height-2);
+					g.drawLine(0, height-1, width, height-1);
+					g.drawLine(0, 0, width, 0);
+					g.drawLine(0, 1, width, 1);
 				}
 			}
 			catch (NullPointerException npe) {}
@@ -981,11 +978,11 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			g.setColor(ColourScheme.DATA_BACKGROUND_ODD);
 		}
 
-		g.fillRect(x, (height/2)-(nameHeight/2), nameWidth+5, nameHeight);
+		g.fillRect(0, (height/2)-(nameHeight/2), nameWidth+5, nameHeight);
 
 		// Finally draw the name of the data track
 		g.setColor(Color.GRAY);
-		g.drawString(name,x+2,(height/2)+((nameHeight/2)-g.getFontMetrics().getDescent()));
+		g.drawString(name,2,(height/2)+((nameHeight/2)-g.getFontMetrics().getDescent()));
 	}
 
 	/**
