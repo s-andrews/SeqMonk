@@ -136,7 +136,6 @@ import uk.ac.babraham.SeqMonk.Filters.DistributionPositionFilter;
 import uk.ac.babraham.SeqMonk.Filters.FeatureFilter;
 import uk.ac.babraham.SeqMonk.Filters.FeatureNameFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityDifferenceFilter;
-import uk.ac.babraham.SeqMonk.Filters.IntensityReplicateFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntersectListsFilter;
 import uk.ac.babraham.SeqMonk.Filters.ListAnnotationValuesFilter;
 import uk.ac.babraham.SeqMonk.Filters.MonteCarloFilter;
@@ -2460,9 +2459,6 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				}
 				else if (action.equals("filter_proportion_library")) {
 					new FilterOptionsDialog(application.dataCollection(), new ProportionOfLibraryStatisticsFilter(application.dataCollection()));
-				}
-				else if (action.equals("filter_intensity_replicate_stats")) {
-					new FilterOptionsDialog(application.dataCollection(), new IntensityReplicateFilter(application.dataCollection()));
 				}
 				else if (action.equals("filter_statsr")) {
 					new FilterOptionsDialog(application.dataCollection(), new WindowedReplicateStatsFilter(application.dataCollection()));
