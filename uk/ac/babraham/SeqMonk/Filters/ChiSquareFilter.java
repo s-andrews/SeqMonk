@@ -230,14 +230,7 @@ public class ChiSquareFilter extends ProbeFilter {
 		
 		pairs = options.getSelectedPairs();
 
-		ProbeList newList;
-		
-		if (applyMultipleTestingCorrection) {
-			newList = new ProbeList(startingList,"Filtered Probes","","Q-value");
-		}
-		else {
-			newList = new ProbeList(startingList,"Filtered Probes","","P-value");			
-		}
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String[] {"P-value","FDR","Difference"});
 
 		Probe [] probes = startingList.getAllProbes();
 
@@ -286,8 +279,9 @@ public class ChiSquareFilter extends ProbeFilter {
 			// Now perform the Chi-Square test.
 			
 			double pValue = ChiSquareTest.chiSquarePvalue(pairCounts);
+			double diff = getDiff(pairCounts);
 			// Store this as a potential hit (after correcting p-values later)
-			hits.add(new ProbeTTestValue(probes[p], pValue));
+			hits.add(new ProbeTTestValue(probes[p], pValue,diff));
 
 		}
 
@@ -302,18 +296,42 @@ public class ChiSquareFilter extends ProbeFilter {
 		for (int h=0;h<rawHits.length;h++) {
 			if (applyMultipleTestingCorrection) {
 				if (rawHits[h].q < stringency) {
-					newList.addProbe(rawHits[h].probe,(float)rawHits[h].q);
+					newList.addProbe(rawHits[h].probe,new float[] {(float)rawHits[h].p,(float)rawHits[h].q,(float)rawHits[h].diff});
 				}
 			}
 			else {
 				if (rawHits[h].p < stringency) {
-					newList.addProbe(rawHits[h].probe,(float)rawHits[h].p);
+					newList.addProbe(rawHits[h].probe,new float[] {(float)rawHits[h].p,(float)rawHits[h].q,(float)rawHits[h].diff});
 				}
 			}
 		}
 
 		filterFinished(newList);
 
+	}
+	
+	private double getDiff (int [][] counts) {
+		double minRatio = 0.5;
+		double maxRatio = 0.5;
+		boolean ratioSet = false;
+		
+		for (int i=0;i<counts.length;i++) {
+			int sum = counts[i][0]+counts[i][1];
+			if (sum==0) continue;
+			double ratio = counts[i][0]  / (double)sum;
+			
+			if (!ratioSet) {
+				minRatio = ratio;
+				maxRatio = ratio;
+				ratioSet = true;
+			}
+			else {
+				if (ratio < minRatio) minRatio = ratio;
+				if (ratio > maxRatio) maxRatio = ratio;
+			}
+		}
+		
+		return (maxRatio - minRatio)*100; // Actually send them back a percentage diff
 	}
 
 	private class GroupMakerPanel extends JPanel implements ActionListener {
