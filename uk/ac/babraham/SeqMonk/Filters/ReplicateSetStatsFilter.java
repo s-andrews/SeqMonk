@@ -44,6 +44,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.AnovaTest;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.BenjHochFDR;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.ProbeTTestValue;
+import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.TTest;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
@@ -136,48 +137,60 @@ public class ReplicateSetStatsFilter extends ProbeFilter {
 				}
 	
 				double pValue = 0;
+				double diff = 0;
 				try {
 					if (replicateSets.length == 1) {
 						pValue = TTest.calculatePValue(values[0],0);
+						diff = SimpleStats.mean(values[0]);
 					}
 					else if (replicateSets.length == 2) {
 						pValue = TTest.calculatePValue(values[0],values[1]);
+						diff = SimpleStats.mean(values[0]) - SimpleStats.mean(values[1]);
 					}
 					else {
+						double [] means = new double[values.length];
+						double minValue = 0;
+						double maxValue = 0;
+						for (int i=0;i<values.length;i++) {
+							means[i] = SimpleStats.mean(values[i]);
+							if (i==0) {
+								minValue = means[i];
+								maxValue = means[i];
+							}
+							else {
+								if (means[i]<minValue)minValue=means[i];
+								if (means[i]>maxValue)maxValue=means[i];
+							}
+						}
 						pValue = AnovaTest.calculatePValue(values);
+						diff = maxValue - minValue;
 					}
 				} 
 				catch (SeqMonkException e) {
 					throw new IllegalStateException(e);
 				}
 		
-				newListProbesVector.add(new ProbeTTestValue(probes[p],pValue));
+				newListProbesVector.add(new ProbeTTestValue(probes[p],pValue,diff));
 			}
 		}
 	
 		ProbeTTestValue [] newListProbes = newListProbesVector.toArray(new ProbeTTestValue[0]);
 	
-		// Do the multi-testing correction if necessary
-		if (multiTest) {
-			BenjHochFDR.calculateQValues(newListProbes);
-		}
+		// Do the multi-testing correction
+		BenjHochFDR.calculateQValues(newListProbes);
 	
-		ProbeList newList;
+		ProbeList newList = new ProbeList(startingList,"","",new String[] {"P-value","FDR","Difference"});
 	
-		if (multiTest) {
-			newList = new ProbeList(startingList,"","","Q-value");
-			for (int i=0;i<newListProbes.length;i++) {
+		for (int i=0;i<newListProbes.length;i++) {
+			if (multiTest) {
 				if (newListProbes[i].q <= cutoff) {
-					newList.addProbe(newListProbes[i].probe,new Float(newListProbes[i].q));
+					newList.addProbe(newListProbes[i].probe,new float []{(float)newListProbes[i].p,(float)newListProbes[i].q,(float)newListProbes[i].diff});
 				}
 			}
-		}
-		else {
-			newList = new ProbeList(startingList,"","","P-value");
-			for (int i=0;i<newListProbes.length;i++) {
+			else {
 				if (newListProbes[i].p <= cutoff) {
-					newList.addProbe(newListProbes[i].probe,new Float(newListProbes[i].p));
-				}
+					newList.addProbe(newListProbes[i].probe,new float []{(float)newListProbes[i].p,(float)newListProbes[i].q,(float)newListProbes[i].diff});
+				}	
 			}
 		}
 	

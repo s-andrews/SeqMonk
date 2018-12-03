@@ -36,15 +36,19 @@ public class ProbeTTestValue implements Comparable<ProbeTTestValue> {
 	/** The q. */
 	public double q;
 	
+	/** The difference */
+	public double diff;
+	
 	/**
 	 * Instantiates a new probe t test value.
 	 * 
 	 * @param probe the probe
 	 * @param p the p
 	 */
-	public ProbeTTestValue (Probe probe, double p) {
+	public ProbeTTestValue (Probe probe, double p, double diff) {
 		this.probe = probe;
 		this.p = p;
+		this.diff = diff;
 	}
 
 	/* (non-Javadoc)

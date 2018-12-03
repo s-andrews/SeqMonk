@@ -126,11 +126,7 @@ public class ProportionOfLibraryStatisticsFilter extends ProbeFilter {
 		ProbeList newList = new ProbeList(startingList,"Filtered Probes","","Diff p-value");
 
 		// We'll build up a set of p-values as we go along
-		float [] lowestPValues = new float[probes.length];
-		for (int p=0;p<lowestPValues.length;p++) {
-			lowestPValues[p] = 1;
-		}
-
+		ProbeTTestValue [] lowestPValues = new ProbeTTestValue[probes.length];
 
 		// Put something in the progress whilst we're ordering the probe values to make
 		// the comparison.
@@ -183,19 +179,29 @@ public class ProportionOfLibraryStatisticsFilter extends ProbeFilter {
 						
 						double [] pValues = FishersExactTest.fishersExactTest(n11, n12, n21, n22);	
 
+						double diff = (n11/n12) - (n21/n22);
+						
 //						System.err.println("N11="+n11+" N12="+n12+" N21="+n21+" N22="+n22+" p="+pValues[0]);
 						
 						// The values in the array are 0=2-sided p-value, 1=left-sided p-value, 2=right-sided p-value
-						if (testForIncreasesOnly) {
-							if (pValues[1] < lowestPValues[p]) lowestPValues[p] = (float)pValues[1];
-						}
+						if (lowestPValues[p] == null) {
+							if (testForIncreasesOnly) {
+								lowestPValues[p] = new ProbeTTestValue(probes[p], pValues[1], diff);
+							}
+							else {
+								lowestPValues[p] = new ProbeTTestValue(probes[p], pValues[0], diff);							}
+							}
+							
 						else {
-							if (pValues[0] < lowestPValues[p]) lowestPValues[p] = (float)pValues[0];							
+							if (testForIncreasesOnly) {
+								if (pValues[1] < lowestPValues[p].p) lowestPValues[p] = new ProbeTTestValue(probes[p], pValues[1], diff);
+							}
+							else {
+								if (pValues[0] < lowestPValues[p].p) lowestPValues[p] = new ProbeTTestValue(probes[p], pValues[0], diff);							
+							}
 						}
 					}
-
 				}	
-
 			}
 		}
 		catch (SeqMonkException sme) {
@@ -203,32 +209,25 @@ public class ProportionOfLibraryStatisticsFilter extends ProbeFilter {
 		}
 
 
+		BenjHochFDR.calculateQValues(lowestPValues);
+
 		// Now we can go through the lowest P-value set and see if any of them
 		// pass the filter.
-		
-		if (applyMultipleTestingCorrection) {
-			ProbeTTestValue [] statsValues = new ProbeTTestValue[probes.length];
-			for (int i=0;i<probes.length;i++) {
-				statsValues[i] = new ProbeTTestValue(probes[i], lowestPValues[i]);
-			}
-			
-			BenjHochFDR.calculateQValues(statsValues);
-			
-			for (int i=0;i<statsValues.length;i++) {
-				if (statsValues[i].q < pValueLimit) {
-					newList.addProbe(statsValues[i].probe, (float)statsValues[i].q);
+
+		for (int i=0;i<lowestPValues.length;i++) {
+			if (applyMultipleTestingCorrection) {
+				if (lowestPValues[i].q < pValueLimit) {
+					newList.addProbe(lowestPValues[i].probe, new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
 				}
 			}
-			
-		}
-		
-		else {
-			for (int i=0;i<lowestPValues.length;i++) {
-				if (lowestPValues[i] < pValueLimit) {
-					newList.addProbe(probes[i],lowestPValues[i]);
+			else {
+				if (lowestPValues[i].p < pValueLimit) {
+					newList.addProbe(lowestPValues[i].probe, new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
 				}
+				
 			}
 		}
+
 
 		filterFinished(newList);		
 	}
