@@ -154,13 +154,10 @@ public class VarianceIntensityDifferenceFilter extends ProbeFilter {
 		Integer updatedProbesPerSet = optionsPanel.probesPerSet();
 		if (updatedProbesPerSet != null) probesPerSet = updatedProbesPerSet;
 
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","","Diff p-value");
+		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String [] {"P-value","FDR","Difference"});
 
 		// We'll build up a set of p-values as we go along
-		float [] lowestPValues = new float[probes.length];
-		for (int p=0;p<lowestPValues.length;p++) {
-			lowestPValues[p] = 1;
-		}
+		IndexTTestValue [] lowestPValues = new IndexTTestValue[probes.length];
 
 		// Put something in the progress whilst we're ordering the probe values to make
 		// the comparison.
@@ -192,14 +189,12 @@ public class VarianceIntensityDifferenceFilter extends ProbeFilter {
 				}
 
 
-				currentPValues[p] = new IndexTTestValue(p, var.getIntenstiyPValueForIndex(p,probesPerSet));
+				currentPValues[p] = new IndexTTestValue(p, var.getIntenstiyPValueForIndex(p,probesPerSet),var.getDifferenceForIndex(p));
 
 			}
 			
 			// We now need to correct the set of pValues
-			if (applyMultipleTestingCorrection) {
-				BenjHochFDR.calculateQValues(currentPValues);
-			}
+			BenjHochFDR.calculateQValues(currentPValues);
 			
 			// Finally we compare these pValues to the lowest ones we have from
 			// the combined set
@@ -216,15 +211,12 @@ public class VarianceIntensityDifferenceFilter extends ProbeFilter {
 					if (var.getDifferenceForIndex(currentPValues[i].index) <0) continue;
 				}
 				
-				if (applyMultipleTestingCorrection) {
-					if (currentPValues[i].q < lowestPValues[currentPValues[i].index]) {
-						lowestPValues[currentPValues[i].index] = (float)currentPValues[i].q;
-					}
+				if (lowestPValues[currentPValues[i].index] == null) {
+					lowestPValues[currentPValues[i].index] = currentPValues[i];
+					continue;
 				}
-				else {
-					if (currentPValues[i].p < lowestPValues[currentPValues[i].index]) {
-						lowestPValues[currentPValues[i].index] = (float)currentPValues[i].p;
-					}
+				if (currentPValues[i].p < lowestPValues[currentPValues[i].index].p) {
+					lowestPValues[currentPValues[i].index] = currentPValues[i];
 				}
 			}
 		}
@@ -234,8 +226,15 @@ public class VarianceIntensityDifferenceFilter extends ProbeFilter {
 		// Now we can go through the lowest P-value set and see if any of them
 		// pass the filter.
 		for (int i=0;i<lowestPValues.length;i++) {
-			if (lowestPValues[i] < pValueLimit) {	
-				newList.addProbe(probes[i],lowestPValues[i]);
+			if (applyMultipleTestingCorrection) {
+				if (lowestPValues[i].q < pValueLimit) {
+					newList.addProbe(probes[i],new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
+				}				
+			}
+			else {
+				if (lowestPValues[i].p < pValueLimit) {
+					newList.addProbe(probes[i],new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
+				}
 			}
 		}
 
