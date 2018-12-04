@@ -204,11 +204,11 @@ public class VarianceIntensityDifferenceFilter extends ProbeFilter {
 				// we need
 				
 				if (! optionsPanel.wantHighVariation()) {
-					if (var.getDifferenceForIndex(currentPValues[i].index) >0) continue;
+					if (currentPValues[i].diff >0) continue;
 				}
 				
 				if (! optionsPanel.wantLowVariation()) {
-					if (var.getDifferenceForIndex(currentPValues[i].index) <0) continue;
+					if (currentPValues[i].diff <0) continue;
 				}
 				
 				if (lowestPValues[currentPValues[i].index] == null) {
@@ -227,12 +227,12 @@ public class VarianceIntensityDifferenceFilter extends ProbeFilter {
 		// pass the filter.
 		for (int i=0;i<lowestPValues.length;i++) {
 			if (applyMultipleTestingCorrection) {
-				if (lowestPValues[i].q < pValueLimit) {
+				if (lowestPValues[i] != null && lowestPValues[i].q < pValueLimit) {
 					newList.addProbe(probes[i],new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
 				}				
 			}
 			else {
-				if (lowestPValues[i].p < pValueLimit) {
+				if (lowestPValues[i] != null && lowestPValues[i].p < pValueLimit) {
 					newList.addProbe(probes[i],new float[] {(float)lowestPValues[i].p,(float)lowestPValues[i].q,(float)lowestPValues[i].diff});
 				}
 			}

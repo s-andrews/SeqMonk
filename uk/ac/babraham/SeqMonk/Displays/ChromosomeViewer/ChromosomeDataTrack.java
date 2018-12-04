@@ -258,6 +258,9 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 		// We need to stack all of the reads in a set of available slots.
 		// Each read is [readHeight] high and slots have a [readSpace] gap between them.
+		
+		// If we're not drawing reads at all then we can just bail out immediately, because who cares.
+		if (!drawReads) return;
 
 		// The quick thing to do is to check if the height has changed since
 		// the last time we looked.  We also need to check whether we're
