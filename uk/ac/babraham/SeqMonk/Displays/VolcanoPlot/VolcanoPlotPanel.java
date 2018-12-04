@@ -401,6 +401,11 @@ public class VolcanoPlotPanel extends JPanel implements Runnable, MouseMotionLis
 			g.fillRect(nonRedundantValues[p].x - (dotSize/2), nonRedundantValues[p].y-(dotSize/2), dotSize, dotSize);
 		}
 
+		// Put some marker lines at p0.05 and p0.01
+		g.setColor(Color.GRAY);
+		g.drawLine(Y_AXIS_SPACE, getY(0-Math.log10(0.05)),getWidth()-10, getY(0-Math.log10(0.05)));
+		g.drawLine(Y_AXIS_SPACE, getY(0-Math.log10(0.01)),getWidth()-10, getY(0-Math.log10(0.01)));
+		
 		// Finally we draw the current measures if the mouse is inside the plot
 		if (cursorX > 0) {
 			g.setColor(Color.BLACK);
