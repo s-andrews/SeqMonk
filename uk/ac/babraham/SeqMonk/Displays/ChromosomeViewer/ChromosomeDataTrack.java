@@ -212,6 +212,10 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		}
 
 	}
+	
+	public DataStore getStore () {
+		return data;
+	}
 
 
 	public Dimension getMinimumSize () {

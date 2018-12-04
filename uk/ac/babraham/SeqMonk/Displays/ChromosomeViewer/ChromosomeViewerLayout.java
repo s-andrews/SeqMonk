@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.LayoutManager2;
 import java.util.Vector;
 
+import uk.ac.babraham.SeqMonk.SeqMonkApplication;
+
 public class ChromosomeViewerLayout implements LayoutManager2 {
 
 	public static Integer ANNOTATION_TRACK = 56426;
@@ -125,13 +127,55 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 		
 		int dataYStart = yStart;
 		int lastYEnd = dataYStart;
+
+		// Work out the overall data height to see if we need to specially accommodate selected 
+		// tracks
 		
 		double dataHeight = (yBottom-yStart) / (double)dataTracks.size();
+		
+		int selectedStore = -1;
+		int selectedHeight = (int)Math.ceil(dataHeight);
+		
+		if (dataHeight < 50) {
+			// We need to accommodate a selected track to make sure that it is visible, if
+			// there is one.
+			
+			for (int i=0;i<dataTracks.size();i++) {
+				if (((ChromosomeDataTrack)dataTracks.get(i)).getStore() == SeqMonkApplication.getInstance().dataCollection().getActiveDataStore()) {
+					selectedStore = i;
+					break;
+				}
+			}
+			
+			if (selectedStore >=0) {
+				// We reserve 100px for this (or how ever much space we actually have)
+				
+				selectedHeight = Math.min(100, (yBottom-yStart));
+				
+				if (dataTracks.size()>1) {
+					dataHeight = (yBottom-(yStart+selectedHeight)) / (double)(dataTracks.size()-1);
+				}
+			}
+			
+		}
 		
 		for (int i=0;i<dataTracks.size();i++) {
 			Component c = dataTracks.elementAt(i);
 			
+			if (i == selectedStore) {
+				// We have to draw this with a preferred height
+				int yEnd = lastYEnd+selectedHeight;
+				c.setLocation(0, lastYEnd);
+				c.setBounds(0, lastYEnd, width, (yEnd-lastYEnd));
+				lastYEnd = yEnd;
+				continue;
+				
+			}
+			
 			int yEnd = (int)Math.round(dataYStart+(dataHeight*(i+1)));
+			if (selectedStore >=0 && i>selectedStore) {
+				yEnd+= selectedHeight;
+			}
 			if (yEnd - lastYEnd < MIN_DATA_HEIGHT) {
 				// We make this zero sized.
 				c.setBounds(0, 0, 0, 0);
