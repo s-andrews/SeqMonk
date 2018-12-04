@@ -174,7 +174,7 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 			
 			int yEnd = (int)Math.round(dataYStart+(dataHeight*(i+1)));
 			if (selectedStore >=0 && i>selectedStore) {
-				yEnd+= selectedHeight;
+				yEnd+= (int)(selectedHeight-dataHeight);
 			}
 			if (yEnd - lastYEnd < MIN_DATA_HEIGHT) {
 				// We make this zero sized.
