@@ -74,8 +74,28 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 			return;
 		}
 		
-		// OK, so we don't have enough space.
-		setLayout(MIN_ANNOT_HEIGHT,width,height);
+		// OK, so we don't have enough space.  Do we have enough with compacted annotation?
+		annotationHeight = MIN_ANNOT_HEIGHT*annotationTracks.size();
+
+		// Do we have enough space like this?
+		if ((totalAvailableHeight - (fixedHeight+annotationHeight))/dataTracks.size() >= 30) {
+			
+			// We're all good
+			setLayout(MIN_ANNOT_HEIGHT,width,height);
+			return;
+		}
+		
+		// No, we're still out.  Is this because annotation takes up more than half the space
+		// available?  If so then it gets compacted, if not then it gets expanded
+		
+		annotationHeight = PREFERRED_ANNOT_HEIGHT*annotationTracks.size();
+		
+		if (totalAvailableHeight > (annotationHeight*2)) {
+			setLayout(PREFERRED_ANNOT_HEIGHT,width,height);
+		}
+		else {
+			setLayout(MIN_ANNOT_HEIGHT,width,height);
+		}
 		
 	}
 	

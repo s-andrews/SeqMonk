@@ -22,6 +22,10 @@ Major changes are:
   result lists.  Works for DESeq and EdgeR at the moment and will
   support more tests in future.
   
+- Added a custom layout for the chromosome view to more efficiently
+  handle the structure of the tracks, especially where there are 
+  large numbers of tracks in a project.
+  
 - Added an option to do bulk renaming of data stores to the DataSet
   editor
   
