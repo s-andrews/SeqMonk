@@ -240,7 +240,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		Arrays.sort(probes);
 
 		//Force the slots to be reassigned
-		height = 0;
+		height = -1;
 
 		repaint();
 	}
@@ -270,8 +270,12 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		
 		// We can also skip most of this if the height isn't the same, but the number of slots 
 		// doesn't change.
+		
+		// We use setting the height to -1 as a flag for a forced update, so if that's there
+		// then we can't skip the reassignment
+		
 		boolean checkSlotCount = false;
-		if (DisplayPreferences.getInstance().getReadDisplay() == lastSplitMode && thisReadDensity == lastReadDensity && drawProbes == lastDrawProbes) {
+		if (height >= 0  && DisplayPreferences.getInstance().getReadDisplay() == lastSplitMode && thisReadDensity == lastReadDensity && drawProbes == lastDrawProbes) {
 			checkSlotCount = true;
 		}
 		
@@ -350,6 +354,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		// slots (even though the slots might have moved slightly)
 		
 		if (checkSlotCount && slotCount == lastReadXEnds.length) {
+//			System.err.println("Skipping slot reassignment");
 			return;
 		}
 		
