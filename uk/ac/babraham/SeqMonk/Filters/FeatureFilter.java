@@ -61,7 +61,6 @@ public class FeatureFilter extends ProbeFilter {
 	
 	
 	private static final int OVERLAPPING = 101;
-	private static final int NOT_OVERLAPPING = 106;
 	private static final int CLOSE_TO = 102;
 	private static final int EXACTLY_MATCHING = 103;
 	private static final int SURROUNDING = 104;
@@ -69,6 +68,7 @@ public class FeatureFilter extends ProbeFilter {
 	
 	private int strand = ANY_STRAND;
 	private int relationship = OVERLAPPING;
+	private boolean inverseFinalList = false;
 	
 	
 	
@@ -149,7 +149,7 @@ public class FeatureFilter extends ProbeFilter {
 		
 		
 		// This is the set of passing probes we're going to build up.
-		ProbeList passedProbes = new ProbeList(startingList,"","",new String[0]);
+		ProbeList passedProbesList = new ProbeList(startingList,"","",new String[0]);
 		
 		
 		// We need to know how far beyond the feature we might need to look
@@ -162,12 +162,6 @@ public class FeatureFilter extends ProbeFilter {
 		Chromosome [] chrs = collection.genome().getAllChromosomes();
 		
 		for (int c=0;c<chrs.length;c++) {
-
-			// For the not-overlapping option it's easiest for us to keep a list
-			// of probes to reject (those that do overlap) and then make the negated
-			// list at the end.
-			HashSet<Probe> failedProbes = new HashSet<Probe>();
-
 			
 			progressUpdated("Processing features on Chr "+chrs[c].name(),c, chrs.length);
 			
@@ -186,6 +180,12 @@ public class FeatureFilter extends ProbeFilter {
 			Arrays.sort(features);
 			
 			int lastFoundIndex = 0;
+			
+			// We'll keep a temporary cache of probes which pass.  Depending on 
+			// whether we're inversing we'll either use this as an include or 
+			// exclude list at the end.
+			HashSet<Probe> passedProbes = new HashSet<Probe>();
+			
 			
 			// We can now step through the probes looking for the best feature match
 			for (int p=0;p<probes.length;p++) {
@@ -206,6 +206,7 @@ public class FeatureFilter extends ProbeFilter {
 							foundFirst = true;
 						}
 					}
+					
 					
 					
 					// See if we're skipping this feature for this probe based on its strand
@@ -242,22 +243,16 @@ public class FeatureFilter extends ProbeFilter {
 						// overall or with one of our subfeatures.
 						
 						if (probes[p].start() == features[f].start() && probes[p].end() == features[f].end()) {
-							passedProbes.addProbe(probes[p], null);
+							passedProbes.add(probes[p]);
 							break;
 						}						
 					}
 					
-					else if (relationship == OVERLAPPING || relationship == NOT_OVERLAPPING) {
+					else if (relationship == OVERLAPPING ) {
 						// Quickest check is whether a probe overlaps a feature
 					
 						if (probes[p].start() < features[f].end() && probes[p].end() > features[f].start()) {
-							if (relationship == OVERLAPPING) {
-								passedProbes.addProbe(probes[p],null);
-							}
-							else {
-								// This is going to be a rejected probe for not-overlapping
-								failedProbes.add(probes[p]);
-							}
+							passedProbes.add(probes[p]);
 							break;
 						}
 					}
@@ -267,7 +262,7 @@ public class FeatureFilter extends ProbeFilter {
 						// The feature has to surround the probe
 						
 						if (probes[p].start() >= features[f].start() && probes[p].end() <= features[f].end()) {
-							passedProbes.addProbe(probes[p],null);
+							passedProbes.add(probes[p]);
 							break;
 						}
 					}
@@ -277,7 +272,7 @@ public class FeatureFilter extends ProbeFilter {
 						// The probe has to surround the feature
 						
 						if (probes[p].start() <= features[f].start() && probes[p].end() >= features[f].end()) {
-							passedProbes.addProbe(probes[p],null);
+							passedProbes.add(probes[p]);
 							break;
 						}
 					}
@@ -287,27 +282,33 @@ public class FeatureFilter extends ProbeFilter {
 						// The probe has to be close to the feature
 						
 						if (probes[p].start() < features[f].end()+annotationLimit && probes[p].end() > features[f].start()-annotationLimit) {
-							passedProbes.addProbe(probes[p],null);
+							passedProbes.add(probes[p]);
 							break;
 						}
 					}
 				}
 			}
 
-			// If we're doing non-overlapping then we need to do another pass through the
-			// data to get the probes which weren't rejected
-			if (relationship == NOT_OVERLAPPING) {
-				for (int p=0;p<probes.length;p++) {
-					if (! failedProbes.contains(probes[p])) {
-						passedProbes.addProbe(probes[p], null);
+			// Now we need to do another pass through the passedProbes set, either
+			// adding or excluding them from the final returned list.
+			for (int p=0;p<probes.length;p++) {
+				if (inverseFinalList) {
+					if (! passedProbes.contains(probes[p])) {
+						passedProbesList.addProbe(probes[p], null);
+					}
+				}
+				else {
+					if (passedProbes.contains(probes[p])) {
+						passedProbesList.addProbe(probes[p], null);
 					}
 				}
 			}
+			
 
 		}
 		
 		
-		filterFinished(passedProbes);
+		filterFinished(passedProbesList);
 		
 	}
 
@@ -387,9 +388,13 @@ public class FeatureFilter extends ProbeFilter {
 					"Overlapping",
 					"Not Overlapping",
 					"Close to",
+					"Not Close to",
 					"Exactly matching",
+					"Not Exactly matching",
 					"Surrounding",
-					"Contained within"
+					"Not Surrounding",
+					"Contained within",
+					"Not Contained within"
 			});
 			
 			relationshipTypeBox.addActionListener(new ActionListener() {
@@ -397,22 +402,28 @@ public class FeatureFilter extends ProbeFilter {
 				public void actionPerformed(ActionEvent e) {
 					if (distanceField == null) return;
 					
-					if (relationshipTypeBox.getSelectedItem().equals("Close to")) {
+					String relationshipString = (String)relationshipTypeBox.getSelectedItem();
+					if (relationshipString.startsWith("Not ")) {
+						inverseFinalList = true;
+						relationshipString = relationshipString.substring(4);
+					}
+					else {
+						inverseFinalList = false;
+					}
+					
+					if (relationshipString.equals("Close to")) {
 						relationship = CLOSE_TO;
 					}
-					else if (relationshipTypeBox.getSelectedItem().equals("Overlapping")) {
+					else if (relationshipString.equals("Overlapping")) {
 						relationship = OVERLAPPING;
 					}
-					else if (relationshipTypeBox.getSelectedItem().equals("Not Overlapping")) {
-						relationship = NOT_OVERLAPPING;
-					}
-					else if (relationshipTypeBox.getSelectedItem().equals("Exactly matching")) {
+					else if (relationshipString.equals("Exactly matching")) {
 						relationship = EXACTLY_MATCHING;
 					}
-					else if (relationshipTypeBox.getSelectedItem().equals("Surrounding")) {
+					else if (relationshipString.equals("Surrounding")) {
 						relationship = SURROUNDING;
 					}
-					else if (relationshipTypeBox.getSelectedItem().equals("Contained within")) {
+					else if (relationshipString.equals("Contained within")) {
 						relationship = CONTAINED_WITHIN;
 					}
 					else {
