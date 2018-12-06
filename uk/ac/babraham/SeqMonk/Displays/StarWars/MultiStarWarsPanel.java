@@ -28,7 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.StarWars;
-import uk.ac.babraham.SeqMonk.Displays.BoxWhisker.BoxWhiskerScaleBar;
+import uk.ac.babraham.SeqMonk.Displays.BeanPlot.BeanPlotScaleBar;
 
 public class MultiStarWarsPanel extends JPanel {
 		
@@ -53,7 +53,7 @@ public class MultiStarWarsPanel extends JPanel {
 		gbc.gridy=2;
 		gbc.weighty=0.999;
 		gbc.weightx=0.001;
-		add(new BoxWhiskerScaleBar(min, max),gbc);
+		add(new BeanPlotScaleBar(min, max),gbc);
 		gbc.weightx=0.5;
 		
 		for (int i=0;i<whiskers.length;i++) {

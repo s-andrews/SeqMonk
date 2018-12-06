@@ -60,7 +60,7 @@ public class BeanPlotScaleBar extends JPanel {
 			int y = (getHeight()-5)-(int)((currentY-axisScale.getMin())*yScale);
 			
 			g.drawLine(getWidth()-5, y, getWidth()-8,y);
-			g.drawString(axisScale.format(currentY), 5, y+(g.getFontMetrics().getAscent()/2));
+			g.drawString(axisScale.format(currentY), getWidth() - (12+g.getFontMetrics().stringWidth(axisScale.format(currentY))), y+(g.getFontMetrics().getAscent()/2));
 			
 			currentY += axisScale.getInterval();
 		}

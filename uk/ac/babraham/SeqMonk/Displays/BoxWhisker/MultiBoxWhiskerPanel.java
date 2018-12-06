@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.BoxWhisker;
+import uk.ac.babraham.SeqMonk.Displays.BeanPlot.BeanPlotScaleBar;
 
 public class MultiBoxWhiskerPanel extends JPanel {
 		
@@ -52,7 +53,7 @@ public class MultiBoxWhiskerPanel extends JPanel {
 		gbc.gridy=2;
 		gbc.weighty=0.999;
 		gbc.weightx=0.001;
-		add(new BoxWhiskerScaleBar(min, max),gbc);
+		add(new BeanPlotScaleBar(min, max),gbc);
 		gbc.weightx=0.5;
 		
 		for (int i=0;i<whiskers.length;i++) {
