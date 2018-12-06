@@ -15,8 +15,8 @@ Major changes are:
 - Added a probe list annotation value filter to allow for additional
   filtering based on the contents of a probe lists annotations.
   
-- Updated the DESeq and EdgeR filters to record p-value,q-value and 
-  log2 fold change.
+- Updated the DESeq and EdgeR, LIMMA, T-test/ANOVA, Intensity Diff
+  filters to record p-value,q-value and log2 fold change.
   
 - Added a volcano plot to visualise hits for statistical search 
   result lists.  Works for DESeq and EdgeR at the moment and will
@@ -47,6 +47,12 @@ Major changes are:
 - Added an option to export annotation tracks as a BED file
 
 - Added a match by name option to the feature report
+
+- Added a generic NOT option to all feature filter matching types
+
+- Updated the R installer code to respect a locally set preferred
+  CRAN repository, and to use the new BiocManager to install 
+  bioconductor packages if appropriate.
 
 
 
