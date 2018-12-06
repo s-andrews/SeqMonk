@@ -625,9 +625,13 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 					return;
 				}
 				
+				// Set a limit on how small a range they can show because things
+				// get silly eventually
+				if ((getXValue(Math.max(selectionStart,selectionEnd)) - getXValue(Math.min(selectionStart,selectionEnd))) < 0.0001) return;
+				
 				currentMinValue = getXValue(Math.min(selectionStart,selectionEnd));
 				currentMaxValue = getXValue(Math.max(selectionStart,selectionEnd));
-
+				
 				calcuateCategories(categorySlider.getValue());
 
 			}
