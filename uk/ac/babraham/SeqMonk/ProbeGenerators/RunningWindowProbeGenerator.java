@@ -255,7 +255,7 @@ public class RunningWindowProbeGenerator extends ProbeGenerator implements Runna
 			existingListName = "Currently visible region";
 			Probe p = new Probe(DisplayPreferences.getInstance().getCurrentChromosome(), DisplayPreferences.getInstance().getCurrentLocation());
 			activeList = new ProbeSet("Current Region", 1);
-			activeList.addProbe(p, 0f);
+			activeList.addProbe(p, null);
 		}
 
 		Vector<Probe> newProbes = new Vector<Probe>();
