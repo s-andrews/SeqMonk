@@ -84,7 +84,7 @@ public class RandomFilter extends ProbeFilter {
 	 */
 	@Override
 	protected void generateProbeList() {
-		ProbeList newList = new ProbeList(startingList,"","","No value");
+		ProbeList newList = new ProbeList(startingList,"","",new String [0]);
 		
 		Probe [] probes = startingList.getAllProbes();
 		
@@ -95,7 +95,7 @@ public class RandomFilter extends ProbeFilter {
 		for (int i=1;i<=numberOfListsToGenerate;i++) {
 			
 			if (numberOfListsToGenerate > 1) {
-				currentList = new ProbeList(newList, "Random list "+i,listDescription(), currentList.getValueNames());
+				currentList = new ProbeList(newList, "Random list "+i,listDescription(), new String[0]);
 			}
 			// Make a random set
 			
@@ -113,9 +113,9 @@ public class RandomFilter extends ProbeFilter {
 					newList.addProbe(probes[j], null);
 				}
 				else {
-					currentList.addProbe(probes[j], currentList.getValuesForProbe(probes[j]));
+					currentList.addProbe(probes[j],null);
 					if (!seenProbes.contains(probes[j])) {
-						newList.addProbe(probes[j], currentList.getValuesForProbe(probes[j]));
+						newList.addProbe(probes[j], null);
 						seenProbes.add(probes[j]);
 					}
 				}
