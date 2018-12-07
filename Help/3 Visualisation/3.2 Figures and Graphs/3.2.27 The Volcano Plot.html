@@ -1,0 +1,58 @@
+<html>
+
+<head>
+<title>The Volcano Plot</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>The Volcano Plot</h1>
+
+<p>
+The volcano plot is a way to review the results of a statistical filter within
+seqmonk.  It is a plot of the absolute difference seen in a test (on the x-axis)
+vs the abs(log10(pvalue)) on the y axis (so larger values are more significant).
+</p>
+<p><img src="volcano_plot.png" alt="A Volcano Plot"></p>
+
+<p>
+The volcano plot does not use your data or quantitations - it solely relies on
+the annotations placed on a probe list by a previously run statistical filter.
+Not all filters will generate the necessary values needed for the plot, but if
+a filter includes a p-value (or FDR), and some measure of difference then you
+can select it in the Data view and launch the volcano plot.
+</p>
+
+<p>
+Within the plot each probe will be plotted.  You can mouse over probes to see
+what they are and you can double click on them to go to that probe in the 
+chromosome view.  Lines will appear across the plot at the locations of the 
+0.05 and 0.01 cutoffs.
+</p>
+
+<h2>Options</h2>
+<ul>
+<li>You can select the annotation values you want to use for the difference
+and significance axes.</li>
+<li>You can opt to highlight other sub-lists onto the points shown on the
+plot</li>
+<li>You can drag a selection region up the plot to generate a probe list which
+you can save which will be filtered by the significance value you're using. This
+is somewhat inexact so you may prefer to use the List Annotation Value Filter 
+instead which will provide more control</li>
+</ul>
+
+
+</ul>
+
+<p>
+</p>
+
+</body>
+</html>
