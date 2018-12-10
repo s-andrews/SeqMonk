@@ -61,7 +61,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(new VistoryToolbar(),BorderLayout.PAGE_START);
-		getContentPane().add(new JScrollPane(vistoryPanel),BorderLayout.CENTER);
+		getContentPane().add(new JScrollPane(vistoryPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
 		
 		setSize(800,600);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());

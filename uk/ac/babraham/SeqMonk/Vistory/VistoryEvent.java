@@ -22,6 +22,9 @@ public class VistoryEvent extends VistoryBlock {
 		JTextArea textArea = new JTextArea(text);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
+		textArea.setEditable(false);
+		
+		textArea.setFont(getFont());
 		
 		add(textArea,BorderLayout.CENTER);
 	}
