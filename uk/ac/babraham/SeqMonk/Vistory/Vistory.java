@@ -18,6 +18,14 @@ public class Vistory {
 	
 	private Vistory () {}
 	
+	public void addListener (VistoryListener l) {
+		if (!listeners.contains(l)) listeners.add(l);
+	}
+	
+	public void removeListener (VistoryListener l) {
+		if (listeners.contains(l)) listeners.removeElement(l);
+	}
+	
 	public static Vistory getInstance() {
 		return(vistory);
 	}
