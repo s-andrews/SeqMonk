@@ -35,14 +35,14 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistory.addListener(this);
 		
 		vistoryPanel = new JPanel();
-		GridBagConstraints gbc = new GridBagConstraints();
+		gbc = new GridBagConstraints();
 		gbc.gridx=0;
 		gbc.gridy=0;
 		gbc.weightx = 0.5;
-		gbc.weighty = 0.5;
+		gbc.weighty = 0.01;
 		
 		gbc.insets = new Insets(5, 5, 5, 5);
-		gbc.fill = GridBagConstraints.BOTH;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
 		vistoryPanel.setLayout(new GridBagLayout());
 		
@@ -52,6 +52,12 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 			gbc.gridy=b;
 			vistoryPanel.add(blocks[b],gbc);
 		}
+		
+		gbc.gridy = 100000;
+		gbc.weighty=0.999;
+		gbc.fill = GridBagConstraints.BOTH;
+		vistoryPanel.add(new JPanel(),gbc);
+		
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(new VistoryToolbar(),BorderLayout.PAGE_START);

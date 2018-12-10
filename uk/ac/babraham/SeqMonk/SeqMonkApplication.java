@@ -74,6 +74,8 @@ import uk.ac.babraham.SeqMonk.Menu.SeqMonkMenu;
 import uk.ac.babraham.SeqMonk.Network.GenomeDownloader;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 
 /**
  * SeqMonkApplication represents the main SeqMonk GUI window and handles
@@ -1104,6 +1106,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public void probeSetReplaced(ProbeSet probes) {
 		probes.addProbeSetChangeListener(this);
 		changesWereMade();
+		
+		Vistory.getInstance().addBlock(new VistoryEvent("New Probe Set",probes.justDescription()));
+
 	}
 
 
@@ -1162,6 +1167,8 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			chromosomeViewer.autoScale();
 			genomeViewer.repaint();
 			changesWereMade();
+			
+			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()));
 		}
 		
 		else if (command.equals("pipeline_quantitation")) {
