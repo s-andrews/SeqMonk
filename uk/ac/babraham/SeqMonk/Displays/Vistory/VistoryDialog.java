@@ -22,6 +22,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	
 	private ScrollablePanel vistoryPanel = null;
 	private GridBagConstraints gbc;
+	private JScrollPane scrollPane;
 	
 	
 	
@@ -63,7 +64,8 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(new VistoryToolbar(),BorderLayout.PAGE_START);
-		getContentPane().add(new JScrollPane(vistoryPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
+		scrollPane = new JScrollPane(vistoryPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		getContentPane().add(scrollPane,BorderLayout.CENTER);
 		
 		setSize(800,600);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
@@ -82,6 +84,9 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistoryPanel.add(block,gbc);
 		
 		vistoryPanel.revalidate();
+		
+		// Scroll to bottom when new block is added.
+		scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
 	}
 
 	@Override
