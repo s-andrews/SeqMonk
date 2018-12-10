@@ -1,6 +1,7 @@
 package uk.ac.babraham.SeqMonk.Displays.Vistory;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -19,7 +20,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	private Vistory vistory;
 	private static VistoryDialog vistoryDialog = null;
 	
-	private JPanel vistoryPanel = null;
+	private ScrollablePanel vistoryPanel = null;
 	private GridBagConstraints gbc;
 	
 	
@@ -34,17 +35,18 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		
 		vistory.addListener(this);
 		
-		vistoryPanel = new JPanel();
+		vistoryPanel = new ScrollablePanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx=0;
 		gbc.gridy=0;
 		gbc.weightx = 0.5;
 		gbc.weighty = 0.01;
 		
-		gbc.insets = new Insets(5, 5, 5, 5);
+		gbc.insets = new Insets(10, 10, 10, 10);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
 		vistoryPanel.setLayout(new GridBagLayout());
+		vistoryPanel.setBackground(Color.BLUE);
 		
 		VistoryBlock [] blocks = vistory.blocks();
 		
@@ -79,7 +81,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		gbc.gridy=vistory.blocks().length-1;
 		vistoryPanel.add(block,gbc);
 		
-		vistoryPanel.validate();
+		vistoryPanel.revalidate();
 	}
 
 	@Override

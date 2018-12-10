@@ -4,8 +4,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JPanel;
-
 public class VistoryImage extends VistoryBlock {
 
 	private BufferedImage image;
@@ -25,7 +23,7 @@ public class VistoryImage extends VistoryBlock {
 	}
 	
 	public Dimension getPreferredSize () {
-		return new Dimension(image.getWidth(),image.getHeight());
+		return new Dimension(1,image.getHeight());
 	}
 
 }

@@ -1,6 +1,7 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.JTextArea;
 
@@ -12,6 +13,7 @@ public class VistoryText extends VistoryBlock {
 		text = new JTextArea();
 		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
+		text.setFont(getFont());
 		
 		setLayout(new BorderLayout());
 		add(text,BorderLayout.CENTER);
