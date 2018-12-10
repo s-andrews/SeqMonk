@@ -1,5 +1,6 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -26,6 +27,10 @@ public class VistoryImage extends JPanel implements VistoryBlock {
 	
 	public void paintComponent (Graphics g) {
 		g.drawImage(image, 0, 0, this);
+	}
+	
+	public Dimension getPreferredSize () {
+		return new Dimension(image.getWidth(),image.getHeight());
 	}
 
 }

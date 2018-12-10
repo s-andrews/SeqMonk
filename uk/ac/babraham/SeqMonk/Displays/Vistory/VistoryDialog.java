@@ -1,9 +1,11 @@
 package uk.ac.babraham.SeqMonk.Displays.Vistory;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
-import javax.swing.BoxLayout;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -12,32 +14,47 @@ import uk.ac.babraham.SeqMonk.Vistory.Vistory;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryBlock;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryListener;
 
-public class VistoryDialog extends JDialog implements VistoryListener {
+public class VistoryDialog extends JFrame implements VistoryListener {
 
 	private Vistory vistory;
 	private static VistoryDialog vistoryDialog = null;
 	
 	private JPanel vistoryPanel = null;
+	private GridBagConstraints gbc;
+	
+	
 	
 	
 	private VistoryDialog () {
-		super(SeqMonkApplication.getInstance(),"Vistory");
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		super("Vistory");
+		setIconImage(SeqMonkApplication.getInstance().getIconImage());
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.vistory = Vistory.getInstance();
+		
 		
 		vistory.addListener(this);
 		
 		vistoryPanel = new JPanel();
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx=0;
+		gbc.gridy=0;
+		gbc.weightx = 0.5;
+		gbc.weighty = 0.5;
 		
-		vistoryPanel.setLayout(new BoxLayout(vistoryPanel, BoxLayout.Y_AXIS));
+		gbc.insets = new Insets(5, 5, 5, 5);
+		gbc.fill = GridBagConstraints.BOTH;
+		
+		vistoryPanel.setLayout(new GridBagLayout());
 		
 		VistoryBlock [] blocks = vistory.blocks();
 		
 		for (int b=0;b<blocks.length;b++) {
-			vistoryPanel.add(blocks[b].getPanel());
+			gbc.gridy=b;
+			vistoryPanel.add(blocks[b].getPanel(),gbc);
 		}
 		
 		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(new VistoryToolbar(),BorderLayout.PAGE_START);
 		getContentPane().add(new JScrollPane(vistoryPanel),BorderLayout.CENTER);
 		
 		setSize(800,600);
@@ -53,7 +70,8 @@ public class VistoryDialog extends JDialog implements VistoryListener {
 
 	@Override
 	public void blockAdded(VistoryBlock block) {
-		vistoryPanel.add(block.getPanel());
+		gbc.gridy=vistory.blocks().length-1;
+		vistoryPanel.add(block.getPanel(),gbc);
 		
 		vistoryPanel.validate();
 	}
