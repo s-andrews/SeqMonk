@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-public class VistoryImage extends JPanel implements VistoryBlock {
+public class VistoryImage extends VistoryBlock {
 
 	private BufferedImage image;
 	
@@ -14,11 +14,6 @@ public class VistoryImage extends JPanel implements VistoryBlock {
 		this.image = image;
 	}
 	
-	@Override
-	public JPanel getPanel() {
-		return(this);
-	}
-
 	@Override
 	public String getHTML() {
 		// TODO Auto-generated method stub

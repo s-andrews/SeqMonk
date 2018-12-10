@@ -50,7 +50,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		
 		for (int b=0;b<blocks.length;b++) {
 			gbc.gridy=b;
-			vistoryPanel.add(blocks[b].getPanel(),gbc);
+			vistoryPanel.add(blocks[b],gbc);
 		}
 		
 		getContentPane().setLayout(new BorderLayout());
@@ -71,14 +71,14 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	@Override
 	public void blockAdded(VistoryBlock block) {
 		gbc.gridy=vistory.blocks().length-1;
-		vistoryPanel.add(block.getPanel(),gbc);
+		vistoryPanel.add(block,gbc);
 		
 		vistoryPanel.validate();
 	}
 
 	@Override
 	public void blockRemoved(VistoryBlock block) {
-		vistoryPanel.remove(block.getPanel());
+		vistoryPanel.remove(block);
 		vistoryPanel.validate();
 		
 	}
