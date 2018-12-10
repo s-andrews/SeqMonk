@@ -39,6 +39,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Filters.OptionsListener;
 import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 
 public class FilterOptionsDialog extends JDialog implements OptionsListener, ProgressListener, ActionListener {
 
@@ -162,6 +164,8 @@ public class FilterOptionsDialog extends JDialog implements OptionsListener, Pro
 			break;
 		}
 		newList.setName(groupName);		
+		
+		Vistory.getInstance().addBlock(new VistoryEvent("Filtered List "+newList.name(), newList.description()));
 		
 	}
 
