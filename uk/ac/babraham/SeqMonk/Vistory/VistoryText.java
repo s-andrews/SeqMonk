@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 
 import javax.swing.JTextArea;
 
+import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
+
 public class VistoryText extends VistoryBlock {
 
 	protected JTextArea text;
@@ -24,8 +26,16 @@ public class VistoryText extends VistoryBlock {
 	
 	@Override
 	public String getHTML() {
-		// TODO Auto-generated method stub
-		return null;
+
+		StringBuffer sb = new StringBuffer();
+		
+		String [] sections = text.getText().split("\n");
+		
+		for (int s=0;s<sections.length;s++) {
+			sb.append("<p>"+EscapeHTML.escapeHTML(sections[s])+"</p>");
+		}
+	
+		return sb.toString();
 	}
 
 }

@@ -5,6 +5,8 @@ import java.awt.Font;
 
 import javax.swing.JTextArea;
 
+import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
+
 public class VistoryTitle extends VistoryBlock {
 
 	protected JTextArea text;
@@ -28,8 +30,8 @@ public class VistoryTitle extends VistoryBlock {
 	
 	@Override
 	public String getHTML() {
-		// TODO Auto-generated method stub
-		return null;
+		return("<h2>"+EscapeHTML.escapeHTML(text.getText())+"</h2>");
+	
 	}
 
 }
