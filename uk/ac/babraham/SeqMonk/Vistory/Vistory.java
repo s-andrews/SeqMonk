@@ -73,6 +73,7 @@ public class Vistory {
 		
 		// Write the title index
 		
+		pr.println("<div class=\"toc\">");
 		pr.println("<ul class=\"toc\">");
 		int currentIndex = 1;
 		for (int b=0;b<blocks.size();b++) {
@@ -86,13 +87,15 @@ public class Vistory {
 				
 			}
 		}
-		pr.println("</ul>");
+		pr.println("</ul></div>");
 		
 		
 		
 		// Write out the HTML from the blocks
 		for (int b=0;b<blocks.size();b++) {
+			pr.println("<div class=\"vistoryblock\">");
 			pr.println(blocks.elementAt(b).getHTML());
+			pr.println("</div>");
 		}
 		
 		// Grab the footer template
