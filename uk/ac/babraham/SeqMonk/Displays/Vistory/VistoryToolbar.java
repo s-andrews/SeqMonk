@@ -27,18 +27,37 @@ import javax.swing.JToolBar;
 
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryText;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryTitle;
 
-public class VistoryToolbar extends JToolBar {
+public class VistoryToolbar extends JToolBar implements ActionListener {
 
 	public VistoryToolbar () {
 		JButton addTextButton = new JButton("Add text");
-		addTextButton.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				Vistory.getInstance().addBlock(new VistoryText());
-			}
-		});
+		addTextButton.setActionCommand("add_text");
+		addTextButton.addActionListener(this);
 		add(addTextButton);
+
+		JButton addTitleButton = new JButton("Add Title");
+		addTitleButton.setActionCommand("add_title");
+		addTitleButton.addActionListener(this);
+		add(addTitleButton);
+
+	
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		String command = ae.getActionCommand();
+		
+		if (command.equals("add_text")) {
+			Vistory.getInstance().addBlock(new VistoryText());
+		}
+		else if (command.equals("add_title")) {
+			Vistory.getInstance().addBlock(new VistoryTitle());
+		}
+		else {
+			throw new IllegalArgumentException("Unknown command "+command);
+		}
 	}
 	
 		
