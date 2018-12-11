@@ -21,10 +21,12 @@ package uk.ac.babraham.SeqMonk.Utilities;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import net.sourceforge.iharder.base64.Base64;
 
@@ -46,5 +48,21 @@ public class ImageToBase64 {
 		
 	}
 	
+	
+	public static String imageToBase64 (File file) throws IOException {
+		BufferedImage image = ImageIO.read(file);
+		return imageToBase64(image);
+	}
+	
+	public static void main (String [] args) {
+//		File file = new File("C:\\Users\\andrewss\\git\\SeqMonk\\uk\\ac\\babraham\\SeqMonk\\Resources\\monk_vistory.png");
+		File file = new File("C:\\Users\\andrewss\\git\\SeqMonk\\uk\\ac\\babraham\\SeqMonk\\Resources\\babraham_bioinf_logo.png");
+		
+		try {
+			System.out.println(imageToBase64(file));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }
