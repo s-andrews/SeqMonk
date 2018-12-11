@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
+
 public class Vistory {
 
 	/**
@@ -70,6 +72,23 @@ public class Vistory {
 		}
 		
 		// Write the title index
+		
+		pr.println("<ul class=\"toc\">");
+		int currentIndex = 1;
+		for (int b=0;b<blocks.size();b++) {
+			if (blocks.elementAt(b) instanceof VistoryTitle) {
+				VistoryTitle block = (VistoryTitle)blocks.elementAt(b);
+				block.setIndex(currentIndex);
+				
+				pr.println("<li><a href=\"#"+currentIndex+"\">"+EscapeHTML.escapeHTML(block.getText())+"</a></li>");
+				
+				currentIndex++;
+				
+			}
+		}
+		pr.println("</ul>");
+		
+		
 		
 		// Write out the HTML from the blocks
 		for (int b=0;b<blocks.size();b++) {
