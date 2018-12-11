@@ -7,6 +7,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
+import uk.ac.babraham.SeqMonk.Utilities.ImageToBase64;
+
 public class VistoryImage extends VistoryBlock implements MouseMotionListener, MouseListener {
 
 	private BufferedImage image;
@@ -20,8 +22,13 @@ public class VistoryImage extends VistoryBlock implements MouseMotionListener, M
 	
 	@Override
 	public String getHTML() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("<p><img src=\"");
+		sb.append(ImageToBase64.imageToBase64(image));
+		sb.append("\"></p>");
+		
+		return(sb.toString());
 	}
 	
 	public void paintComponent (Graphics g) {
