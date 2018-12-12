@@ -17,9 +17,11 @@ public class VistoryBlockButtons extends JPanel implements MouseListener {
 	public VistoryBlockButtons (VistoryBlock block) {
 		this.block = block;
 		addMouseListener(this);
+		setBackground(Color.WHITE);
 	}
 	
 	public void paintComponent (Graphics g) {
+		super.paintComponent(g);
 		g.setColor(Color.RED);
 		g.fillRect(getWidth()-10, 0, 10, 10);
 		g.setColor(Color.WHITE);

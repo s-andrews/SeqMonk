@@ -2,6 +2,7 @@ package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JTextArea;
 
@@ -46,5 +47,6 @@ public class VistoryText extends VistoryBlock {
 	public Component componentToFocus () {
 		return text;
 	}
-	
+
+
 }

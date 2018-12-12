@@ -72,17 +72,10 @@ public class VistoryImage extends VistoryBlock implements MouseMotionListener, M
 		
 	}
 
-	@Override
-	public void mouseMoved(MouseEvent arg0) {}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		super.mouseExited(e);
 		if (xOffset != 0) {
 			xOffset = 0;
 			repaint();
@@ -90,9 +83,6 @@ public class VistoryImage extends VistoryBlock implements MouseMotionListener, M
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {}
+	public void mouseMoved(MouseEvent arg0) {}
 
 }

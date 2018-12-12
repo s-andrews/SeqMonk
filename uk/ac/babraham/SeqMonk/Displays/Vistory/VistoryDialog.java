@@ -43,7 +43,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		gbc.weightx = 0.5;
 		gbc.weighty = 0.01;
 		
-		gbc.insets = new Insets(10, 10, 10, 10);
+		gbc.insets = new Insets(2, 5, 2, 5);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
 		vistoryPanel.setLayout(new GridBagLayout());
@@ -59,10 +59,13 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		gbc.gridy = 100000;
 		gbc.weighty=0.999;
 		gbc.fill = GridBagConstraints.BOTH;
-		vistoryPanel.add(new JPanel(),gbc);
+		JPanel spaceFillPanel = new JPanel();
+		spaceFillPanel.setBackground(Color.WHITE);
+		vistoryPanel.add(spaceFillPanel,gbc);
 		
 		
 		getContentPane().setLayout(new BorderLayout());
+		getContentPane().setBackground(Color.WHITE);
 		getContentPane().add(new VistoryToolbar(this),BorderLayout.PAGE_START);
 		scrollPane = new JScrollPane(vistoryPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		getContentPane().add(scrollPane,BorderLayout.CENTER);
