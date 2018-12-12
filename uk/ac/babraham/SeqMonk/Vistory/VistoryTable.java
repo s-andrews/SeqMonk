@@ -28,7 +28,14 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 		// Now the rest of the data
 		for (int i=0;i<tableData.length-1;i++) {
 			for (int j=0;j<tableData[0].length;j++) {
-				tableData[i+1][j] = model.getValueAt(i, j).toString();
+//				System.err.println("Getting value at r="+i+" col="+j+" totalRows="+model.getRowCount()+" totalCols="+model.getColumnCount());
+				Object value = model.getValueAt(i, j);
+				if (value == null) {
+					tableData[i+1][j] = "";					
+				}
+				else {
+					tableData[i+1][j] = value.toString();
+				}
 			}
 		}
 		
@@ -78,7 +85,7 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 
 	@Override
 	public int getColumnCount() {
-		return tableData.length;
+		return tableData[0].length;
 	}
 
 	@Override
@@ -88,11 +95,12 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 
 	@Override
 	public int getRowCount() {
-		return tableData[0].length-1;
+		return tableData.length-1;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		System.err.println("Getting r="+rowIndex+" c="+columnIndex+" rows="+tableData.length+" cols="+tableData[0].length);
 		return tableData[rowIndex+1][columnIndex];
 	}
 

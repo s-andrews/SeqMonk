@@ -48,6 +48,8 @@ import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Reports.Report;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.GFFFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryTable;
 
 import com.sun.java.TableSorter;
 
@@ -101,10 +103,16 @@ public class ReportTableDialog extends JDialog implements MouseListener, ActionL
 		cancelButton.addActionListener(this);
 		buttonPanel.add(cancelButton);
 		
-		JButton saveButton = new JButton("Save");
+		JButton saveButton = new JButton("Save to File");
 		saveButton.setActionCommand("save");
 		saveButton.addActionListener(this);
 		buttonPanel.add(saveButton);
+
+		JButton saveVistoryButton = new JButton("Save to Vistory");
+		saveVistoryButton.setActionCommand("save_vistory");
+		saveVistoryButton.addActionListener(this);
+		buttonPanel.add(saveVistoryButton);
+
 		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
 
@@ -185,6 +193,9 @@ public class ReportTableDialog extends JDialog implements MouseListener, ActionL
 		if (ae.getActionCommand().equals("close")){
 			setVisible(false);
 			dispose();
+		}
+		else if (ae.getActionCommand().equals("save_vistory")){
+			Vistory.getInstance().addBlock(new VistoryTable(model));
 		}
 		else if (ae.getActionCommand().equals("save")){
 			
