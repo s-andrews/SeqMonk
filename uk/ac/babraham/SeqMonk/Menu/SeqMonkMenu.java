@@ -1282,6 +1282,8 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		reportShowVistory.setActionCommand("report_vistory");
 		reportShowVistory.addActionListener(this);
 		reportShowVistory.setMnemonic(KeyEvent.VK_V);
+		reportShowVistory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
+
 		reportMenu.add(reportShowVistory);
 
 		add(reportMenu);
