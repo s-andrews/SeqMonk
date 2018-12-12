@@ -45,6 +45,14 @@ public class Vistory {
 		}
 	}
 	
+	public void clear () {
+		VistoryBlock [] blocksToClear = blocks();
+		
+		for (int b=0;b<blocksToClear.length;b++) {
+			removeBlock(blocksToClear[b]);
+		}
+	}
+	
 	public void removeBlock (VistoryBlock block) {
 		if (! blocks.contains(block))return;
 		blocks.remove(block);

@@ -63,7 +63,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		
 		
 		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(new VistoryToolbar(),BorderLayout.PAGE_START);
+		getContentPane().add(new VistoryToolbar(this),BorderLayout.PAGE_START);
 		scrollPane = new JScrollPane(vistoryPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		getContentPane().add(scrollPane,BorderLayout.CENTER);
 		
@@ -92,7 +92,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	@Override
 	public void blockRemoved(VistoryBlock block) {
 		vistoryPanel.remove(block);
-		vistoryPanel.validate();
+		vistoryPanel.revalidate();
 		
 	}
 

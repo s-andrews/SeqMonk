@@ -40,7 +40,10 @@ import uk.ac.babraham.SeqMonk.Vistory.VistoryTitle;
 
 public class VistoryToolbar extends JToolBar implements ActionListener {
 
-	public VistoryToolbar () {
+	private VistoryDialog dialog;
+	
+	public VistoryToolbar (VistoryDialog dialog) {
+		this.dialog = dialog;
 		JButton addTextButton = new JButton("Add text");
 		addTextButton.setActionCommand("add_text");
 		addTextButton.addActionListener(this);
@@ -51,11 +54,15 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		addTitleButton.addActionListener(this);
 		add(addTitleButton);
 
+		JButton clearVistoryButton = new JButton("Clear Vistory");
+		clearVistoryButton.setActionCommand("clear");
+		clearVistoryButton.addActionListener(this);
+		add(clearVistoryButton);
+
 		JButton saveVistoryButton = new JButton("Save");
 		saveVistoryButton.setActionCommand("save");
 		saveVistoryButton.addActionListener(this);
 		add(saveVistoryButton);
-	
 	}
 
 	@Override
@@ -67,6 +74,12 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		}
 		else if (command.equals("add_title")) {
 			Vistory.getInstance().addBlock(new VistoryTitle());
+		}
+		else if (command.equals("clear")) {
+			
+			if (JOptionPane.showConfirmDialog(dialog, "Are you sure you want to wipe your vistory?","Clear vistory",JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) return;
+			
+			Vistory.getInstance().clear();
 		}
 		else if (command.equals("save")) {
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
