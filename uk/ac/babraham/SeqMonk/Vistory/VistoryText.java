@@ -16,8 +16,6 @@ public class VistoryText extends VistoryBlock {
 		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
 		text.setFont(getFont());
-		
-		setLayout(new BorderLayout());
 		add(text,BorderLayout.CENTER);
 	}
 	

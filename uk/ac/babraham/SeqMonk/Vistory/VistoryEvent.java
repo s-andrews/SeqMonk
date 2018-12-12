@@ -17,7 +17,6 @@ public class VistoryEvent extends VistoryBlock {
 		this.type = type;
 		this.text = text;
 
-		setLayout(new BorderLayout());
 		setBackground(Color.LIGHT_GRAY);
 		JLabel typeLabel = new JLabel(type);
 		add(typeLabel,BorderLayout.NORTH);

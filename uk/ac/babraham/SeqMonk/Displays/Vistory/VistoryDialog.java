@@ -47,7 +47,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
 		vistoryPanel.setLayout(new GridBagLayout());
-		vistoryPanel.setBackground(Color.GRAY);
+		vistoryPanel.setBackground(Color.WHITE);
 		
 		VistoryBlock [] blocks = vistory.blocks();
 		

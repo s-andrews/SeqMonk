@@ -1,9 +1,12 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Date;
 
-import javax.swing.JPanel;;
+import javax.swing.JPanel;
+
+import uk.ac.babraham.SeqMonk.Displays.Vistory.VistoryBlockButtons;;
 
 public abstract class VistoryBlock extends JPanel {
 	
@@ -11,6 +14,8 @@ public abstract class VistoryBlock extends JPanel {
 	
 	public VistoryBlock () {
 		date = new Date();
+		setLayout(new BorderLayout());
+		add(new VistoryBlockButtons(this),BorderLayout.EAST);
 	}
 	
 	public boolean wantsFocus () {

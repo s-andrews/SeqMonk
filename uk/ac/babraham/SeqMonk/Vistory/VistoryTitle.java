@@ -22,7 +22,6 @@ public class VistoryTitle extends VistoryBlock {
 		font = new Font(font.getName(), font.getStyle(), font.getSize()*2);
 		text.setFont(font);
 		
-		setLayout(new BorderLayout());
 		add(text,BorderLayout.CENTER);
 	}
 	
