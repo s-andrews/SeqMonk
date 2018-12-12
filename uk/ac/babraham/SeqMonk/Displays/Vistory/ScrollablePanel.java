@@ -16,7 +16,7 @@ public class ScrollablePanel extends JPanel implements Scrollable {
 
 	@Override
 	public int getScrollableBlockIncrement(Rectangle arg0, int arg1, int arg2) {
-		return 1;
+		return 20;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class ScrollablePanel extends JPanel implements Scrollable {
 
 	@Override
 	public int getScrollableUnitIncrement(Rectangle arg0, int arg1, int arg2) {
-		return 1;
+		return 5;
 	}
 
 }
