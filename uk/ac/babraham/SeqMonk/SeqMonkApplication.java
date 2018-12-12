@@ -1023,6 +1023,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataGroupAdded(DataGroup g) {
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(g.name());
+		DataSet [] sets = g.dataSets();
+		for (DataSet s : sets) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Created", sb.toString()));
 	}
 
 	/* (non-Javadoc)
@@ -1046,6 +1054,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataGroupSamplesChanged(DataGroup g) {
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(g.name());
+		DataSet [] sets = g.dataSets();
+		for (DataSet s : sets) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Changed", sb.toString()));
 	}
 
 	/* (non-Javadoc)
@@ -1061,6 +1077,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataSetAdded(DataSet d) {
 		changesWereMade();
+		Vistory.getInstance().addBlock(new VistoryEvent("DataSet Added", d.name()+" "+d.fileName()+" "+d.importOptions()));
 	}	
 
 	/* (non-Javadoc)
@@ -1073,6 +1090,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 	public void replicateSetAdded(ReplicateSet r) {
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(r.name());
+		DataStore [] stores = r.dataStores();
+		for (DataStore s : stores) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
 	}
 
 	public void replicateSetsRemoved(ReplicateSet [] r) {
@@ -1083,6 +1108,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public void replicateSetRenamed(ReplicateSet r) {
 		chromosomeViewer.repaint();
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(r.name());
+		DataStore [] stores = r.dataStores();
+		for (DataStore s : stores) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
 	}
 
 	public void replicateSetStoresChanged(ReplicateSet r) {

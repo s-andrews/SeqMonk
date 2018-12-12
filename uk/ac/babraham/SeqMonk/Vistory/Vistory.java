@@ -83,6 +83,8 @@ public class Vistory {
 		
 		pr.println("<div class=\"toc\">");
 		pr.println("<ul class=\"toc\">");
+		
+		pr.println("<li><a href=\"#top\">Top</a></li>");
 		int currentIndex = 1;
 		for (int b=0;b<blocks.size();b++) {
 			if (blocks.elementAt(b) instanceof VistoryTitle) {
