@@ -320,6 +320,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		drawnDataStores = new Vector<DataStore>();
 		menu.resetMenus();
 		DisplayPreferences.getInstance().reset();
+		Vistory.getInstance().clear();
 	}
 	
 	/**
@@ -634,6 +635,8 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		if (!forceAssembly) {
 			wipeAllData();
 		}
+		
+		Vistory.getInstance().addBlock(new VistoryEvent("Project Loaded", "Loaded "+file.getAbsolutePath()));
 		
 		currentFile = file;
 		
@@ -1178,6 +1181,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			chromosomeViewer.autoScale();
 			genomeViewer.repaint();
 			changesWereMade();
+
+			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()));
+
 		}
 		
 		else {
