@@ -1,6 +1,7 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Font;
 
 import javax.swing.JTextArea;
@@ -42,5 +43,16 @@ public class VistoryTitle extends VistoryBlock {
 		return("<h2 id=\""+indexPosition+"\">"+EscapeHTML.escapeHTML(text.getText())+"</h2>");
 	
 	}
+	
+	@Override
+	public boolean wantsFocus () {
+		return true;
+	}
+	
+	@Override
+	public Component componentToFocus () {
+		return text;
+	}
+
 
 }
