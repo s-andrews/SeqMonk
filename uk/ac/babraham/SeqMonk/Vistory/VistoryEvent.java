@@ -6,6 +6,8 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
+import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
+
 public class VistoryEvent extends VistoryBlock {
 
 	public String type;
@@ -31,8 +33,15 @@ public class VistoryEvent extends VistoryBlock {
 	
 	@Override
 	public String getHTML() {
-		// TODO Auto-generated method stub
-		return null;
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("<p class=\"eventtype\">");
+		sb.append(EscapeHTML.escapeHTML(type));
+		sb.append("</p><p class=\"eventtext\">");
+		sb.append(EscapeHTML.escapeHTML(text));
+		sb.append("</p>");
+		
+		return sb.toString();
 	}
 
 }
