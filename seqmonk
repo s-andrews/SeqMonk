@@ -59,9 +59,13 @@ my $java_exe = "java";
 # We might have bundled a jre with the installation.  If that's the case then we'll
 # use the interpreter which is bundled in preference to the system one.
 
+# Windows first
 if (-e "$RealBin/jre/bin/java.exe") {
 	$java_exe = "$RealBin/jre/bin/java.exe";
-	delete $ENV{JAVA_HOME};
+}
+# OSX
+if (-e "$RealBin/jre/Contents/Home/bin/java") {
+	$java_exe = "$RealBin/jre/Contents/Home/bin/java";
 }
 
 warn "Java interpreter is '$java_exe'\n";
