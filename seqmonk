@@ -50,6 +50,28 @@ if (exists $ENV{LANG}) {
 
 $ENV{LANG}='C';
 
+
+# We need to find the java interpreter.  We'll start from the assumption that this
+# is included in the path.
+
+my $java_exe = "java";
+
+# We might have bundled a jre with the installation.  If that's the case then we'll
+# use the interpreter which is bundled in preference to the system one.
+
+# Windows first
+if (-e "$RealBin/jre/bin/java.exe") {
+	$java_exe = "$RealBin/jre/bin/java.exe";
+}
+# OSX
+if (-e "$RealBin/jre/Contents/Home/bin/java") {
+	$java_exe = "$RealBin/jre/Contents/Home/bin/java";
+}
+
+warn "Java interpreter is '$java_exe'\n";
+
+warn `\"$java_exe\" -version`."\n";
+
 my @java_args;
 
 
@@ -90,7 +112,7 @@ else {
 
 # We now need to correct for the fact that java doesn't honour the
 # heap size you set
-my $actual_memory = correct_memory($memory);
+my $actual_memory = correct_memory($memory,$java_exe);
 
 warn "Correcting for VM actual requested allocation for $memory is $actual_memory\n";
 
@@ -107,9 +129,9 @@ else {
 	delete $ENV{LANG};
 }
 
-warn "Command is: java @java_args uk.ac.babraham.SeqMonk.SeqMonkApplication $file\n";
+warn "Command is: $java_exe @java_args uk.ac.babraham.SeqMonk.SeqMonkApplication $file\n";
 
-exec "java",@java_args, "uk.ac.babraham.SeqMonk.SeqMonkApplication", $file;
+exec $java_exe,@java_args, "uk.ac.babraham.SeqMonk.SeqMonkApplication", $file;
 
 sub print_error {
 	
@@ -127,9 +149,9 @@ sub print_error {
 
 sub correct_memory {
 	
-	my ($requested_memory) = @_;
+	my ($requested_memory,$java_exe) = @_;
 	
-	my $actual_memory = `java -Xmx${requested_memory}m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage`;
+	my $actual_memory = `"$java_exe" -Xmx${requested_memory}m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage`;
 	
 	if ($actual_memory =~ /^(\d+)/) {
 		$actual_memory = $1;
@@ -380,9 +402,9 @@ DESCRIPTION
     
     -h --help       Print this help file and exit
     
-    -m --memory     Set the starting memory allocation in megabytes. Defaults
-                    to 1300. Minimum allowed value is 500 and values above
-                    1300 should only be set on systems running a 64-bit JRE
+    -m --memory     [Deprecated] Set the starting memory allocation in megabytes. 
+    				This should now be configured under Edit > Preferences > Memory
+    				within the program.
                         
 BUGS
 
