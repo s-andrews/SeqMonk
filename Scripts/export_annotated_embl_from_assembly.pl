@@ -40,9 +40,9 @@ my $version = software_version();
 
 my $registry = load_registry();
 
-my $GO_adapter =   $registry->get_adaptor( 'Multi', 'Ontology', 'GOTerm' );
+my $GO_adapter =   $registry->get_adaptor( 'Multi', 'Ontology', 'OntologyTerm' );
 
-die "Couldn't get GO adaptor" unless ($GO_adapter);
+die "Couldn't get GO adaptor from $version" unless ($GO_adapter);
 
 my $slice_adapter = select_slice_adapter($registry);
 
@@ -178,7 +178,14 @@ sub process_genome {
   # the 4 argument form of fetch_all.  Specifying just 'chromosome' gets us separate
   # regions for the non-duplicated parts of duplicated chromosomes.
 
-  my @chr_slices = @{$db_adapter -> get_adaptor('slice') -> fetch_all('chromosome',undef,0,1)};
+  # Another change to this.  Ensembl are starting to not create chromosome slices
+  # but are just putting them under "toplevel" so we might have to work with that
+  # and then figure out which ones are chromsomes.  They also have a 'karyotype'
+  # method which might do the filtering for us, but I don't know how this deals 
+  # with PAR regions so we might need to be careful with that.
+
+#  my @chr_slices = @{$db_adapter -> get_adaptor('slice') -> fetch_all('chromosome',undef,0,1)};
+  my @chr_slices = @{$db_adapter -> get_SliceAdaptor -> fetch_all_karyotype()};
 
   # Destroy the chr array as we're iterating since
   # the API does lazy loading which will make these
