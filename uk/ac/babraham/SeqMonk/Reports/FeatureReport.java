@@ -383,7 +383,7 @@ public class FeatureReport extends Report {
 				Probe [] theseProbes = data[r].probes();
 				
 				if (c < 9+list.getValueNames().length) {
-					return(data[r].getAnnotationValues()[c-(8+list.getValueNames().length)]);
+					return(data[r].getAnnotationValues()[c-9]);
 				}
 
 				

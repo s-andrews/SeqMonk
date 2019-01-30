@@ -42,7 +42,7 @@ my $version = software_version();
 
 my $registry = load_registry();
 
-my $GO_adapter =   $registry->get_adaptor( 'Multi', 'Ontology', 'GOTerm' );
+my $GO_adapter =   $registry->get_adaptor( 'Multi', 'Ontology', 'OntologyTerm' );
 
 die "Couldn't get GO adaptor" unless ($GO_adapter);
 
