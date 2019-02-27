@@ -15,9 +15,14 @@ namespace SeqMonkLauncher
     {
         static void Main(string [] args)
         {
+
+            Console.WriteLine("PATH is '" + System.Environment.GetEnvironmentVariable("PATH") + "'");
+
             string javaVersion = getJavaVersion();
 
-            if (!javaVersion.Contains("Java"))
+            Console.WriteLine("Java version string is " + javaVersion);
+
+            if (!(javaVersion.Contains("Java") || javaVersion.Contains("OpenJDK")))
             {
                 MessageBox.Show("Couldn't find java on your system", "Failed to launch SeqMonk", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 Environment.Exit(1);
