@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 
 import uk.ac.babraham.SeqMonk.Utilities.ImageToBase64;
 
-public class VistoryImage extends VistoryBlock implements MouseMotionListener, MouseListener {
+public class VistoryImage extends VistoryBlock implements MouseListener, MouseMotionListener {
 
 	private BufferedImage image;
 	private int xOffset = 0;
@@ -17,6 +17,7 @@ public class VistoryImage extends VistoryBlock implements MouseMotionListener, M
 	
 	public VistoryImage (BufferedImage image) {
 		this.image = image;
+		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
 	
@@ -75,7 +76,6 @@ public class VistoryImage extends VistoryBlock implements MouseMotionListener, M
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		super.mouseExited(e);
 		if (xOffset != 0) {
 			xOffset = 0;
 			repaint();
@@ -84,5 +84,7 @@ public class VistoryImage extends VistoryBlock implements MouseMotionListener, M
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {}
+
+
 
 }

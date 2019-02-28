@@ -26,6 +26,7 @@ public class VistoryEvent extends VistoryBlock {
 		textArea.setEditable(false);
 		
 		textArea.setFont(getFont());
+		textArea.addMouseListener(this);
 		
 		add(textArea,BorderLayout.CENTER);
 	}

@@ -1,28 +1,39 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JTextArea;
 
 import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
 
-public class VistoryText extends VistoryBlock {
+public class VistoryText extends VistoryBlock implements FocusListener {
 
 	protected JTextArea text;
 	
 	public VistoryText () {
-		text = new JTextArea();
+		text = new JTextArea("[Enter text here]");
 		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
 		text.setFont(getFont());
+		text.addMouseListener(this);
+		text.addFocusListener(this);
 		add(text,BorderLayout.CENTER);
 	}
 	
 	public void setText (String text) {
 		this.text.setText(text);
 	}
+	
+	public void mouseClicked (MouseEvent me) {
+		if (text.getText().equals("[Enter text here]")) {
+			text.setText("");
+		}
+		super.mouseClicked(me);
+	}
+	
 	
 	@Override
 	public String getHTML() {
@@ -39,14 +50,16 @@ public class VistoryText extends VistoryBlock {
 	}
 
 	@Override
-	public boolean wantsFocus () {
-		return true;
-	}
-	
-	@Override
-	public Component componentToFocus () {
-		return text;
+	public void focusGained(FocusEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
+	@Override
+	public void focusLost(FocusEvent e) {
+		if (text.getText().equals("")) {
+			text.setText("[Enter text here]");
+		}
+	}
 
 }

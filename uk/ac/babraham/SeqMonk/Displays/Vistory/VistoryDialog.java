@@ -92,8 +92,8 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
 		
 		// If it's a text box find out if it wants focus and give it if it does
-		if (isVisible() && block.wantsFocus()) {
-			block.componentToFocus().requestFocus();
+		if (isVisible()) {
+			Vistory.getInstance().requestVistoryFocus(block);
 		}
 	}
 

@@ -3,10 +3,10 @@ package uk.ac.babraham.SeqMonk.Vistory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
@@ -43,6 +43,29 @@ public class Vistory {
 		while (en.hasMoreElements()) {
 			en.nextElement().blockAdded(block);
 		}
+	}
+	
+	public void requestVistoryFocus (VistoryBlock b) {
+		// Go through all of the blocks setting the focus to the
+		// one we're looking at now.
+		
+		Iterator<VistoryBlock> it = blocks.iterator();
+		
+		System.err.println("Setting blocks to "+b);
+		while (it.hasNext()) {
+			VistoryBlock block = it.next();
+			
+			if (block.equals(b)) {
+				System.err.println("Found block");
+				block.setVistoryFocus(true);
+			}
+			else {
+				System.err.println("Reset block");
+				block.setVistoryFocus(false);
+			}
+		}
+		System.err.println("Finished");
+
 	}
 	
 	public void clear () {

@@ -39,7 +39,10 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 			}
 		}
 		
-		add(new JTable(this),BorderLayout.CENTER);
+		JTable table = new JTable(this);
+		table.addMouseListener(this);
+		add(table.getTableHeader(),BorderLayout.NORTH);
+		add(table,BorderLayout.CENTER);
 	}
 	
 	public void setData (String[][] tableData) {
