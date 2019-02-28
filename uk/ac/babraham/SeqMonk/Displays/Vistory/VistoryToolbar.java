@@ -24,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -70,10 +69,10 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		String command = ae.getActionCommand();
 		
 		if (command.equals("add_text")) {
-			Vistory.getInstance().addBlock(new VistoryText());
+			Vistory.getInstance().addBlock(new VistoryText(),true);
 		}
 		else if (command.equals("add_title")) {
-			Vistory.getInstance().addBlock(new VistoryTitle());
+			Vistory.getInstance().addBlock(new VistoryTitle(),true);
 		}
 		else if (command.equals("clear")) {
 			

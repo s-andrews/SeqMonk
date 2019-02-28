@@ -195,7 +195,7 @@ public class ReportTableDialog extends JDialog implements MouseListener, ActionL
 			dispose();
 		}
 		else if (ae.getActionCommand().equals("save_vistory")){
-			Vistory.getInstance().addBlock(new VistoryTable(model));
+			Vistory.getInstance().addBlock(new VistoryTable(model),false);
 		}
 		else if (ae.getActionCommand().equals("save")){
 			

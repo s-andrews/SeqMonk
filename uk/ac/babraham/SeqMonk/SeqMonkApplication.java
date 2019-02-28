@@ -636,7 +636,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			wipeAllData();
 		}
 		
-		Vistory.getInstance().addBlock(new VistoryEvent("Project Loaded", "Loaded "+file.getAbsolutePath()));
+		Vistory.getInstance().addBlock(new VistoryEvent("Project Loaded", "Loaded "+file.getAbsolutePath()),false);
 		
 		currentFile = file;
 		
@@ -1030,7 +1030,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			sb.append("\n");
 			sb.append(s.name());
 		}
-		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Created", sb.toString()));
+		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Created", sb.toString()),false);
 	}
 
 	/* (non-Javadoc)
@@ -1061,7 +1061,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			sb.append("\n");
 			sb.append(s.name());
 		}
-		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Changed", sb.toString()));
+		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Changed", sb.toString()),false);
 	}
 
 	/* (non-Javadoc)
@@ -1077,7 +1077,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataSetAdded(DataSet d) {
 		changesWereMade();
-		Vistory.getInstance().addBlock(new VistoryEvent("DataSet Added", d.name()+" "+d.fileName()+" "+d.importOptions()));
+		Vistory.getInstance().addBlock(new VistoryEvent("DataSet Added", d.name()+" "+d.fileName()+" "+d.importOptions()),false);
 	}	
 
 	/* (non-Javadoc)
@@ -1097,7 +1097,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			sb.append("\n");
 			sb.append(s.name());
 		}
-		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
+		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()),false);
 	}
 
 	public void replicateSetsRemoved(ReplicateSet [] r) {
@@ -1115,7 +1115,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			sb.append("\n");
 			sb.append(s.name());
 		}
-		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
+		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()),false);
 	}
 
 	public void replicateSetStoresChanged(ReplicateSet r) {
@@ -1143,7 +1143,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		probes.addProbeSetChangeListener(this);
 		changesWereMade();
 		
-		Vistory.getInstance().addBlock(new VistoryEvent("New Probe Set",probes.justDescription()));
+		Vistory.getInstance().addBlock(new VistoryEvent("New Probe Set",probes.justDescription()),false);
 
 	}
 
@@ -1204,7 +1204,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			genomeViewer.repaint();
 			changesWereMade();
 			
-			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()));
+			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()),false);
 		}
 		
 		else if (command.equals("pipeline_quantitation")) {
@@ -1215,7 +1215,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			genomeViewer.repaint();
 			changesWereMade();
 
-			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()));
+			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()),false);
 
 		}
 		

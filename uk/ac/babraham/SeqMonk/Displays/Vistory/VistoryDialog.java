@@ -21,7 +21,6 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	private static VistoryDialog vistoryDialog = null;
 	
 	private ScrollablePanel vistoryPanel = null;
-	private GridBagConstraints gbc;
 	private JScrollPane scrollPane;
 	
 	
@@ -37,32 +36,8 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistory.addListener(this);
 		
 		vistoryPanel = new ScrollablePanel();
-		gbc = new GridBagConstraints();
-		gbc.gridx=0;
-		gbc.gridy=0;
-		gbc.weightx = 0.5;
-		gbc.weighty = 0.01;
-		
-		gbc.insets = new Insets(2, 5, 2, 5);
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		
-		vistoryPanel.setLayout(new GridBagLayout());
-		vistoryPanel.setBackground(Color.WHITE);
-		
-		VistoryBlock [] blocks = vistory.blocks();
-		
-		for (int b=0;b<blocks.length;b++) {
-			gbc.gridy=b;
-			vistoryPanel.add(blocks[b],gbc);
-		}
-		
-		gbc.gridy = 100000;
-		gbc.weighty=0.999;
-		gbc.fill = GridBagConstraints.BOTH;
-		JPanel spaceFillPanel = new JPanel();
-		spaceFillPanel.setBackground(Color.WHITE);
-		vistoryPanel.add(spaceFillPanel,gbc);
-		
+
+		addCurrentBlocks();
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().setBackground(Color.WHITE);
@@ -81,15 +56,50 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistoryDialog.setVisible(true);
 	}
 
-	@Override
-	public void blockAdded(VistoryBlock block) {
-		gbc.gridy=vistory.blocks().length-1;
-		vistoryPanel.add(block,gbc);
+	public void addCurrentBlocks () {
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx=0;
+		gbc.gridy=0;
+		gbc.weightx = 0.5;
+		gbc.weighty = 0.00000001;
+		
+		gbc.insets = new Insets(2, 5, 2, 5);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		
+		vistoryPanel.setLayout(new GridBagLayout());
+		vistoryPanel.setBackground(Color.WHITE);
+		
+		VistoryBlock [] blocks = vistory.blocks();
+		
+		for (int b=0;b<blocks.length;b++) {
+			gbc.gridy=b;
+			vistoryPanel.add(blocks[b],gbc);
+		}
+		
+		gbc.gridy = 100000;
+		gbc.weighty=0.99999999;
+		gbc.fill = GridBagConstraints.BOTH;
+		JPanel spaceFillPanel = new JPanel();
+		spaceFillPanel.setBackground(Color.WHITE);
+		vistoryPanel.add(spaceFillPanel,gbc);
 		
 		vistoryPanel.revalidate();
 		
 		// Scroll to bottom when new block is added.
-		scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+		if (scrollPane != null) {
+			scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+		}
+
+	}
+	
+	@Override
+	public void blockAdded(VistoryBlock block) {
+		
+		vistoryPanel.removeAll();
+		vistoryPanel.revalidate();
+		
+		addCurrentBlocks();
 		
 		// If it's a text box find out if it wants focus and give it if it does
 		if (isVisible()) {

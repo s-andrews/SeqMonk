@@ -152,7 +152,7 @@ public class ImageSaver {
 		
 		Vistory v = Vistory.getInstance();
 		
-		v.addBlock(new VistoryImage(b));
+		v.addBlock(new VistoryImage(b),false);
 		
 		
 	}

@@ -1,11 +1,8 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.MouseEvent;
 
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -103,7 +100,7 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		System.err.println("Getting r="+rowIndex+" c="+columnIndex+" rows="+tableData.length+" cols="+tableData[0].length);
+//		System.err.println("Getting r="+rowIndex+" c="+columnIndex+" rows="+tableData.length+" cols="+tableData[0].length);
 		return tableData[rowIndex+1][columnIndex];
 	}
 

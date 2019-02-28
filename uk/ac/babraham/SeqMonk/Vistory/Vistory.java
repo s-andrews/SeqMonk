@@ -20,6 +20,7 @@ public class Vistory {
 
 	private static final Vistory vistory = new Vistory();
 	private Vector<VistoryListener> listeners = new Vector<VistoryListener>();
+	private VistoryBlock selectedBlock = null;
 	
 	private Vector<VistoryBlock> blocks = new Vector<VistoryBlock>();
 	
@@ -37,8 +38,27 @@ public class Vistory {
 		return(vistory);
 	}
 	
-	public void addBlock (VistoryBlock block) {
-		blocks.add(block);
+	public void addBlock (VistoryBlock block, boolean relativeToSelected) {
+		VistoryBlock relativeBlock = null;
+		if (relativeToSelected) {
+			relativeBlock = selectedBlock;
+		}
+		else {
+			if (blocks.size() > 0) {
+				relativeBlock = blocks.elementAt(blocks.size()-1);
+			}
+		}
+		
+		if (relativeBlock == null) {
+			blocks.add(block);
+		}
+		else {
+			for (int i=0;i<blocks.size();i++) {
+				if (blocks.elementAt(i).equals(relativeBlock)) {
+					blocks.add(i+1,block);
+				}
+			}
+		}
 		Enumeration<VistoryListener> en = listeners.elements();
 		while (en.hasMoreElements()) {
 			en.nextElement().blockAdded(block);
@@ -51,20 +71,16 @@ public class Vistory {
 		
 		Iterator<VistoryBlock> it = blocks.iterator();
 		
-		System.err.println("Setting blocks to "+b);
 		while (it.hasNext()) {
 			VistoryBlock block = it.next();
 			
 			if (block.equals(b)) {
-				System.err.println("Found block");
 				block.setVistoryFocus(true);
 			}
 			else {
-				System.err.println("Reset block");
 				block.setVistoryFocus(false);
 			}
 		}
-		System.err.println("Finished");
 
 	}
 	

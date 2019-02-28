@@ -41,7 +41,6 @@ public abstract class VistoryBlock extends JPanel implements MouseListener {
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.err.println("Clicked in block");
 		requestVistoryFocus();
 	}
 
