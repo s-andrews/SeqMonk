@@ -223,7 +223,8 @@ sub process_chromosome {
     return;
   }
 
-  if (length($chr_slice->seq_region_name()) > 5) {
+  # This test broke the processing of mitochondrial genomes so I need to refine it.
+  if (length($chr_slice->seq_region_name()) > 5 and $chr_slice->seq_region_name() !~ /mito/i) {
     warn "Skipping odd looking chromsome ".$chr_slice->seq_region_name()."\n";
     return;
   }
