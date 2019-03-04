@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -78,6 +79,13 @@ public class BisulphiteFeaturePipeline extends Pipeline {
 
 			availableFeatures = temp;
 		}
+		
+		// Sanity check time
+		if (availableFeatures.length == 0 && collection.probeSet() == null) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "You can't run this until you've defined some probes", "Can't run pipeline", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		
 		optionsPanel = new BisulphiteOptionsPanel(availableFeatures);
 	}
 
@@ -99,6 +107,11 @@ public class BisulphiteFeaturePipeline extends Pipeline {
 		// We first need to generate probes over all of the features listed in
 		// the feature types.  The probes should cover the whole area of the
 		// feature regardless of where it splices.
+		
+		if (optionsPanel.getSelectedFeatureType() == null) {
+			// They don't have any features nor any probes so bail out
+			progressCancelled();
+		}
 
 		Vector<Probe> probes = new Vector<Probe>();
 		int minCount = optionsPanel.getMinCount();
@@ -396,6 +409,9 @@ public class BisulphiteFeaturePipeline extends Pipeline {
 		}
 
 		public String getSelectedFeatureType () {
+			if (featureTypeBox.getSelectedItem() == null) {
+				return null;
+			}
 			return featureTypeBox.getSelectedItem().toString();
 		}
 
