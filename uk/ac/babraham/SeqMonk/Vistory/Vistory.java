@@ -39,6 +39,7 @@ public class Vistory {
 	}
 	
 	public void addBlock (VistoryBlock block, boolean relativeToSelected) {
+		
 		VistoryBlock relativeBlock = null;
 		if (relativeToSelected) {
 			relativeBlock = selectedBlock;
@@ -76,6 +77,7 @@ public class Vistory {
 			
 			if (block.equals(b)) {
 				block.setVistoryFocus(true);
+				selectedBlock = b;
 			}
 			else {
 				block.setVistoryFocus(false);
@@ -158,15 +160,15 @@ public class Vistory {
 	}
 	
 	
-	public static void main (String [] args) {
-		File f = new File("C:/Users/andrewss/Desktop/vistory.html");
-		try {
-			Vistory.getInstance().writeReport(f);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public static void main (String [] args) {
+//		File f = new File("C:/Users/andrewss/Desktop/vistory.html");
+//		try {
+//			Vistory.getInstance().writeReport(f);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	
 }
