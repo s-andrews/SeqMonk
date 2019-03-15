@@ -18,6 +18,8 @@ public class Vistory {
 	 * single vistory so we're going to construct this as a singleton.
 	 */
 
+	private static final int VISTORY_FILE_VERSION = 1;
+	
 	private static final Vistory vistory = new Vistory();
 	private Vector<VistoryListener> listeners = new Vector<VistoryListener>();
 	private VistoryBlock selectedBlock = null;
@@ -158,7 +160,38 @@ public class Vistory {
 		
 		pr.close();
 	}
+
 	
+	public void saveToFile (File file) throws IOException {
+
+		PrintWriter pr = new PrintWriter(file);
+		
+		pr.println("SEQMONK_VISTORY\t"+VISTORY_FILE_VERSION);
+		
+		for (int b=0;b<blocks.size();b++) {
+			// Our format is tab delimited.  The last section is always a specific block which the vistory block
+			// needs to know how to deal with and probably contains the text it's going to use.
+			// 
+			// Section 1 is the type of block
+			// Section 2 is the date/time associated with the block
+
+			StringBuffer sb = new StringBuffer();
+
+			sb.append(blocks.elementAt(b).getType());
+			sb.append("\t");
+			
+			sb.append(blocks.elementAt(b).date().toString());
+			sb.append("\t");
+			
+			sb.append(blocks.elementAt(b).getData());
+			
+			pr.println(sb.toString());
+			
+		}
+		
+		pr.close();
+	}
+
 	
 //	public static void main (String [] args) {
 //		File f = new File("C:/Users/andrewss/Desktop/vistory.html");

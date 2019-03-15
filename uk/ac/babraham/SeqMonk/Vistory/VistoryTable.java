@@ -1,6 +1,7 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
+import java.util.Date;
 
 import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
@@ -11,6 +12,33 @@ import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
 public class VistoryTable extends VistoryBlock implements TableModel {
 
 	String [][] tableData;
+	
+	public VistoryTable (Date date, String data) {
+		super(date);
+		String [] sections = data.split("%%t%%");
+		
+		int rows = Integer.parseInt(sections[0]);
+		int cols = Integer.parseInt(sections[1]);
+		
+		tableData = new String[rows+1][cols];
+		
+		int index = 2;
+		
+		for (int h=0;h<cols;h++) {
+			tableData[0][h] = sections[index];
+			index++;
+		}
+		
+		for (int r=0;r<rows;r++) {
+			for (int c=0;c<cols;c++) {
+				tableData[r+1][c] = sections[index];
+				index++;
+			}
+		}
+		
+		doInitialLayout();
+		
+	}
 	
 	
 	public VistoryTable (TableModel model) {
@@ -35,6 +63,10 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 				}
 			}
 		}
+		doInitialLayout();
+	}
+	
+	private void doInitialLayout() {
 		
 		JTable table = new JTable(this);
 		table.addMouseListener(this);
@@ -114,6 +146,38 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {}
+
+	@Override
+	public String getType() {
+		return "TABLE";
+	}
+
+	@Override
+	public String getData() {
+		StringBuffer sb = new StringBuffer();
+		// We start with rows and columns
+		sb.append(getRowCount());
+		sb.append("%%t%%");
+		sb.append(getColumnCount());
+		sb.append("%%t%%");
+		
+		// Now the headers
+		for (int i=0;i<getColumnCount();i++) {
+			sb.append(getColumnName(i));
+			sb.append("%%t%%");
+		}
+
+		// Now the rows
+		for (int r=0;r<getRowCount();r++) {
+			for (int c=0;c<getColumnCount();c++) {
+			sb.append(getValueAt(r, c));
+			sb.append("%%t%%");
+			}
+		}
+		
+		return sb.toString();
+		
+	}
 
 
 }

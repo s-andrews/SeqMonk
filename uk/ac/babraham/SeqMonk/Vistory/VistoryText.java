@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 
 import javax.swing.JTextArea;
 
@@ -13,7 +14,17 @@ public class VistoryText extends VistoryBlock implements FocusListener {
 
 	protected JTextArea text;
 	
+	public VistoryText (Date date, String data) {
+		super(date);
+		startSetup();
+		text.setText(data.replaceAll("<br>", "\n"));
+	}
+	
 	public VistoryText () {
+		startSetup();
+	}
+	
+	private void startSetup() {
 		text = new JTextArea("[Enter text here]");
 		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
@@ -60,6 +71,16 @@ public class VistoryText extends VistoryBlock implements FocusListener {
 		if (text.getText().equals("")) {
 			text.setText("[Enter text here]");
 		}
+	}
+
+	@Override
+	public String getType() {
+		return "TEXT";
+	}
+
+	@Override
+	public String getData() {
+		return text.getText().replaceAll("\n", "<br>");
 	}
 
 }

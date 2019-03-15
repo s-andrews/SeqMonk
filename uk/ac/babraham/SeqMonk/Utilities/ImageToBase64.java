@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 import net.sourceforge.iharder.base64.Base64;
 

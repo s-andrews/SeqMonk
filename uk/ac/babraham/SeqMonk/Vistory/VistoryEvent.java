@@ -2,6 +2,7 @@ package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.Date;
 
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -13,10 +14,24 @@ public class VistoryEvent extends VistoryBlock {
 	public String type;
 	public String text;
 	
+	public VistoryEvent (Date date, String data) {
+		super(date);
+		String [] splitdata = data.split(":", 2);
+		this.type = splitdata[0];
+		this.text = splitdata[1].replaceAll("<br>", "\n");
+		
+		startSetup();
+	}
+	
 	public VistoryEvent(String type, String text) {
 		this.type = type;
 		this.text = text;
-
+	
+		startSetup();
+	}
+	
+	
+	private void startSetup () {
 		setBackground(Color.LIGHT_GRAY);
 		JLabel typeLabel = new JLabel(type);
 		add(typeLabel,BorderLayout.NORTH);
@@ -42,6 +57,16 @@ public class VistoryEvent extends VistoryBlock {
 		sb.append("</p>");
 		
 		return sb.toString();
+	}
+
+	@Override
+	public String getType() {
+		return "EVENT";
+	}
+
+	@Override
+	public String getData() {
+		return type+":"+text.replaceAll("\n", "<br>");
 	}
 
 }

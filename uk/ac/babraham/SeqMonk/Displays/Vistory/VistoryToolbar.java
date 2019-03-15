@@ -34,6 +34,7 @@ import javax.swing.JToolBar;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.HTMLFileFilter;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.VistoryFileFilter;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryText;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryTitle;
@@ -131,6 +132,41 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 				// This platform doesn't allow us to open a browser 
 				// automatically.  Print a message instead.
 				JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>Your report has been saved at<br><br>"+file.getAbsolutePath()+"<br><br>Open this file in a browser to view the report.", "Report created", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+			catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+
+		}
+		else if (command.equals("save_vistory")) {
+			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+			chooser.setMultiSelectionEnabled(false);
+			chooser.addChoosableFileFilter(new VistoryFileFilter());
+
+			int result = chooser.showSaveDialog(SeqMonkApplication.getInstance());
+			if (result == JFileChooser.CANCEL_OPTION) return;
+
+			File file = chooser.getSelectedFile();
+			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+
+			if (file.isDirectory()) return;
+
+			if (! (file.getPath().toLowerCase().endsWith(".smv") )) {
+				file = new File(file.getPath()+".smv");
+			}
+
+			// Check if we're stepping on anyone's toes...
+			if (file.exists()) {
+				int answer = JOptionPane.showOptionDialog(SeqMonkApplication.getInstance(),file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+
+				if (answer > 0) {
+					return;
+				}
+			}
+
+			try {					
+				Vistory.getInstance().saveToFile(file);				
 			}
 			
 			catch (IOException e) {

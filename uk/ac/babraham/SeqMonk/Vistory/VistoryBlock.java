@@ -24,6 +24,15 @@ public abstract class VistoryBlock extends JPanel implements MouseListener {
 		addMouseListener(this);
 	}
 	
+	public VistoryBlock (Date date) {
+		this();
+		date = this.date;
+	}
+	
+	public Date date () {
+		return date;
+	}
+	
 	public void requestVistoryFocus () {
 		Vistory.getInstance().requestVistoryFocus(this);
 	}
@@ -38,6 +47,10 @@ public abstract class VistoryBlock extends JPanel implements MouseListener {
 	}
 		
 	public abstract String getHTML();
+	
+	public abstract String getType();
+	
+	public abstract String getData();
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {

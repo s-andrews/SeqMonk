@@ -6,7 +6,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Date;
 
+import javax.imageio.ImageIO;
+
+import net.sourceforge.iharder.base64.Base64;
 import uk.ac.babraham.SeqMonk.Utilities.ImageToBase64;
 
 public class VistoryImage extends VistoryBlock implements MouseListener, MouseMotionListener {
@@ -14,6 +20,21 @@ public class VistoryImage extends VistoryBlock implements MouseListener, MouseMo
 	private BufferedImage image;
 	private int xOffset = 0;
 	
+	
+	public VistoryImage (Date date, String data) {
+		super(date);
+
+		String base64Image = data.split(",")[1];
+		try {
+			byte [] imageBytes = Base64.decode(base64Image);
+			image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+		}
+		catch (IOException ioe) {
+			throw new IllegalStateException(ioe);
+		}
+		addMouseListener(this);
+		addMouseMotionListener(this);
+	}
 	
 	public VistoryImage (BufferedImage image) {
 		this.image = image;
@@ -84,6 +105,16 @@ public class VistoryImage extends VistoryBlock implements MouseListener, MouseMo
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {}
+
+	@Override
+	public String getType() {
+		return "IMAGE";
+	}
+
+	@Override
+	public String getData() {
+		return ImageToBase64.imageToBase64(image);
+	}
 
 
 
