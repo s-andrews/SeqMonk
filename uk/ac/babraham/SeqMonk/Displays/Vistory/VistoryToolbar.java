@@ -174,6 +174,29 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 			}
 
 		}
+		else if (command.equals("load_vistory")) {
+			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+			chooser.setMultiSelectionEnabled(false);
+			chooser.addChoosableFileFilter(new VistoryFileFilter());
+
+			int result = chooser.showOpenDialog(SeqMonkApplication.getInstance());
+			if (result == JFileChooser.CANCEL_OPTION) return;
+
+			File file = chooser.getSelectedFile();
+			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+
+			if (file.isDirectory()) return;
+
+			try {					
+				Vistory.getInstance().loadFile(file);
+			}
+			
+			catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+
+		}
+
 		else {
 			throw new IllegalArgumentException("Unknown command "+command);
 		}

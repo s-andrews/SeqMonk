@@ -2,9 +2,12 @@ package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -180,7 +183,7 @@ public class Vistory {
 			sb.append(blocks.elementAt(b).getType());
 			sb.append("\t");
 			
-			sb.append(blocks.elementAt(b).date().toString());
+			sb.append(blocks.elementAt(b).date().getTime());
 			sb.append("\t");
 			
 			sb.append(blocks.elementAt(b).getData());
@@ -190,6 +193,51 @@ public class Vistory {
 		}
 		
 		pr.close();
+	}
+	
+	public void loadFile (File file) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		
+		String line = br.readLine();
+		
+		// First line is the data version
+		if (line == null) throw new IOException("File was empty");
+
+		String [] headers = line.split("\t");
+		if (!headers[0].equals("SEQMONK_VISTORY")) {
+			throw new IOException("Header doesn't look like a vistory file");
+		}
+		
+		if (Integer.parseInt(headers[1]) > VISTORY_FILE_VERSION) {
+			throw new IOException("You need a newer version of SeqMonk to read this file");
+		}
+				
+		while ((line = br.readLine()) != null) {
+			String [] sections = line.split("\t");
+			String type = sections[0];
+			Date date = new Date(Long.parseLong(sections[1]));
+			
+			if (type.equals("TEXT")) {
+				addBlock(new VistoryText(date,sections[sections.length-1]),false);
+			}
+			else if (type.equals("TITLE")) {
+				addBlock(new VistoryTitle(date,sections[sections.length-1]),false);
+			}
+			else if (type.equals("TABLE")) {
+				addBlock(new VistoryTable(date,sections[sections.length-1]),false);
+			}
+			else if (type.equals("EVENT")) {
+				addBlock(new VistoryEvent(date,sections[sections.length-1]),false);
+			}
+			else if (type.equals("IMAGE")) {
+				addBlock(new VistoryImage(date,sections[sections.length-1]),false);
+			}
+			else {
+				throw new IllegalStateException("Unknown block type "+type);
+			}
+
+		}
+		
 	}
 
 	
