@@ -25,6 +25,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -43,25 +44,35 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 	
 	public VistoryToolbar (VistoryDialog dialog) {
 		this.dialog = dialog;
-		JButton addTextButton = new JButton("Add text");
-		addTextButton.setActionCommand("add_text");
-		addTextButton.addActionListener(this);
-		add(addTextButton);
+		JButton loadButton = new JButton("Load",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/load_project.png")));
+		loadButton.setActionCommand("load_vistory");
+		loadButton.addActionListener(this);
+		add(loadButton);
 
-		JButton addTitleButton = new JButton("Add Title");
+		JButton saveButton = new JButton("Save",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/save_project.png")));
+		saveButton.setActionCommand("save_vistory");
+		saveButton.addActionListener(this);
+		add(saveButton);
+
+		JButton addTitleButton = new JButton("Add Title",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_title.png")));
 		addTitleButton.setActionCommand("add_title");
 		addTitleButton.addActionListener(this);
 		add(addTitleButton);
 
-		JButton clearVistoryButton = new JButton("Clear Vistory");
+		JButton addTextButton = new JButton("Add text",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_text.png")));
+		addTextButton.setActionCommand("add_text");
+		addTextButton.addActionListener(this);
+		add(addTextButton);
+
+		JButton clearVistoryButton = new JButton("Clear Vistory",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/clear_vistory.png")));
 		clearVistoryButton.setActionCommand("clear");
 		clearVistoryButton.addActionListener(this);
 		add(clearVistoryButton);
 
-		JButton saveVistoryButton = new JButton("Save");
-		saveVistoryButton.setActionCommand("save");
-		saveVistoryButton.addActionListener(this);
-		add(saveVistoryButton);
+		JButton exportVistoryButton = new JButton("Export to HTML",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/export_to_web.png")));
+		exportVistoryButton.setActionCommand("export");
+		exportVistoryButton.addActionListener(this);
+		add(exportVistoryButton);
 	}
 
 	@Override
@@ -80,7 +91,7 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 			
 			Vistory.getInstance().clear();
 		}
-		else if (command.equals("save")) {
+		else if (command.equals("export")) {
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 			chooser.setMultiSelectionEnabled(false);
 			chooser.addChoosableFileFilter(new HTMLFileFilter());
