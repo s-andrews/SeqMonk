@@ -77,7 +77,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 			vistoryPanel.add(blocks[b],gbc);
 		}
 		
-		gbc.gridy = 100000;
+		gbc.gridy = gbc.gridy+1;
 		gbc.weighty=0.99999999;
 		gbc.fill = GridBagConstraints.BOTH;
 		JPanel spaceFillPanel = new JPanel();

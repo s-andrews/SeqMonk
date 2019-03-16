@@ -59,6 +59,10 @@ public class VistoryImage extends VistoryBlock implements MouseListener, MouseMo
 	}
 	
 	public Dimension getPreferredSize () {
+		return new Dimension(image.getWidth(),image.getHeight());
+	}
+
+	public Dimension getMinimumSize () {
 		return new Dimension(1,image.getHeight());
 	}
 
