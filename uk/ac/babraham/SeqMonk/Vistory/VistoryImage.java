@@ -120,6 +120,11 @@ public class VistoryImage extends VistoryBlock implements MouseListener, MouseMo
 		return ImageToBase64.imageToBase64(image);
 	}
 
+	@Override
+	public boolean allowsRelativePosition() {
+		return false;
+	}
+
 
 
 }

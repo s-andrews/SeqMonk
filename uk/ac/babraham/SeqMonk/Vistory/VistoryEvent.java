@@ -69,4 +69,9 @@ public class VistoryEvent extends VistoryBlock {
 		return type+":"+text.replaceAll("\n", "<br>");
 	}
 
+	@Override
+	public boolean allowsRelativePosition() {
+		return false;
+	}
+
 }

@@ -120,6 +120,16 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	}
 
 	@Override
+	public void blocksReordered() {
+		vistoryPanel.removeAll();
+		vistoryPanel.revalidate();
+		
+		addCurrentBlocks();
+	}
+
+	
+	
+	@Override
 	public void vistoryUpdated() {
 		vistoryPanel.validate();
 	}

@@ -8,6 +8,8 @@ public interface VistoryListener {
 	
 	public void blockEdited (VistoryBlock block);
 	
+	public void blocksReordered();
+	
 	public void vistoryUpdated ();
 	
 	public void vistoryCleared ();

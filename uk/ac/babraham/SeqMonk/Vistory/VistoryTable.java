@@ -180,4 +180,10 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 	}
 
 
+	@Override
+	public boolean allowsRelativePosition() {
+		return false;
+	}
+
+
 }

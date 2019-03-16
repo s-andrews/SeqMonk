@@ -83,4 +83,9 @@ public class VistoryText extends VistoryBlock implements FocusListener {
 		return text.getText().replaceAll("\n", "<br>");
 	}
 
+	@Override
+	public boolean allowsRelativePosition() {
+		return true;
+	}
+
 }

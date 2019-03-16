@@ -52,6 +52,8 @@ public abstract class VistoryBlock extends JPanel implements MouseListener {
 	
 	public abstract String getData();
 	
+	public abstract boolean allowsRelativePosition();
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		requestVistoryFocus();

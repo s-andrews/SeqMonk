@@ -165,7 +165,7 @@ public class FilterOptionsDialog extends JDialog implements OptionsListener, Pro
 		}
 		newList.setName(groupName);		
 		
-		Vistory.getInstance().addBlock(new VistoryEvent("Filtered List "+newList.name(), newList.description()),false);
+		Vistory.getInstance().addBlock(new VistoryEvent("Filtered List "+newList.name(), newList.description()));
 		
 	}
 

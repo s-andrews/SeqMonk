@@ -63,6 +63,11 @@ public class VistoryTitle extends VistoryBlock {
 	public String getData() {
 		return text.getText().replaceAll("\n", "<br>");
 	}
+
+	@Override
+	public boolean allowsRelativePosition() {
+		return true;
+	}
 	
 
 }

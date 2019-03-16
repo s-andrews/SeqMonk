@@ -81,10 +81,10 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		String command = ae.getActionCommand();
 		
 		if (command.equals("add_text")) {
-			Vistory.getInstance().addBlock(new VistoryText(),true);
+			Vistory.getInstance().addBlock(new VistoryText());
 		}
 		else if (command.equals("add_title")) {
-			Vistory.getInstance().addBlock(new VistoryTitle(),true);
+			Vistory.getInstance().addBlock(new VistoryTitle());
 		}
 		else if (command.equals("clear")) {
 			

@@ -43,7 +43,9 @@ public class Vistory {
 		return(vistory);
 	}
 	
-	public void addBlock (VistoryBlock block, boolean relativeToSelected) {
+	public void addBlock (VistoryBlock block) {
+		
+		boolean relativeToSelected = block.allowsRelativePosition();
 		
 		VistoryBlock relativeBlock = null;
 		if (relativeToSelected) {
@@ -107,6 +109,38 @@ public class Vistory {
 			en.nextElement().blockRemoved(block);
 		}
 	}
+
+	public void raiseBlock (VistoryBlock block) {
+		if (! blocks.contains(block))return;
+		
+		int index = blocks.indexOf(block);
+		if (index == 0) return;
+		
+		blocks.set(index, blocks.elementAt(index-1));
+		blocks.set(index-1, block);
+		
+		Enumeration<VistoryListener> en = listeners.elements();
+		while (en.hasMoreElements()) {
+			en.nextElement().blocksReordered();
+		}
+	}
+
+	public void lowerBlock (VistoryBlock block) {
+		if (! blocks.contains(block))return;
+		
+		int index = blocks.indexOf(block);
+		if (index == blocks.size()-1) return;
+		
+		blocks.set(index, blocks.elementAt(index+1));
+		blocks.set(index+1, block);
+		
+		Enumeration<VistoryListener> en = listeners.elements();
+		while (en.hasMoreElements()) {
+			en.nextElement().blocksReordered();
+		}
+	}
+	
+	
 	
 	public VistoryBlock [] blocks () {
 		return blocks.toArray(new VistoryBlock[0]);
@@ -218,19 +252,19 @@ public class Vistory {
 			Date date = new Date(Long.parseLong(sections[1]));
 			
 			if (type.equals("TEXT")) {
-				addBlock(new VistoryText(date,sections[sections.length-1]),false);
+				addBlock(new VistoryText(date,sections[sections.length-1]));
 			}
 			else if (type.equals("TITLE")) {
-				addBlock(new VistoryTitle(date,sections[sections.length-1]),false);
+				addBlock(new VistoryTitle(date,sections[sections.length-1]));
 			}
 			else if (type.equals("TABLE")) {
-				addBlock(new VistoryTable(date,sections[sections.length-1]),false);
+				addBlock(new VistoryTable(date,sections[sections.length-1]));
 			}
 			else if (type.equals("EVENT")) {
-				addBlock(new VistoryEvent(date,sections[sections.length-1]),false);
+				addBlock(new VistoryEvent(date,sections[sections.length-1]));
 			}
 			else if (type.equals("IMAGE")) {
-				addBlock(new VistoryImage(date,sections[sections.length-1]),false);
+				addBlock(new VistoryImage(date,sections[sections.length-1]));
 			}
 			else {
 				throw new IllegalStateException("Unknown block type "+type);
