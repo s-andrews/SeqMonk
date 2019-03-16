@@ -53,7 +53,6 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 		// Now the rest of the data
 		for (int i=0;i<tableData.length-1;i++) {
 			for (int j=0;j<tableData[0].length;j++) {
-//				System.err.println("Getting value at r="+i+" col="+j+" totalRows="+model.getRowCount()+" totalCols="+model.getColumnCount());
 				Object value = model.getValueAt(i, j);
 				if (value == null) {
 					tableData[i+1][j] = "";					
@@ -72,6 +71,11 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 		table.addMouseListener(this);
 		add(table.getTableHeader(),BorderLayout.NORTH);
 		add(table,BorderLayout.CENTER);
+		
+		// We need to add this call otherwise an optimisation in the 
+		// scroll pane implementation means that non-visible portions
+		// of the table won't render until we click on it.
+		table.setVisible(true);
 	}
 	
 	public void setData (String[][] tableData) {
