@@ -42,6 +42,7 @@ import uk.ac.babraham.SeqMonk.Vistory.VistoryTitle;
 public class VistoryToolbar extends JToolBar implements ActionListener {
 
 	private VistoryDialog dialog;
+	private File saveFile = null;
 	
 	public VistoryToolbar (VistoryDialog dialog) {
 		this.dialog = dialog;
@@ -54,6 +55,11 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		saveButton.setActionCommand("save_vistory");
 		saveButton.addActionListener(this);
 		add(saveButton);
+
+		JButton saveAsButton = new JButton("Save As",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/save_project.png")));
+		saveAsButton.setActionCommand("saveas_vistory");
+		saveAsButton.addActionListener(this);
+		add(saveAsButton);
 
 		JButton addTitleButton = new JButton("Add Title",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_title.png")));
 		addTitleButton.setActionCommand("add_title");
@@ -95,7 +101,7 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		else if (command.equals("export")) {
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 			chooser.setMultiSelectionEnabled(false);
-			chooser.addChoosableFileFilter(new HTMLFileFilter());
+			chooser.setFileFilter(new HTMLFileFilter());
 
 			int result = chooser.showSaveDialog(SeqMonkApplication.getInstance());
 			if (result == JFileChooser.CANCEL_OPTION) return;
@@ -139,34 +145,44 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 			}
 
 		}
-		else if (command.equals("save_vistory")) {
-			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
-			chooser.setMultiSelectionEnabled(false);
-			chooser.addChoosableFileFilter(new VistoryFileFilter());
+		else if (command.equals("save_vistory") || command.equals("saveas_vistory")) {
+			
+			File file = null;
+			
+			if (command.equals("saveas_vistory") || saveFile == null) {
+				JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+				chooser.setMultiSelectionEnabled(false);
+				chooser.setFileFilter(new VistoryFileFilter());
 
-			int result = chooser.showSaveDialog(SeqMonkApplication.getInstance());
-			if (result == JFileChooser.CANCEL_OPTION) return;
+				int result = chooser.showSaveDialog(SeqMonkApplication.getInstance());
+				if (result == JFileChooser.CANCEL_OPTION) return;
 
-			File file = chooser.getSelectedFile();
-			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+				file = chooser.getSelectedFile();
+				SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
 
-			if (file.isDirectory()) return;
+				if (file.isDirectory()) return;
 
-			if (! (file.getPath().toLowerCase().endsWith(".smv") )) {
-				file = new File(file.getPath()+".smv");
-			}
+				if (! (file.getPath().toLowerCase().endsWith(".smv") )) {
+					file = new File(file.getPath()+".smv");
+				}
 
-			// Check if we're stepping on anyone's toes...
-			if (file.exists()) {
-				int answer = JOptionPane.showOptionDialog(SeqMonkApplication.getInstance(),file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+				// Check if we're stepping on anyone's toes...
+				if (file.exists()) {
+					int answer = JOptionPane.showOptionDialog(SeqMonkApplication.getInstance(),file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
 
-				if (answer > 0) {
-					return;
+					if (answer > 0) {
+						return;
+					}
 				}
 			}
-
+			else {
+				file = saveFile;
+			}
+			
 			try {					
-				Vistory.getInstance().saveToFile(file);				
+				Vistory.getInstance().saveToFile(file);	
+				saveFile = file;
+				dialog.setTitle("Vistory ["+file.getName()+"]");
 			}
 			
 			catch (IOException e) {
@@ -177,7 +193,7 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		else if (command.equals("load_vistory")) {
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 			chooser.setMultiSelectionEnabled(false);
-			chooser.addChoosableFileFilter(new VistoryFileFilter());
+			chooser.setFileFilter(new VistoryFileFilter());
 
 			int result = chooser.showOpenDialog(SeqMonkApplication.getInstance());
 			if (result == JFileChooser.CANCEL_OPTION) return;
@@ -189,6 +205,7 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 
 			try {					
 				Vistory.getInstance().loadFile(file);
+				dialog.setTitle("Vistory ["+file.getName()+"]");
 			}
 			
 			catch (IOException e) {
