@@ -1,28 +1,35 @@
 Installing SeqMonk
 -------------------
-SeqMonk is a java application.  In order to run it needs your system to have a suitable
-Java Runtime Environment (JRE) installed.  Before you try to run SeqMonk you should therefore
-ensure that you have a suitable JRE. Becuse of it's use of the HTSJDK library SeqMonk requires
-the use of java 8 (also cofusingly called java 1.8) or later.
 
-Free versions of java are available for a number of different platforms from www.java.com.
-When downloading DON'T just use the download link on the front page, but click on the smaller
-link to "See all java downloads", and make sure that if you are on a 64 bit system you get
-the 64 bit JVM.
+Windows
+-------
 
-If you are on a Mac you will be promoted to go to the Oracle download page.  SeqMonk requires
-that the command line version of java is installed and on the latest versions of java for 
-OSX that means that you need to install the Java SE Development kit.  Installing just the 
-Java SE Runtime Environment is NOT ENOUGH.
+Download the seqmonk zip file, and unzip it on your machine.  Windows has a 
+virtual filesystem view of zip files which allows you to look at the contents in windows
+explorer without actually unzipping the file - this isn't enough to run seqmonk, you need
+to right click on the zip file and extract the contents to a conventional folder.  Once
+you've done that just double click seqmonk.exe to run the program.
 
-If you're not sure whether you have java installed then you can test this from a command
-prompt.  To get a command prompt try:
+MacOS
+-----
 
-Windows: Select Start > Run, and type 'cmd' (no quotes) in the box which appears, press OK
+SeqMonk is distributed as a dmg file which is a virtual filesystem on a mac.  Just
+download the dmg file and double click on it.  You will see the SeqMonk app appear in a 
+finder window.  Simply drag it from there to somewhere on your machine to install the 
+program.  Since seqmonk is not a signed application, the first time you want to launch it
+right click (or control click) on the app and select Open (rather than double clicking). 
+You should then be prompted as to whether you trust this application.  If you say yes then
+you will be able to open it by double clicking in future.  If the app doesn't open then
+go to your OS preferneces and look in the security section.  There will be a message saying
+that the app was blocked, and giving you an option to unblock it.  Once you've done that
+then it will work as normal.
 
-MaxOSX: Run Applications > Utilities > Terminal
+Linux
+-----
 
-Linux: You should find a program called Terminal or KTerm in your applications menu
+To run SeqMonk on linux you will need to install a java runtime environment on your
+system.  This will already be there in many cases, but you should check.  You should find 
+a program called Terminal or KTerm in your applications menu
 
 At the command prompt type 'java -version' and press enter.  You should see something like:
 
@@ -33,40 +40,20 @@ At the command prompt type 'java -version' and press enter.  You should see some
 If you get an error then you don't have java installed.  If the version listed on the first
 line is less than 1.8 then you won't be able to run SeqMonk without updating your JRE.
 
-If you are running Fedora then although you see something like this SeqMonk still won't run 
-because the version of java which is installed by default doesn't include any of the graphical 
-libraries.  You will need to install the full version of openjdk which will be something like:
+To install java on your system use your package manager.
 
-sudo yum -y install java-1.8.0-openjdk
+On ubuntu/debian: sudo apt install default-jre
+On centos/fedora: sudo yum install java-1.8.0-openjdk
 
-(that's for Fedora 27 - the exact name might change on different versions, but it's the same idea)
+If you are running Fedora then even if you see a java version on the command line SeqMonk still 
+may not run because the version of java which is installed by default doesn't include any 
+of the graphical  libraries.  You may need to install the full version of openjdk using the command
+listed above.
 
 Actually installing SeqMonk is as simple as unzipping the zip file it comes in into a
 suitable location.  That's it.  Once unzipped it's ready to go.
 
-
-Running SeqMonk
-----------------
-Windows: Simply double click on the seqmonk.exe file.
-
-NB for Windows 8 users: Windows 8 ships a newer version of the Microsoft .NET framework
-which seqmonk uses to launch the main java program.  If you find the program won't
-launch and you're getting errors like 
-
-'Could not load assembly System, Version=2.0.0.0'
-
-..then the fix is to go to:
-
-Control Panel > Programs and Features > Turn windows features on or off
-
-..and turn on the '.NET Framework 3.5' option.  This will install the older windows
-libraries and the launcher should work again.
-
-
-MacOSX: There is an application bundle for MacOSX which you can use to install and run
-SeqMonk.
-
-Linux:  You can use the seqmonk wrapper program to launch the program.  You will need to
+You can use the seqmonk wrapper program to launch the program.  You will need to
 make this file executable (chmod 755 seqmonk), and then ./seqmonk will launch the program.
 If you link (don't copy) the seqmonk file into /usr/local/bin then you will be able to run
 the program from anywhere on your system.  We have also included a seqmonk.desktop file
