@@ -32,9 +32,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
+import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.PNGFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.SVGFileFilter;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryImage;
 
 /**
  * A utility class which acts as a wrapper for the SVG or PNG generating
@@ -50,6 +53,18 @@ public class ImageSaver {
 	 * @param c The component to save.
 	 */
 	public static void saveImage (Component c) {
+		
+		// Start by finding out if they want to save to a vistory
+		// or to a file
+		
+		int answerIndex = JOptionPane.showOptionDialog(SeqMonkApplication.getInstance(), "Save to File or Vistory?", "File or vistory?", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {"Vistory","File"}, "Vistory");
+		
+		if (answerIndex == 0) {
+			saveToVistory(c);
+			return;
+		}
+		
+		
 		JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 		chooser.setMultiSelectionEnabled(false);
 		chooser.addChoosableFileFilter(new SVGFileFilter());
@@ -129,5 +144,18 @@ public class ImageSaver {
 
 		ImageIO.write((BufferedImage)(b),"PNG",file);
 	}
+	
+	public static void saveToVistory (Component c) {
+		BufferedImage b = new BufferedImage(c.getWidth(),c.getHeight(),BufferedImage.TYPE_INT_RGB);
+		Graphics g = b.getGraphics();			
+		c.paint(g);
+		
+		Vistory v = Vistory.getInstance();
+		
+		v.addBlock(new VistoryImage(b));
+		
+		
+	}
+	
 	
 }

@@ -78,7 +78,13 @@ public class MainSeqMonkToolbar extends SeqMonkToolbar {
 
 		addSeparator();
 
-		
+		JButton showVistoryButton = new JButton(new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/launch_vistory.png")));
+		showVistoryButton.setActionCommand("report_vistory");
+		showVistoryButton.setToolTipText("Show Vistory");
+		showVistoryButton.addActionListener(menu);
+
+		add(showVistoryButton);
+		addSeparator();
 
 		JButton viewPrefsButton = new JButton(new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/display_prefs.png")));
 		viewPrefsButton.setActionCommand("view_display_options");

@@ -74,6 +74,8 @@ import uk.ac.babraham.SeqMonk.Menu.SeqMonkMenu;
 import uk.ac.babraham.SeqMonk.Network.GenomeDownloader;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 
 /**
  * SeqMonkApplication represents the main SeqMonk GUI window and handles
@@ -84,7 +86,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	private static SeqMonkApplication application;
 	
 	/** The version of SeqMonk */
-	public static final String VERSION = "1.44.1.devel";
+	public static final String VERSION = "1.45.0.devel";
 	
 	private SeqMonkMenu menu;
 	
@@ -318,6 +320,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		drawnDataStores = new Vector<DataStore>();
 		menu.resetMenus();
 		DisplayPreferences.getInstance().reset();
+		Vistory.getInstance().clear();
 	}
 	
 	/**
@@ -632,6 +635,8 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		if (!forceAssembly) {
 			wipeAllData();
 		}
+		
+		Vistory.getInstance().addBlock(new VistoryEvent("Project Loaded", "Loaded "+file.getAbsolutePath()));
 		
 		currentFile = file;
 		
@@ -1018,6 +1023,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataGroupAdded(DataGroup g) {
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(g.name());
+		DataSet [] sets = g.dataSets();
+		for (DataSet s : sets) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Created", sb.toString()));
 	}
 
 	/* (non-Javadoc)
@@ -1041,6 +1054,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataGroupSamplesChanged(DataGroup g) {
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(g.name());
+		DataSet [] sets = g.dataSets();
+		for (DataSet s : sets) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Changed", sb.toString()));
 	}
 
 	/* (non-Javadoc)
@@ -1056,6 +1077,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataSetAdded(DataSet d) {
 		changesWereMade();
+		Vistory.getInstance().addBlock(new VistoryEvent("DataSet Added", d.name()+" "+d.fileName()+" "+d.importOptions()));
 	}	
 
 	/* (non-Javadoc)
@@ -1068,6 +1090,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 	public void replicateSetAdded(ReplicateSet r) {
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(r.name());
+		DataStore [] stores = r.dataStores();
+		for (DataStore s : stores) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
 	}
 
 	public void replicateSetsRemoved(ReplicateSet [] r) {
@@ -1078,6 +1108,14 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public void replicateSetRenamed(ReplicateSet r) {
 		chromosomeViewer.repaint();
 		changesWereMade();
+		StringBuffer sb = new StringBuffer();
+		sb.append(r.name());
+		DataStore [] stores = r.dataStores();
+		for (DataStore s : stores) {
+			sb.append("\n");
+			sb.append(s.name());
+		}
+		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
 	}
 
 	public void replicateSetStoresChanged(ReplicateSet r) {
@@ -1104,6 +1142,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public void probeSetReplaced(ProbeSet probes) {
 		probes.addProbeSetChangeListener(this);
 		changesWereMade();
+		
+		Vistory.getInstance().addBlock(new VistoryEvent("New Probe Set",probes.justDescription()));
+
 	}
 
 
@@ -1162,6 +1203,8 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			chromosomeViewer.autoScale();
 			genomeViewer.repaint();
 			changesWereMade();
+			
+			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()));
 		}
 		
 		else if (command.equals("pipeline_quantitation")) {
@@ -1171,6 +1214,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			chromosomeViewer.autoScale();
 			genomeViewer.repaint();
 			changesWereMade();
+
+			Vistory.getInstance().addBlock(new VistoryEvent("Probes Quantitated",dataCollection.probeSet().currentQuantitation()));
+
 		}
 		
 		else {

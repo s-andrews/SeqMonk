@@ -95,6 +95,7 @@ import uk.ac.babraham.SeqMonk.Displays.StarWars.MultiStarWarsDialog;
 import uk.ac.babraham.SeqMonk.Displays.StrandBias.StrandBiasPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.TsneDataStorePlot.TsneOptionsDialog;
 import uk.ac.babraham.SeqMonk.Displays.VariancePlot.VariancePlotDialog;
+import uk.ac.babraham.SeqMonk.Displays.Vistory.VistoryDialog;
 import uk.ac.babraham.SeqMonk.Displays.VolcanoPlot.VolcanoPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.CisTransScatterplot.CisTransScatterPlotDialog;
 import uk.ac.babraham.SeqMonk.Displays.CorrelationMatrix.CorrelationMatrix;
@@ -1274,6 +1275,16 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		reportProbeListDescription.addActionListener(this);
 		reportProbeListDescription.setMnemonic(KeyEvent.VK_D);
 		reportMenu.add(reportProbeListDescription);
+
+		reportMenu.addSeparator();
+
+		JMenuItem reportShowVistory = new JMenuItem("Show Vistory...");
+		reportShowVistory.setActionCommand("report_vistory");
+		reportShowVistory.addActionListener(this);
+		reportShowVistory.setMnemonic(KeyEvent.VK_V);
+		reportShowVistory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
+
+		reportMenu.add(reportShowVistory);
 
 		add(reportMenu);
 
@@ -2551,6 +2562,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				JOptionPane.showMessageDialog(application, e.getMessage(), "Can't run filter", JOptionPane.ERROR_MESSAGE);			
 			}
 		}
+		else if (action.equals("report_vistory")) {
+			VistoryDialog.showVistory();
+		}
 		else if (action.startsWith("report")) {
 			if (action != "report_summary" && !application.dataCollection().isQuantitated()) {
 				JOptionPane.showMessageDialog(application, "You must quantiate your data before creating reports", "Can't generate report", JOptionPane.ERROR_MESSAGE);			
@@ -2562,6 +2576,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			else if (action.equals("report_description")) {
 				new ProbeListReportCreator(application.dataCollection().probeSet().getActiveList());
 			}
+
 			else if (action.equals("report_group")) {
 				new ReportOptions(application,new ProbeGroupReport(application.dataCollection(),application.drawnDataSets()));
 			}

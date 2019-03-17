@@ -15,12 +15,32 @@ namespace SeqMonkLauncher
     {
         static void Main(string [] args)
         {
-            string javaVersion = getJavaVersion();
 
-            if (!javaVersion.Contains("Java"))
+            Console.WriteLine("Finding java");
+
+            string javaPath = getJavaPath();
+
+            if (!(javaPath.Contains("java")))
             {
                 MessageBox.Show("Couldn't find java on your system", "Failed to launch SeqMonk", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 Environment.Exit(1);
+            }
+
+            Console.WriteLine("Found java at '"+javaPath+"'");
+
+
+            if (javaPath == "java")
+            {
+                Console.WriteLine("PATH is '" + System.Environment.GetEnvironmentVariable("PATH") + "'");
+            }
+
+            string javaVersion = getJavaVersion(javaPath);
+
+            Console.WriteLine("Java version string is " + javaVersion);
+
+            if (!(javaVersion.Contains("Java") || javaVersion.Contains("OpenJDK")))
+            {
+                MessageBox.Show("Got an unexpected output from running java -version. Going for it anyway...", "Failed to launch SeqMonk", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
             int memoryCeiling = 1300;
@@ -31,7 +51,7 @@ namespace SeqMonkLauncher
             if (javaVersion.Contains("64-Bit"))
             {
                 memoryCeiling = 10240;
-                int manualMemoryCeiling = getManualMemoryCeiling();
+                int manualMemoryCeiling = getManualMemoryCeiling(javaPath);
 
                 if (manualMemoryCeiling > memoryCeiling)
                 {
@@ -57,7 +77,7 @@ namespace SeqMonkLauncher
             }
 
 
-            int physicalMemory = getPhysicalMemory();
+            int physicalMemory = getPhysicalMemory(javaPath);
 
             Console.WriteLine("Physical memory installed is " + physicalMemory);
 
@@ -78,7 +98,7 @@ namespace SeqMonkLauncher
             Console.Write(memoryToUse);
             Console.WriteLine("");
 
-            int memoryToRequest = correctMemory(memoryToUse);
+            int memoryToRequest = correctMemory(memoryToUse, javaPath);
 
             if (memoryToRequest == 0)
             {
@@ -116,7 +136,7 @@ namespace SeqMonkLauncher
 					filename = args[0];
 				}
 
-                string finalCommand = "java -cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xss4m -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"";
+                string finalCommand = "\""+javaPath+"\" -cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xss4m -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"";
 
                 Console.WriteLine("Final command is " + finalCommand);
                 System.Diagnostics.ProcessStartInfo procStartInfo = new System.Diagnostics.ProcessStartInfo("java", "-cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"");
@@ -137,7 +157,7 @@ namespace SeqMonkLauncher
 
         }
 
-        static int getPhysicalMemory()
+        static int getPhysicalMemory(String javaPath)
         {
             Microsoft.VisualBasic.Devices.ComputerInfo computer = new Microsoft.VisualBasic.Devices.ComputerInfo();
             ulong rawMemory = computer.TotalPhysicalMemory;
@@ -148,7 +168,7 @@ namespace SeqMonkLauncher
 
         }
 
-        static int correctMemory(int requestedMemory)
+        static int correctMemory(int requestedMemory, String javaPath)
         {
             string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
@@ -177,7 +197,7 @@ namespace SeqMonkLauncher
             {
 
 
-                string finalCommand = "java -cp \"" + path + "\" -Xmx" + currentRequestAmount + "m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage";
+                string finalCommand = "\""+javaPath+"\" -cp \"" + path + "\" -Xmx" + currentRequestAmount + "m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage";
 
                 Console.WriteLine("Memcheck command is " + finalCommand);
                 string parms = "-cp \"" + path + "\" -Xmx" + currentRequestAmount + "m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage";
@@ -252,7 +272,7 @@ namespace SeqMonkLauncher
         }
 
 
-        static int getManualMemoryCeiling()
+        static int getManualMemoryCeiling(String javaPath)
         {
             // We need to start by getting the location of the seqmonk preferences file.  We do this
             // with a call to a specical class in seqmonk which prints this.
@@ -274,7 +294,7 @@ namespace SeqMonkLauncher
                 }
 
 
-                string finalCommand = "java -cp \"" + path + "\" uk.ac.babraham.Utilities.PrefsPrinter";
+                string finalCommand = "\""+javaPath+"\" -cp \"" + path + "\" uk.ac.babraham.Utilities.PrefsPrinter";
 
                 Console.WriteLine("Prefs check command is " + finalCommand);
                 string parms = "-cp \"" + path + "\" uk.ac.babraham.SeqMonk.Utilities.PrefsPrinter";
@@ -352,7 +372,24 @@ namespace SeqMonkLauncher
 
          }
 
-        static string getJavaVersion()
+        static string getJavaPath ()
+        {
+            string javaPath = @"java.exe";
+
+            // Check for an embedded jre shipped with seqmonk
+            string localPath = AppDomain.CurrentDomain.BaseDirectory + "jre\\bin\\java.exe";
+            if (File.Exists(localPath))
+            {
+                return localPath;
+            }
+            else
+            {
+                Console.WriteLine("No local java found at " + localPath);
+            }
+            return (javaPath);
+        }
+
+        static string getJavaVersion(String javaPath)
         {
             try
             {
@@ -360,7 +397,7 @@ namespace SeqMonkLauncher
                 string output = "";
                 string error = string.Empty;
 
-                ProcessStartInfo psi = new ProcessStartInfo("java.exe", parms);
+                ProcessStartInfo psi = new ProcessStartInfo(javaPath, parms);
 
                 psi.RedirectStandardOutput = true;
                 psi.RedirectStandardError = true;
