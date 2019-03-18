@@ -202,6 +202,10 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
 
 			if (file.isDirectory()) return;
+			
+			if (JOptionPane.showConfirmDialog(dialog, "Do you want to wipe your existing vistory before loading?","Clear before loading",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {			
+				Vistory.getInstance().clear();
+			}
 
 			try {					
 				Vistory.getInstance().loadFile(file);
