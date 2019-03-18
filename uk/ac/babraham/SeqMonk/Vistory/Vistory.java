@@ -104,6 +104,9 @@ public class Vistory {
 	public void removeBlock (VistoryBlock block) {
 		if (! blocks.contains(block))return;
 		blocks.remove(block);
+		if (block.equals(selectedBlock)) {
+			selectedBlock = null;
+		}
 		Enumeration<VistoryListener> en = listeners.elements();
 		while (en.hasMoreElements()) {
 			en.nextElement().blockRemoved(block);
