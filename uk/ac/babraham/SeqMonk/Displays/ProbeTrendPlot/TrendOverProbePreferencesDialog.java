@@ -165,7 +165,7 @@ public class TrendOverProbePreferencesDialog extends JDialog implements ActionLi
 		gbc.gridy++;
 		gbc.gridx=1;
 		
-		prefPanel.add(new JLabel("Scale within each data store"),gbc);
+		prefPanel.add(new JLabel("Scale within each data store/list"),gbc);
 		gbc.gridx = 2;
 		correctEachStoreBox = new JCheckBox();
 		correctEachStoreBox.setSelected(prefs.correctWithinEachStore);
