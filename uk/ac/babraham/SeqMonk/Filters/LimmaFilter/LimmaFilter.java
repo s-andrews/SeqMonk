@@ -128,9 +128,12 @@ public class LimmaFilter extends ProbeFilter {
 		// We need to make a temporary directory, save the data into it, write out the R script
 		// and then run it an collect the list of results, then clean up.
 
-		// Make up the list of DataStores in each replicate set		
-		DataStore [] fromStores = replicateSets[0].dataStores();
-		DataStore [] toStores = replicateSets[1].dataStores();
+		// Make up the list of DataStores in each replicate set	
+		DataStore [][] stores = new DataStore[replicateSets.length][];
+		
+		for (int r=0;r<replicateSets.length;r++) {
+			stores[r] = replicateSets[r].dataStores();
+		}
 
 		File tempDir;
 		try {
@@ -145,23 +148,15 @@ public class LimmaFilter extends ProbeFilter {
 			for (int p=0;p<probes.length;p++) {
 				boolean valid = true;
 				
-				for (int s=0;s<fromStores.length;s++) {
-					if (Float.isNaN(fromStores[s].getValueForProbe(probes[p]))) {
-						valid = false;
-						break;
-					}
-				}
-				
-				// Only check the to stores if from was OK
-				if (valid) {
-					for (int s=0;s<toStores.length;s++) {
-						if (Float.isNaN(toStores[s].getValueForProbe(probes[p]))) {
+				for (int r=0;r<stores.length;r++) {
+					for (int s=0;s<stores[r].length;s++) {
+						if (Float.isNaN(stores[r][s].getValueForProbe(probes[p]))) {
 							valid = false;
 							break;
 						}
 					}
-					
 				}
+
 				if (valid) {
 					validProbes.add(probes[p]);
 				}
@@ -200,15 +195,28 @@ public class LimmaFilter extends ProbeFilter {
 			else {
 				template.setValue("CORRECTED", "P.Value");
 			}
+			
+			StringBuffer contrasts = new StringBuffer();
+			
+			for (int x=0;x<replicateSets.length;x++) {
+				for (int y=x+1;y<replicateSets.length;y++) {
+					contrasts.append("group");
+					contrasts.append(x);
+					contrasts.append("-");
+					contrasts.append("group");
+					contrasts.append(y);
+					contrasts.append(", ");
+				}
+			}
+			
+			template.setValue("CONTRASTS", contrasts.toString());
 
 			StringBuffer sb = new StringBuffer();
-			for (int i=0;i<fromStores.length;i++) {
-				if (i>0) sb.append(",");
-				sb.append("\"from\"");
-			}
-			for (int i=0;i<toStores.length;i++) {
-				sb.append(",");
-				sb.append("\"to\"");
+			for (int c=0;c<stores.length;c++) {
+				for (int i=0;i<stores[c].length;i++) {
+					if (c>0 || i>0) sb.append(",");
+					sb.append("\"group"+c+"\"");
+				}
 			}
 			template.setValue("CONDITIONS", sb.toString());
 			template.setValue("PVALUE", ""+cutoff);
@@ -226,17 +234,15 @@ public class LimmaFilter extends ProbeFilter {
 
 			sb = new StringBuffer();
 			sb.append("probe");
-			for (int i=0;i<fromStores.length;i++) {
-				sb.append("\t");
-				sb.append("from");
-				sb.append(i);
+			for (int c=0;c<stores.length;c++) {
+				for (int i=0;i<stores[c].length;i++) {
+					sb.append("\t");
+					sb.append("group");
+					sb.append(c);
+					sb.append("-");
+					sb.append(i);
+				}
 			}
-			for (int i=0;i<toStores.length;i++) {
-				sb.append("\t");
-				sb.append("to");
-				sb.append(i);
-			}
-
 			pr.println(sb.toString());
 
 			progressUpdated("Writing count data",0,1);
@@ -251,15 +257,12 @@ public class LimmaFilter extends ProbeFilter {
 				}
 				sb = new StringBuffer();
 				sb.append(p);
-				for (int i=0;i<fromStores.length;i++) {
-					sb.append("\t");
-					value = fromStores[i].getValueForProbe(probes[p]);
-					sb.append(value);
-				}
-				for (int i=0;i<toStores.length;i++) {
-					sb.append("\t");
-					value = toStores[i].getValueForProbe(probes[p]);
-					sb.append(value);
+				for (int c=0;c<stores.length;c++) {
+					for (int i=0;i<stores[c].length;i++) {
+						sb.append("\t");
+						value = stores[c][i].getValueForProbe(probes[p]);
+						sb.append(value);
+					}
 				}
 
 				pr.println(sb.toString());
@@ -292,8 +295,13 @@ public class LimmaFilter extends ProbeFilter {
 			// We can now parse the results and put the hits into a new probe list
 
 			ProbeList newList;
-
-			newList = new ProbeList(startingList,"","",new String[]{"P-value","FDR","Log2 Fold Change"});
+			
+			if (replicateSets.length == 2) {
+				newList = new ProbeList(startingList,"","",new String[]{"P-value","FDR","Log2 Fold Change"});
+			}
+			else {
+				newList = new ProbeList(startingList,"","",new String[]{"P-value","FDR"});
+			}
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 
@@ -305,12 +313,16 @@ public class LimmaFilter extends ProbeFilter {
 				String [] sections = line.split("\t");
 
 				int probeIndex = Integer.parseInt(sections[0]);
-				float pValue = Float.parseFloat(sections[4]);
-				float qValue = Float.parseFloat(sections[5]);
-				float foldChange = Float.parseFloat(sections[1]);
+				float pValue = Float.parseFloat(sections[sections.length-3]);
+				float qValue = Float.parseFloat(sections[sections.length-2]);
 				
-
-				newList.addProbe(probes[probeIndex],new float [] {pValue,qValue,foldChange});
+				if (replicateSets.length == 2) {
+					float foldChange = Float.parseFloat(sections[1]);
+					newList.addProbe(probes[probeIndex],new float [] {pValue,qValue,foldChange});
+				}
+				else {
+					newList.addProbe(probes[probeIndex],new float [] {pValue,qValue});
+				}
 			}
 
 			br.close();
@@ -356,7 +368,7 @@ public class LimmaFilter extends ProbeFilter {
 	 */
 	@Override
 	public boolean isReady() {
-		if (replicateSets.length != 2) return false;
+		if (replicateSets.length < 2) return false;
 
 		if (cutoff == null || cutoff > 1 || cutoff < 0) return false;
 
