@@ -372,7 +372,7 @@ public class TrendOverProbePanel extends JPanel implements Runnable, MouseMotion
 		if (prefs.correctWithinEachStore) {
 
 			// We put everything on a range of 1 - 100
-			for (int i=0;i<stores.length;i++) {
+			for (int i=0;i<theseCounts.length;i++) {
 				double min = theseCounts[i][0];
 				double max = min;
 
@@ -380,7 +380,7 @@ public class TrendOverProbePanel extends JPanel implements Runnable, MouseMotion
 					if (theseCounts[i][p]<min) min = theseCounts[i][p];
 					if (theseCounts[i][p]>max) max = theseCounts[i][p];
 				}
-
+				
 				// Now go back and correct
 
 				// Don't try to correct if we don't have any counts
