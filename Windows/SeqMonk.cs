@@ -139,7 +139,7 @@ namespace SeqMonkLauncher
                 string finalCommand = "\""+javaPath+"\" -cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xss4m -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"";
 
                 Console.WriteLine("Final command is " + finalCommand);
-                System.Diagnostics.ProcessStartInfo procStartInfo = new System.Diagnostics.ProcessStartInfo("java", "-cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"");
+                System.Diagnostics.ProcessStartInfo procStartInfo = new System.Diagnostics.ProcessStartInfo(javaPath, "-cp \"" + path + ";" + path + "\\Jama-1.0.2.jar" + ";" + path + "\\commons-math3-3.5.jar" + ";" + path + "\\sam-1.32.jar\" -Xmx" + memoryToRequest + "m uk.ac.babraham.SeqMonk.SeqMonkApplication \""+filename+"\"");
 
                 procStartInfo.RedirectStandardOutput = true;
                 procStartInfo.UseShellExecute = false;
@@ -204,7 +204,7 @@ namespace SeqMonkLauncher
                 string output = "";
                 string error = string.Empty;
 
-                ProcessStartInfo psi = new ProcessStartInfo("java.exe", parms);
+                ProcessStartInfo psi = new ProcessStartInfo(javaPath, parms);
 
                 psi.RedirectStandardOutput = true;
                 psi.RedirectStandardError = true;
@@ -301,7 +301,7 @@ namespace SeqMonkLauncher
                 string prefsFile = "";
                 string error = string.Empty;
 
-                ProcessStartInfo psi = new ProcessStartInfo("java.exe", parms);
+                ProcessStartInfo psi = new ProcessStartInfo(javaPath, parms);
 
                 psi.RedirectStandardOutput = true;
                 psi.RedirectStandardError = true;
