@@ -89,10 +89,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	
 	/** The email used to send crash reports by default */
 	private JTextField crashEmailAddress;
-	
-	/** Whether to compress output */
-	private JCheckBox compressOutput;
-	
+		
 	/** The temp directory. */
 	private JTextField tempDirectory;
 	
@@ -286,15 +283,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		
 		
 		memoryPanel.add(featureTypesPanel,c);
-		
-		c.gridx=0;
-		c.gridy++;
-		memoryPanel.add(new JLabel("Compress Output"),c);
-		c.gridx=1;
-		compressOutput = new JCheckBox();
-		compressOutput.setSelected(p.compressOutput());
-		memoryPanel.add(compressOutput,c);
-		
+				
 		c.gridx=0;
 		c.gridy++;
 		memoryPanel.add(new JLabel("Initial Memory (0 for auto - RECOMMENDED)"),c);
@@ -558,7 +547,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			p.setProxy(proxyHostValue,proxyPortValue);
 			p.setGenomeDownloadLocation(downloadLocation.getText());
 			p.setTempDirectory(tempDirFile);
-			p.setCompressOutput(compressOutput.isSelected());
 			p.setMemory(memoryValue);
 			Object [] o = ignoredFeaturesModel.toArray();
 			String [] s = new String[o.length];

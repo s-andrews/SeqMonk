@@ -33,7 +33,7 @@ import java.util.LinkedList;
 /**
  * A set of preferences, both temporary and permanent which are used
  * throughout SeqMonk.  Permanent preferences can be loaded from and
- * saved to a preferences file allowing persistance between sessions.
+ * saved to a preferences file allowing persistence between sessions.
  */
 public class SeqMonkPreferences {
 
@@ -69,10 +69,7 @@ public class SeqMonkPreferences {
 	
 	/** The directory in which to save temporary cache files */
 	private File tempDirectory = null;
-		
-	/** Whether we've opted to compress our output files */
-	private boolean compressOutput = true;
-	
+			
 	/** The network address from where we can download new genomes */
 	private String genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
 	
@@ -178,9 +175,6 @@ public class SeqMonkPreferences {
 				}
 				else if (sections[0].equals("UseTempDir")) {
 					// Old option, no longer required
-				}
-				else if (sections[0].equals("CompressOutput")) {
-					compressOutput = sections[1].equals("1");
 				}
 				else if (sections[0].equals("Memory")) {
 					memory = Integer.parseInt(sections[1]);
@@ -295,14 +289,6 @@ public class SeqMonkPreferences {
 			p.println("CrashEmail\t"+crashEmail);
 		}
 		
-		// Whether to compress our output
-		if (compressOutput) {
-			p.println("CompressOutput\t1");
-		}
-		else {
-			p.println("CompressOutput\t0");
-		}
-
 		// The initial memory setting to use
 		p.println("Memory\t"+memory);
 		
@@ -398,25 +384,7 @@ public class SeqMonkPreferences {
 	public boolean checkForUpdates () {
 		return checkForUpdates;
 	}
-		
-	/**
-	 * Should seqmonk format output files be gzip compressed
-	 * 
-	 * @return true if output should be compressed
-	 */
-	public boolean compressOutput () {
-		return compressOutput;
-	}
-	
-	/**
-	 * Sets whether seqmonk output should be compressed
-	 * 
-	 * @param true if output should be compressed
-	 */
-	public void setCompressOutput (boolean compressOutput) {
-		this.compressOutput = compressOutput;
-	}
-		
+				
 	/**
 	 * The location of the directory to use to cache data
 	 * 

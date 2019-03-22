@@ -50,7 +50,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
-import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 
 /**
  * The Class SeqMonkDataWriter serialises a SeqMonk project to a single file.
@@ -198,17 +197,12 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 			
 			BufferedOutputStream bos;
 			
-			if (SeqMonkPreferences.getInstance().compressOutput()) {
-				GZIPOutputStream gos = new GZIPOutputStream(new FileOutputStream(tempFile),65536) {
-					{
-						this.def.setLevel(1);
-					}
-				};
-				bos = new BufferedOutputStream(gos,65536);
-			}
-			else {
-				bos = new BufferedOutputStream(new FileOutputStream(tempFile),65536);
-			}			
+			GZIPOutputStream gos = new GZIPOutputStream(new FileOutputStream(tempFile),65536) {
+				{
+					this.def.setLevel(1);
+				}
+			};
+			bos = new BufferedOutputStream(gos,65536);
 			
 			PrintStream p = new PrintStream(bos);
 			
