@@ -63,8 +63,12 @@ my $java_exe = "java";
 if (-e "$RealBin/jre/bin/java.exe") {
 	$java_exe = "$RealBin/jre/bin/java.exe";
 }
+# Linux
+elsif (-e "$RealBin/jre/bin/java") {
+	$java_exe = "$RealBin/jre/bin/java";
+}
 # OSX
-if (-e "$RealBin/jre/Contents/Home/bin/java") {
+elsif (-e "$RealBin/jre/Contents/Home/bin/java") {
 	$java_exe = "$RealBin/jre/Contents/Home/bin/java";
 }
 
@@ -220,6 +224,9 @@ sub determine_optimal_memory {
 		$physical = get_osx_memory($max_memory);	
 	}
 	else {
+		push @java_args, "-Dawt.useSystemAAFontSettings=on";
+		push @java_args, "-Dswing.aatext=true";
+
 		$physical = get_linux_memory($max_memory);
 	}
 	
