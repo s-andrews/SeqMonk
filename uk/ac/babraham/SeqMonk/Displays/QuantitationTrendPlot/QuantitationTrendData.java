@@ -450,7 +450,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 
 
 				// Check to see if they actually overlap and contain data we can use
-				if (probe.start() <= window.end() && probe.end() >= window.start()  && Float.isFinite(store.getValueForProbe(probe)) && !Float.isNaN(store.getValueForProbe(probe))) {
+				if (probe.start() <= window.end() && probe.end() >= window.start()  && !Float.isInfinite(store.getValueForProbe(probe)) && !Float.isNaN(store.getValueForProbe(probe))) {
 					// Now we need to find the extent of the overlap.  We're diving
 					// the whole window into chunks so we need to find out which of
 					// these we start and end in.
