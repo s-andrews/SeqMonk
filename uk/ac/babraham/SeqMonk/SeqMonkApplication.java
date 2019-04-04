@@ -301,7 +301,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public void startNewProject () {
 		new GenomeSelector(this);
 	}
-	
+		
 	/**
 	 * Clears all stored data and blanks the UI.
 	 */
@@ -590,6 +590,10 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		else {
 			return "[No project name yet]";
 		}
+	}
+	
+	public File currentFile () {
+		return currentFile;
 	}
 	
 
