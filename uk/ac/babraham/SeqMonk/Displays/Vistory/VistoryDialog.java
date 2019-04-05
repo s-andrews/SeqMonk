@@ -60,7 +60,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		
 		vistoryPanel = new ScrollablePanel();
 
-		addCurrentBlocks();
+		addCurrentBlocks(true);
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().setBackground(Color.WHITE);
@@ -79,7 +79,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistoryDialog.setVisible(true);
 	}
 
-	public void addCurrentBlocks () {
+	public void addCurrentBlocks (boolean scrollToEnd) {
 		
 		vistoryPanel.setLayout(new BoxLayout(vistoryPanel, BoxLayout.PAGE_AXIS));
 		vistoryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -95,7 +95,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistoryPanel.revalidate();
 		
 		// Scroll to bottom when new block is added.
-		if (scrollPane != null) {
+		if (scrollPane != null && scrollToEnd) {
 			scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
 		}
 
@@ -107,7 +107,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistoryPanel.removeAll();
 		vistoryPanel.revalidate();
 		
-		addCurrentBlocks();
+		addCurrentBlocks(!block.allowsRelativePosition());
 		
 		// If it's a text box find out if it wants focus and give it if it does
 		if (isVisible()) {
@@ -132,7 +132,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		vistoryPanel.removeAll();
 		vistoryPanel.revalidate();
 		
-		addCurrentBlocks();
+		addCurrentBlocks(false);
 	}
 
 	
