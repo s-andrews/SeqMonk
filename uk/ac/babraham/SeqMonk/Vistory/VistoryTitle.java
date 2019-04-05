@@ -46,6 +46,9 @@ public class VistoryTitle extends VistoryBlock {
 		startSetup();
 	}
 
+	public int level () {
+		return level;
+	}
 	
 	public VistoryTitle (String message, int level) {
 		this.level = level;

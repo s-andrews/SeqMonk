@@ -193,14 +193,14 @@ public class Vistory {
 		pr.println("<div class=\"toc\">");
 		pr.println("<ul class=\"toc\">");
 		
-		pr.println("<li><a href=\"#top\">Top</a></li>");
+		pr.println("<li class=\"title2\"><a href=\"#top\">Top</a></li>");
 		int currentIndex = 1;
 		for (int b=0;b<blocks.size();b++) {
 			if (blocks.elementAt(b) instanceof VistoryTitle) {
 				VistoryTitle block = (VistoryTitle)blocks.elementAt(b);
 				block.setIndex(currentIndex);
 				
-				pr.println("<li><a href=\"#"+currentIndex+"\">"+EscapeHTML.escapeHTML(block.getText())+"</a></li>");
+				pr.println("<li class=\"title"+block.level()+"\"><a href=\"#"+currentIndex+"\">"+EscapeHTML.escapeHTML(block.getText())+"</a></li>");
 				
 				currentIndex++;
 				
