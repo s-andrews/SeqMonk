@@ -59,6 +59,11 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 		
 	}
 	
+	public VistoryTable (String [][] data) {
+		this.tableData = data;
+		doInitialLayout();
+	}
+	
 	
 	public VistoryTable (TableModel model) {
 		

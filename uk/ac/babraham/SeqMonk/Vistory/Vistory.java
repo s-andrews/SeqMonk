@@ -46,10 +46,17 @@ public class Vistory {
 	private Vector<VistoryListener> listeners = new Vector<VistoryListener>();
 	private VistoryBlock selectedBlock = null;
 	
+	private File saveFile = null;
+
+	
 	private Vector<VistoryBlock> blocks = new Vector<VistoryBlock>();
 	
 	private Vistory () {}
-	
+
+	public File saveFile () {
+		return saveFile;
+	}
+		
 	public void addListener (VistoryListener l) {
 		if (!listeners.contains(l)) listeners.add(l);
 	}
@@ -249,6 +256,8 @@ public class Vistory {
 		}
 		
 		pr.close();
+		
+		saveFile = file;
 	}
 	
 	public void loadFile (File file) throws IOException {
@@ -294,6 +303,7 @@ public class Vistory {
 
 		}
 		
+		saveFile = file;
 	}
 
 	

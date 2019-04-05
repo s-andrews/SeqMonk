@@ -36,13 +36,13 @@ import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.HTMLFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.VistoryFileFilter;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryProjectSummary;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryText;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryTitle;
 
 public class VistoryToolbar extends JToolBar implements ActionListener {
 
 	private VistoryDialog dialog;
-	private File saveFile = null;
 	
 	public VistoryToolbar (VistoryDialog dialog) {
 		this.dialog = dialog;
@@ -76,6 +76,12 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		clearVistoryButton.addActionListener(this);
 		add(clearVistoryButton);
 
+		JButton projectSummaryButton = new JButton("Project Summary",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/clear_vistory.png")));
+		projectSummaryButton.setActionCommand("summary");
+		projectSummaryButton.addActionListener(this);
+		add(projectSummaryButton);
+
+		
 		JButton exportVistoryButton = new JButton("Export to HTML",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/export_to_web.png")));
 		exportVistoryButton.setActionCommand("export");
 		exportVistoryButton.addActionListener(this);
@@ -98,6 +104,10 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 			
 			Vistory.getInstance().clear();
 		}
+		else if (command.equals("summary")) {
+			VistoryProjectSummary.addProjectSummary();
+		}
+		
 		else if (command.equals("export")) {
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 			chooser.setMultiSelectionEnabled(false);
@@ -149,7 +159,7 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 			
 			File file = null;
 			
-			if (command.equals("saveas_vistory") || saveFile == null) {
+			if (command.equals("saveas_vistory") || Vistory.getInstance().saveFile() == null) {
 				JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 				chooser.setMultiSelectionEnabled(false);
 				chooser.setFileFilter(new VistoryFileFilter());
@@ -180,12 +190,11 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 				}
 			}
 			else {
-				file = saveFile;
+				file = Vistory.getInstance().saveFile();
 			}
 			
 			try {					
 				Vistory.getInstance().saveToFile(file);	
-				saveFile = file;
 				dialog.setTitle("Vistory ["+file.getName()+"]");
 			}
 			

@@ -32,6 +32,8 @@ public class VistoryTitle extends VistoryBlock {
 	protected JTextArea text;
 	private int indexPosition = 0;
 	
+	private boolean allowsRelative = true;
+	
 	public VistoryTitle(Date date, String data) {
 		super(date);
 		startSetup();
@@ -42,6 +44,16 @@ public class VistoryTitle extends VistoryBlock {
 		startSetup();
 	}
 
+	
+	public VistoryTitle (String message) {
+		// If a message is being supplied then this isn't a user
+		// instigated title so we put it at the end.
+		allowsRelative = false;
+		startSetup();
+		text.setText(message);
+	}
+
+	
 	private void startSetup() {
 		text = new JTextArea("New Title");
 		text.setLineWrap(true);
@@ -85,7 +97,7 @@ public class VistoryTitle extends VistoryBlock {
 
 	@Override
 	public boolean allowsRelativePosition() {
-		return true;
+		return allowsRelative;
 	}
 	
 
