@@ -20,8 +20,10 @@
 package uk.ac.babraham.SeqMonk.Vistory;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Date;
 
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -31,6 +33,7 @@ import uk.ac.babraham.SeqMonk.Utilities.EscapeHTML;
 public class VistoryTable extends VistoryBlock implements TableModel {
 
 	String [][] tableData;
+	JTable table;
 	
 	public VistoryTable (Date date, String data) {
 		super(date);
@@ -91,16 +94,27 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 	
 	private void doInitialLayout() {
 		
-		JTable table = new JTable(this);
+		table = new JTable(this);
 		table.addMouseListener(this);
-		add(table.getTableHeader(),BorderLayout.NORTH);
-		add(table,BorderLayout.CENTER);
 		
-		// We need to add this call otherwise an optimisation in the 
-		// scroll pane implementation means that non-visible portions
-		// of the table won't render until we click on it.
-		table.setVisible(true);
+		int requestedHeight = Math.min(table.getPreferredSize().height, 300);
+		
+		System.err.println("Requested height for "+getRowCount()+" rows is "+requestedHeight);
+		
+		table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredSize().width, requestedHeight));
+		
+		add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
+
+		
 	}
+	
+//	public Dimension getPreferredSize () {
+//		
+//		System.err.println("Table's preferred size is "+(table.getTableHeader().getPreferredSize().height+table.getPreferredSize().height)+" from "+getRowCount()+" rows");
+//		
+//		return(new Dimension(600,Math.min(table.getTableHeader().getPreferredSize().height+table.getPreferredSize().height, 600)));
+//	}
+	
 	
 	public void setData (String[][] tableData) {
 		this.tableData = tableData;

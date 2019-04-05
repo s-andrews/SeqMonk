@@ -21,10 +21,14 @@ package uk.ac.babraham.SeqMonk.Displays.Vistory;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -76,33 +80,18 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	}
 
 	public void addCurrentBlocks () {
-
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx=0;
-		gbc.gridy=0;
-		gbc.weightx = 0.5;
-		gbc.weighty = 0.00000001;
 		
-		gbc.insets = new Insets(2, 5, 2, 5);
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		
-		vistoryPanel.setLayout(new GridBagLayout());
+		vistoryPanel.setLayout(new BoxLayout(vistoryPanel, BoxLayout.PAGE_AXIS));
+		vistoryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		vistoryPanel.setBackground(Color.WHITE);
 		
 		VistoryBlock [] blocks = vistory.blocks();
 		
 		for (int b=0;b<blocks.length;b++) {
-			gbc.gridy=b;
-			vistoryPanel.add(blocks[b],gbc);
+			vistoryPanel.add(blocks[b]);
+			vistoryPanel.add(Box.createRigidArea(new Dimension(20,0)));
 		}
-		
-		gbc.gridy = gbc.gridy+1;
-		gbc.weighty=0.99999999;
-		gbc.fill = GridBagConstraints.BOTH;
-		JPanel spaceFillPanel = new JPanel();
-		spaceFillPanel.setBackground(Color.WHITE);
-		vistoryPanel.add(spaceFillPanel,gbc);
-		
+				
 		vistoryPanel.revalidate();
 		
 		// Scroll to bottom when new block is added.
