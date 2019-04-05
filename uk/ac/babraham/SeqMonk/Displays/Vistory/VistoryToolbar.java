@@ -76,7 +76,7 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		clearVistoryButton.addActionListener(this);
 		add(clearVistoryButton);
 
-		JButton projectSummaryButton = new JButton("Project Summary",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/clear_vistory.png")));
+		JButton projectSummaryButton = new JButton("Project Summary",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/project_status.png")));
 		projectSummaryButton.setActionCommand("summary");
 		projectSummaryButton.addActionListener(this);
 		add(projectSummaryButton);
