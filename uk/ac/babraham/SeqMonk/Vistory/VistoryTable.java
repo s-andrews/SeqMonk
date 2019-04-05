@@ -98,9 +98,7 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 		table.addMouseListener(this);
 		
 		int requestedHeight = Math.min(table.getPreferredSize().height, 300);
-		
-		System.err.println("Requested height for "+getRowCount()+" rows is "+requestedHeight);
-		
+				
 		table.setPreferredScrollableViewportSize(new Dimension(table.getPreferredSize().width, requestedHeight));
 		
 		add(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);

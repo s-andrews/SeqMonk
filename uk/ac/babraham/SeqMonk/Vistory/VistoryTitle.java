@@ -37,6 +37,7 @@ public class VistoryTitle extends VistoryBlock {
 	
 	public VistoryTitle(int level, Date date, String data) {
 		super(date);
+		this.level = level;
 		startSetup();
 		text.setText(data.replaceAll("<br>", "\n"));
 	}

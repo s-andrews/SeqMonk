@@ -294,7 +294,7 @@ public class Vistory {
 				else {
 					level = Integer.parseInt(type.substring(5));
 				}
-				
+								
 				addBlock(new VistoryTitle(level,date,sections[sections.length-1]));
 			}
 			else if (type.equals("TABLE")) {
