@@ -37,11 +37,11 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 	
 	public VistoryTable (Date date, String data) {
 		super(date);
-		String [] sections = data.split("%%t%%");
+		String [] sections = data.split("%%t%%",-1);
 		
 		int rows = Integer.parseInt(sections[0]);
 		int cols = Integer.parseInt(sections[1]);
-		
+				
 		tableData = new String[rows+1][cols];
 		
 		int index = 2;
@@ -107,13 +107,6 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 
 		
 	}
-	
-//	public Dimension getPreferredSize () {
-//		
-//		System.err.println("Table's preferred size is "+(table.getTableHeader().getPreferredSize().height+table.getPreferredSize().height)+" from "+getRowCount()+" rows");
-//		
-//		return(new Dimension(600,Math.min(table.getTableHeader().getPreferredSize().height+table.getPreferredSize().height, 600)));
-//	}
 	
 	
 	public void setData (String[][] tableData) {
