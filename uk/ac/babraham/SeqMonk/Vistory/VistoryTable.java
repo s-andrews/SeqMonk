@@ -110,7 +110,7 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 	public String getHTML() {
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("<table>");
+		sb.append("<div class=\"vistorytable\"><table>");
 		
 		for (int i=0;i<tableData.length;i++) {
 			sb.append("<tr>");
@@ -129,7 +129,7 @@ public class VistoryTable extends VistoryBlock implements TableModel {
 			sb.append("</tr>");
 		}
 		
-		sb.append("</table>");
+		sb.append("</table></div>");
 	
 		return sb.toString();
 	}

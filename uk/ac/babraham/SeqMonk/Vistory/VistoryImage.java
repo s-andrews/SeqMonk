@@ -65,7 +65,7 @@ public class VistoryImage extends VistoryBlock implements MouseListener, MouseMo
 	public String getHTML() {
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<p><img src=\"");
+		sb.append("<p class=\"vistoryimage\"><img src=\"");
 		sb.append(ImageToBase64.imageToBase64(image));
 		sb.append("\"></p>");
 		

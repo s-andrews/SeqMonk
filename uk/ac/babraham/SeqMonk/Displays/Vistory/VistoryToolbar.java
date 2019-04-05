@@ -112,6 +112,10 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
 			chooser.setMultiSelectionEnabled(false);
 			chooser.setFileFilter(new HTMLFileFilter());
+			
+			if (Vistory.getInstance().saveFile() != null) {
+				chooser.setSelectedFile(new File(Vistory.getInstance().saveFile().getAbsolutePath().replaceAll("\\.smv", "")+".html"));
+			}
 
 			int result = chooser.showSaveDialog(SeqMonkApplication.getInstance());
 			if (result == JFileChooser.CANCEL_OPTION) return;
