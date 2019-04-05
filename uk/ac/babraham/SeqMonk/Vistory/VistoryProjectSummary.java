@@ -12,26 +12,28 @@ public class VistoryProjectSummary {
 	public static void addProjectSummary () {
 		Vistory v = Vistory.getInstance();
 		
-		v.addBlock(new VistoryTitle("Basic Project Info"));
+		v.addBlock(new VistoryTitle("Project Summary",2));
+
+		v.addBlock(new VistoryTitle("Basic Project Info",3));
 		v.addBlock(new VistoryTable(basicInfo()));
 
 		if (SeqMonkApplication.getInstance().dataCollection().getAllDataSets().length > 0) {
-			v.addBlock(new VistoryTitle("Data Sets"));
+			v.addBlock(new VistoryTitle("Data Sets",3));
 			v.addBlock(new VistoryTable(dataSets()));
 		}
 		
 		if (SeqMonkApplication.getInstance().dataCollection().getAllDataGroups().length > 0) {
-			v.addBlock(new VistoryTitle("Data Groups"));
+			v.addBlock(new VistoryTitle("Data Groups",3));
 			v.addBlock(new VistoryTable(dataGroups()));
 		}
 		
 		if (SeqMonkApplication.getInstance().dataCollection().getAllReplicateSets().length > 0) {
-			v.addBlock(new VistoryTitle("Replicate Sets"));
+			v.addBlock(new VistoryTitle("Replicate Sets",3));
 			v.addBlock(new VistoryTable(replicateSets()));
 		}
 		
 		if (SeqMonkApplication.getInstance().dataCollection().isQuantitated()) {
-			v.addBlock(new VistoryTitle("Quantitation"));
+			v.addBlock(new VistoryTitle("Quantitation",3));
 			v.addBlock(new VistoryTable(probeLists()));
 		}
 		

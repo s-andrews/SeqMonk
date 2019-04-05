@@ -61,28 +61,34 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		saveAsButton.addActionListener(this);
 		add(saveAsButton);
 
-		JButton addTitleButton = new JButton("Add Title",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_title.png")));
-		addTitleButton.setActionCommand("add_title");
+		JButton addTitleButton = new JButton("Title",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_title.png")));
+		addTitleButton.setActionCommand("add_title2");
 		addTitleButton.addActionListener(this);
 		add(addTitleButton);
 
-		JButton addTextButton = new JButton("Add text",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_text.png")));
+		JButton addSubTitleButton = new JButton("Subtitle",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_title.png")));
+		addSubTitleButton.setActionCommand("add_title3");
+		addSubTitleButton.addActionListener(this);
+		add(addSubTitleButton);
+
+		
+		JButton addTextButton = new JButton("Text",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_text.png")));
 		addTextButton.setActionCommand("add_text");
 		addTextButton.addActionListener(this);
 		add(addTextButton);
 
-		JButton clearVistoryButton = new JButton("Clear Vistory",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/clear_vistory.png")));
+		JButton clearVistoryButton = new JButton("Clear",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/clear_vistory.png")));
 		clearVistoryButton.setActionCommand("clear");
 		clearVistoryButton.addActionListener(this);
 		add(clearVistoryButton);
 
-		JButton projectSummaryButton = new JButton("Project Summary",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/project_status.png")));
+		JButton projectSummaryButton = new JButton("Summary",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/project_status.png")));
 		projectSummaryButton.setActionCommand("summary");
 		projectSummaryButton.addActionListener(this);
 		add(projectSummaryButton);
 
 		
-		JButton exportVistoryButton = new JButton("Export to HTML",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/export_to_web.png")));
+		JButton exportVistoryButton = new JButton("Save HTML",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/export_to_web.png")));
 		exportVistoryButton.setActionCommand("export");
 		exportVistoryButton.addActionListener(this);
 		add(exportVistoryButton);
@@ -95,9 +101,13 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		if (command.equals("add_text")) {
 			Vistory.getInstance().addBlock(new VistoryText());
 		}
-		else if (command.equals("add_title")) {
-			Vistory.getInstance().addBlock(new VistoryTitle());
+		else if (command.equals("add_title2")) {
+			Vistory.getInstance().addBlock(new VistoryTitle(2));
 		}
+		else if (command.equals("add_title3")) {
+			Vistory.getInstance().addBlock(new VistoryTitle(3));
+		}
+
 		else if (command.equals("clear")) {
 			
 			if (JOptionPane.showConfirmDialog(dialog, "Are you sure you want to wipe your vistory?","Clear vistory",JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) return;

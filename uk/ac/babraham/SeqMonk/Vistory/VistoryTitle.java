@@ -31,21 +31,24 @@ public class VistoryTitle extends VistoryBlock {
 
 	protected JTextArea text;
 	private int indexPosition = 0;
+	private int level;
 	
 	private boolean allowsRelative = true;
 	
-	public VistoryTitle(Date date, String data) {
+	public VistoryTitle(int level, Date date, String data) {
 		super(date);
 		startSetup();
 		text.setText(data.replaceAll("<br>", "\n"));
 	}
 	
-	public VistoryTitle () {
+	public VistoryTitle (int level) {
+		this.level = level;
 		startSetup();
 	}
 
 	
-	public VistoryTitle (String message) {
+	public VistoryTitle (String message, int level) {
+		this.level = level;
 		// If a message is being supplied then this isn't a user
 		// instigated title so we put it at the end.
 		allowsRelative = false;
@@ -60,8 +63,16 @@ public class VistoryTitle extends VistoryBlock {
 		text.setWrapStyleWord(true);
 		text.addMouseListener(this);
 		Font font = getFont();
+
+		if (level == 2) {
+			font = new Font(font.getName(), font.getStyle(), font.getSize()*2);
+		}
+		else if (level == 3) {
+			font = new Font(font.getName(), font.getStyle(), (int)(font.getSize()*1.5));
+		}
 		
-		font = new Font(font.getName(), font.getStyle(), font.getSize()*2);
+		// Anything below 3 stays at default size.
+		
 		text.setFont(font);
 		
 		add(text,BorderLayout.CENTER);
@@ -81,13 +92,13 @@ public class VistoryTitle extends VistoryBlock {
 	}
 	@Override
 	public String getHTML() {
-		return("<h2 id=\""+indexPosition+"\">"+EscapeHTML.escapeHTML(text.getText())+"</h2>");
+		return("<h"+level+" id=\""+indexPosition+"\">"+EscapeHTML.escapeHTML(text.getText())+"</h2>");
 	
 	}
 
 	@Override
 	public String getType() {
-		return "TITLE";
+		return "TITLE"+level;
 	}
 
 	@Override

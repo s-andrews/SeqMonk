@@ -285,8 +285,17 @@ public class Vistory {
 			if (type.equals("TEXT")) {
 				addBlock(new VistoryText(date,sections[sections.length-1]));
 			}
-			else if (type.equals("TITLE")) {
-				addBlock(new VistoryTitle(date,sections[sections.length-1]));
+			else if (type.startsWith("TITLE")) {
+				int level;
+				
+				if (type.equals("TITLE")) {
+					level = 2;
+				}
+				else {
+					level = Integer.parseInt(type.substring(5));
+				}
+				
+				addBlock(new VistoryTitle(level,date,sections[sections.length-1]));
 			}
 			else if (type.equals("TABLE")) {
 				addBlock(new VistoryTable(date,sections[sections.length-1]));
