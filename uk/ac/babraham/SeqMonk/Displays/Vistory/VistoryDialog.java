@@ -25,6 +25,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -32,6 +34,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
@@ -46,9 +49,8 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	private ScrollablePanel vistoryPanel = null;
 	private JScrollPane scrollPane;
 	
-	
-	
-	
+	private static final BlankPanel BLANK_PANEL = new BlankPanel();
+		
 	private VistoryDialog () {
 		super("Vistory");
 		setIconImage(SeqMonkApplication.getInstance().getIconImage());
@@ -89,14 +91,23 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		
 		for (int b=0;b<blocks.length;b++) {
 			vistoryPanel.add(blocks[b]);
-			vistoryPanel.add(Box.createRigidArea(new Dimension(20,0)));
+			vistoryPanel.add(Box.createRigidArea(new Dimension(50,0)));
 		}
-				
+
+		// Add a blank space so we're not always typing right at the bottom of the window.
+		vistoryPanel.add(BLANK_PANEL);
+
 		vistoryPanel.revalidate();
 		
 		// Scroll to bottom when new block is added.
+		
+		// Have tried numerous variations on this, but none of them scroll right to the
+		// bottom.  Not sure what the heck is going on or how to fix it.
+		
 		if (scrollPane != null && scrollToEnd) {
-			scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+//			scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+						
+			scrollPane.getViewport().scrollRectToVisible(BLANK_PANEL.getBounds());
 		}
 
 	}
@@ -145,7 +156,7 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	@Override
 	public void vistoryCleared() {
 		vistoryPanel.removeAll();
-		vistoryPanel.validate();
+		addCurrentBlocks(true);
 	}
 	
 	
