@@ -14,6 +14,32 @@ if (-e "$RealBin/uk/ac/babraham/SeqMonk/SeqMonkApplication.java") {
 }
 
 
+# We now need to scan the command line for switches which we're going
+# to pass on to the main java program.
+
+my $help;
+my $memory;
+
+my $result = GetOptions('help' => \$help,
+						'memory=i' => \$memory,
+						 );
+						 
+if ($memory) {
+	die "\n[ERROR] The use of the -m parameter is now deprecated.  
+	
+Use the settings under Edit > Preferences > Memory within SeqMonk if you really need to change the default memory allowance\n\n";
+}
+
+# Check the simple stuff first
+
+if ($help) {
+	# Just print the help and exit
+	print while(<DATA>);
+	exit;
+}
+
+
+
 if ($ENV{CLASSPATH}) {
 	$ENV{CLASSPATH} .= ":$RealBin:$RealBin/sam-1.32.jar:$RealBin/Jama-1.0.2.jar:$RealBin/commons-math3-3.5.jar";
 }
@@ -79,15 +105,6 @@ warn `\"$java_exe\" -version`."\n";
 my @java_args;
 
 
-# We now need to scan the command line for switches which we're going
-# to pass on to the main java program.
-
-my $help;
-my $memory;
-
-my $result = GetOptions('help' => \$help,
-						'memory=i' => \$memory,
-						 );
 
 
 # If we have been passed a filename to open then we need to make sure we capture this so we can
@@ -96,22 +113,8 @@ my $file = $ARGV[0];
 $file = "" unless ($file);
 
 
-# Check the simple stuff first
+$memory = determine_optimal_memory();
 
-if ($help) {
-	# Just print the help and exit
-	print while(<DATA>);
-	exit;
-}
-
-if ($memory) {
-	if ($memory < 500) {
-		die "Memory allocation must be at least 500M";
-	}
-}
-else {
-	$memory = determine_optimal_memory();
-}
 
 
 # We now need to correct for the fact that java doesn't honour the
@@ -409,9 +412,6 @@ DESCRIPTION
     
     -h --help       Print this help file and exit
     
-    -m --memory     [Deprecated] Set the starting memory allocation in megabytes. 
-    				This should now be configured under Edit > Preferences > Memory
-    				within the program.
                         
 BUGS
 
