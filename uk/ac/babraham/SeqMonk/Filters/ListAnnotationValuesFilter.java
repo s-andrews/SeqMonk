@@ -21,6 +21,8 @@ package uk.ac.babraham.SeqMonk.Filters;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -48,6 +50,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
  */
 public class ListAnnotationValuesFilter extends ProbeFilter {
 
+	private ProbeList listToUse = null;
 	private String annotationToUse = null;
 	private Float lowerLimit = null;
 	private Float upperLimit = null;
@@ -64,6 +67,7 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 	 */
 	public ListAnnotationValuesFilter (DataCollection collection) throws SeqMonkException {
 		super(collection);
+		listToUse = startingList;
 	}
 
 	/* (non-Javadoc)
@@ -89,8 +93,8 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 		
 		int indexForAnnotation = -1;
 
-		for (int i=0;i<startingList.getValueNames().length;i++) {
-			if (annotationToUse.equals(startingList.getValueNames()[i])) {
+		for (int i=0;i<listToUse.getValueNames().length;i++) {
+			if (annotationToUse.equals(listToUse.getValueNames()[i])) {
 				indexForAnnotation = i;
 				break;
 			}
@@ -109,9 +113,12 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 				progressCancelled();
 				return;
 			}
+			
 
-			float [] values = startingList.getValuesForProbe(probes[p]);
+			float [] values = listToUse.getValuesForProbe(probes[p]);
 
+			// If we're annotating against a different list this probe might not be in
+			// the other list so let's check
 			if (values == null) continue;
 
 			float value = values[indexForAnnotation];
@@ -191,6 +198,9 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 		b.append(" where annotation ");
 
 		b.append(annotationToUse);
+		
+		b.append(" from ");
+		b.append(listToUse.name());
 
 		if (absoluteTransform)
 			b.append(" had an absolute value ");
@@ -253,6 +263,8 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 	 */
 	private class ValuesFilterOptionPanel extends JPanel implements ListSelectionListener, KeyListener {
 
+		private JComboBox<ProbeList> probeListBox;
+		private DefaultListModel<String> dataModel;
 		private JList annotationList;
 		private JTextField lowerLimitField;
 		private JTextField upperLimitField;
@@ -268,15 +280,14 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 			annotationPanel.setLayout(new BorderLayout());
 			annotationPanel.add(new JLabel("Annotation values",JLabel.CENTER),BorderLayout.NORTH);
 
-			DefaultListModel dataModel = new DefaultListModel();
-
 			String [] annotations = startingList.getValueNames();
 
 			for (int i=0;i<annotations.length;i++) {
 				dataModel.addElement(annotations[i]);
 			}
 
-			annotationList = new JList(dataModel);
+			dataModel = new DefaultListModel<String>();
+			annotationList = new JList<String>(dataModel);
 			if (annotations.length==1) {
 				annotationList.setSelectedIndex(0);
 			}
@@ -292,6 +303,33 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 			JPanel choicePanel = new JPanel();
 			choicePanel.setLayout(new BoxLayout(choicePanel,BoxLayout.Y_AXIS));
 
+			
+			JPanel choicePanel0 = new JPanel();
+			probeListBox = new JComboBox<ProbeList>(collection.probeSet().getAllProbeLists());
+			choicePanel0.add(probeListBox);
+			for (int i=0;i<probeListBox.getModel().getSize();i++) {
+				if (probeListBox.getModel().getElementAt(i).equals(listToUse)) {
+					probeListBox.setSelectedIndex(i);
+					break;
+				}
+			}
+			
+			probeListBox.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					listToUse = (ProbeList)probeListBox.getSelectedItem();
+					dataModel.removeAllElements();
+					String [] annots = listToUse.getValueNames();
+					for (int i=0;i<annots.length;i++) {
+						dataModel.addElement(annots[i]);
+					}
+				}
+			});
+			
+			choicePanel.add(choicePanel0);
+
+			
 			JPanel choicePanel1 = new JPanel();
 			absoluteBox = new JComboBox<String>(new String[]{"Value","Absolute value"});
 			choicePanel1.add(absoluteBox);
