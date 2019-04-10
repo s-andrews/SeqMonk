@@ -253,7 +253,7 @@ sub get_prefs_max () {
 	# We need to get the location of the seqmonk prefs file and see if it contains
 	# a memory setting.
 	
-	my $prefs_file = `java uk.ac.babraham.SeqMonk.Utilities.PrefsPrinter`;
+	my $prefs_file = `"$java_exe" uk.ac.babraham.SeqMonk.Utilities.PrefsPrinter`;
 	
 	$prefs_file =~ s/[\r\n]+//g;
 	$prefs_file =~ s/\\/\//g;
