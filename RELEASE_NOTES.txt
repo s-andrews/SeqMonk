@@ -1,3 +1,42 @@
+RELEASE NOTES FOR SeqMonk v1.45.0
+---------------------------------
+SeqMonk v1.45.0 is a major release which introduces some big changes
+in the program.
+
+The two major changes with this release are:
+
+1. The introduction of Vistories, which are a way of documenting
+   your SeqMonk analysis.  This is a document mixing the automatic
+   collection of events in the program with embedding graphics and
+   tables and allowing you to annotate the analysis with titles
+   and text.  Vistories can be saved and loaded and can be exported
+   to HTML files for archiving and distribution.
+   
+2. With the change in licensing of the Oracle JRE we have made the
+   decision to stop relying on a JRE on the host computer and are 
+   instead shipping embedded copies of the AdoptOpenJDK distributions
+   of java along with SeqMonk.  This means that we now have platform
+   specific versions of SeqMonk for Windows, Linux and OSX, and that
+   the install procedure is much simpler than before since java is 
+   no longer required to be separately installed.
+   
+ In addition to these major features we have added a number of other
+ changes in this release.
+ 
+ - The LIMMA filter can now analyse multiple replicate sets in a single
+   operation.
+   
+ - A bug in the Probe Trend plot when using the "scale within each 
+   data store" option was fixed.
+   
+ - We have removed the option to allow the storage of uncompressed 
+   project files.  In future all project files will be compressed.
+   
+ - The list annotation filter can now use annotations coming from
+   lists other than the one you are filtering.
+
+
+
 RELEASE NOTES FOR SeqMonk v1.44.0
 ---------------------------------
 This release makes a major change in the way that probe lists annotations
