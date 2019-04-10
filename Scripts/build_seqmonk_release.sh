@@ -46,7 +46,9 @@ echo "Removing unwanted bits"
 rm -rf SeqMonk/.* SeqMonk/Windows SeqMonk/build.xml
 
 echo "Compressing into tar file"
-tar -czf seqmonk_v${VERSION}_linux64.tar.gz SeqMonk
+# We installed gnu-tar (gtar) from brew to get a version 
+# which doesn't give us warning when we uncompress on linux
+gtar -czf seqmonk_v${VERSION}_linux64.tar.gz SeqMonk
 
 echo "Cleaning up"
 rm -rf SeqMonk
