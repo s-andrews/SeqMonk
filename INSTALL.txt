@@ -10,6 +10,12 @@ explorer without actually unzipping the file - this isn't enough to run seqmonk,
 to right click on the zip file and extract the contents to a conventional folder.  Once
 you've done that just double click seqmonk.exe to run the program.
 
+You may find that the first time you run the app you get a Windows Smart Screen dialog
+saying that the app has been blocked.  You may be able to click on the button which 
+says "Run anyway", or you might have to click on a link to "more information" and then
+click on the button which says "Run anyway".  You only need to do this once and the
+app will be allowed to run after that.
+
 MacOS
 -----
 
@@ -27,60 +33,46 @@ then it will work as normal.
 Linux
 -----
 
-To run SeqMonk on linux you will need to install a java runtime environment on your
-system.  This will already be there in many cases, but you should check.  You should find 
-a program called Terminal or KTerm in your applications menu
+On linux seqmonk is distributed as a tar.gz file which contains a launch script and
+an embedded java runtime.
 
-At the command prompt type 'java -version' and press enter.  You should see something like:
+You will need to extract the program from the tar file using something like:
 
-	java version "1.8.0_60"
-	Java(TM) SE Runtime Environment (build 1.8.0_60-b27)
-	Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)
+tar -xzf seqmonk_v1.45.0_linux64.tar.gz
 
-If you get an error then you don't have java installed.  If the version listed on the first
-line is less than 1.8 then you won't be able to run SeqMonk without updating your JRE.
+..but using whatever the file you downloaded is called.  You can then run the
+program by using the launcher.
 
-To install java on your system use your package manager.
+cd SeqMonk
+./seqmonk
 
-On ubuntu/debian: sudo apt install default-jre
-On centos/fedora: sudo yum install java-1.8.0-openjdk
-
-If you are running Fedora then even if you see a java version on the command line SeqMonk still 
-may not run because the version of java which is installed by default doesn't include any 
-of the graphical  libraries.  You may need to install the full version of openjdk using the command
-listed above.
-
-Actually installing SeqMonk is as simple as unzipping the zip file it comes in into a
-suitable location.  That's it.  Once unzipped it's ready to go.
-
-You can use the seqmonk wrapper program to launch the program.  You will need to
-make this file executable (chmod 755 seqmonk), and then ./seqmonk will launch the program.
-If you link (don't copy) the seqmonk file into /usr/local/bin then you will be able to run
-the program from anywhere on your system.  We have also included a seqmonk.desktop file
-which you can use to register seqmonk with your desktop environment.  If you have put
-the whole SeqMonk folder into /usr/local then you can simply copy the seqmonk.desktop file
-to /usr/local/share/applications.  If you installed it elsewhere you'll need to edit the
-paths in the desktop file (it's pretty obvious what to edit), and then copy the file to
-the applications folder.
+You can link (NOT COPY) the seqmonk launcher into somewhere like /usr/local/bin/ 
+to allow you to run seqmonk from anywhere on your filesystem.
 
 
 Configuring SeqMonk
 --------------------
-Before starting out using SeqMonk you may want to review the configuration options you
-have for the program.  Information about configuration can be found in the help which 
-comes with the program under Help > Contents > Configuration.
+When you first run seqmonk you will be prompted to set up two file locations:
 
-In particular you must set up a cache directory in order to allow the analysis of all
-but the smallest of datasets.  Simply create a folder somewhere on your machine you are
-able to temporarily write large amounts of data, and then use the button of the front
-screen of seqmonk to tell it where to find this folder.
-
+1. A cache file which will store temporary data used when seqmonk is running.  This 
+   folder needs to be on a local disk (rather than a network drive) since lots of 
+   data will be written to and read from it.  It will default to a folder called
+   seqmonk_cache in your home directory, but you can change this.
+   
+2. A genomes folder which will hold a cache of the genome annotations for genomes 
+   you use in your projects.  This folder will retain information between seqmonk
+   sessions, but it can be re-downloaded at any point if lost so it doesn't need 
+   to be backed up.  This will default to a folder called seqmonk_genomes in your
+   home directory, but you can change this if you like.
+   
+ Once these are set up you can run seqmonk.  You can now optionally install and 
+ configure R.
 
 Configuring R
 -------------
 For some of the advanced statistical filters SeqMonk talks to a locally installed instance
 of R to do the statistical analysis.  Configuring R is optional, and SeqMonk will run 
-without it, but the R based filters will not be available.
+without it, but the R based filters and some of the graphical plots will not be available.
 
 To configure SeqMonk and R you first need to install R on your system.  R can be downloaded
 from http://www.r-project.org/ and you should follow the instructions there to load it.
@@ -89,7 +81,7 @@ For OSX and Linux users the installation of some R packages will require that yo
 suitable development tools installed.  For OSX the easiest way to get these is to install the
 OSX R Tools Package which can be found at:
 
-https://github.com/coatless/r-macos-rtools
+https://github.com/rmacoslib/r-macos-rtools
 
 For Linux users you should install the normal build environment on your system.  Many systems
 will have this already, but you can explicitly install them with:
