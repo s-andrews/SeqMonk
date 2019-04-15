@@ -406,7 +406,7 @@ public class ChromosomeDisplay extends JPanel implements DataChangeListener {
 
 	public void dataGroupsRemoved(DataGroup [] g) {}
 
-	public void dataGroupRenamed(DataGroup g) {}
+	public void dataGroupRenamed(DataGroup g, String oldName) {}
 
 	public void dataGroupSamplesChanged(DataGroup g) {}
 
@@ -414,7 +414,7 @@ public class ChromosomeDisplay extends JPanel implements DataChangeListener {
 
 	public void dataSetsRemoved(DataSet [] d) {}
 
-	public void dataSetRenamed(DataSet d) {}
+	public void dataSetRenamed(DataSet d, String oldName) {}
 
 	public void probeSetReplaced(ProbeSet p) {
 		if (p == null) {
@@ -430,7 +430,7 @@ public class ChromosomeDisplay extends JPanel implements DataChangeListener {
 
 	public void replicateSetsRemoved(ReplicateSet [] r) {}
 
-	public void replicateSetRenamed(ReplicateSet r) {}
+	public void replicateSetRenamed(ReplicateSet r, String oldName) {}
 
 	public void replicateSetStoresChanged(ReplicateSet r) {}
 

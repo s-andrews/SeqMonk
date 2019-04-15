@@ -82,9 +82,10 @@ public class DataGroup extends DataStore implements HiCDataStore {
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#setName(java.lang.String)
 	 */
 	public void setName (String name) {
+		String oldName = this.name();
 		super.setName(name);
 		if (collection() != null) {
-			collection().dataGroupRenamed(this);
+			collection().dataGroupRenamed(this,oldName);
 		}
 	}
 

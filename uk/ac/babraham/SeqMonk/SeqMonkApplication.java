@@ -1027,14 +1027,16 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void dataGroupAdded(DataGroup g) {
 		changesWereMade();
-		StringBuffer sb = new StringBuffer();
-		sb.append(g.name());
-		DataSet [] sets = g.dataSets();
-		for (DataSet s : sets) {
-			sb.append("\n");
-			sb.append(s.name());
+		if (g.dataSets().length > 0) {
+			StringBuffer sb = new StringBuffer();
+			sb.append(g.name());
+			DataSet [] sets = g.dataSets();
+			for (DataSet s : sets) {
+				sb.append("\n");
+				sb.append(s.name());
+			}
+			Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Created", sb.toString()));
 		}
-		Vistory.getInstance().addBlock(new VistoryEvent("DataGroup Created", sb.toString()));
 	}
 
 	/* (non-Javadoc)
@@ -1043,14 +1045,29 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public void dataGroupsRemoved(DataGroup [] g) {
 		removeFromDrawnDataStores(g);
 		changesWereMade();
+		if (g.length == 1) {
+			Vistory.getInstance().addBlock(new VistoryEvent("Data Group Removed", g[0].name()));
+		}
+		else {
+			StringBuffer sb = new StringBuffer();
+			sb.append("Removed Groups:");
+			for (DataGroup dg : g) {
+				sb.append("\n");
+				sb.append(dg.name());
+			}
+			Vistory.getInstance().addBlock(new VistoryEvent("Data Groups Removed", sb.toString()));
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataChangeListener#dataGroupRenamed(uk.ac.babraham.SeqMonk.DataTypes.DataGroup)
 	 */
-	public void dataGroupRenamed(DataGroup g) {
+	public void dataGroupRenamed(DataGroup g, String oldName) {
 		chromosomeViewer.repaint();
 		changesWereMade();
+		if (g.dataSets().length > 0) {
+			Vistory.getInstance().addBlock(new VistoryEvent("Data Group Renamed", oldName+" changed to "+g.name()));
+		}
 	}
 
 	/* (non-Javadoc)
@@ -1071,9 +1088,11 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataChangeListener#dataSetRenamed(uk.ac.babraham.SeqMonk.DataTypes.DataSet)
 	 */
-	public void dataSetRenamed(DataSet d) {
+	public void dataSetRenamed(DataSet d, String oldName) {
 		chromosomeViewer.repaint();
 		changesWereMade();
+		Vistory.getInstance().addBlock(new VistoryEvent("Data Set Renamed", oldName+" changed to "+d.name()));
+		
 	}
 
 	/* (non-Javadoc)
@@ -1090,40 +1109,72 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	public void dataSetsRemoved(DataSet [] d) {
 		removeFromDrawnDataStores(d);
 		changesWereMade();
+		if (d.length == 1) {
+			Vistory.getInstance().addBlock(new VistoryEvent("Data Set Removed", d[0].name()));
+		}
+		else {
+			StringBuffer sb = new StringBuffer();
+			sb.append("Removed Sets:");
+			for (DataSet dg : d) {
+				sb.append("\n");
+				sb.append(dg.name());
+			}
+			Vistory.getInstance().addBlock(new VistoryEvent("Data Groups Removed", sb.toString()));
+		}
+
 	}
 
 	public void replicateSetAdded(ReplicateSet r) {
 		changesWereMade();
-		StringBuffer sb = new StringBuffer();
-		sb.append(r.name());
-		DataStore [] stores = r.dataStores();
-		for (DataStore s : stores) {
-			sb.append("\n");
-			sb.append(s.name());
+		if (r.dataStores().length > 0) {
+			StringBuffer sb = new StringBuffer();
+			sb.append(r.name());
+			DataStore [] stores = r.dataStores();
+			for (DataStore s : stores) {
+				sb.append("\n");
+				sb.append(s.name());
+			}
+			Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
 		}
-		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
 	}
 
 	public void replicateSetsRemoved(ReplicateSet [] r) {
 		removeFromDrawnDataStores(r);
 		changesWereMade();
+		if (r.length == 1) {
+			Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Removed", r[0].name()));
+		}
+		else {
+			StringBuffer sb = new StringBuffer();
+			sb.append("Removed Sets:");
+			for (DataStore dg : r) {
+				sb.append("\n");
+				sb.append(dg.name());
+			}
+			Vistory.getInstance().addBlock(new VistoryEvent("Replicate Sets Removed", sb.toString()));
+		}
 	}
 
-	public void replicateSetRenamed(ReplicateSet r) {
+	public void replicateSetRenamed(ReplicateSet r, String oldName) {
 		chromosomeViewer.repaint();
 		changesWereMade();
-		StringBuffer sb = new StringBuffer();
-		sb.append(r.name());
-		DataStore [] stores = r.dataStores();
-		for (DataStore s : stores) {
-			sb.append("\n");
-			sb.append(s.name());
+		if (r.dataStores().length > 0) {
+			Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Renamed", oldName+" changed to "+r.name()));
 		}
-		Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Created", sb.toString()));
 	}
 
 	public void replicateSetStoresChanged(ReplicateSet r) {
 		changesWereMade();
+		if (r.dataStores().length > 0) {
+			StringBuffer sb = new StringBuffer();
+			sb.append(r.name());
+			DataStore [] stores = r.dataStores();
+			for (DataStore s : stores) {
+				sb.append("\n");
+				sb.append(s.name());
+			}
+			Vistory.getInstance().addBlock(new VistoryEvent("Replicate Set Changed", sb.toString()));
+		}
 	}
 
 	/* (non-Javadoc)

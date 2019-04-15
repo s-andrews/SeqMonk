@@ -68,14 +68,14 @@ public interface DataChangeListener {
 	 * 
 	 * @param d the d
 	 */
-	public void dataSetRenamed (DataSet d);
+	public void dataSetRenamed (DataSet d, String oldName);
 	
 	/**
 	 * Data group renamed.
 	 * 
 	 * @param g the g
 	 */
-	public void dataGroupRenamed (DataGroup g);
+	public void dataGroupRenamed (DataGroup g, String oldName);
 	
 	/**
 	 * Data group samples changed.
@@ -95,7 +95,7 @@ public interface DataChangeListener {
 	
 	public void replicateSetsRemoved (ReplicateSet [] r);
 	
-	public void replicateSetRenamed (ReplicateSet r);
+	public void replicateSetRenamed (ReplicateSet r, String oldName);
 	
 	public void replicateSetStoresChanged (ReplicateSet r);
 	

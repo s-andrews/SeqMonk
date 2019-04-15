@@ -452,10 +452,10 @@ public class DataCollection {
 	 * 
 	 * @param g the g
 	 */
-	public void dataGroupRenamed (DataGroup g) {
+	public void dataGroupRenamed (DataGroup g, String oldName) {
 		Enumeration<DataChangeListener> e = listeners.elements();
 		while (e.hasMoreElements()) {
-			e.nextElement().dataGroupRenamed(g);
+			e.nextElement().dataGroupRenamed(g,oldName);
 		}
 	}
 	
@@ -464,10 +464,10 @@ public class DataCollection {
 	 * 
 	 * @param s the s
 	 */
-	public void dataSetRenamed (DataSet s) {
+	public void dataSetRenamed (DataSet s, String oldName) {
 		Enumeration<DataChangeListener> e = listeners.elements();
 		while (e.hasMoreElements()) {
-			e.nextElement().dataSetRenamed(s);
+			e.nextElement().dataSetRenamed(s,oldName);
 		}
 	}
 	
@@ -483,10 +483,10 @@ public class DataCollection {
 		}
 	}
 		
-	public void replicateSetRenamed (ReplicateSet r) {
+	public void replicateSetRenamed (ReplicateSet r, String oldName) {
 		Enumeration<DataChangeListener> e = listeners.elements();
 		while (e.hasMoreElements()) {
-			e.nextElement().replicateSetRenamed(r);
+			e.nextElement().replicateSetRenamed(r,oldName);
 		}
 	}
 	

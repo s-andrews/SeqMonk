@@ -149,9 +149,9 @@ public class HiCSeqMonkToolbar extends SeqMonkToolbar {
 
 	public void dataGroupsRemoved(DataGroup[] g) {}
 
-	public void dataSetRenamed(DataSet d) {}
+	public void dataSetRenamed(DataSet d, String oldName) {}
 
-	public void dataGroupRenamed(DataGroup g) {}
+	public void dataGroupRenamed(DataGroup g, String oldName) {}
 
 	public void dataGroupSamplesChanged(DataGroup g) {}
 
@@ -161,7 +161,7 @@ public class HiCSeqMonkToolbar extends SeqMonkToolbar {
 
 	public void replicateSetsRemoved(ReplicateSet[] r) {}
 
-	public void replicateSetRenamed(ReplicateSet r) {}
+	public void replicateSetRenamed(ReplicateSet r, String oldName) {}
 
 	public void replicateSetStoresChanged(ReplicateSet r) {}
 

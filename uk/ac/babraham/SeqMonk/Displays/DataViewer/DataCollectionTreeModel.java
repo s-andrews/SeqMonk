@@ -282,7 +282,7 @@ public class DataCollectionTreeModel implements TreeModel, DataChangeListener, A
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataChangeListener#dataGroupRenamed(uk.ac.babraham.SeqMonk.DataTypes.DataGroup)
 	 */
-	public void dataGroupRenamed(DataGroup g) {
+	public void dataGroupRenamed(DataGroup g, String oldName) {
 		TreeModelEvent me = new TreeModelEvent(g, getPathToRoot(g));
 		Enumeration<TreeModelListener>e = listeners.elements();
 		while (e.hasMoreElements()) {
@@ -306,7 +306,7 @@ public class DataCollectionTreeModel implements TreeModel, DataChangeListener, A
 	public void dataGroupSamplesChanged(DataGroup g) {
 		// This can affect the name we display if the group changes from being HiC
 		// to non-hiC (or vice versa) so we treat this like a name change.
-		dataGroupRenamed(g);
+		dataGroupRenamed(g,null);
 		
 	}
 
@@ -351,7 +351,7 @@ public class DataCollectionTreeModel implements TreeModel, DataChangeListener, A
 		}			
 	}
 
-	public void replicateSetRenamed(ReplicateSet r) {
+	public void replicateSetRenamed(ReplicateSet r, String oldName) {
 		TreeModelEvent me = new TreeModelEvent(r, getPathToRoot(r));
 		Enumeration<TreeModelListener>e = listeners.elements();
 		while (e.hasMoreElements()) {
@@ -372,7 +372,7 @@ public class DataCollectionTreeModel implements TreeModel, DataChangeListener, A
 	public void replicateSetStoresChanged(ReplicateSet r) {
 		// This can affect the name we display if the group changes from being HiC
 		// to non-hiC (or vice versa) so we treat this like a name change.
-		replicateSetRenamed(r);
+		replicateSetRenamed(r,null);
 	}
 
 	/* (non-Javadoc)
@@ -425,7 +425,7 @@ public class DataCollectionTreeModel implements TreeModel, DataChangeListener, A
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataChangeListener#dataSetRenamed(uk.ac.babraham.SeqMonk.DataTypes.DataSet)
 	 */
-	public void dataSetRenamed(DataSet d) {
+	public void dataSetRenamed(DataSet d, String oldName) {
 		TreeModelEvent me = new TreeModelEvent(d, getPathToRoot(d));
 		Enumeration<TreeModelListener>e = listeners.elements();
 		while (e.hasMoreElements()) {

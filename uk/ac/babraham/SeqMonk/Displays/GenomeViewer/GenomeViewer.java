@@ -186,9 +186,9 @@ public class GenomeViewer extends JPanel implements DataChangeListener, DisplayP
 	}
 
 
-	public void dataGroupRenamed(DataGroup g) {
+	public void dataGroupRenamed(DataGroup g, String oldName) {
 		for (int i=0;i<chromosomeDisplays.length;i++) {
-			chromosomeDisplays[i].dataGroupRenamed(g);
+			chromosomeDisplays[i].dataGroupRenamed(g,oldName);
 		}
 
 	}
@@ -215,9 +215,9 @@ public class GenomeViewer extends JPanel implements DataChangeListener, DisplayP
 	}
 
 
-	public void dataSetRenamed(DataSet d) {
+	public void dataSetRenamed(DataSet d, String oldName) {
 		for (int i=0;i<chromosomeDisplays.length;i++) {
-			chromosomeDisplays[i].dataSetRenamed(d);
+			chromosomeDisplays[i].dataSetRenamed(d, oldName);
 		}
 	}
 
@@ -243,9 +243,9 @@ public class GenomeViewer extends JPanel implements DataChangeListener, DisplayP
 	}
 
 
-	public void replicateSetRenamed(ReplicateSet r) {
+	public void replicateSetRenamed(ReplicateSet r, String oldName) {
 		for (int i=0;i<chromosomeDisplays.length;i++) {
-			chromosomeDisplays[i].replicateSetRenamed(r);
+			chromosomeDisplays[i].replicateSetRenamed(r,oldName);
 		}
 	}
 

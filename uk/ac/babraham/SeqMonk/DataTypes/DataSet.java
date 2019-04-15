@@ -162,9 +162,10 @@ public class DataSet extends DataStore implements Runnable {
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#setName(java.lang.String)
 	 */
 	public void setName (String name) {
+		String oldName = this.name();
 		super.setName(name);
 		if (collection() != null) {
-			collection().dataSetRenamed(this);
+			collection().dataSetRenamed(this,oldName);
 		}
 	}
 

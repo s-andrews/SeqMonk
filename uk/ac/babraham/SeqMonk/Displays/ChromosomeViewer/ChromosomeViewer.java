@@ -571,7 +571,7 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 
 	public void dataGroupsRemoved(DataGroup [] g) {}
 
-	public void dataGroupRenamed(DataGroup g) {
+	public void dataGroupRenamed(DataGroup g, String oldName) {
 		repaint();
 	}
 
@@ -581,7 +581,7 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 
 	public void dataSetsRemoved(DataSet [] d) {}
 
-	public void dataSetRenamed(DataSet d) {
+	public void dataSetRenamed(DataSet d, String oldName) {
 		repaint();
 	}
 
@@ -591,7 +591,7 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 
 	public void replicateSetsRemoved(ReplicateSet [] r) {}
 
-	public void replicateSetRenamed(ReplicateSet r) {
+	public void replicateSetRenamed(ReplicateSet r, String oldName) {
 		repaint();
 	}
 

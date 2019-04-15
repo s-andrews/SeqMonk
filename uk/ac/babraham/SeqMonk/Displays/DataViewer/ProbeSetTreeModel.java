@@ -222,7 +222,7 @@ public class ProbeSetTreeModel implements TreeModel, ProbeSetChangeListener, Dat
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataChangeListener#dataGroupRenamed(uk.ac.babraham.SeqMonk.DataTypes.DataGroup)
 	 */
-	public void dataGroupRenamed(DataGroup g) {}
+	public void dataGroupRenamed(DataGroup g, String oldName) {}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataChangeListener#dataGroupSamplesChanged(uk.ac.babraham.SeqMonk.DataTypes.DataGroup)
@@ -242,13 +242,13 @@ public class ProbeSetTreeModel implements TreeModel, ProbeSetChangeListener, Dat
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataChangeListener#dataSetRenamed(uk.ac.babraham.SeqMonk.DataTypes.DataSet)
 	 */
-	public void dataSetRenamed(DataSet d) {}
+	public void dataSetRenamed(DataSet d, String oldName) {}
 
 	public void replicateSetAdded(ReplicateSet r) {}
 
 	public void replicateSetsRemoved(ReplicateSet [] r) {}
 
-	public void replicateSetRenamed(ReplicateSet r) {}
+	public void replicateSetRenamed(ReplicateSet r, String oldName) {}
 
 	public void replicateSetStoresChanged(ReplicateSet r) {}
 

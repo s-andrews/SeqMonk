@@ -94,9 +94,10 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	 * @see uk.ac.babraham.SeqMonk.DataTypes.DataStore#setName(java.lang.String)
 	 */
 	public void setName (String name) {
+		String oldName = this.name();
 		super.setName(name);
 		if (collection() != null) {
-			collection().replicateSetRenamed(this);
+			collection().replicateSetRenamed(this,oldName);
 		}
 	}
 
