@@ -69,12 +69,18 @@ warn "CLASSPATH is : $ENV{CLASSPATH}\n";
 # in other locales so we need to restore the original value.
 
 my $original_lang = undef;
+my $original_lcall = undef;
 
 if (exists $ENV{LANG}) {
 	$original_lang = $ENV{LANG};
 }	
 
+if (exists $ENV{LC_ALL}) {
+	$original_lcall = $ENV{LC_ALL};
+}
+
 $ENV{LANG}='C';
+$ENV{LC_ALL}='C';
 
 
 # We need to find the java interpreter.  We'll start from the assumption that this
@@ -135,6 +141,14 @@ if (defined $original_lang) {
 else {
 	delete $ENV{LANG};
 }
+
+if (defined $original_lcall) {
+	$ENV{LC_ALL} = $original_lcall;
+}
+else {
+	delete $ENV{LC_ALL};
+}
+
 
 warn "Command is: $java_exe @java_args uk.ac.babraham.SeqMonk.SeqMonkApplication $file\n";
 
