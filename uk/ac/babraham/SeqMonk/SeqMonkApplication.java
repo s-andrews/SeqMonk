@@ -1119,7 +1119,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 				sb.append("\n");
 				sb.append(dg.name());
 			}
-			Vistory.getInstance().addBlock(new VistoryEvent("Data Groups Removed", sb.toString()));
+			Vistory.getInstance().addBlock(new VistoryEvent("Data Sets Removed", sb.toString()));
 		}
 
 	}
