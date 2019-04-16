@@ -282,6 +282,8 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 
 			String [] annotations = startingList.getValueNames();
 
+			dataModel = new DefaultListModel<String>();
+			
 			for (int i=0;i<annotations.length;i++) {
 				dataModel.addElement(annotations[i]);
 			}
