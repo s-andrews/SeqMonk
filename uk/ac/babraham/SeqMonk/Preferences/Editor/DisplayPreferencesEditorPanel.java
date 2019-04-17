@@ -43,6 +43,7 @@ public class DisplayPreferencesEditorPanel extends JPanel implements ActionListe
 	private JCheckBox invertGradientCheckbox;
 	private JComboBox scaleTypeBox;
 	private JComboBox replicateExpansionBox;
+	private JComboBox replicateNAExclusionBox;
 	private JComboBox variabilityRepresentationBox;
 	
 	
@@ -102,6 +103,15 @@ public class DisplayPreferencesEditorPanel extends JPanel implements ActionListe
 		gbc.gridx=1;
 		gbc.gridy++;
 
+		add(new JLabel("Rep Set NA Exclusion"),gbc);
+		gbc.gridx=2;
+		replicateNAExclusionBox = new JComboBox(getNamedValueArray(new String [] {"Excluded","Included"}, new int []{DisplayPreferences.REPLICATE_SET_NA_EXCLUDE,DisplayPreferences.REPLICATE_SET_NA_INCLUDE}));
+		selectDefault(replicateNAExclusionBox, DisplayPreferences.getInstance().getReplicateSetNAExclusion());
+		replicateNAExclusionBox.addActionListener(this);
+		add(replicateNAExclusionBox,gbc);
+		gbc.gridx=1;
+		gbc.gridy++;
+		
 		add(new JLabel("Replicate Set Variability"),gbc);
 		gbc.gridx=2;
 		variabilityRepresentationBox = new JComboBox(getNamedValueArray(new String [] {"None","StDev","SEM","MinMax","Points"}, new int []{DisplayPreferences.VARIATION_NONE,DisplayPreferences.VARIATION_STDEV,DisplayPreferences.VARIATION_SEM,DisplayPreferences.VARIATION_MAX_MIN,DisplayPreferences.VARIATION_POINTS}));
@@ -207,6 +217,7 @@ public class DisplayPreferencesEditorPanel extends JPanel implements ActionListe
 		if (source.equals(scaleTypeBox)) DisplayPreferences.getInstance().setScaleType(((NamedValueObject)scaleTypeBox.getSelectedItem()).value());
 		if (source.equals(invertGradientCheckbox)) DisplayPreferences.getInstance().setInvertGradient(invertGradientCheckbox.isSelected());
 		if (source.equals(replicateExpansionBox)) DisplayPreferences.getInstance().setReplicateSetExpansion(((NamedValueObject)replicateExpansionBox.getSelectedItem()).value());
+		if (source.equals(replicateNAExclusionBox)) DisplayPreferences.getInstance().setReplicateSetNAExclusion(((NamedValueObject)replicateNAExclusionBox.getSelectedItem()).value());
 		if (source.equals(variabilityRepresentationBox)) DisplayPreferences.getInstance().setVariation(((NamedValueObject)variabilityRepresentationBox.getSelectedItem()).value());
 		
 	}

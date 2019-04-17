@@ -123,8 +123,15 @@ public class DisplayPreferences {
 	/** Whether we want to expand replicate sets into their component parts **/
 	public static final int REPLICATE_SETS_EXPANDED = 4001;
 	public static final int REPLICATE_SETS_COMPRESSED = 4002;
-	
+
 	private int currentReplicateSetsExpanded = REPLICATE_SETS_COMPRESSED;
+
+	
+	/** Whether we want to see partial means for probes with some NA values **/
+	public static final int REPLICATE_SET_NA_EXCLUDE = 6001;
+	public static final int REPLICATE_SET_NA_INCLUDE = 6002;
+
+	private int currentRepSetNAExclude = REPLICATE_SET_NA_EXCLUDE;
 	
 	/** How we want to show variation in replicate sets **/
 	public static final int VARIATION_NONE = 5001;
@@ -162,6 +169,7 @@ public class DisplayPreferences {
 		currentReadDensity  = READ_DENSITY_LOW;
 		currentReadDisplay = READ_DISPLAY_COMBINED;
 		currentScaleType = SCALE_TYPE_POSITIVE;
+		currentRepSetNAExclude = REPLICATE_SET_NA_EXCLUDE;
 	}
 	
 	/* We allow views to listen for changes */
@@ -382,6 +390,21 @@ public class DisplayPreferences {
 		}
 	}
 
+	
+	/* The replicate set NA exclusion */
+	public int getReplicateSetNAExclusion () {
+		return currentRepSetNAExclude;
+	}
+	
+	public void setReplicateSetNAExclusion (int exclusion) {
+		if (equalsAny(new int [] {REPLICATE_SET_NA_EXCLUDE,REPLICATE_SET_NA_INCLUDE}, exclusion)) {
+			currentRepSetNAExclude = exclusion;
+			optionsChanged();
+		}
+		else {
+			throw new IllegalArgumentException("Value "+exclusion+" is not a valid replicate set NA exclusion");
+		}
+	}
 	
 	/* The replicate set expansion */
 	public int getReplicateSetExpansion () {

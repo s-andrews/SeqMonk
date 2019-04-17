@@ -25,6 +25,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.HiCHitCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
+import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 
 
 /**
@@ -310,6 +311,11 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 	 */
 	public float getValueForProbe(Probe p) throws SeqMonkException {
 		
+		if (DisplayPreferences.getInstance().getReplicateSetNAExclusion() == DisplayPreferences.REPLICATE_SET_NA_INCLUDE) {
+			return(getValueForProbeExcludingUnmeasured(p));
+		}
+
+		
 		if (! hasValueForProbe(p)) {
 			throw new SeqMonkException("No quantitation for probe "+p+" in "+name());			
 		}
@@ -317,6 +323,7 @@ public class ReplicateSet extends DataStore implements HiCDataStore {
 		if (dataStores.length == 0) {
 			return 0;
 		}
+		
 
 		float total = 0;
 		for (int i=0;i<dataStores.length;i++) {
