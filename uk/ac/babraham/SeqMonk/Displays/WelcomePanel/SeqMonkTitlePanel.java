@@ -91,7 +91,7 @@ public class SeqMonkTitlePanel extends JPanel {
 		c.add(copyright,constraints);
 		constraints.gridy++;
 
-		JLabel copyright2 = new JLabel("Picard BAM/SAM reader \u00a9The Broad Institute, 2009", JLabel.CENTER);
+		JLabel copyright2 = new JLabel("HTSJDK BAM/SAM reader \u00a9The Broad Institute, 2009-19", JLabel.CENTER);
 		copyright2.setFont(new Font("Dialog",Font.PLAIN,10));
 		c.add(copyright2,constraints);
 
