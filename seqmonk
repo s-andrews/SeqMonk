@@ -41,10 +41,10 @@ if ($help) {
 
 
 if ($ENV{CLASSPATH}) {
-	$ENV{CLASSPATH} .= ":$RealBin:$RealBin/sam-1.32.jar:$RealBin/Jama-1.0.2.jar:$RealBin/commons-math3-3.5.jar";
+	$ENV{CLASSPATH} .= ":$RealBin:$RealBin/htsjdk.jar:$RealBin/Jama-1.0.2.jar:$RealBin/commons-math3-3.5.jar";
 }
 else {
-	$ENV{CLASSPATH} = "$RealBin:$RealBin/sam-1.32.jar:$RealBin/Jama-1.0.2.jar:$RealBin/commons-math3-3.5.jar";
+	$ENV{CLASSPATH} = "$RealBin:$RealBin/htsjdk.jar:$RealBin/Jama-1.0.2.jar:$RealBin/commons-math3-3.5.jar";
 }
 
 # If we're on OSX and launched via an app bundle we get a -psn argument passed, which we don't
