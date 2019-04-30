@@ -20,14 +20,17 @@
 package uk.ac.babraham.SeqMonk.DataParsers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMRecord;
-
+import htsjdk.samtools.BAMFileReader;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
 import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
@@ -70,9 +73,7 @@ public class BAMFileParser extends DataParser {
 		// This just reads the first few thousand lines from the first file and
 		// tries to set the preferences options to the correct defaults.
 		
-		SAMFileReader.setDefaultValidationStringency(SAMFileReader.ValidationStringency.SILENT);
-
-		SAMFileReader inputSam = new SAMFileReader(file); 
+		SamReader inputSam = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT).open(file); 
 
 		int lineCount = 0;
 		// Now process the file
@@ -101,7 +102,12 @@ public class BAMFileParser extends DataParser {
 			
 		}
 		
-		inputSam.close();
+		try {
+			inputSam.close();
+		} 
+		catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
 		
 		prefs.setPairedEnd(pairedEnd);
 		prefs.setSpliced(spliced);
@@ -130,9 +136,7 @@ public class BAMFileParser extends DataParser {
 		try {
 			for (int f=0;f<samFiles.length;f++) {
 
-				SAMFileReader.setDefaultValidationStringency(SAMFileReader.ValidationStringency.SILENT);
-
-				SAMFileReader inputSam = new SAMFileReader(samFiles[f]); 
+				SamReader inputSam = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT).open(samFiles[f]); 
 
 				if (prefs.isHiC()) {
 					newData[f] = new PairedDataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
