@@ -62,7 +62,7 @@ echo "Copying OSX version"
 cp -r ~/git/SeqMonk/bin/* ./SeqMonk.app/Contents/MacOS/
 
 echo "Copying osx jre"
-cp -r jre-osx ./SeqMonk.app/Contents/MacOS/
+cp -r jre-osx ./SeqMonk.app/Contents/MacOS/jre
 
 echo "Removing unwanted bits"
 # We get a warning from trying to delete . and .. but that's OK
