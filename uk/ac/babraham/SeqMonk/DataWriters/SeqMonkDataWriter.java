@@ -58,7 +58,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 	
 	// THIS VALUE IS IMPORTANT!!!
 	/** The Constant DATA_VERSION. */
-	public static final int DATA_VERSION = 19;
+	public static final int DATA_VERSION = 20;
 	
 	// If you make ANY changes to the format written by this class
 	// you MUST increment this value to stop older parsers from

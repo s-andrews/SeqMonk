@@ -448,7 +448,7 @@ public class DisplayPreferences {
 		 * data parser and update the version there too.
 		 */
 		
-		p.println("Display Preferences\t12"); //Make sure this number at the end equates to the number of configuration lines to be written
+		p.println("Display Preferences\t13"); //Make sure this number at the end equates to the number of configuration lines to be written
 		
 		p.println("DataZoom\t"+getMaxDataValue());
 		
@@ -457,6 +457,8 @@ public class DisplayPreferences {
 		p.println("DisplayMode\t"+getDisplayMode());
 
 		p.println("ReplicateExpansion\t"+getReplicateSetExpansion());
+		
+		p.println("ReplicateSetNAExclusion\t"+getReplicateSetNAExclusion());
 
 		p.println("Variation\t"+getVariation());
 

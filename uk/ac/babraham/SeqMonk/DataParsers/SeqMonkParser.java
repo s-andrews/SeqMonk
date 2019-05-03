@@ -70,7 +70,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	 * If the file to be loaded has a version higher than this then
 	 * the parser won't attempt to load it. */
 	
-	public static final int MAX_DATA_VERSION = 19;
+	public static final int MAX_DATA_VERSION = 20;
 
 	private SeqMonkApplication application;
 	private FileInputStream fis;
@@ -1396,6 +1396,9 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 			}
 			else if (prefs[0].equals("ReplicateExpansion")) {
 				DisplayPreferences.getInstance().setReplicateSetExpansion(Integer.parseInt(prefs[1]));
+			}
+			else if (prefs[0].equals("ReplicateSetNAExclusion")) {
+				DisplayPreferences.getInstance().setReplicateSetNAExclusion(Integer.parseInt(prefs[1]));
 			}
 			else if (prefs[0].equals("Variation")) {
 				DisplayPreferences.getInstance().setVariation(Integer.parseInt(prefs[1]));

@@ -1,3 +1,35 @@
+RELEASE NOTES FOR SeqMonk v1.45.1
+---------------------------------
+This is a bugfix release which resolves some issues in the previous
+release.  It also adds some minor additional functionality.
+
+Changes in this release are:
+
+1. We fixed a bug in the packaging script for OSX which meant that
+   SeqMonk was not using the bundled JRE and was reliant on the 
+   presence of a Java installation on the host machine.  This also
+   caused a failure to launch on machines running a version of 
+   Java older than 1.8.
+   
+2. We updated our BAM parser from the old samtools java library to
+   the newer htslib parser.  This should resolve crashes caused when
+   the mapping command line recorded in the BAM header contained a
+   colon.  Using the newer parser should also be somewhat quicker.
+   
+3. We fixed some limitations in Vistories.  The table of contents 
+   in the HTML report won't now truncate on smaller screens.  We
+   capture some additional events which we were missing before.
+   Additional fixes will follow in future releases.
+
+4. We fixed a crash in the List Annotation Value filter.
+
+5. We added a new display option to change how replicate sets treat
+   probes which have quantitations for some (but not all) of their
+   members.  Previously we had returned an NA value for the mean of
+   the probe if any member contained an NA.  You can now choose to
+   return the mean of however many members contain valid values to
+   give more complete coverage of your data.
+
 RELEASE NOTES FOR SeqMonk v1.45.0
 ---------------------------------
 SeqMonk v1.45.0 is a major release which introduces some big changes
