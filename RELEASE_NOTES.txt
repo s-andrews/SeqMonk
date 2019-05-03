@@ -29,6 +29,8 @@ Changes in this release are:
    the probe if any member contained an NA.  You can now choose to
    return the mean of however many members contain valid values to
    give more complete coverage of your data.
+   
+   
 
 RELEASE NOTES FOR SeqMonk v1.45.0
 ---------------------------------
