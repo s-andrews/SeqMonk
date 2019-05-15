@@ -134,6 +134,7 @@ import uk.ac.babraham.SeqMonk.Filters.CorrelationFilter;
 import uk.ac.babraham.SeqMonk.Filters.DeduplicationFilter;
 import uk.ac.babraham.SeqMonk.Filters.DifferencesFilter;
 import uk.ac.babraham.SeqMonk.Filters.DistributionPositionFilter;
+import uk.ac.babraham.SeqMonk.Filters.DuplicateListFilter;
 import uk.ac.babraham.SeqMonk.Filters.FeatureFilter;
 import uk.ac.babraham.SeqMonk.Filters.FeatureNameFilter;
 import uk.ac.babraham.SeqMonk.Filters.IntensityDifferenceFilter;
@@ -1203,6 +1204,13 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		filterRandom.addActionListener(this);
 		filterRandom.setMnemonic(KeyEvent.VK_R);
 		filterMenu.add(filterRandom);
+		
+		JMenuItem filterDuplicateList = new JMenuItem("Duplicate Existing List");
+		filterDuplicateList.setActionCommand("filter_duplicate_list");
+		filterDuplicateList.addActionListener(this);
+		filterDuplicateList.setMnemonic(KeyEvent.VK_D);
+		filterMenu.add(filterDuplicateList);
+		
 
 		JMenu combineListsMenu = new JMenu("Combine existing lists");
 
@@ -2547,6 +2555,10 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				else if (action.equals("filter_random")) {
 					new FilterOptionsDialog(application.dataCollection(),new RandomFilter(application.dataCollection()));
 				}
+				else if (action.equals("filter_duplicate_list")) {
+					new FilterOptionsDialog(application.dataCollection(),new DuplicateListFilter(application.dataCollection()));
+				}
+
 				else if (action.equals("filter_combine")) {
 					new FilterOptionsDialog(application.dataCollection(),new CombineFilter(application.dataCollection()));
 				}
