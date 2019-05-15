@@ -141,7 +141,7 @@ public class VistoryImage extends VistoryBlock implements MouseListener, MouseMo
 
 	@Override
 	public boolean allowsRelativePosition() {
-		return false;
+		return true;
 	}
 
 
