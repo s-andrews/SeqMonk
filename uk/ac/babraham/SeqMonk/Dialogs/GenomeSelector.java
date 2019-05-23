@@ -259,8 +259,12 @@ public class GenomeSelector extends JDialog {
 
 				Vector<File> baseLocations = new Vector<File>();
 
-				// We must have at least one main assembly
-				baseLocations.add(((AssemblyNode)genomesTree.getSelectionPath().getLastPathComponent()).file());
+				// We can have a main assembly (but we don't have to)
+				boolean foundAGenome = false;
+				if (genomesTree.getSelectionPath() != null) {
+					foundAGenome = true;
+					baseLocations.add(((AssemblyNode)genomesTree.getSelectionPath().getLastPathComponent()).file());
+				}
 
 				// We may have one or more control genomes
 
@@ -268,12 +272,17 @@ public class GenomeSelector extends JDialog {
 					TreePath [] controlPaths = controlsTree.getSelectionPaths();
 
 					if (controlPaths != null) {
+						foundAGenome = true;
 						for (int c=0;c<controlPaths.length;c++) {
 							if (controlPaths[c].getLastPathComponent() instanceof AssemblyNode) {
 								baseLocations.add(((AssemblyNode)controlPaths[c].getLastPathComponent()).file());
 							}
 						}
 					}
+				}
+				
+				if (!foundAGenome) {
+					throw(new IllegalStateException("Couldn't find any selected genomes"));
 				}
 
 				application.loadGenome(baseLocations.toArray(new File[0]));
@@ -320,6 +329,9 @@ public class GenomeSelector extends JDialog {
 		 */
 		public void valueChanged(TreeSelectionEvent tse) {
 			if (genomesTree.getSelectionPath() != null && genomesTree.getSelectionPath().getLastPathComponent() instanceof AssemblyNode) {
+				okButton.setEnabled(true);
+			}
+			if (controlsTree != null && controlsTree.getSelectionPath() != null && controlsTree.getSelectionPath().getLastPathComponent() instanceof AssemblyNode) {
 				okButton.setEnabled(true);
 			}
 			else {
