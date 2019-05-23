@@ -173,7 +173,7 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 		
 		
 		
-		if (!(genome.species().equals(sections[1]) && genome.assembly().equals(sections[2]))) {
+		if (!(genome.species().equals(sections[1]) && genome.assembly().replaceAll("_v\\d+$", "").equals(sections[2].replaceAll("_v\\d+$", "")))) {
 			
 			// We give them a chance to redeem themselves if this is a multi-genome and the
 			// incoming file is one of the sub-genomes
@@ -183,7 +183,7 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 				
 				for (int s=0;s<subGenomes.length;s++) {
 										
-					if (subGenomes[s].species().equals(sections[1]) && subGenomes[s].assembly().equals(sections[2])) {
+					if (subGenomes[s].species().equals(sections[1]) && subGenomes[s].assembly().replaceAll("_v\\d+$", "").equals(sections[2].replaceAll("_v\\d+$", ""))) {
 						// That's close enough
 						return;
 					}
