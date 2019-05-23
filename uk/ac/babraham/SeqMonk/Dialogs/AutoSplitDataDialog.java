@@ -229,12 +229,14 @@ public class AutoSplitDataDialog extends JDialog implements ActionListener {
 				Vector<DataSet> sets = new Vector<DataSet>();
 				
 				DATASET: for (int i=0;i<dataSets.length;i++) {
+					if (setsFound[i]) continue;
 					for (int p=0;p<patterns.length;p++) {
 						if (!dataSets[i].name().contains(patterns[p])) {
 							continue DATASET;
 						}
 					}	
 					sets.add(dataSets[i]);
+					setsFound[i] = true;
 				}
 
 				counts[n] = sets.size();
