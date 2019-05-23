@@ -23,6 +23,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,6 +46,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import com.sun.org.apache.xpath.internal.compiler.PsuedoNames;
+
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
@@ -52,7 +56,7 @@ import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.FastaFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.GFFFileFilter;
 
-public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
+public class ManualGenomeBuilderPanel extends JPanel implements ActionListener, KeyListener {
 
 	private JTextField speciesField;
 	private JTextField assemblyField;
@@ -109,6 +113,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 		pseudoPanel.add(new JLabel(" Create "));
 		pseudoNumberField = new JTextField("25",4);
 		pseudoNumberField.addKeyListener(new NumberKeyListener(false, false, 50));
+		pseudoNumberField.addKeyListener(this);
 		pseudoPanel.add(pseudoNumberField);
 		pseudoPanel.add(new JLabel(" pseudo-chromosomes"));
 
@@ -537,5 +542,21 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 		}
 
 	}
+
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {}
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		if (pseudoBox.isSelected()) {
+			int pseudoNumber = 25;
+			if (pseudoNumberField.getText().length() > 0) {
+				pseudoNumber = Integer.parseInt(pseudoNumberField.getText());
+			}
+			manualGenome.addPseudoGenome(pseudoNumber);
+		}
+	}
+	@Override
+	public void keyTyped(KeyEvent arg0) {}
 
 }
