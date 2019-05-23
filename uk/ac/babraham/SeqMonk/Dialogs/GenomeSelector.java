@@ -331,7 +331,7 @@ public class GenomeSelector extends JDialog {
 			if (genomesTree.getSelectionPath() != null && genomesTree.getSelectionPath().getLastPathComponent() instanceof AssemblyNode) {
 				okButton.setEnabled(true);
 			}
-			if (controlsTree != null && controlsTree.getSelectionPath() != null && controlsTree.getSelectionPath().getLastPathComponent() instanceof AssemblyNode) {
+			else if (controlsTree != null && controlsTree.getSelectionPath() != null && controlsTree.getSelectionPath().getLastPathComponent() instanceof AssemblyNode) {
 				okButton.setEnabled(true);
 			}
 			else {
