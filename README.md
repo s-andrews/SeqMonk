@@ -16,29 +16,25 @@ This project page contains the source code for the application and is useful onl
 
 # Windows
 
-1. Install the 64-bit [Java Runtime Environment](https://java.com/en/download/windows-64bit.jsp)
-2. Install [R](https://cran.r-project.org/bin/windows/base/)
-3. Download the latest SeqMonk zip file from the [project website](http://www.bioinformatics.babraham.ac.uk/projects/download.html#seqmonk)
-4. Unzip the contents somewhere on your machine
-5. Double click on seqmonk.exe
+1. Install [R](https://cran.r-project.org/bin/windows/base/)
+2. Download the latest SeqMonk windows zip file from the [project website](http://www.bioinformatics.babraham.ac.uk/projects/download.html#seqmonk)
+3. Unzip the contents somewhere on your machine
+4. Double click on seqmonk.exe
 
 # OSX
 
-1. Install the 64-bit [Java Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html). Note that the Java Runtime Environment is **NOT** enough.  It has to be the development kit.
-2. Install [R](https://cran.r-project.org/bin/macosx/)
-3. Install the [R OSX toolchain](https://github.com/coatless/r-macos-rtools) to allow you to compile all of the packages you will need
-4. Download the latest SeqMonk DMG file from the [project website](http://www.bioinformatics.babraham.ac.uk/projects/download.html#seqmonk)
-5. Open the DMG file and drag the icon to somewhere on your computer (normally the applications folder).
-6. Double click the icon.  If you get a warning about an unsigned application then right-click on the icon and select "Open". You should then be able to allow the application to run.  This warning will only appear once per-machine.
+1. Install [R](https://cran.r-project.org/bin/macosx/)
+2. Install the [R OSX toolchain](https://github.com/rmacoslib/r-macos-rtools) to allow you to compile all of the packages you will need
+3. Download the latest SeqMonk DMG file from the [project website](http://www.bioinformatics.babraham.ac.uk/projects/download.html#seqmonk)
+4. Open the DMG file and drag the icon to somewhere on your computer (normally the applications folder).
+5. Double click the icon.  If you get a warning about an unsigned application then right-click on the icon and select "Open". You should then be able to allow the application to run.  This warning will only appear once per-machine.
 
 # Linux
 
-1. Install the 64-bit version of openJRE. (Ubuntu: sudo apt install default-jre    Centos: sudo yum install java-1.8.0-openjdk)
-2. Install [R](https://cran.r-project.org/bin/linux/)
-3. Install a development environment (Ubuntu: sudo apt install build-essential  Centos: sudo yum groupinstall "Development tools")
-4. Install the xml2-dev library (Ubuntu: sudo apt install libxml2-dev  Centos: sudo yum install libxml2-devel)
-5. Download the latest SeqMonk zip file from the [project website](http://www.bioinformatics.babraham.ac.uk/projects/download.html#seqmonk)
-6. Unzip the contents somewhere on your machine
-7. Use cd to move to the directory you just created
-8. Make the launcher executable with chmod 755 seqmonk
-9. Run ./seqmonk
+1. Install [R](https://cran.r-project.org/bin/linux/)
+2. Install a development environment (Ubuntu: sudo apt install build-essential  Centos: sudo yum groupinstall "Development tools")
+3. Install the xml2-dev library (Ubuntu: sudo apt install libxml2-dev  Centos: sudo yum install libxml2-devel)
+4. Download the latest SeqMonk linux tar.gz file from the [project website](http://www.bioinformatics.babraham.ac.uk/projects/download.html#seqmonk)
+5. Untar the contents somewhere on your machine
+6. Use cd to move to the directory you just created
+7. Run ./seqmonk
