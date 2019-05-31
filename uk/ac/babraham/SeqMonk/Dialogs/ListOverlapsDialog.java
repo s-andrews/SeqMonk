@@ -20,8 +20,18 @@
 package uk.ac.babraham.SeqMonk.Dialogs;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -31,8 +41,12 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryTable;
 
-public class ListOverlapsDialog extends JDialog implements Runnable {
+public class ListOverlapsDialog extends JDialog implements Runnable, ActionListener {
 	
 
 	private int [][] overlapCounts;
@@ -50,6 +64,26 @@ public class ListOverlapsDialog extends JDialog implements Runnable {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		getContentPane().setLayout(new BorderLayout());
+		
+		JPanel buttonPanel = new JPanel();
+		JButton cancelButton = new JButton("Close");
+		cancelButton.setActionCommand("close");
+		cancelButton.addActionListener(this);
+		buttonPanel.add(cancelButton);
+		
+		JButton saveButton = new JButton("Save to File");
+		saveButton.setActionCommand("save");
+		saveButton.addActionListener(this);
+		buttonPanel.add(saveButton);
+
+		JButton saveVistoryButton = new JButton("Save to Vistory");
+		saveVistoryButton.setActionCommand("save_vistory");
+		saveVistoryButton.addActionListener(this);
+		buttonPanel.add(saveVistoryButton);
+
+		add(buttonPanel,BorderLayout.SOUTH);
+		
+		
 		
 		this.progressDialog = new ProgressDialog("Calculating list overlaps");
 		Thread t = new Thread(this);
@@ -167,4 +201,80 @@ public class ListOverlapsDialog extends JDialog implements Runnable {
 		}
 	}
 	
+	
+	public void actionPerformed(ActionEvent ae) {
+		
+		if (ae.getActionCommand().equals("close")){
+			setVisible(false);
+			dispose();
+		}
+		else if (ae.getActionCommand().equals("save_vistory")){
+			Vistory.getInstance().addBlock(new VistoryTable(table.getModel()));
+		}
+		else if (ae.getActionCommand().equals("save")){
+			
+			
+			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+			chooser.setMultiSelectionEnabled(false);
+						
+			TxtFileFilter txtff = new TxtFileFilter();
+			chooser.addChoosableFileFilter(txtff);
+			chooser.setFileFilter(txtff);
+			
+			int result = chooser.showSaveDialog(this);
+			if (result == JFileChooser.CANCEL_OPTION) return;
+
+			File file = chooser.getSelectedFile();
+			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+			
+			if (file.isDirectory()) return;
+
+			file = new File(file.getPath()+".txt");
+			
+			// Check if we're stepping on anyone's toes...
+			if (file.exists()) {
+				int answer = JOptionPane.showOptionDialog(this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+
+				if (answer > 0) {
+					return;
+				}
+			}
+
+			try {
+				saveTextReport(file);
+			}
+
+			catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		
+		
+	}
+
+	private void saveTextReport (File file) throws IOException {
+		
+		PrintWriter p = new PrintWriter(new FileWriter(file));
+		
+		TableModel model = table.getModel();
+		
+		int rowCount = model.getRowCount();
+		int colCount = model.getColumnCount();
+			
+		StringBuffer b;
+		
+		for (int r=0;r<rowCount;r++) {
+			b = new StringBuffer();
+			for (int c=0;c<colCount;c++) {
+				b.append(model.getValueAt(r,c));
+				if (c+1 != colCount) {
+					b.append("\t");
+				}
+			}
+			p.println(b);
+			
+		}
+		p.close();
+	}
+
 }

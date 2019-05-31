@@ -532,12 +532,6 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 
 		plotsMenu.add(plotListOverlapMenu);
 
-		/*JMenuItem plotListOverlapMatrix = new JMenuItem("Probe List Overlap Matrix...");
-		plotListOverlapMatrix.setActionCommand("multiprobe_plot_list_overlap");
-		plotListOverlapMatrix.setMnemonic(KeyEvent.VK_O);
-		plotListOverlapMatrix.addActionListener(this);
-		plotsMenu.add(plotListOverlapMatrix);
-		 */
 		JMenuItem viewHierarchicalClusterMenu = new JMenu("Hierarchical Clusters");
 		viewHierarchicalClusterMenu.setMnemonic(KeyEvent.VK_C);
 
