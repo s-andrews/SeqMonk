@@ -26,7 +26,6 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
-import htsjdk.samtools.BAMFileReader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
@@ -181,7 +180,7 @@ public class BAMFileParser extends DataParser {
 						// There was no match
 						continue;
 					}
-					if (primaryAlignmentsOnly && samRecord.getNotPrimaryAlignmentFlag()) {
+					if (primaryAlignmentsOnly && samRecord.isSecondaryAlignment()) {
 						// This is a secondary alignment and we're only importing primary
 						// alignments
 						continue;
