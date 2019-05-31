@@ -161,7 +161,7 @@ public class RandomFilter extends ProbeFilter {
 	 */
 	@Override
 	public String name() {
-		return "Position Filter";
+		return "Random Probe Filter";
 	}
 
 	/* (non-Javadoc)
