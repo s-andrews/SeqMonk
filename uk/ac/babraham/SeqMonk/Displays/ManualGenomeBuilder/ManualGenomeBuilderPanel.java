@@ -46,8 +46,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import com.sun.org.apache.xpath.internal.compiler.PsuedoNames;
-
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
