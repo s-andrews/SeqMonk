@@ -163,10 +163,15 @@ public class FilterOptionsDialog extends JDialog implements OptionsListener, Pro
 			
 			break;
 		}
-		newList.setName(groupName);		
+		newList.setName(groupName);
+		
+		// We want to add the name of the filter to the description which the filter
+		// actually added
+		newList.setDescription("["+filter.name()+"] "+newList.description());
 		
 		Vistory.getInstance().addBlock(new VistoryEvent("New Probe List: "+newList.name()+" ("+newList.getAllProbes().length+" probes)", newList.description()));
-		
+
+				
 	}
 
 
