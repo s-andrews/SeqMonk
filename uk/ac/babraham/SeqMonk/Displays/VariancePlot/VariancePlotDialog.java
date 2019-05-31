@@ -42,6 +42,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.OrderedListSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 
 /**
  * The Class VariancePlotDialog is a container for the options
@@ -248,7 +250,11 @@ public class VariancePlotDialog extends JDialog implements ActionListener, Chang
 					
 					break;
 				}
-				list.setName(groupName);
+				list.setName(groupName);				
+				list.setDescription("[Variance Plot Manual Selection] "+list.description());
+				
+				Vistory.getInstance().addBlock(new VistoryEvent("New Probe List: "+list.name()+" ("+list.getAllProbes().length+" probes)", list.description()));
+
 				
 			}
 			
