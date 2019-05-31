@@ -248,17 +248,20 @@ public class DistributionPositionFilter extends ProbeFilter {
 		if (lowerLimit != null && upperLimit != null) {
 			b.append("between ");
 			b.append(lowerLimit);
-			b.append(" and ");
+			b.append("% and ");
 			b.append(upperLimit);
+			b.append("%");
 		}
 		
 		else if (lowerLimit != null) {
 			b.append("above ");
 			b.append(lowerLimit);
+			b.append("%");
 		}
 		else if (upperLimit != null) {
 			b.append("below ");
 			b.append(upperLimit);
+			b.append("%");
 		}
 		
 		b.append(". Quantitation was ");
