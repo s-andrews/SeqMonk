@@ -58,6 +58,8 @@ public class GenomeViewer extends JPanel implements DataChangeListener, DisplayP
 	/** The application. */
 	private SeqMonkApplication application;
 	
+	private JPanel chromosomePanel;
+	
 	/**
 	 * Instantiates a new genome viewer.
 	 * 
@@ -75,7 +77,7 @@ public class GenomeViewer extends JPanel implements DataChangeListener, DisplayP
 		add(title,BorderLayout.NORTH);
 		
 		
-		JPanel chromosomePanel = new JPanel();
+		chromosomePanel = new JPanel();
 		chromosomePanel.setBackground(Color.WHITE);
 		chromosomePanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -113,6 +115,10 @@ public class GenomeViewer extends JPanel implements DataChangeListener, DisplayP
 		});
 		
 		add(new JScrollPane(chromosomePanel),BorderLayout.CENTER);				
+	}
+	
+	public JPanel chromosomePanel () {
+		return chromosomePanel;
 	}
 	
 	

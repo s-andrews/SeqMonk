@@ -2387,7 +2387,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 
 		}
 		else if (action.equals("file_export_genome_view")) {
-			ImageSaver.saveImage(application.genomeViewer());
+			ImageSaver.saveImage(application.genomeViewer().chromosomePanel());
 		}
 		else if (action.equals("file_export_bedgraph")) {
 
