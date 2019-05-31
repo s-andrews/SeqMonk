@@ -392,6 +392,8 @@ public class VariancePlotPanel extends JPanel implements Runnable, MouseMotionLi
 
 		// ProbeList
 		g.drawString(probeList.name(), getWidth()-10-metrics.stringWidth(probeList.name()), 15);
+		// Replicate Set
+		g.drawString(repSet.name(), getWidth()-10-metrics.stringWidth(repSet.name()), 15+g.getFontMetrics().getHeight());
 
 
 		g.setColor(Color.BLUE);
