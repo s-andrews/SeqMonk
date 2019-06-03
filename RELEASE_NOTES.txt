@@ -1,3 +1,43 @@
+RELEASE NOTES FOR SeqMonk v1.45.2
+---------------------------------
+This is a bugfix and stability release which tidies up a number of
+areas.  The main changes are:
+
+1. 	Update vistory filter events to have the number of probes and
+	the name of the filter attached to them.
+
+2.	Fix a versioning bug when cross-importing annotation from another
+	project.  Also allow cross importing between different annotation
+	versions of the same genome assembly.
+	
+3.	Added a duplicate list filter which makes it easier to create
+	additional structure in a set of filtered probes.
+
+4.	Allow images to be moved up and down in vistories
+
+5.	Make the difference quantitation introduce NA values for ratio
+	measures when the total number of observations is very small.
+	
+6.	Fix an updating bug when changing the number of pseudo chromosomes
+	when building a custom genome.
+
+7. 	When auto-creating Data Groups only add each data set to one group.
+
+8.	Allow the creation of projects using just a control genome.
+
+9.	Add a save option to the probe list overlap matrix.
+
+10.	Improve the description of the percentile value filter.
+
+11.	Generate vistory events for probe lists created in plots
+
+12.	Add the replicate set name to the plot area in variation plots.
+
+13.	Fix the genome view image export to not include scroll bars.
+
+
+
+
 RELEASE NOTES FOR SeqMonk v1.45.1
 ---------------------------------
 This is a bugfix release which resolves some issues in the previous
