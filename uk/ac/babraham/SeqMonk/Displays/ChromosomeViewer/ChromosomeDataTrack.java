@@ -183,7 +183,6 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 	private Chromosome lastChromosome = null;
 	private int lastInteractionIndexStart = 0;
 
-
 	/**
 	 * Instantiates a new chromosome data track.
 	 * 
@@ -1151,7 +1150,9 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				g.setColor(DisplayPreferences.getInstance().getGradient().getColor(value,minValue,maxValue));
 			}
 			else {
-				g.setColor(ColourIndexSet.getColour(viewer.getIndex(this)));
+				// We do something different here so that if we're expanding repsets then
+				// we colour by set instead of individually.
+				g.setColor(ColourIndexSet.getColour(viewer.getGroupedIndex(this)));
 			}
 
 		}

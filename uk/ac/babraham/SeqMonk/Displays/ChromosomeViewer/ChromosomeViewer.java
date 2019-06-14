@@ -20,8 +20,6 @@
 package uk.ac.babraham.SeqMonk.Displays.ChromosomeViewer;
 
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -66,6 +64,8 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 	private Vector<ChromosomeFeatureTrack> featureTracks = new Vector<ChromosomeFeatureTrack>();
 
 	private Vector<ChromosomeDataTrack> dataTracks = new Vector<ChromosomeDataTrack>();
+	
+	private Vector<Integer> groupedIndices = new Vector<Integer>(); // Stores a mapping between index position and group position when we're grouping rep sets
 
 	private JPanel featurePanel;
 	
@@ -232,6 +232,10 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 
 		if (featurePanel == null) return;
 
+		groupedIndices.clear();
+		
+		int groupPosition = 0;
+		
 		String [] featureTypes = application.drawnFeatureTypes();
 		featureTracks.removeAllElements();
 		for (int i=0;i<featureTypes.length;i++) {
@@ -248,18 +252,24 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 				for (int j=0;j<localStores.length;j++) {
 					ChromosomeDataTrack t = new ChromosomeDataTrack(this,application.dataCollection(),localStores[j]);
 					t.setEnclosingReplicateSet((ReplicateSet)dataStores[i]);
+					groupedIndices.add(groupPosition);
 					dataTracks.add(t);
 				}
+				groupPosition++;
 			}
 
 			else {
 				if (dataStores[i] == application.dataCollection().getActiveDataStore()) {
 					ChromosomeDataTrack t = new MinSizeDataTrack(this,application.dataCollection(),dataStores[i]);
-					dataTracks.add(t);					
+					dataTracks.add(t);
+					groupedIndices.add(groupPosition);
+					groupPosition++;
 				}
 				else {
 					ChromosomeDataTrack t = new ChromosomeDataTrack(this,application.dataCollection(),dataStores[i]);
 					dataTracks.add(t);
+					groupedIndices.add(groupPosition);
+					groupPosition++;
 				}
 			}
 		}
@@ -537,6 +547,26 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 	}
 
 
+	/**
+	 * Gets the positional index of a data track
+	 * 
+	 * @param t The track to query
+	 * @return The position of this track in the current set of displayed data tracks.
+	 */
+	public int getGroupedIndex (ChromosomeDataTrack t) {
+		
+		// This can give an invalid value if we're in the middle of updating tracks
+		// so we have to test for validity.
+		
+		int index = getIndex(t);
+		
+		if (groupedIndices.size()>index) {
+			return groupedIndices.elementAt(getIndex(t));
+		}
+		return(0);
+	}
+
+	
 	/**
 	 * Chromosome.
 	 * 
