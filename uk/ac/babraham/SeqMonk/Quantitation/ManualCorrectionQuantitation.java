@@ -245,7 +245,6 @@ public class ManualCorrectionQuantitation extends Quantitation {
 				
 		gbc.gridx=1;
 		gbc.gridy++;
-		gbc.gridwidth = 2;
 		gbc.weighty = 0.001;
 		gbc.fill = GridBagConstraints.NONE;
 		
@@ -302,6 +301,23 @@ public class ManualCorrectionQuantitation extends Quantitation {
 		
 		
 		optionPanel.add(loadFromFileButton,gbc);
+
+		JButton copyFirstButton = new JButton("Copy first value to all");
+		copyFirstButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if (correctionFactors.length==0) return;
+				String value = correctionFactors[0].getText();
+				for (int i=1;i<correctionFactors.length;i++) {
+					correctionFactors[i].setText(value);
+				}
+			}
+		});
+		
+		
+		gbc.gridx++;
+		optionPanel.add(copyFirstButton,gbc);
+
 		
 		return optionPanel;
 	}
