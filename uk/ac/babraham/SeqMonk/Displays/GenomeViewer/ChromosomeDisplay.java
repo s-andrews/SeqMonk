@@ -345,10 +345,14 @@ public class ChromosomeDisplay extends JPanel implements DataChangeListener {
 		switch (DisplayPreferences.getInstance().getGraphType()) {
 
 		case DisplayPreferences.GRAPH_TYPE_BAR: 
-
 			g.fillRect(wholeXStart,yBoxStart,(wholeXEnd-wholeXStart),yBoxEnd-yBoxStart);
 			break;
 
+		case DisplayPreferences.GRAPH_TYPE_BLOCK: 
+			g.fillRect(wholeXStart,(getHeight()-effectiveHeight)/2,(wholeXEnd-wholeXStart),effectiveHeight);
+			break;
+	
+			
 		case DisplayPreferences.GRAPH_TYPE_POINT:
 			g.fillOval(wholeXStart+((wholeXEnd-wholeXStart)/2), yValue, 2, 2);
 			break;
