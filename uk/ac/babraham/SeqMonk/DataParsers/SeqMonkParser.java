@@ -70,7 +70,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 	 * If the file to be loaded has a version higher than this then
 	 * the parser won't attempt to load it. */
 	
-	public static final int MAX_DATA_VERSION = 20;
+	public static final int MAX_DATA_VERSION = 21;
 
 	private SeqMonkApplication application;
 	private FileInputStream fis;
@@ -1044,6 +1044,10 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 			probeSet.setComments(sections[4].replaceAll("`", "\n"));
 		}
 
+		if (sections.length > 5) {
+			probeSet.setName(sections[5]);
+		}
+
 		// We need to save the probeset to the dataset at this point so we can add the probe
 		// lists as we get to them.
 		application.dataCollection().setProbeSet(probeSet);
@@ -1163,7 +1167,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 		// there are any probe lists under all probes as they cause it to be refreshed,
 		// but if you only have the probe set then you need this to make the display show
 		// the correct information.
-		probeSet.setName("All Probes");
+		probeSet.setName(probeSet.name());
 
 	}
 

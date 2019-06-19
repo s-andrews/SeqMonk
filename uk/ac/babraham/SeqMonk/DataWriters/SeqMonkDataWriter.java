@@ -58,7 +58,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 	
 	// THIS VALUE IS IMPORTANT!!!
 	/** The Constant DATA_VERSION. */
-	public static final int DATA_VERSION = 20;
+	public static final int DATA_VERSION = 21;
 	
 	// If you make ANY changes to the format written by this class
 	// you MUST increment this value to stop older parsers from
@@ -637,7 +637,7 @@ public class SeqMonkDataWriter implements Runnable, Cancellable {
 		
 		String comments = probeSet.comments().replaceAll("[\\r\\n]", "`");
 		
-		p.println("Probes\t"+probes.length+"\t"+probeSet.justDescription()+"\t"+probeSetQuantitation+"\t"+comments);
+		p.println("Probes\t"+probes.length+"\t"+probeSet.justDescription()+"\t"+probeSetQuantitation+"\t"+comments+"\t"+probeSet.name());
 
 		// Next we print out the data
 
