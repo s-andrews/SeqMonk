@@ -37,6 +37,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Genome;
+import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
+import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.Quantitation.Options.DefineQuantitationOptions;
 
@@ -57,7 +62,11 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 	private JList generatorList;
 	private JPanel optionPanel;
 	private JButton runButton;
+	private JButton runAnnotationButton;
 	private SeqMonkApplication application;
+	
+	// This flag says whether we're abusing the system to make an annotation track
+	private boolean makeAnnotationsNotProbes = false;
 
 	
 	/**
@@ -129,6 +138,15 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 		
 		buttonPanel.add(closeButton);
 
+		
+		runAnnotationButton = new JButton("Create Annotation Track");
+		runAnnotationButton.setActionCommand("run_annotation");
+		runAnnotationButton.addActionListener(this);
+		runAnnotationButton.setEnabled(false);
+		
+		buttonPanel.add(runAnnotationButton);
+
+		
 		runButton = new JButton("Create Probes");
 		runButton.setActionCommand("run");
 		runButton.addActionListener(this);
@@ -152,6 +170,7 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 	 */
 	public void optionsReady (){
 		runButton.setEnabled(true);
+		runAnnotationButton.setEnabled(true);
 	}
 	
 	/* (non-Javadoc)
@@ -159,6 +178,7 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 	 */
 	public void optionsNotReady () {
 		runButton.setEnabled(false);
+		runAnnotationButton.setEnabled(true);
 	}
 
 	/* (non-Javadoc)
@@ -169,17 +189,25 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 			setVisible(false);
 			dispose();
 		}
-		else if (ae.getActionCommand().equals("run")) {
+		else if (ae.getActionCommand().equals("run") || ae.getActionCommand().equals("run_annotation") ) {
 			
-			// Let's make sure they really want to do this
-			if (application.dataCollection().probeSet() != null) {
-				int answer = JOptionPane.showConfirmDialog(this, "This will wipe out your existing probes and quantitations.  Are you sure you want to continue?","Are you sure?",JOptionPane.YES_NO_OPTION);
-				if (answer != JOptionPane.YES_OPTION) {
-					return;
+			makeAnnotationsNotProbes = false;
+			if (ae.getActionCommand().equals("run_annotation")) {
+				makeAnnotationsNotProbes = true;
+			}
+			
+			if (!makeAnnotationsNotProbes) {
+				// Let's make sure they really want to do this
+				if (application.dataCollection().probeSet() != null) {
+					int answer = JOptionPane.showConfirmDialog(this, "This will wipe out your existing probes and quantitations.  Are you sure you want to continue?","Are you sure?",JOptionPane.YES_NO_OPTION);
+					if (answer != JOptionPane.YES_OPTION) {
+						return;
+					}
 				}
 			}
 			
 			runButton.setEnabled(false); // They can't do two runs at once
+			runAnnotationButton.setEnabled(false); // They can't do two runs at once
 			generators[generatorList.getSelectedIndex()].addProbeGeneratorListener(new ProbeGeneratorProgressDialog(application,generators[generatorList.getSelectedIndex()]));
 			generators[generatorList.getSelectedIndex()].addProbeGeneratorListener(this);
 			generators[generatorList.getSelectedIndex()].generateProbes();
@@ -196,12 +224,70 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 			return;
 		}
 		
-		application.dataCollection().setProbeSet(probes);
-		setVisible(false);
-		dispose();
-		// We now need to launch the quantitation tool, otherwise this will
-		// have been somewhat pointless!
-		new DefineQuantitationOptions(application);
+		// Get the name we want to use
+		// Ask for a name for the list
+		String groupName=probes.name();
+		while (true) {
+			groupName = (String)JOptionPane.showInputDialog(this,"Enter Probe Set Name","Made "+probes.getAllProbes().length+" probes",JOptionPane.QUESTION_MESSAGE,null,null,probes.name());
+			if (groupName == null){
+				// Since the list will automatically have been added to
+				// the ProbeList tree we actively need to delete it if
+				// they choose to cancel at this point.
+				return;  // They cancelled
+			}			
+				
+			if (groupName.length() == 0)
+				continue; // Try again
+			
+			break;
+		}
+
+		
+		if (makeAnnotationsNotProbes) {
+			// We need to turn the probes into an Annotation track.
+
+			Genome genome = SeqMonkApplication.getInstance().dataCollection().genome();
+			
+			Vector<AnnotationSet> annotationSets = new Vector<AnnotationSet>();
+
+			AnnotationSet currentAnnotation = new AnnotationSet(genome, groupName);
+			annotationSets.add(currentAnnotation);
+
+			Probe [] probeArray = probes.getAllProbes();
+
+			
+			for (int p=0;p<probeArray.length;p++) {
+			
+				if (p>1000000 && p%1000000 == 0) {
+					currentAnnotation.finalise();
+					currentAnnotation = new AnnotationSet(genome, groupName+"["+annotationSets.size()+"]");
+					annotationSets.add(currentAnnotation);
+				}
+
+				
+				Feature feature = new Feature(groupName,probeArray[p].chromosome().name());
+				if (probeArray[p].hasDefinedName()) {
+					feature.addAttribute("name", probeArray[p].name());
+				}
+				feature.setLocation(new Location(probeArray[p].start(),probeArray[p].end(),probeArray[p].strand()));
+				currentAnnotation.addFeature(feature);
+			}
+
+			genome.annotationCollection().addAnnotationSets(annotationSets.toArray(new AnnotationSet[0]));
+			runButton.setEnabled(true);
+			runAnnotationButton.setEnabled(true);
+		}
+		
+		else {
+			probes.setName(groupName);
+			application.dataCollection().setProbeSet(probes);
+			setVisible(false);
+			dispose();
+			// We now need to launch the quantitation tool, otherwise this will
+			// have been somewhat pointless!
+			new DefineQuantitationOptions(application);
+		}
+		
 	}
 	
 	/* (non-Javadoc)
