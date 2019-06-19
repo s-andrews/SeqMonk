@@ -1088,9 +1088,6 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 		int wholeXStart = bpToPixel(p.start());
 		int wholeXEnd = bpToPixel(p.end()+1);
-		if ((wholeXEnd-wholeXStart)<2) {
-			wholeXEnd = wholeXStart+2;
-		}
 
 		float value;
 		if (! data.hasValueForProbe(p)) return;
