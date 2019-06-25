@@ -563,7 +563,7 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 12+list.getValueNames().length+stores.length;
+			return 12+annotations.length+stores.length;
 		}
 
 		/* (non-Javadoc)
@@ -584,11 +584,11 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 			case 10: return "Feature Orientation";
 			case 11: return "Distance";
 			default: 
-				if (c < 12 + list.getValueNames().length) {
-					return list.getValueNames()[c-12];
+				if (c < 12 + annotations.length) {
+					return annotations[c-12].toString();
 				}
 				
-				return stores[c-(12+list.getValueNames().length)].name();
+				return stores[c-(12+annotations.length)].name();
 			}
 		}
 
@@ -672,17 +672,17 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 				return new Integer(data[r].distance);
 
 			default:
-				if (c < 12 + list.getValueNames().length) {
-					if (list.getValuesForProbe(data[r].probe) == null) {
+				if (c < 12 + annotations.length) {
+					if (annotations[c-12].list().getValuesForProbe(data[r].probe) == null) {
 						return Double.NaN;
 					}
 					else {
-						return list.getValuesForProbe(data[r].probe)[c-12];
+						return annotations[c-12].list().getValuesForProbe(data[r].probe)[annotations[c-12].index()];
 					}
 				}
 				
 				try {
-					return new Float(stores[c-(12+list.getValueNames().length)].getValueForProbe(data[r].probe));
+					return new Float(stores[c-(12+annotations.length)].getValueForProbe(data[r].probe));
 				} 
 				catch (SeqMonkException e) {
 					return null;
