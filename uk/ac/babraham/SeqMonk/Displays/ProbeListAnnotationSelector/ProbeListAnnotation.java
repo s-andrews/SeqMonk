@@ -20,6 +20,9 @@ public class ProbeListAnnotation {
 	public String annotation () {
 		return annotation;
 	}
-		
+	
+	public String toString () {
+		return annotation+" ("+list.name()+")";
+	}
 	
 }

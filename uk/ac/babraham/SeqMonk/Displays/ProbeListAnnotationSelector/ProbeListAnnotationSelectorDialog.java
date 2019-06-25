@@ -33,10 +33,10 @@ public class ProbeListAnnotationSelectorDialog extends JDialog implements Action
 	JButton removeButton;
 	
 	public ProbeListAnnotationSelectorDialog () {
-		this(null);
+		this(new ProbeListAnnotation[0]);
 	}
 	
-	public ProbeListAnnotationSelectorDialog (ProbeList startingList) {
+	public ProbeListAnnotationSelectorDialog (ProbeListAnnotation [] alreadySelected) {
 		
 		super(SeqMonkApplication.getInstance(),"Select Annotations",true);
 		
@@ -50,10 +50,12 @@ public class ProbeListAnnotationSelectorDialog extends JDialog implements Action
 		tree.setCellRenderer(new DataTreeRenderer());
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.getSelectionModel().addTreeSelectionListener(this);
+		for (int i = 0; i < tree.getRowCount(); i++) {
+		    tree.expandRow(i);
+		}
 		
 		mainPanel.add(new JScrollPane(tree),BorderLayout.CENTER);
 
-		
 		// Top right is a list of the annotations within the list
 		currentListAnnotationsModel = new DefaultListModel<ProbeListAnnotation>();
 		currentListAnnotations = new JList<ProbeListAnnotation>(currentListAnnotationsModel);
@@ -65,6 +67,9 @@ public class ProbeListAnnotationSelectorDialog extends JDialog implements Action
 		selectedPanel.setLayout(new BorderLayout());
 		selectedListAnnotationsModel = new DefaultListModel<ProbeListAnnotation>();
 		selectedListAnnotations = new JList<ProbeListAnnotation>(selectedListAnnotationsModel);
+		for (int s=0;s<alreadySelected.length;s++) {
+			selectedListAnnotationsModel.addElement(alreadySelected[s]);
+		}
 		
 		selectedPanel.add(new JScrollPane(selectedListAnnotations),BorderLayout.CENTER);
 		JPanel addRemovePanel = new JPanel();
@@ -78,7 +83,7 @@ public class ProbeListAnnotationSelectorDialog extends JDialog implements Action
 		removeButton.addActionListener(this);
 		addRemovePanel.add(removeButton);
 		
-		selectedPanel.add(addRemovePanel);
+		selectedPanel.add(addRemovePanel,BorderLayout.NORTH);
 		
 		mainPanel.add(selectedPanel,BorderLayout.SOUTH);
 		
@@ -92,9 +97,10 @@ public class ProbeListAnnotationSelectorDialog extends JDialog implements Action
 		buttonPanel.add(selectButton);
 		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
+		getContentPane().add(mainPanel,BorderLayout.CENTER);
 		
 		
-		setSize(800,600);
+		setSize(600,600);
 		
 		
 	}
@@ -156,6 +162,7 @@ public class ProbeListAnnotationSelectorDialog extends JDialog implements Action
 	
 	
 	public ProbeListAnnotation [] getAnnotations () {
+		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		setVisible(true); // It's modal so it will stall here
 		
 		return(getCurrentSelection());

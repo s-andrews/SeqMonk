@@ -20,6 +20,8 @@
 package uk.ac.babraham.SeqMonk.Reports;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -27,6 +29,7 @@ import java.awt.event.KeyListener;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,6 +46,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
+import uk.ac.babraham.SeqMonk.Displays.ProbeListAnnotationSelector.ProbeListAnnotation;
+import uk.ac.babraham.SeqMonk.Displays.ProbeListAnnotationSelector.ProbeListAnnotationSelectorDialog;
 
 /**
  * The AnnotatedListReport adds feature annotation to a probe list.  It
@@ -77,6 +82,11 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 
 	/** How far away a feature can be to be attached to a probe */
 	private JTextField annotationLimit;
+	
+	/** The set of annotations to put on the report **/
+	private ProbeListAnnotation [] annotations = new ProbeListAnnotation[0];
+	private JLabel annotationLabel;
+	
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.Reports.Report#getOptionsPanel()
@@ -120,13 +130,40 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 		choicePanel3.add(new JLabel(" unannotated probes"));
 		choicePanel.add(choicePanel3);
 
-		optionsPanel.add(choicePanel,BorderLayout.CENTER);
-
 		JPanel choicePanel4 = new JPanel();
 		data = new JComboBox(new String [] {"Include","Don't include"});
 		choicePanel4.add(data);
 		choicePanel4.add(new JLabel(" data for currently visible stores"));
 		choicePanel.add(choicePanel4);
+
+		
+		JPanel choicePanel5 = new JPanel();
+		JButton annotationButton = new JButton("Select List Annotation");
+		
+		// The initial annotations will be the values on the list we're annotating
+		ProbeList listToAnnotate = collection.probeSet().getActiveList();
+		String [] valueNames = listToAnnotate.getValueNames();
+		
+		annotations = new ProbeListAnnotation[valueNames.length];
+		
+		for (int i=0;i<valueNames.length;i++) {
+			annotations[i] = new ProbeListAnnotation(listToAnnotate,valueNames[i]);
+		}
+		
+		annotationButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ProbeListAnnotationSelectorDialog d = new ProbeListAnnotationSelectorDialog(annotations);
+				
+				annotations = d.getAnnotations();
+				annotationLabel.setText(" "+annotations.length+" annotations selected");
+			}
+		});
+		choicePanel5.add(annotationButton);
+		annotationLabel = new JLabel(" "+annotations.length+" annotations selected");
+		choicePanel5.add(annotationLabel);
+		choicePanel.add(choicePanel5);
 
 		optionsPanel.add(choicePanel,BorderLayout.CENTER);
 
