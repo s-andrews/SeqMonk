@@ -29,7 +29,6 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -41,7 +40,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
-import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeValueHistogramPlot;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 import uk.ac.babraham.SeqMonk.Gradients.HotColdColourGradient;
@@ -96,7 +94,6 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 	private double maxValueY = 1;
 
 	/** The ready to draw. */
-	//private boolean readyToDraw = false;
 	protected boolean readyToDraw = false;
 	
 	/** The dot size. */
@@ -124,6 +121,9 @@ public class ScatterPlotPanel extends JPanel implements Runnable, MouseMotionLis
 	 */
 	private ProbePairValue closestPoint = null;
 	
+	/**
+	 * The set of points to label
+	 */
 	private HashSet<ProbePairValue> labelledPoints = new HashSet<ProbePairValue>();  
 
 
