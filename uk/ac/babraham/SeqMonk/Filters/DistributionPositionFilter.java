@@ -243,7 +243,7 @@ public class DistributionPositionFilter extends ProbeFilter {
 			}
 		}
 		
-		b.append(" had a value ");
+		b.append(" had a distribution position ");
 		
 		if (lowerLimit != null && upperLimit != null) {
 			b.append("between ");
