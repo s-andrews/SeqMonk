@@ -52,6 +52,7 @@ my $mapq;
 my $genome;
 my $outfile;
 my $spliced;
+my $introns;
 my $unspliced;
 
 my $result = GetOptions('help' => \$help,
@@ -59,6 +60,7 @@ my $result = GetOptions('help' => \$help,
 						'genome=s' => \$genome,
 						'outfile=s' => \$outfile,
 						'spliced' => \$spliced,
+						'introns' => \$introns,
 						'unspliced' => \$unspliced,
 						'mapq=i' => \$mapq,
 						 );
@@ -101,7 +103,16 @@ else {
 
 if ($unspliced and $spliced) {
 	die "You can't set both spliced and unspliced on the same import\n";
-}	
+}
+
+if ($unspliced and $introns) {
+	die "You can't set both introns and unspliced on the same import\n";
+}
+
+# Introns implies spliced even if they didn't say it
+if ($introns) {
+	$spliced = 1;
+}
 
 
 if ($memory) {
@@ -126,10 +137,18 @@ unshift @java_args,"-Xmx${actual_memory}m";
 # Expand the default stack size to allow for large recursive sorts
 unshift @java_args,"-Xss4m";
 
-# Work out the value we're using for splicing, 0 = auto, 1 = unspliced, 2 = spliced
+# Work out the value we're using for splicing, 0 = auto, 1 = unspliced, 2 = spliced, 3=spliced_introns
 my $spliced_value = 0;
 $spliced_value = 1 if ($unspliced);
-$spliced_value = 2 if ($spliced);
+if ($spliced) {
+	if ($introns) {
+		$spliced_value = 3;	
+	}
+	else {
+		$spliced_value = 2;
+	}
+}
+
 
 # Put the environment back to how we found it
 if (defined $original_lang) {
@@ -395,6 +414,8 @@ DESCRIPTION
 	                
     --unspliced     No not split spliced reads even if they are present.  This
                     flag overrides the default auto-detection.
+
+    --introns     	When importing with --spliced import introns rather than exons
 	                
     --mapq          Value to use as a MAPQ cutoff for imported reads.  Defaults
                     to 20 if any of the first 100,000 reads has a value above 20.

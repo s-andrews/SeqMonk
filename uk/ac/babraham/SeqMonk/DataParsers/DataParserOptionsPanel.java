@@ -368,6 +368,12 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	public void setSpliced (boolean spliced) {
 		splitSplicedReads.setSelected(spliced);
 	}
+
+	public void setIntrons (boolean introns) {
+		splitSplicedReads.setSelected(true);
+		importIntrons.setSelected(introns);
+	}
+
 	
 	public boolean splitSplicedReads () {
 		return splitSplicedReads.isSelected();

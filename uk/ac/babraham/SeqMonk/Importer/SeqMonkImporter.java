@@ -50,7 +50,7 @@ public class SeqMonkImporter implements ProgressListener {
 	 * 
 	 * 1 ) The genome to use (Species/Assembly)
 	 * 2 ) The output file name
-	 * 3 ) Whether to split for RNA-Seq (0 = auto, 1 = no, 2 = yes)
+	 * 3 ) Whether to split for RNA-Seq (0 = auto, 1 = no, 2 = yes, 3 = yes+introns)
 	 * 4 ) MapQ cutoff filter
 	 * 5+) List of BAM files to import 
 	 * 	
@@ -177,6 +177,10 @@ public class SeqMonkImporter implements ProgressListener {
 				}
 				else if (splitReads == 2) {
 					options.setSpliced(true);
+				}
+				else if (splitReads == 3) {
+					options.setSpliced(true);
+					options.setIntrons(true);
 				}
 				
 				
