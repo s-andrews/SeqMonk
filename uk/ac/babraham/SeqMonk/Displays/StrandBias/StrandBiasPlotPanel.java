@@ -27,7 +27,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import javax.swing.JPanel;
 
@@ -119,6 +121,12 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 	 * The last ProbePairValue we were near
 	 */
 	private ProbePairValue closestPoint = null;
+	
+	/**
+	 * The set of points to label
+	 */
+	private HashSet<ProbePairValue> labelledPoints = new HashSet<ProbePairValue>();  
+
 
 
 	private int Y_AXIS_SPACE = 50;
@@ -349,6 +357,20 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 
 			g.fillRect(nonRedundantValues[p].x - (dotSize/2), nonRedundantValues[p].y-(dotSize/2), dotSize, dotSize);
 		}
+		
+		// Draw the labels on the labelled points
+		Iterator<ProbePairValue> it = labelledPoints.iterator();
+		
+		while (it.hasNext()) {
+			ProbePairValue thisPoint = it.next();
+
+			g.setColor(Color.BLACK);
+			if (thisPoint != null && thisPoint.probe() != null) {
+				g.drawString(thisPoint.probe().name(),thisPoint.x+1,thisPoint.y-1);
+			}
+
+		}
+
 		
 		// Finally we draw the current measures if the mouse is inside the plot
 		if (cursorX > 0) {
@@ -646,6 +668,21 @@ public class StrandBiasPlotPanel extends JPanel implements Runnable, MouseMotion
 			if (closestPoint != null && closestPoint.probe() != null) {
 				DisplayPreferences.getInstance().setLocation(closestPoint.probe().chromosome(),SequenceRead.packPosition(closestPoint.probe().start(),closestPoint.probe().end(),Location.UNKNOWN));
 			}
+		}
+		else if (e.getClickCount() == 1){
+			// Add or remove this point from the drawn set
+			if (closestPoint != null && closestPoint.probe != null) {
+				if (labelledPoints.contains(closestPoint)) {
+					labelledPoints.remove(closestPoint);
+				}
+				else {
+					labelledPoints.add(closestPoint);
+				}
+			}
+		}
+		else if (e.getClickCount() == 3) {
+			labelledPoints.clear();
+			repaint();
 		}
 	}
 
