@@ -66,6 +66,8 @@ import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeValueHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ReadLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 
 /**
  * The DataViewer is a panel which shows a tree based overview of a data
@@ -666,9 +668,6 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 			JMenuItem rename = new JMenuItem("Rename");
 			rename.setActionCommand("rename");
 			rename.addActionListener(this);
-			if (p instanceof ProbeSet) {
-				rename.setEnabled(false);
-			}
 			add(rename);
 			
 			JMenuItem comments = new JMenuItem("Edit comments");
@@ -692,6 +691,7 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 			if (ae.getActionCommand().equals("rename")) {
 				String name = getNewName(p.name());
 				if (name != null) {
+					Vistory.getInstance().addBlock(new VistoryEvent("Probe List Renamed", "Probe list "+p.name()+" renamed to "+name));
 					p.setName(name);
 				}
 			}
