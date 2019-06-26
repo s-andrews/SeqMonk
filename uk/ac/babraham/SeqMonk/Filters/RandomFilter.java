@@ -174,7 +174,7 @@ public class RandomFilter extends ProbeFilter {
 		b.append(numberOfProbesPerList);
 		
 		b.append(" probes from ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		
 		return b.toString();
 	}

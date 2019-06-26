@@ -343,7 +343,7 @@ public class IntensityDifferenceFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 
 		b.append("Filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" where minimum ");
 
 		b.append("p-value when comparing ");

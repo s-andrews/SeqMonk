@@ -337,7 +337,7 @@ public class SegmentationFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 
 		b.append("Segmentation clustering on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" using data from ");
 		b.append(dataStore.name());
 

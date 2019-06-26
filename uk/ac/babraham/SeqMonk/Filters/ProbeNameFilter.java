@@ -203,7 +203,7 @@ public class ProbeNameFilter extends ProbeFilter {
 	protected String listDescription() {
 		StringBuffer b = new StringBuffer();
 		b.append("Probes from ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" whose name matches any of ");
 
 		for (int i=0;i<queries.length;i++) {

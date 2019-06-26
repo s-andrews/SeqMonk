@@ -121,7 +121,7 @@ public class DuplicateListFilter extends ProbeFilter {
 	protected String listDescription() {
 		StringBuffer b = new StringBuffer();
 		b.append("All Probes from ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		
 		return b.toString();
 	}

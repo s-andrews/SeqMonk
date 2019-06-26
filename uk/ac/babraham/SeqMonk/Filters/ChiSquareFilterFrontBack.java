@@ -130,7 +130,7 @@ public class ChiSquareFilterFrontBack extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 
 		b.append("ChiSquare front back filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 
 		b.append(" using data stores ");
 

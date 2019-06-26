@@ -137,7 +137,7 @@ public class BinomialFilterForRev extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 
 		b.append("Binomial For/Rev filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 
 		b.append(" with reference ");
 

@@ -194,7 +194,7 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 
 		b.append("Filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" where annotation ");
 
 		b.append(annotationToUse);

@@ -148,7 +148,7 @@ public class ProbeLengthFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 		
 		b.append("Filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" where probe length was ");
 		
 		if (lowerLimit != null && upperLimit != null) {

@@ -246,7 +246,7 @@ public class VarianceValuesFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 		
 		b.append("Filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" where ");
 		if (limitType == EXACTLY) {
 			b.append("exactly ");

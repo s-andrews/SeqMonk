@@ -178,7 +178,7 @@ public class BoxWhiskerFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 		
 		b.append("BoxWhisker filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" where ");
 		if (filterType == EXACTLY) {
 			b.append("exactly ");

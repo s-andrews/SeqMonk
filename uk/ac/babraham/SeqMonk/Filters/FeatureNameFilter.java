@@ -205,7 +205,7 @@ public class FeatureNameFilter extends ProbeFilter {
 	protected String listDescription() {
 		StringBuffer b = new StringBuffer();
 		b.append("Probes from ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" whose name matches features of type ");
 
 		b.append(annotationType);

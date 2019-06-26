@@ -161,7 +161,7 @@ public class ChiSquareFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 
 		b.append("ChiSquare filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 
 		b.append(" using data stores ");
 

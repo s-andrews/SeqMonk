@@ -86,7 +86,9 @@ public class FeatureFilter extends ProbeFilter {
 		
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("Filter on regions based on ");
+		sb.append("Filter probes in ");
+		sb.append(startingList.name());
+		sb.append(" on regions based on ");
 		String [] featureNames = options.featurePositions.selectedFeatureTypes();
 		for (int i=0;i<featureNames.length;i++) {
 			sb.append(featureNames[i]);

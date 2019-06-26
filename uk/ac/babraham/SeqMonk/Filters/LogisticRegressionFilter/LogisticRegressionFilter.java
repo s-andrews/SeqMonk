@@ -455,7 +455,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 
 		b.append("Logistic regression filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" where ");
 
 		for (int s=0;s<replicateSets.length;s++) {

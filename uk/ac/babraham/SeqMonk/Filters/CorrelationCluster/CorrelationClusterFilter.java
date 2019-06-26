@@ -203,7 +203,7 @@ public class CorrelationClusterFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 		
 		b.append("Correlate probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" for stores ");
 
 		for (int s=0;s<stores.length;s++) {

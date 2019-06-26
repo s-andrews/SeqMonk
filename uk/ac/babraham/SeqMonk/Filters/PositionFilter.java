@@ -173,7 +173,7 @@ public class PositionFilter extends ProbeFilter {
 	protected String listDescription() {
 		StringBuffer b = new StringBuffer();
 		b.append("Probes from ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		if (chromosome == null) {
 			b.append(" on any chromosome ");			
 		}

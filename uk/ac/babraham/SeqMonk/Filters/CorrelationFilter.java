@@ -231,7 +231,7 @@ public class CorrelationFilter extends ProbeFilter {
 		StringBuffer b = new StringBuffer();
 		
 		b.append("Filter on probes in ");
-		b.append(collection.probeSet().getActiveList().name());
+		b.append(startingList.name());
 		b.append(" where quantitation profiles in ");
 		for (int s=0;s<stores.length;s++) {
 			b.append(stores[s].name());
