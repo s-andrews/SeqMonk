@@ -20,8 +20,14 @@
 package uk.ac.babraham.SeqMonk.Displays.Vistory;
 
 import java.awt.Desktop;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -36,6 +42,7 @@ import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.HTMLFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.VistoryFileFilter;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryImage;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryProjectSummary;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryText;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryTitle;
@@ -70,12 +77,16 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		addSubTitleButton.setActionCommand("add_title3");
 		addSubTitleButton.addActionListener(this);
 		add(addSubTitleButton);
-
 		
 		JButton addTextButton = new JButton("Text",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_text.png")));
 		addTextButton.setActionCommand("add_text");
 		addTextButton.addActionListener(this);
 		add(addTextButton);
+
+		JButton pasteImageButton = new JButton("Paste Image",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_text.png")));
+		pasteImageButton.setActionCommand("paste_image");
+		pasteImageButton.addActionListener(this);
+		add(pasteImageButton);
 
 		JButton clearVistoryButton = new JButton("Clear",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/clear_vistory.png")));
 		clearVistoryButton.setActionCommand("clear");
@@ -93,6 +104,25 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		exportVistoryButton.addActionListener(this);
 		add(exportVistoryButton);
 	}
+	
+	private BufferedImage getImageFromClipboard () throws Exception {
+		Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+		if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+		     Image im = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
+		     
+		     // Convert to BufferedImage as that's what we need
+		     BufferedImage bi = new BufferedImage(im.getWidth(null), im.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+		     // Draw the image on to the buffered image
+		     Graphics2D g2d = bi.createGraphics();
+		     g2d.drawImage(im, 0, 0, null);
+		     g2d.dispose();
+
+		     return(bi);
+		}
+		throw new Exception("Couldn't find image data on clipboard");
+	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
@@ -106,6 +136,15 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		}
 		else if (command.equals("add_title3")) {
 			Vistory.getInstance().addBlock(new VistoryTitle(3));
+		}
+		else if (command.equals("paste_image")) {
+			
+			try {
+				BufferedImage bi = getImageFromClipboard();
+				Vistory.getInstance().addBlock(new VistoryImage(bi));
+			}
+			catch(Exception e) {}
+			
 		}
 
 		else if (command.equals("clear")) {
