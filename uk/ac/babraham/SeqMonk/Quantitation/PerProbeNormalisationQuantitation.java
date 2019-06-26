@@ -183,24 +183,6 @@ public class PerProbeNormalisationQuantitation extends Quantitation {
 		averageMethod = new JComboBox(new String [] {"Median","Mean","Sum"});
 		optionPanel.add(averageMethod,gbc);
 		
-		Vector<DataStore>quantitatedStores = new Vector<DataStore>();
-
-		DataSet [] sets = application.dataCollection().getAllDataSets();
-		for (int s=0;s<sets.length;s++) {
-			if (sets[s].isQuantitated()) {
-				quantitatedStores.add(sets[s]);
-			}
-		}
-		DataGroup [] groups = application.dataCollection().getAllDataGroups();
-		for (int g=0;g<groups.length;g++) {
-			if (groups[g].isQuantitated()) {
-				quantitatedStores.add(groups[g]);
-			}
-		}
-
-		data = quantitatedStores.toArray(new DataStore[0]);
-
-
 		return optionPanel;
 	}
 
@@ -217,6 +199,16 @@ public class PerProbeNormalisationQuantitation extends Quantitation {
 	 * @see uk.ac.babraham.SeqMonk.Quantitation.Quantitation#quantitate(uk.ac.babraham.SeqMonk.DataTypes.DataStore[])
 	 */
 	public void quantitate(DataStore[] data) {
+
+		Vector<DataStore>quantitatedStores = new Vector<DataStore>();
+
+		for (int d=0;d<data.length;d++) {
+			if (data[d].isQuantitated()) {
+				quantitatedStores.add(data[d]);
+			}
+		}
+
+		this.data = quantitatedStores.toArray(new DataStore[0]);
 
 		// We need to set the correction action
 		if (correctionActions.getSelectedItem().equals("Subtract")) {
