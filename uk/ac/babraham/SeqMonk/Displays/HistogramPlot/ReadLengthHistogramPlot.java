@@ -59,7 +59,7 @@ public class ReadLengthHistogramPlot extends JDialog implements ActionListener {
 		setSize(800,600);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		plotPanel = new HistogramPanel(getReadLengths(d));
+		plotPanel = new HistogramPanel(getReadLengths(d),d.name());
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(plotPanel,BorderLayout.CENTER);
 		

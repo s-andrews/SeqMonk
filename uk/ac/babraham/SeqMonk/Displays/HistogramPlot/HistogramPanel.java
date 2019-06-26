@@ -54,6 +54,9 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 	/** The data. */
 	private float [] data;
 	
+	/** The data name to stick at the top **/
+	private String storeName;
+	
 	/** The category slider. */
 	private JSlider categorySlider;
 	
@@ -102,9 +105,10 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 	 * 
 	 * @param data the data
 	 */
-	public HistogramPanel (float [] data) {
+	public HistogramPanel (float [] data, String storeName) {
 				
 		this.data = removeNaN(data);
+		this.storeName = storeName;
 		
 		if (data.length < 2) {
 			throw new IllegalArgumentException("At least two data points are needed to draw a histogram");
@@ -451,8 +455,9 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 				g.drawLine(X_AXIS_SPACE-3, (int)((getHeight()-Y_AXIS_SPACE)-yHeight), X_AXIS_SPACE, (int)((getHeight()-Y_AXIS_SPACE)-yHeight));
 				
 				// Put a line across the plot
+				Color veryLightGrey = new Color(225, 225, 225);
 				if (currentYValue != 0) {
-					g.setColor(Color.LIGHT_GRAY);
+					g.setColor(veryLightGrey);
 					g.drawLine(X_AXIS_SPACE, (int)((getHeight()-Y_AXIS_SPACE)-yHeight), getWidth()-5, (int)((getHeight()-Y_AXIS_SPACE)-yHeight));
 					g.setColor(Color.BLACK);
 				}
@@ -503,6 +508,9 @@ public class HistogramPanel extends JPanel implements Runnable, ChangeListener {
 				g.drawRect(categories[c].xStart, (int)((getHeight()-Y_AXIS_SPACE)-ySize), categories[c].xEnd-categories[c].xStart, (int)(ySize));
 				
 			}
+			
+			// Write the data name at the top
+			g.drawString(storeName, getWidth()-(g.getFontMetrics().stringWidth(storeName)+5),15);
 			
 		}
 		

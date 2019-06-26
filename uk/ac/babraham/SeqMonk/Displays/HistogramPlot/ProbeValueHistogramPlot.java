@@ -177,7 +177,7 @@ public class ProbeValueHistogramPlot extends JDialog implements ActionListener, 
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		plotPanel = new HistogramPanel(getData(d, p));
+		plotPanel = new HistogramPanel(getData(d, p), d.name()+" "+p.name());
 		getContentPane().remove(calculatingLabel);
 		getContentPane().add(plotPanel,BorderLayout.CENTER);
 		getContentPane().validate();

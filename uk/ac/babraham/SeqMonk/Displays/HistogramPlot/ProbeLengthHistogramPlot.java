@@ -202,7 +202,7 @@ public class ProbeLengthHistogramPlot extends JDialog implements ActionListener,
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		plotPanel = new HistogramPanel(getData(p));
+		plotPanel = new HistogramPanel(getData(p), p.name());
 		getContentPane().remove(calculatingLabel);
 		getContentPane().add(plotPanel,BorderLayout.CENTER);
 		getContentPane().validate();

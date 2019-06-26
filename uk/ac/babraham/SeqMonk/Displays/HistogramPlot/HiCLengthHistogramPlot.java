@@ -225,7 +225,7 @@ public class HiCLengthHistogramPlot extends JDialog implements ActionListener, R
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		plotPanel = new HistogramPanel(getData());
+		plotPanel = new HistogramPanel(getData(),store.name());
 		getContentPane().remove(calculatingLabel);
 		getContentPane().add(plotPanel,BorderLayout.CENTER);
 		getContentPane().validate();
