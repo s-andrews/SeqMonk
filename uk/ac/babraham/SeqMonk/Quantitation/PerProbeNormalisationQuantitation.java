@@ -42,8 +42,9 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 public class PerProbeNormalisationQuantitation extends Quantitation {
 
 	private static final int SUBTRACT = 1;
-	private static final int DIVIDE = 2;
+	private static final int LOGDIVIDE = 2;
 	private static final int SCALE = 3;
+	private static final int DIVIDE = 4;
 
 
 	private JPanel optionPanel = null;
@@ -63,6 +64,7 @@ public class PerProbeNormalisationQuantitation extends Quantitation {
 		Probe [] probes = application.dataCollection().probeSet().getAllProbes();
 
 		boolean useMean = averageMethod.getSelectedItem().equals("Mean");
+		boolean useSum = averageMethod.getSelectedItem().equals("Sum");
 		
 		try {
 			for (int p=0;p<probes.length;p++) {
@@ -82,23 +84,36 @@ public class PerProbeNormalisationQuantitation extends Quantitation {
 				}
 
 				
-				float median;
+				float summaryValue = 0;
 				
 				if (useMean) {
-					median = (float)SimpleStats.mean(values);
+					summaryValue = (float)SimpleStats.mean(values);
+				}
+				else if (useSum) {
+					for (int i=0;i<values.length;i++) {
+						if (values[i] < 0) {
+							progressWarningReceived(new SeqMonkException("Negative values found when taking the sum - transformed values won't make sense"));
+						}
+						summaryValue += values[i];
+					}
 				}
 				else {
-					median  = (float)SimpleStats.median(values);
+					summaryValue  = (float)SimpleStats.median(values);
 				}
 				
 				if (correctionAction == SUBTRACT) {
 					for (int d=0;d<data.length;d++) {
-						data[d].setValueForProbe(probes[p], data[d].getValueForProbe(probes[p])-median);
+						data[d].setValueForProbe(probes[p], data[d].getValueForProbe(probes[p])-summaryValue);
+					}
+				}
+				else if (correctionAction == LOGDIVIDE) {
+					for (int d=0;d<data.length;d++) {
+						data[d].setValueForProbe(probes[p], (float)(Math.log(data[d].getValueForProbe(probes[p])/summaryValue)/Math.log(2)));
 					}
 				}
 				else if (correctionAction == DIVIDE) {
 					for (int d=0;d<data.length;d++) {
-						data[d].setValueForProbe(probes[p], (float)(Math.log(data[d].getValueForProbe(probes[p])/median)/Math.log(2)));
+						data[d].setValueForProbe(probes[p], (float)(data[d].getValueForProbe(probes[p])/summaryValue));
 					}
 				}
 				else if (correctionAction == SCALE) {
@@ -158,14 +173,14 @@ public class PerProbeNormalisationQuantitation extends Quantitation {
 
 		optionPanel.add(new JLabel("Method of correction"),gbc);
 		gbc.gridx = 2;
-		correctionActions = new JComboBox(new String [] {"Subtract","Log Divide","Scale"});
+		correctionActions = new JComboBox(new String [] {"Subtract","Divide","Log Divide","Scale"});
 		optionPanel.add(correctionActions,gbc);
 		
 		gbc.gridy++;
 		gbc.gridx=1;
 		optionPanel.add(new JLabel("Averaging Method"),gbc);
 		gbc.gridx = 2;
-		averageMethod = new JComboBox(new String [] {"Median","Mean"});
+		averageMethod = new JComboBox(new String [] {"Median","Mean","Sum"});
 		optionPanel.add(averageMethod,gbc);
 		
 		Vector<DataStore>quantitatedStores = new Vector<DataStore>();
@@ -208,6 +223,9 @@ public class PerProbeNormalisationQuantitation extends Quantitation {
 			correctionAction = SUBTRACT;
 		}
 		else if (correctionActions.getSelectedItem().equals("Log Divide")) {
+			correctionAction = LOGDIVIDE;
+		}
+		else if (correctionActions.getSelectedItem().equals("Divide")) {
 			correctionAction = DIVIDE;
 		}
 		else if (correctionActions.getSelectedItem().equals("Scale")) {
