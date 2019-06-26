@@ -83,7 +83,7 @@ public class VistoryToolbar extends JToolBar implements ActionListener {
 		addTextButton.addActionListener(this);
 		add(addTextButton);
 
-		JButton pasteImageButton = new JButton("Paste Image",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/add_text.png")));
+		JButton pasteImageButton = new JButton("Paste Image",new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/Toolbar/paste_image.png")));
 		pasteImageButton.setActionCommand("paste_image");
 		pasteImageButton.addActionListener(this);
 		add(pasteImageButton);
