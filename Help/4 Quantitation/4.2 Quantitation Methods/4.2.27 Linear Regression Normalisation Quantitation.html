@@ -1,0 +1,35 @@
+<html>
+
+<head>
+<title>Linear Regression Normalisation Quantitation</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Linear Regression Normalisation Quantitation</h1>
+
+<p>
+This normalisation is useful where you have a linear change superimposed on
+top of a normal set of quantitation differences.  It operates in a somewhat
+similar way to the enrichment normalisation in that you define two percentiles
+within your data around which you wish to base the normalisation.  In this
+case though a line is drawn through these two percentiles and then the data
+is re-scaled so that the line becomes flat, and fixed at a value of 0.
+</p>
+	
+</p>
+<h2>Options</h2>
+<ol>
+<li>You can choose the percentile values to set for the lower and upper reference
+points.  You should look at the shape of the traces on the cumulative distriubution
+plot to decide where you should sensibly set these.</li>
+<li>You can choose which probe list to use to calculate the correction values</li>
+</ol>
+</body>
+</html>
