@@ -92,9 +92,7 @@ public class LinearRegressionNormalisationQuantitation extends Quantitation {
 
 			lowerPercentileValues[d] = getPercentileValue(theseValues, lowerPercentile);
 			upperPercentileValues[d] = getPercentileValue(theseValues, upperPercentile);
-			
-			System.err.println("Lower percentile for "+data[d].name() + " is "+ lowerPercentileValues[d]+" from "+theseValues.length+" values");
-			
+						
 		}
 
 		
