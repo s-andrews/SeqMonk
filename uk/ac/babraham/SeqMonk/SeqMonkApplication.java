@@ -68,6 +68,7 @@ import uk.ac.babraham.SeqMonk.Displays.ChromosomeViewer.ChromosomePositionScroll
 import uk.ac.babraham.SeqMonk.Displays.ChromosomeViewer.ChromosomeViewer;
 import uk.ac.babraham.SeqMonk.Displays.DataViewer.DataViewer;
 import uk.ac.babraham.SeqMonk.Displays.GenomeViewer.GenomeViewer;
+import uk.ac.babraham.SeqMonk.Displays.Vistory.VistoryDialog;
 import uk.ac.babraham.SeqMonk.Displays.WelcomePanel.InitialSetupPanel;
 import uk.ac.babraham.SeqMonk.Displays.WelcomePanel.WelcomePanel;
 import uk.ac.babraham.SeqMonk.Menu.SeqMonkMenu;
@@ -272,13 +273,26 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		// us visible again in case we're hanging around.
 		setVisible(true);
 		
+		// Check to see if the user has made any changes to their vistory
+		if (Vistory.getInstance().needsSaving() && VistoryDialog.hasBeenVisible()) {
+			int answer = JOptionPane.showOptionDialog(this,"You have made changes to your Vistory which were not saved.  Do you want to cancel so you can save them?","Save vistory before exit?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Exit without Saving","Cancel"},"Save");
+
+			switch (answer){
+			case 0:
+				break;
+			case 1:
+				return;
+			}
+			
+		}
+		
 		// Check to see if the user has made any changes they might
 		// want to save
 		if (changesWereMade) {
 			int answer = JOptionPane.showOptionDialog(this,"You have made changes which were not saved.  Do you want to save before exiting?","Save before exit?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Save and Exit","Exit without Saving","Cancel"},"Save");
 
 			switch (answer){
-			case 0: 
+			case 0: 		
 				shuttingDown = true;
 				saveProject();
 				return;
