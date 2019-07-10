@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -45,6 +44,7 @@ public class Vistory {
 	private static final Vistory vistory = new Vistory();
 	private Vector<VistoryListener> listeners = new Vector<VistoryListener>();
 	private VistoryBlock selectedBlock = null;
+	private boolean needsSaving = false;
 	
 	private File saveFile = null;
 
@@ -70,6 +70,8 @@ public class Vistory {
 	}
 	
 	public void addBlock (VistoryBlock block) {
+		
+		needsSaving = true;
 		
 		boolean relativeToSelected = block.allowsRelativePosition();
 		
@@ -128,6 +130,9 @@ public class Vistory {
 	}
 	
 	public void removeBlock (VistoryBlock block) {
+		
+		needsSaving = true;
+		
 		if (! blocks.contains(block))return;
 		blocks.remove(block);
 		if (block.equals(selectedBlock)) {
@@ -139,7 +144,15 @@ public class Vistory {
 		}
 	}
 
+	public boolean needsSaving () {
+		return needsSaving;
+	}
+	
+	
 	public void raiseBlock (VistoryBlock block) {
+		
+		needsSaving = true;
+		
 		if (! blocks.contains(block))return;
 		
 		int index = blocks.indexOf(block);
@@ -155,6 +168,9 @@ public class Vistory {
 	}
 
 	public void lowerBlock (VistoryBlock block) {
+		
+		needsSaving = true;
+		
 		if (! blocks.contains(block))return;
 		
 		int index = blocks.indexOf(block);
@@ -258,6 +274,8 @@ public class Vistory {
 		pr.close();
 		
 		saveFile = file;
+		
+		needsSaving = false;
 	}
 	
 	public void loadFile (File file) throws IOException {

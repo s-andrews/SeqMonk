@@ -22,19 +22,12 @@ package uk.ac.babraham.SeqMonk.Displays.Vistory;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
@@ -46,6 +39,8 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	private Vistory vistory;
 	private static VistoryDialog vistoryDialog = null;
 	
+	private static boolean hasBeenVisible = false;
+	
 	private ScrollablePanel vistoryPanel = null;
 	private JScrollPane scrollPane;
 	
@@ -56,7 +51,6 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 		setIconImage(SeqMonkApplication.getInstance().getIconImage());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.vistory = Vistory.getInstance();
-		
 		
 		vistory.addListener(this);
 		
@@ -77,9 +71,15 @@ public class VistoryDialog extends JFrame implements VistoryListener {
 	}
 	
 	public static void showVistory () {
+		hasBeenVisible = true;
 		if (vistoryDialog == null) vistoryDialog = new VistoryDialog();
 		vistoryDialog.setVisible(true);
 	}
+	
+	public static boolean hasBeenVisible () {
+		return hasBeenVisible;
+	}
+	
 
 	public void addCurrentBlocks (boolean scrollToEnd) {
 		
