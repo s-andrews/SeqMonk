@@ -60,7 +60,7 @@ public class SeqMonkDataReimportParser extends DataParser {
 	 * version of the SeqMonk file format this parser can understand.
 	 * If the file to be loaded has a version higher than this then
 	 * the parser won't attempt to load it. */
-	public static final int MAX_DATA_VERSION = 20;
+	public static final int MAX_DATA_VERSION = 21;
 
 	private BufferedReader br;
 	private int thisDataVersion = -1;
@@ -177,7 +177,7 @@ public class SeqMonkDataReimportParser extends DataParser {
 		thisDataVersion = Integer.parseInt(sections[1]);
 
 		if (thisDataVersion > MAX_DATA_VERSION) {
-			throw new SeqMonkException("This data file needs a newer verison of SeqMonk to read it.");
+			throw new SeqMonkException("This project file uses data format v"+thisDataVersion+" but this SeqMonk release ("+SeqMonkApplication.VERSION+") only knows how to read up to v"+MAX_DATA_VERSION+". You need to update SeqMonk to a newer version to read this file.");
 		}
 	}
 

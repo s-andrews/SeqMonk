@@ -385,7 +385,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 		thisDataVersion = Integer.parseInt(sections[1]);
 
 		if (thisDataVersion > MAX_DATA_VERSION) {
-			throw new SeqMonkException("This data file needs a newer verison of SeqMonk to read it.");
+			throw new SeqMonkException("This project file uses data format v"+thisDataVersion+" but this SeqMonk release ("+SeqMonkApplication.VERSION+") only knows how to read up to v"+MAX_DATA_VERSION+". You need to update SeqMonk to a newer version to read this file.");
 		}
 	}
 
