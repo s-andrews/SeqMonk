@@ -1,3 +1,49 @@
+RELEASE NOTES FOR SeqMonk v1.45.3
+---------------------------------
+This release adds some useful functionality and cleans up a lot of
+the new functions which have been added in recent releases.  The main
+changes are:
+
+1. Indexed colours now duplicate if you're looking at expanded 
+   replicate sets
+   
+2. Genome view block display now works
+
+3. Added an option to apply the same manual correction to all samples
+
+4. Added an option to make an annotation track instead of a probe set
+   for all probe generators
+   
+5. Allow probe sets to be called something other than "All Probes"
+
+6. Allow annotated probe reports to be annotated with list values from
+   any combination of probe lists
+   
+7. Allow any images to be pasted into Vistories
+
+8. Added a --introns option to the command line importer
+
+9. Fixed per-probe normalisation when the "Use visible stores" option is
+   selected
+ 
+10. Added the ability to label multiple points in all scatterplot type
+    displays
+    
+11. Added a new normalisation method based on subtracting a linear 
+    trend from your data
+    
+12. Added a "sum" and "divide" option to to per-probe normalisation
+
+13. Make seqmonk prompt on exit if a vistory has been modified and 
+    viewed but not saved.
+    
+14. Allow all graphics exports to go straight to the clipboard
+
+15. Created a vistory event for hierarchical cluster probe generation
+
+
+
+
 RELEASE NOTES FOR SeqMonk v1.45.2
 ---------------------------------
 This is a bugfix and stability release which tidies up a number of
