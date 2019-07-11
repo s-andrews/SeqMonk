@@ -21,6 +21,7 @@ package uk.ac.babraham.SeqMonk.Utilities.ImageSaver;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -57,9 +58,16 @@ public class ImageSaver {
 		// Start by finding out if they want to save to a vistory
 		// or to a file
 		
-		int answerIndex = JOptionPane.showOptionDialog(SeqMonkApplication.getInstance(), "Save to File or Vistory?", "File or vistory?", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {"Vistory","File"}, "Vistory");
+		int answerIndex = JOptionPane.showOptionDialog(SeqMonkApplication.getInstance(), "Save to Clipboard, File or Vistory?", "Destination?", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {"Clipboard","Vistory","File"}, "Vistory");
+
 		
 		if (answerIndex == 0) {
+			saveToClipboard(c);
+			return;
+		}
+
+		
+		if (answerIndex == 1) {
 			saveToVistory(c);
 			return;
 		}
@@ -153,9 +161,14 @@ public class ImageSaver {
 		Vistory v = Vistory.getInstance();
 		
 		v.addBlock(new VistoryImage(b));
-		
-		
 	}
 	
+	public static void saveToClipboard (Component c) {
+		BufferedImage b = new BufferedImage(c.getWidth(),c.getHeight(),BufferedImage.TYPE_INT_RGB);
+		Graphics g = b.getGraphics();			
+		c.paint(g);
+		
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new TransferrableImage(b), null);
+	}
 	
 }
