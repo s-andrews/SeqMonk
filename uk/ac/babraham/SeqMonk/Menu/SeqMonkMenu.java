@@ -1492,6 +1492,8 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			JMenuItem fileExportImageChromosome = new JMenuItem("Chromosome View");
 			fileExportImageChromosome.setMnemonic(KeyEvent.VK_C);
 			fileExportImageChromosome.setActionCommand("file_export_chromosome_view");
+			fileExportImageChromosome.setAccelerator(KeyStroke.getKeyStroke('X', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
 			fileExportImageChromosome.addActionListener(this);
 			fileExportImage.add(fileExportImageChromosome);
 
