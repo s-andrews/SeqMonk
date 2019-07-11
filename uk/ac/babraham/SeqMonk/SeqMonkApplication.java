@@ -1212,7 +1212,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		probes.addProbeSetChangeListener(this);
 		changesWereMade();
 		
-		Vistory.getInstance().addBlock(new VistoryEvent("New Probe Set ("+probes.getAllProbes().length+" probes)",probes.justDescription()));
+		Vistory.getInstance().addBlock(new VistoryEvent("New Probe Set:"+ probes.name()+" ("+probes.getAllProbes().length+" probes)",probes.justDescription()));
 	}
 
 
