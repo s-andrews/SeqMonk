@@ -54,6 +54,8 @@ import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
 import uk.ac.babraham.SeqMonk.Gradients.InvertedGradient;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
+import uk.ac.babraham.SeqMonk.Vistory.Vistory;
+import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 
 public class HierarchicalClusterDialog extends JDialog implements ProgressListener, ChangeListener, ActionListener {
 
@@ -386,7 +388,8 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 				
 				break;
 			}
-			newList.setName(groupName);		
+			newList.setName(groupName);
+			Vistory.getInstance().addBlock(new VistoryEvent("New Probe List: "+newList.name()+" ("+newList.getAllProbes().length+" probes)", "[Hierarchical Clusters] "+newList.description()));
 
 		}
 	}

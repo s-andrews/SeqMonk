@@ -29,6 +29,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 
+import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
@@ -149,7 +150,18 @@ public class HierarchicalClusterPanel extends JPanel implements MouseListener, M
 	
 	public ProbeList saveClusters (int minClusterSize) {
 		
-		ProbeList allClusterList = new ProbeList(probeList, "Hierarchical Clusters", "Hierarchical Clusters with R > "+rValue, new String[0]);
+		StringBuffer listDescription = new StringBuffer();
+		listDescription.append("Hierarchical Clusters with R>=");
+		listDescription.append(rValue);
+		listDescription.append(" from ");
+		listDescription.append(probeList.name());
+		listDescription.append(" Quantitation was ");
+		listDescription.append(SeqMonkApplication.getInstance().dataCollection().probeSet().currentQuantitation());
+		if (normalise) {
+			listDescription.append(" Per-probe normalisation was applied");
+		}
+				
+		ProbeList allClusterList = new ProbeList(probeList, "Hierarchical Clusters", listDescription.toString(), new String[0]);
 				
 		// Now we need to work our way through the connected clusters
 		// to make the appropriate sub-lists
