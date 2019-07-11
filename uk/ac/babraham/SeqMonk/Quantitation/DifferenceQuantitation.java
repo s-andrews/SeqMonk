@@ -221,6 +221,11 @@ public class DifferenceQuantitation extends Quantitation implements ItemListener
 		sb.append(diffTypeBox.getSelectedItem().toString());
 		sb.append(" ");
 		sb.append(subtractEndBox.getSelectedItem().toString());
+		
+		if (minCountField.isEnabled()) {
+			sb.append(" min count was ");
+			sb.append(minCount);
+		}
 		return sb.toString();
 	}
 	
