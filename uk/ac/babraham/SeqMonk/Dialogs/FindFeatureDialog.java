@@ -304,7 +304,7 @@ public class FindFeatureDialog extends JDialog implements ActionListener, Runnab
 			if (name == null) return;  // They cancelled
 			
 			// Now we can go ahead and make the new annotation set
-			AnnotationSet searchAnnotations = new AnnotationSet(dataCollection.genome(), search.getText()+" "+featureType.getSelectedItem()+" search");
+			AnnotationSet searchAnnotations = new AnnotationSet(dataCollection.genome(), name);
 			for (int f=0;f<lastHits.length;f++) {
 
 				Feature feature = new Feature(name, lastHits[f].chromosomeName());
@@ -337,7 +337,7 @@ public class FindFeatureDialog extends JDialog implements ActionListener, Runnab
 			if (name == null) return;  // They cancelled
 			
 			// Now we can go ahead and make the new annotation set
-			AnnotationSet searchAnnotations = new AnnotationSet(dataCollection.genome(), search.getText()+" search results");
+			AnnotationSet searchAnnotations = new AnnotationSet(dataCollection.genome(), name);
 			for (int f=0;f<selectedHits.length;f++) {
 
 				Feature feature = new Feature(name, selectedHits[f].chromosomeName());
