@@ -32,7 +32,9 @@ import javax.swing.JPanel;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class LineGraphDialog extends JDialog implements ActionListener {
@@ -78,6 +80,12 @@ public class LineGraphDialog extends JDialog implements ActionListener {
 		summariseBox.setActionCommand("summarise");
 		optionsPanel.add(summariseBox);
 
+		
+		JButton highlightButton = new JButton("Highlight Rep Sets");
+		highlightButton.setActionCommand("highlight");
+		highlightButton.addActionListener(this);
+		optionsPanel.add(highlightButton);
+		
 		getContentPane().add(optionsPanel,BorderLayout.NORTH);
 		
 		graphPanel = new JPanel();
@@ -111,6 +119,13 @@ public class LineGraphDialog extends JDialog implements ActionListener {
 		if (ae.getActionCommand().equals("close")) {
 			setVisible(false);
 			dispose();
+		}
+		else if (ae.getActionCommand().contentEquals("highlight")) {
+			ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
+			for (int g=0;g<lineGraphs.length;g++) {
+				lineGraphs[g].setRepSets(repSets);
+			}
+
 		}
 		else if (ae.getActionCommand().equals("save")) {
 			ImageSaver.saveImage(graphPanel);

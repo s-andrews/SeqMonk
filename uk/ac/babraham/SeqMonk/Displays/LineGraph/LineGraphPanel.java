@@ -32,10 +32,12 @@ import javax.swing.JPanel;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
+import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.AxisScale;
 
@@ -45,9 +47,14 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 	private Probe [] probes;
 	private ProbeList list;
 	
+	private static final Color VERY_LIGHT_GREY = new Color(220,220,220);
+	
 	private Probe selectedProbe = null;
 	private int selectedX = 0;
 	private int selectedY = 0;
+	
+	private ReplicateSet[] repSets = null;
+	private int [] repSetIndices = null;
 	
 	private Color BLUE = new Color(0,0,200);
 	
@@ -119,6 +126,31 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 			this.summarise = summarise;
 			repaint();
 		}
+	}
+	
+	public void setRepSets (ReplicateSet [] repSets) {
+		this.repSets = repSets;
+		
+		if (repSets == null) {
+			repSetIndices = null;
+		}
+		else {
+			repSetIndices = new int [stores.length];
+			
+			for (int s=0;s<stores.length;s++) {
+				repSetIndices[s] = -1;
+			}
+			
+			for (int s=0;s<stores.length;s++) {
+				for (int r=0;r<repSets.length;r++) {
+					if (repSets[r].containsDataStore(stores[s])) {
+						repSetIndices[s] = r;
+					}
+				}
+			}
+		}
+		
+		repaint();
 	}
 	
 	public void run() {
@@ -305,7 +337,14 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 			int upperY;
 			int lowerY;
 			
-			g.setColor(BLUE);
+			if (repSets == null) {
+				g.setColor(BLUE);
+			}
+			else {
+				g.setColor(Color.GRAY);
+			}
+			
+			
 			for (int s=0;s<means.length;s++) {
 				thisX = getXPixels(s);
 				value = means[s]; 
@@ -315,6 +354,15 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 				thisY = getYPixels(value);
 
 				if (s>0) {
+					if (repSetIndices != null) {
+						if (repSetIndices[s] == repSetIndices[s-1]) {
+							g.setColor(ColourIndexSet.getColour(repSetIndices[s]));
+						}
+						else {
+							g.setColor(VERY_LIGHT_GREY);
+						}
+					}
+					
 					g.drawLine(lastX, lastY, thisX, thisY);
 				}
 				
@@ -342,6 +390,15 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 					thisY = getYPixels(value);
 					
 					if (s>0) {
+						if (repSetIndices != null) {
+							if (repSetIndices[s] == repSetIndices[s-1]) {
+								g.setColor(ColourIndexSet.getColour(repSetIndices[s]));
+							}
+							else {
+								g.setColor(VERY_LIGHT_GREY);
+							}
+						}
+
 						g.drawLine(lastX, lastY, thisX, thisY);
 					}
 					lastX = thisX;
@@ -368,6 +425,39 @@ public class LineGraphPanel extends JPanel implements Runnable, MouseListener {
 				}
 				g.drawString(selectedProbe.name(), selectedX, selectedY);
 			}
+		}
+		
+		
+		// Add the names of the rep sets if they're being shown
+		if (repSetIndices != null) {
+			
+			for (int r=0;r<repSets.length;r++) {
+				// Assume that the rep sets are contiguous otherwise this is going to be
+				// weird anyway.  We can find the mean index for the set
+				float total = 0;
+				float count = 0;
+				
+				for (int i=0;i<repSetIndices.length;i++) {
+					if (repSetIndices[i]==r) {
+						count++;
+						total += i;
+					}					
+				}
+
+				if (count > 0) {
+					total /= count;
+
+					// We're going to draw the name centering on total
+					thisX = Y_AXIS_SPACE + (int)(total*((getWidth()-(10+Y_AXIS_SPACE))/(stores.length-1)));
+					
+					thisX -= g.getFontMetrics().stringWidth(repSets[r].name())/2;
+					
+					g.setColor(ColourIndexSet.getColour(r));
+					g.drawString(repSets[r].name(),thisX,getHeight() - (X_AXIS_SPACE+2));
+				}
+				
+			}
+			
 		}
 		
 	}
