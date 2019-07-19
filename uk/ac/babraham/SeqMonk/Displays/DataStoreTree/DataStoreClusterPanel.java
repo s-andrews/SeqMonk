@@ -27,7 +27,9 @@ import java.util.HashMap;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterPair;
+import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 
 public class DataStoreClusterPanel extends JPanel {
 	
@@ -36,6 +38,7 @@ public class DataStoreClusterPanel extends JPanel {
 	
 	private ClusterPair clusterSet;
 	private DataStore [] stores;
+	private ReplicateSet [] repSets = null;
 	private float [] rRange;
 	private String listName;
 	
@@ -120,7 +123,26 @@ public class DataStoreClusterPanel extends JPanel {
 			xyPosition newPosition = new xyPosition(getX(rRange[1]), (getHeight()*(i+1))/(indices.length+1));
 			xyPositions.put(initialPairs.get(indices[i]), newPosition);
 			
+			
+			// Find if we're highlighting rep sets
+			if (repSets != null) {
+				DataStore store = stores[indices[i]];
+				int repSetIndex = -1;
+				
+				for (int r=0;r<repSets.length;r++) {
+					if (repSets[r].containsDataStore(store)) {
+						repSetIndex = r;
+					}
+				}
+				
+				if (repSetIndex >= 0) {
+					g.setColor(ColourIndexSet.getColour(repSetIndex));
+				}
+			}
+			
 			g.drawString(stores[indices[i]].name(), newPosition.x+5,newPosition.y+(g.getFontMetrics().getAscent()/2));
+			
+			g.setColor(Color.BLACK);
 		}
 		
 		
@@ -143,6 +165,12 @@ public class DataStoreClusterPanel extends JPanel {
 		
 		return rSplit;
 	}
+	
+	public void setRepSets (ReplicateSet [] repSets) {
+		this.repSets = repSets;
+		repaint();
+	}
+	
 	
 	public DataStore [][] getSplitStores (int limitPerStore) {
 

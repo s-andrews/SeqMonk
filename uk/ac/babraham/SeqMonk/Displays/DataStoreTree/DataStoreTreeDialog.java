@@ -38,6 +38,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.ClusterPair;
 import uk.ac.babraham.SeqMonk.DataTypes.Cluster.HierarchicalClusterSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
@@ -161,6 +162,20 @@ public class DataStoreTreeDialog extends JDialog implements ProgressListener {
 		});
 		
 		buttonPanel.add(reorderStoresButton);
+
+
+		buttonPanel.add(createRepSetsButton);
+
+		JButton highlightButton = new JButton("Highlight Rep Sets");
+		highlightButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
+				clusterPanel.setRepSets(repSets);
+			}
+		});
+		
+		buttonPanel.add(highlightButton);
 
 		
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
