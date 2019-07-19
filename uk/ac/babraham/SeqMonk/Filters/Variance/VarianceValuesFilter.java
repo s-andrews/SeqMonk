@@ -96,10 +96,17 @@ public class VarianceValuesFilter extends ProbeFilter {
 //		System.out.println("Data store size="+stores.length+" lower="+lowerLimit+" upper="+upperLimit+" type="+limitType+" chosen="+chosenNumber);
 		
 		Probe [] probes = startingList.getAllProbes();
-		ProbeList newList = new ProbeList(startingList,"Filtered Probes","",new String[0]);
 		
 		locallyCorrect = optionsPanel.locallyCorrectBox.isSelected();
 		
+		ProbeList newList;
+		
+		if (locallyCorrect) {
+			newList = new ProbeList(startingList,"Filtered Probes","",new String [] {"Corrected Variance"});
+		}
+		else {
+			newList = new ProbeList(startingList,"Filtered Probes","",new String [] {"Variance"});
+		}
 		
 		// If we're correcting our variances by the local trend then we'll need to store
 		// the smoothed values.
@@ -114,6 +121,8 @@ public class VarianceValuesFilter extends ProbeFilter {
 		
 		
 		for (int p=0;p<probes.length;p++) {
+			
+			float meanVariance = 0;
 			
 			progressUpdated(p, probes.length);
 			
@@ -137,6 +146,8 @@ public class VarianceValuesFilter extends ProbeFilter {
 //						System.err.println("Raw value is "+d+" smoothed value is "+localValue);
 						d -= localValue;
 					}
+					
+					meanVariance += d;
 				}
 				
 				catch (SeqMonkException e) {
@@ -159,22 +170,24 @@ public class VarianceValuesFilter extends ProbeFilter {
 				++count;
 			}
 			
+			meanVariance /= stores.length;
+			
 			// We can now figure out if the count we've got lets us add this
 			// probe to the probe set.
 			switch (limitType) {
 			case EXACTLY:
 				if (count == chosenNumber)
-					newList.addProbe(probes[p],null);
+					newList.addProbe(probes[p],meanVariance);
 				break;
 			
 			case AT_LEAST:
 				if (count >= chosenNumber)
-					newList.addProbe(probes[p],null);
+					newList.addProbe(probes[p],meanVariance);
 				break;
 
 			case NO_MORE_THAN:
 				if (count <= chosenNumber)
-					newList.addProbe(probes[p],null);
+					newList.addProbe(probes[p],meanVariance);
 				break;
 			}
 		}
