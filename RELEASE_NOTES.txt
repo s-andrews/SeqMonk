@@ -1,3 +1,23 @@
+RELEASE NOTES FOR SeqMonk v1.45.4
+---------------------------------
+This release is a bugfix release for the last version which resolves
+an issue where small probes might not be drawn in the chromsome view
+if their inferred size was less than 1 pixel.
+
+It also introduces a copule of other minor changes:
+
+1. Fix a probe drawing optimisation bug which caused some small probes
+   not to be drawn.
+   
+2. Add the option to highlight replicate sets in the line graph.
+
+3. Annotate the variance filter results with the actual variance 
+   values which were used for the test.
+   
+4. Improved the efficiency of drawing raw reads in the chromosome view
+   for replicate sets and data groups.
+
+
 RELEASE NOTES FOR SeqMonk v1.45.3
 ---------------------------------
 This release adds some useful functionality and cleans up a lot of
