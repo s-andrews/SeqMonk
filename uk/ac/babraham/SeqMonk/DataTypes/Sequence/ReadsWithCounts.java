@@ -107,7 +107,7 @@ public class ReadsWithCounts implements Serializable {
 		// then collapse them. Hopefully this will be quicker...
 		
 		int readCount = 0;
-		
+
 		for (int i=0;i<readsToMerge.length;i++) {
 			readCount += readsToMerge[i].reads.length;
 		}
@@ -125,30 +125,43 @@ public class ReadsWithCounts implements Serializable {
 			}
 		}
 		
-		// Now we sort them
+		// Now we sort them.  This is where all of the
+		// time goes in this function.
 		SequenceRead.sort(tempReads, tempCounts);
-		
-		// Now we find the unique values
-		LongVector uniqueReads = new LongVector();
-		IntVector uniqueCounts = new IntVector();
+				
+		// Now we find the number of unique values
+		readCount = 0;
 		if (tempReads.length>0) {
-			uniqueReads.add(tempReads[0]);
-			uniqueCounts.add(tempCounts[0]);
+			readCount = 1;
+		}
+		for (int i=1;i<tempReads.length;i++) {
+			if (tempReads[i] != tempReads[i-1]) {
+				++readCount;
+			}
+		}
+		
+		// Now we make up the collapsed counts
+		reads = new long[readCount];
+		counts = new int[readCount];
+		
+		index=0;
+
+		if (tempReads.length>0) {
+			reads[index] = tempReads[0];
+			counts[index] = tempCounts[0];
 		}
 		
 		for (int i=1;i<tempReads.length;i++) {
 			if (tempReads[i]==tempReads[i-1]) {
-				uniqueCounts.increaseLastBy(tempCounts[i]);
+				counts[index] += tempCounts[i];
 			}
 			else {
-				uniqueReads.add(tempReads[i]);
-				uniqueCounts.add(tempCounts[i]);
+				++index;
+				reads[index] = tempReads[i];
+				counts[index] += tempCounts[i];
 			}
 		}
-
-		reads = uniqueReads.toArray();
-		counts = uniqueCounts.toArray();
-
+		
 	}
 
 	public int totalCount () {
