@@ -99,83 +99,55 @@ public class ReadsWithCounts implements Serializable {
 			counts = readsToMerge[0].counts;
 			return;
 		}
+		
+		// The previous implementation of this was horribly slow where we found
+		// the unique positions first then assembled the set of counts through
+		// multiple iterations.  We can try a simpler approach where we just 
+		// concatenate the reads and counts into two new arrays, sort them and
+		// then collapse them. Hopefully this will be quicker...
+		
+		int readCount = 0;
+		
+		for (int i=0;i<readsToMerge.length;i++) {
+			readCount += readsToMerge[i].reads.length;
+		}
+		
+		// Now we can make the temporary values
+		long [] tempReads = new long[readCount];
+		int [] tempCounts = new int[readCount];
 
-
-		// Let's try a new approach.  We can merge and deduplicate the reads 
-		// first and then sum up the counts as a second step.
-
-		// First we get the set of unique positions between all of the sets
-
-		Set<Long> uniqueReads = new HashSet<Long>();
-
-		for (int m=0;m<readsToMerge.length;m++) {
-			long [] reads = readsToMerge[m].reads;
-			for (int r=0;r<reads.length;r++) {
-				uniqueReads.add(reads[r]);
+		int index = 0;
+		for (int i=0;i<readsToMerge.length;i++) {
+			for (int j=0;j<readsToMerge[i].reads.length;j++) {
+				tempReads[index] = readsToMerge[i].reads[j];
+				tempCounts[index] = readsToMerge[i].counts[j];
+				++index;
+			}
+		}
+		
+		// Now we sort them
+		SequenceRead.sort(tempReads, tempCounts);
+		
+		// Now we find the unique values
+		LongVector uniqueReads = new LongVector();
+		IntVector uniqueCounts = new IntVector();
+		if (tempReads.length>0) {
+			uniqueReads.add(tempReads[0]);
+			uniqueCounts.add(tempCounts[0]);
+		}
+		
+		for (int i=1;i<tempReads.length;i++) {
+			if (tempReads[i]==tempReads[i-1]) {
+				uniqueCounts.increaseLastBy(tempCounts[i]);
+			}
+			else {
+				uniqueReads.add(tempReads[i]);
+				uniqueCounts.add(tempCounts[i]);
 			}
 		}
 
-		reads = new long[uniqueReads.size()];
-
-		Iterator<Long> it = uniqueReads.iterator();
-		int i=0;
-		while (it.hasNext()) {
-			reads[i] = it.next();
-			i++;
-		}
-
-		// Now we sort it so it should be in the same order as the 
-		// original reads.
-
-		SequenceRead.sort(reads);
-
-		uniqueReads.clear();
-
-		counts = new int [reads.length];
-
-
-		// Now we go through each of the original lists comparing
-		// them to the latest value and incrementing the total 
-		// counts as appropriate.  Because the lists are always in
-		// order then we should always see everything.
-
-		int [] currentIndices = new int[readsToMerge.length];
-
-		for (int r=0;r<reads.length;r++) {
-
-			long lowestValue = reads[r];
-
-			for (int j=0;j<currentIndices.length;j++) {
-				if (currentIndices[j] == readsToMerge[j].reads.length) continue; // Skip datasets we've already emptied
-
-				if (readsToMerge[j].reads[currentIndices[j]] == lowestValue) {
-					counts[r] += readsToMerge[j].counts[currentIndices[j]];
-					++currentIndices[j];
-				}
-			}
-		}
-
-		// As a final sanity check we can see if we ended up with the final
-		// index position recorded for each of the lists.
-		for (int d=0;d<readsToMerge.length;d++) {
-			if (currentIndices[d] != readsToMerge[d].reads.length) {
-				throw new IllegalStateException("In index "+d+" expected "+readsToMerge[d].reads.length+" reads but got "+currentIndices[d]);
-			}
-		}
-
-		// We can also check that the summed counts is the same.
-
-		// This is a bit of a performance hit so we comment this out when we're not testing.
-
-		//		int totalCount = 0;
-		//		for (int d=0;d<readsToMerge.length;d++) {
-		//			totalCount += readsToMerge[d].totalCount();
-		//		}
-		//		
-		//		if (totalCount != totalCount()) {
-		//			throw new IllegalStateException("Total counts weren't the same");
-		//		}
-
+		reads = uniqueReads.toArray();
+		counts = uniqueCounts.toArray();
 
 	}
 
