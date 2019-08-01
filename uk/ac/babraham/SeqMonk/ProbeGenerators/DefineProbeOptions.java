@@ -178,7 +178,7 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 	 */
 	public void optionsNotReady () {
 		runButton.setEnabled(false);
-		runAnnotationButton.setEnabled(true);
+		runAnnotationButton.setEnabled(false);
 	}
 
 	/* (non-Javadoc)
@@ -303,6 +303,7 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 	public void generationExceptionReceived(Exception e) {
 		// This will be handled elsewhere...
 		runButton.setEnabled(true);  // Let them have another go!
+		runAnnotationButton.setEnabled(true);  // Let them have another go!
 	}
 
 	/* (non-Javadoc)
