@@ -296,21 +296,37 @@ public class AnnotationSetEditor extends JDialog implements ActionListener, List
 					
 					Feature [] features = as.getAllFeatures();
 					
+					// Add a track title
+					pr.println("track name="+file.getName().replaceAll(" ", "_").replaceAll(".bed$", "") + " description="+file.getName().replaceAll(" ", "_").replaceAll(".bed$", ""));
+					
 					for (int f=0;f<features.length;f++) {
 						StringBuffer sb = new StringBuffer();
+						
+						
+						// UCSC browser is thick and can't figure out that 1 and chr1 are the
+						// same thing so we need to help it out.
+						if (!features[f].chromosomeName().startsWith("chr")) {
+							sb.append("chr");
+						}
 						sb.append(features[f].chromosomeName());
 						sb.append("\t");
 						sb.append(features[f].location().start());
 						sb.append("\t");
 						sb.append(features[f].location().end());
 						sb.append("\t");
-						sb.append(features[f].type());
+						
+						// UCSC browser is thick and won't accept (perfectly valid) strings if they
+						// have spaces in them, even if they are quoted so we have to fix this
+						sb.append(features[f].type().replaceAll(" ", "_"));
 						sb.append("\t");
 						sb.append("100");
 						sb.append("\t");
 						if (features[f].location().strand() == Location.FORWARD) sb.append("+");
 						else if (features[f].location().strand() == Location.REVERSE) sb.append("-");
-						else sb.append(".");
+					
+						// UCSC browser is thick and won't accept the (perfectly valid) unknown strand
+						// so we're going to turn this into a plus
+						else sb.append("+");
 
 						pr.println(sb.toString());
 						
