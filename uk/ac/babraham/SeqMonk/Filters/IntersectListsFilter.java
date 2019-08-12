@@ -70,7 +70,7 @@ public class IntersectListsFilter extends ProbeFilter {
 	@Override
 	protected void generateProbeList() {
 						
-		ProbeList newList = new ProbeList(collection.probeSet(),"Filtered Probes","","Number of lists");
+		ProbeList newList = new ProbeList(collection.probeSet(),"Filtered Probes","", new String[0]);
 		
 		ProbeList [] includedLists = optionsPanel.includedLists();
 		ProbeList [] excludedLists = optionsPanel.excludedLists();
