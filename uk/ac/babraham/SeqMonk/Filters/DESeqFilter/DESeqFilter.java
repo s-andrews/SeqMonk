@@ -58,6 +58,7 @@ import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
 import uk.ac.babraham.SeqMonk.R.RProgressListener;
 import uk.ac.babraham.SeqMonk.R.RScriptRunner;
 import uk.ac.babraham.SeqMonk.Utilities.ListDefaultSelector;
+import uk.ac.babraham.SeqMonk.Utilities.OrderPreservingJList;
 import uk.ac.babraham.SeqMonk.Utilities.TempDirectory;
 import uk.ac.babraham.SeqMonk.Utilities.Templates.Template;
 
@@ -450,7 +451,7 @@ public class DESeqFilter extends ProbeFilter {
 			}
 
 
-			dataList = new JList(dataModel);
+			dataList = new OrderPreservingJList(dataModel);
 			ListDefaultSelector.selectDefaultStores(dataList);
 			valueChanged(null); // Set the initial lists
 			dataList.setCellRenderer(new TypeColourRenderer());
@@ -578,6 +579,7 @@ public class DESeqFilter extends ProbeFilter {
 		 */
 		public void valueChanged(ListSelectionEvent lse) {
 			Object [] o = dataList.getSelectedValues();
+			
 			ReplicateSet [] newSets = new ReplicateSet[o.length];
 			for (int i=0;i<o.length;i++) {
 				newSets[i] = (ReplicateSet)o[i];
