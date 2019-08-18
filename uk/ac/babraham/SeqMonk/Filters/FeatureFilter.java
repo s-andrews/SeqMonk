@@ -433,7 +433,7 @@ public class FeatureFilter extends ProbeFilter {
 					}
 					
 					
-					if (relationshipTypeBox.getSelectedItem().equals("Close to")) {
+					if (relationshipTypeBox.getSelectedItem().equals("Close to") || relationshipTypeBox.getSelectedItem().equals("Not Close to")) {
 						distanceField.setEnabled(true);
 					}
 					else {
