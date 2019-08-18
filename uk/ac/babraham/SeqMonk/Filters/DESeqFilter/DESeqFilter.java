@@ -23,6 +23,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -32,6 +34,7 @@ import java.io.PrintWriter;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -54,6 +57,8 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressRecordDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.Renderers.TypeColourRenderer;
+import uk.ac.babraham.SeqMonk.Displays.DesignEditor.StatisticalDesign;
+import uk.ac.babraham.SeqMonk.Displays.DesignEditor.StatisticalDesignEditorDialog;
 import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
 import uk.ac.babraham.SeqMonk.R.RProgressListener;
 import uk.ac.babraham.SeqMonk.R.RScriptRunner;
@@ -75,6 +80,7 @@ public class DESeqFilter extends ProbeFilter {
 	private static boolean independentFiltering = false;
 
 	private final DESeqOptionsPanel optionsPanel;
+	private StatisticalDesign design = null;
 
 	/**
 	 * Instantiates a new replicate set stats filter.
@@ -427,6 +433,7 @@ public class DESeqFilter extends ProbeFilter {
 		private JTextField cutoffField;
 		private JCheckBox multiTestBox;
 		private JCheckBox independentFilteringBox;
+		private JButton cofactorButton;
 
 		/**
 		 * Instantiates a new windowed replicate options panel.
@@ -453,10 +460,22 @@ public class DESeqFilter extends ProbeFilter {
 
 			dataList = new OrderPreservingJList(dataModel);
 			ListDefaultSelector.selectDefaultStores(dataList);
-			valueChanged(null); // Set the initial lists
 			dataList.setCellRenderer(new TypeColourRenderer());
 			dataList.addListSelectionListener(this);
 			dataPanel.add(new JScrollPane(dataList),BorderLayout.CENTER);
+		
+			cofactorButton = new JButton("Edit Cofactors");
+			cofactorButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					new StatisticalDesignEditorDialog(design);
+				}
+			});
+			cofactorButton.setEnabled(false);
+			dataPanel.add(cofactorButton,BorderLayout.SOUTH);
+			
+			valueChanged(null); // Set the initial lists
 
 			add(dataPanel,BorderLayout.WEST);
 
@@ -584,7 +603,16 @@ public class DESeqFilter extends ProbeFilter {
 			for (int i=0;i<o.length;i++) {
 				newSets[i] = (ReplicateSet)o[i];
 			}
+			
 			replicateSets = newSets;
+			if (newSets.length > 1) {
+				design = new StatisticalDesign(newSets);
+				cofactorButton.setEnabled(true);
+			}
+			else {
+				design = null;
+				cofactorButton.setEnabled(false);
+			}
 			optionsChanged();
 		}
 
