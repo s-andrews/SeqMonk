@@ -192,7 +192,19 @@ public class DESeqFilter extends ProbeFilter {
 				template.setValue("INDEPENDENT", "FALSE");
 			}
 
+			
+			// We need to make up a conditions data frame.  This will have the factor we're going
+			// to test (called source) and all of the other cofactors (called cofactor1, cofactor2 etc)
+			
+			
+			StringBuffer sb_design = new StringBuffer();
+			StringBuffer sb_reduced = new StringBuffer();
+			
 			StringBuffer sb = new StringBuffer();
+			
+			// Start with the source
+			sb.append("source=as.factor(c(");
+			
 			for (int s=0;s<storeGroups.length;s++) {
 				for (int i=0;i<storeGroups[s].length;i++) {
 					if (!(s==0 && i==0)) {
@@ -201,7 +213,59 @@ public class DESeqFilter extends ProbeFilter {
 					sb.append("\"group"+s+"\"");
 				}
 			}
+			
+			sb.append("))");
+			
+			// Now add the cofactors
+			for (int c=0;c<design.getCofactorCount();c++) {
+				String [] names = design.getSimpleCofactorValues(c);
+
+				sb.append(",cofactor");
+				sb.append(c+1);
+				sb.append("=as.factor(c(");
+				
+				// We'll sort out the design strings whilst we're at it.
+				if (c > 0) {
+					sb_design.append(" + ");
+					sb_reduced.append(" + ");
+				}
+				sb_design.append("cofactor");
+				sb_design.append(c+1);
+				
+				sb_reduced.append("cofactor");
+				sb_reduced.append(c+1);
+
+				
+				for (int n=0;n<names.length;n++){
+					if (n > 0) {
+						sb.append(",");
+					}
+					sb.append("\"");
+					sb.append(names[n]);
+					sb.append("\"");
+				}
+				
+				sb.append("))");
+			}
+			
+			// Add the source to the main design string
+			
+			if (design.getCofactorCount() > 0) {
+				sb_design.append(" + ");
+			}
+			
+			sb_design.append("source");
+			
+			
 			template.setValue("CONDITIONS", sb.toString());
+			template.setValue("DESIGN", sb_design.toString());
+			
+			if (design.getCofactorCount() == 0) {
+				template.setValue("REDUCED", "1");
+			}
+			else {
+				template.setValue("REDUCED", sb_reduced.toString());
+			}
 			template.setValue("PVALUE", ""+cutoff);
 
 			// Write the script file

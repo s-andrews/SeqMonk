@@ -4,7 +4,7 @@ setwd("%%WORKING%%")
 just.raw.counts <- read.delim("counts.txt",quote="",row.names=1)
 
 # Make up a condition table
-column.data <- data.frame(source=as.factor(c(%%CONDITIONS%%)))
+column.data <- data.frame(%%CONDITIONS%%)
 
 rownames(column.data) <- colnames(just.raw.counts)
 
@@ -13,11 +13,11 @@ library("DESeq2")
 
 # Make a DESeq data set from the counts and the design and specify which factors in
 # the design to test
-count.data.set <- DESeqDataSetFromMatrix(countData=just.raw.counts, colData=column.data,design= ~ source)
+count.data.set <- DESeqDataSetFromMatrix(countData=just.raw.counts, colData=column.data,design= ~ %%DESIGN%%)
 
 # Perform the analysis.
 if(length(levels(column.data$source))>2) {
-  count.data.set <- DESeq(count.data.set, test="LRT", full= ~source, reduced= ~1)
+  count.data.set <- DESeq(count.data.set, test="LRT", full= ~%%DESIGN%%, reduced= ~%%REDUCED%%)
 }else {
   count.data.set <- DESeq(count.data.set)
 }
