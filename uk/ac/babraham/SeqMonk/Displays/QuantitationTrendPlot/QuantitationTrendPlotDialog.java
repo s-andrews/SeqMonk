@@ -69,7 +69,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 	 * @param prefs the prefs
 	 */
 	public QuantitationTrendPlotDialog (QuantitationTrendData data) {
-		super(SeqMonkApplication.getInstance(),"Probe Trend Plot");
+		super(SeqMonkApplication.getInstance(),"Quantitation Trend Plot");
 		this.data = data;
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				
