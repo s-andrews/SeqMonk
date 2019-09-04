@@ -627,17 +627,21 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 			if (sections.length != 2) {
 				throw new SeqMonkException("Read line "+i+" didn't contain 2 sections");
 			}
-			int readCount = Integer.parseInt(sections[0]);
+			
+			// We updated the read count to be a long since we get datasets with more than 2^31 reads in them.
+			long readCount = Long.parseLong(sections[0]);
 
 			// In versions prior to 7 we encoded everything on every line separately
 			if (thisDataVersion < 7) {
 
+				// In versions this old it's safe to assume that everything will fit into an int
+				// since we didn't support big data sets back then.
 				for (int r=0;r<readCount;r++) {
 
 					if ((r % (1 +(readCount/10))) == 0) {
 						Enumeration<ProgressListener> en2 = listeners.elements();
 						while (en2.hasMoreElements()) {
-							en2.nextElement().progressUpdated("Reading data for "+dataSets[i].name(),i*10+(r / (1 + (readCount/10))),n*10);
+							en2.nextElement().progressUpdated("Reading data for "+dataSets[i].name(),i*10+(r / (1 + ((int)readCount/10))),n*10);
 						}
 					}
 
@@ -762,7 +766,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 				// a count after it, so we need to check for this.
 
 				// We keep count of reads processed to update the progress listeners
-				int readsRead = 0;
+				long readsRead = 0;
 
 				while (true) {
 					// The first line should be the chromosome and a number of reads
@@ -787,7 +791,9 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 						if ((readsRead % (1 +(readCount/10))) == 0) {
 							Enumeration<ProgressListener> en2 = listeners.elements();
 							while (en2.hasMoreElements()) {
-								en2.nextElement().progressUpdated("Reading data for "+dataSets[i].name(),i*10+(readsRead / (1 + (readCount/10))),n*10);
+								
+								// TODO: The progress bar will break if there are >2^31 reads.
+								en2.nextElement().progressUpdated("Reading data for "+dataSets[i].name(),i*10+((int)readsRead / (1 + ((int)(readCount/10)))),n*10);
 							}
 						}
 
