@@ -56,7 +56,7 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 	private Float upperLimit = null;
 	private boolean absoluteTransform = false;
 
-	private ValuesFilterOptionPanel optionsPanel = new ValuesFilterOptionPanel();
+	private ValuesFilterOptionPanel optionsPanel;
 
 
 	/**
@@ -68,6 +68,7 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 	public ListAnnotationValuesFilter (DataCollection collection) throws SeqMonkException {
 		super(collection);
 		listToUse = startingList;
+		optionsPanel = new ValuesFilterOptionPanel();
 	}
 
 	/* (non-Javadoc)
@@ -312,6 +313,11 @@ public class ListAnnotationValuesFilter extends ProbeFilter {
 			for (int i=0;i<probeListBox.getModel().getSize();i++) {
 				if (probeListBox.getModel().getElementAt(i).equals(listToUse)) {
 					probeListBox.setSelectedIndex(i);
+					String [] annots = listToUse.getValueNames();
+					for (int j=0;j<annots.length;j++) {
+						dataModel.addElement(annots[j]);
+					}
+										
 					break;
 				}
 			}
