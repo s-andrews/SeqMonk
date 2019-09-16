@@ -198,7 +198,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 				try {
 					PrintWriter pr = new PrintWriter(file);
 					
-					QuantitationTrendPlotDialog.this .data.writeData(pr);
+					QuantitationTrendPlotDialog.this.data.writeData(pr);
 					
 					pr.close();
 					
@@ -229,58 +229,6 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		if (ae.getActionCommand().equals("close")){
 			setVisible(false);
 			dispose();
-		}
-		else if (ae.getActionCommand().equals("save_data")){
-
-			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
-			chooser.setMultiSelectionEnabled(false);
-			chooser.setFileFilter(new FileFilter() {
-			
-				@Override
-				public String getDescription() {
-					return "Text files";
-				}
-			
-				@Override
-				public boolean accept(File f) {
-					if (f.isDirectory()) return true;
-					if (f.getName().toLowerCase().endsWith(".txt")) return true;
-					return false;
-				}
-			});
-			
-			int result = chooser.showSaveDialog(this);
-			if (result == JFileChooser.CANCEL_OPTION) return;
-
-			File file = chooser.getSelectedFile();
-			SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
-			
-			if (file.isDirectory()) return;
-
-			if (! file.getPath().toLowerCase().endsWith(".txt")) {
-				file = new File(file.getPath()+".txt");
-			}
-			
-			// Check if we're stepping on anyone's toes...
-			if (file.exists()) {
-				int answer = JOptionPane.showOptionDialog(this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
-
-				if (answer > 0) {
-					return;
-				}
-			}
-			
-//			try {
-				
-				// TODO: Work out how to save data...
-				
-//				trendPanel.saveData(file);
-//			} 
-//			catch (IOException e) {
-//				e.printStackTrace();
-//				JOptionPane.showMessageDialog(this, "Error saving data: "+e.getMessage(), "Data Save Error", JOptionPane.ERROR_MESSAGE);
-//			}
-			
 		}
 		else if (ae.getActionCommand().equals("save_image")){
 			ImageSaver.saveImage(trendPanel);

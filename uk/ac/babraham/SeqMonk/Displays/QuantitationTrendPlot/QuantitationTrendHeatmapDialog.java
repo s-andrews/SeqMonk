@@ -23,17 +23,23 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Hashtable;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
@@ -44,6 +50,7 @@ import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.HeatmapPanel.Quanti
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
 import uk.ac.babraham.SeqMonk.Gradients.InvertedGradient;
+import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeListener, ActionListener {
@@ -81,7 +88,65 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 
 		JButton saveDataButton = new JButton("Save Data");
 		saveDataButton.setActionCommand("save_data");
-		saveDataButton.addActionListener(this);
+		saveDataButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent ae) {
+
+				JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+				chooser.setMultiSelectionEnabled(false);
+				chooser.setFileFilter(new FileFilter() {
+					
+					public String getDescription() {
+						return "Text Files";
+					}
+					
+					public boolean accept(File f) {
+						if (f.isDirectory() || f.getName().toLowerCase().endsWith(".txt")) {
+							return true;
+						}
+						return false;
+					}
+				});
+				
+				int result = chooser.showSaveDialog(QuantitationTrendHeatmapDialog.this);
+				if (result == JFileChooser.CANCEL_OPTION) return;
+
+				File file = chooser.getSelectedFile();
+				SeqMonkPreferences.getInstance().setLastUsedSaveLocation(file);
+				
+				if (file.isDirectory()) return;
+
+				if (! file.getPath().toLowerCase().endsWith(".txt")) {
+					file = new File(file.getPath()+".txt");
+				}
+				
+				// Check if we're stepping on anyone's toes...
+				if (file.exists()) {
+					int answer = JOptionPane.showOptionDialog(QuantitationTrendHeatmapDialog.this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+
+					if (answer > 0) {
+						return;
+					}
+				}
+
+				// Now write out the results
+				
+				try {
+					PrintWriter pr = new PrintWriter(file);
+					
+					QuantitationTrendHeatmapDialog.this.data.writeData(pr);
+					
+					pr.close();
+					
+				}
+				catch (IOException ioe) {
+					throw new IllegalStateException(ioe);
+				}
+				
+			
+			}
+		});
+
 		buttonPanel.add(saveDataButton);
 
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
