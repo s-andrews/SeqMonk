@@ -37,7 +37,10 @@ import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
+import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.HiCDataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
@@ -60,6 +63,8 @@ public class AnnotatedInteractionReport extends InteractionReport implements Key
 	public AnnotatedInteractionReport(DataCollection collection,  HeatmapMatrix matrix) {
 		super(collection, matrix);
 		interactions = matrix.filteredInteractions();
+		
+		dataStore = matrix.dataStore();
 
 		HashSet<Probe> uniqueProbes = new HashSet<Probe>();
 		for (int i=0;i<interactions.length;i++) {
@@ -90,6 +95,9 @@ public class AnnotatedInteractionReport extends InteractionReport implements Key
 
 	/** How far away a feature can be to be attached to a probe */
 	private JTextField annotationLimit;
+	
+	/** We report on the current quantitation so we need the data store for this **/
+	private HiCDataStore dataStore;
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.SeqMonk.Reports.Report#getOptionsPanel()
@@ -437,7 +445,7 @@ public class AnnotatedInteractionReport extends InteractionReport implements Key
 		 * @see javax.swing.table.TableModel#getColumnCount()
 		 */
 		public int getColumnCount() {
-			return 15;
+			return 17;
 		}
 
 		/* (non-Javadoc)
@@ -460,6 +468,8 @@ public class AnnotatedInteractionReport extends InteractionReport implements Key
 			case 12: return "Obs/Exp";
 			case 13: return "P-value";
 			case 14: return "Interactions";
+			case 15: return "Probe1Quantitation";
+			case 16: return "Probe2Quantitation";
 			}
 			return null;
 		}
@@ -485,6 +495,8 @@ public class AnnotatedInteractionReport extends InteractionReport implements Key
 			case 12: return Double.class;
 			case 13: return Double.class;
 			case 14: return Integer.class;
+			case 15: return Float.class;
+			case 16: return Float.class;
 			}
 			return null;
 		}
@@ -537,6 +549,16 @@ public class AnnotatedInteractionReport extends InteractionReport implements Key
 			case 12: return interactions[r].strength();
 			case 13: return interactions[r].signficance();
 			case 14: return interactions[r].absolute();
+			case 15: try {
+					return ((DataStore)dataStore).getValueForProbe(interactions[r].lowestProbe());
+				} catch (SeqMonkException e) {
+					return Float.NaN;
+				}
+			case 16: try {
+					return ((DataStore)dataStore).getValueForProbe(interactions[r].highestProbe());
+				} catch (SeqMonkException e) {
+					return Float.NaN;
+				}
 
 
 			}
