@@ -276,7 +276,7 @@ public class FindFeaturesByNameDialog extends JDialog implements ActionListener,
 			if (name == null) return;  // They cancelled
 			
 			// Now we can go ahead and make the new annotation set
-			AnnotationSet searchAnnotations = new AnnotationSet(dataCollection.genome(), "Named features search results");
+			AnnotationSet searchAnnotations = new AnnotationSet(dataCollection.genome(), name);
 			for (int f=0;f<lastHits.length;f++) {
 
 				Feature feature = new Feature(name, lastHits[f].chromosomeName());
