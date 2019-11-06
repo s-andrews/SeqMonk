@@ -296,6 +296,23 @@ sub get_prefs_max () {
 
 
 sub get_linux_memory {
+
+	# Before we look at physical memory we can check whether we're running on
+	# a SLURM cluster.  In this case the amount of memory we have isn't the 
+	# amount which is on the machine, but is the allocation we've been given,
+	# which will be lower than the physical memory on the node.
+	
+	if (exists $ENV{SLURM_JOB_ID}) {
+		my $scontrol = `scontrol show jobid=$ENV{SLURM_JOB_ID}`;
+		
+		if ($scontrol =~ /TRES=.*mem=(\d+)M/) {
+			return $1;
+		}
+		else {
+			warn "Found a SLURM JOB ID, but couldn't get a memory allocation from\n$scontrol\n";
+		}	
+	}	
+
 	# We get the amount of physical memory on linux by parsing the output of free
 	
 	open (MEM,"free -m |") or print_error("Can't launch free on linux: $!");
