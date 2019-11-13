@@ -85,7 +85,7 @@ public class VisibleStoresParser extends DataParser {
 	 */
 	public VisibleStoresParser (SeqMonkApplication application) {
 		super(application.dataCollection());
-		visibleStores = application.drawnDataStores();
+		visibleStores = application.drawnDataSets();
 		prefs = new VisibleStoresOptionsPanel();
 	}
 
