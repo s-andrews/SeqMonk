@@ -34,6 +34,7 @@ import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
@@ -91,7 +92,10 @@ public class RNASeqPipeline extends Pipeline {
 	}
 
 	public boolean createsNewProbes () {
-		return true;
+		// We're going to lie here and say no, even though we do.  That's because
+		// some times we don't and we need to check within the pipeline and not 
+		// at the start.
+		return false;
 	}
 
 	protected FeatureGroup [] mergeTranscripts (Feature [] features, boolean merge) {
@@ -367,6 +371,15 @@ public class RNASeqPipeline extends Pipeline {
 			Arrays.sort(existingProbes);
 
 			if (allProbes.length != existingProbes.length) {
+				// Warn the user that the new probe set is not the same as the existing
+				// one and that we're going to wipe their probes out.
+				
+				int answer = JOptionPane.showConfirmDialog(SeqMonkApplication.getInstance(), "Since you're using different option to your last probe generation your previous probes and lists will be replaced.  Are you sure you want to continue?","Are you sure?",JOptionPane.YES_NO_OPTION);
+				if (answer != JOptionPane.YES_OPTION) {
+					progressCancelled();
+					return;
+				}
+
 				collection().setProbeSet(new ProbeSet("Transcript features over "+optionsPanel.getSelectedFeatureType(), allProbes));				
 			}
 			else {
@@ -384,6 +397,18 @@ public class RNASeqPipeline extends Pipeline {
 					allProbes = existingProbes;
 				}
 				else {
+					
+					// Warn the user that the new probe set is not the same as the existing
+					// one and that we're going to wipe their probes out.
+					
+					int answer = JOptionPane.showConfirmDialog(SeqMonkApplication.getInstance(), "Since you're using different option to your last probe generation your previous probes and lists will be replaced.  Are you sure you want to continue?","Are you sure?",JOptionPane.YES_NO_OPTION);
+					if (answer != JOptionPane.YES_OPTION) {
+						progressCancelled();
+						return;
+					}
+
+					
+					
 					collection().setProbeSet(new ProbeSet("Transcript features over "+optionsPanel.getSelectedFeatureType(), allProbes));
 				}
 			}
