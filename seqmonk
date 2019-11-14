@@ -305,7 +305,7 @@ sub get_linux_memory {
 	if (exists $ENV{SLURM_JOB_ID}) {
 		my $scontrol = `scontrol show jobid=$ENV{SLURM_JOB_ID}`;
 		
-		if ($scontrol =~ /TRES=.*mem=(\d+)(MG)/) {
+		if ($scontrol =~ /TRES=.*mem=(\d+)([MG])/) {
 			if ($2 eq 'M') {
 				return $1;
 			}
