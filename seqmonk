@@ -305,8 +305,13 @@ sub get_linux_memory {
 	if (exists $ENV{SLURM_JOB_ID}) {
 		my $scontrol = `scontrol show jobid=$ENV{SLURM_JOB_ID}`;
 		
-		if ($scontrol =~ /TRES=.*mem=(\d+)M/) {
-			return $1;
+		if ($scontrol =~ /TRES=.*mem=(\d+)(MG)/) {
+			if ($2 eq 'M') {
+				return $1;
+			}
+			else {
+				return $1 * 1024;
+			}
 		}
 		else {
 			warn "Found a SLURM JOB ID, but couldn't get a memory allocation from\n$scontrol\n";
