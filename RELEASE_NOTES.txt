@@ -1,3 +1,44 @@
+RELEASE NOTES FOR SeqMonk v1.46.0
+---------------------------------
+The v1.46.0 release introduces a couple of new features and fixes 
+some bugs.
+
+The main changes are:
+
+1. In statistical tests which can use more than 2 replicate sets
+   we now remember the order of selection of the sets in the options
+   so that the meaning of the fold change values is deterministic, ie
+   if you are comparing WT and KO you can choose to have the change as
+   either WT/KO or KO/WT in the report.
+
+2. Fixed a bug where the intersect lists filter could make project files
+   which couldn't be re-loaded.
+   
+3. Added suitable track headers to make exported BED files more compatible
+   with UCSC browser
+ 
+4. Allowed custom distances for "not close to" feature filter
+
+5. Added an option to define co-factors when constructing a linear model 
+   for DESeq2.
+   
+6. Fixed the save data option in the quantitation trend heatmap
+
+7. Fixed PCA domain quantitation probe generation
+
+8. Added the current quantitation values to the HiC report
+
+9. Make the annotation set name the same as the feature name for imported
+   annotation.
+   
+10. Made the linux launch script SLURM aware so it configures memory limits
+    correctly.
+    
+11. Fix the warning of replacing probes in the RNA-Seq quantitation pipeline
+    so it only warns if it's actually going to replace them.
+
+
+
 RELEASE NOTES FOR SeqMonk v1.45.4
 ---------------------------------
 This release is a bugfix release for the last version which resolves
