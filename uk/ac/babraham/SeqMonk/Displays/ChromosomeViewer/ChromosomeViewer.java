@@ -561,7 +561,7 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 		int index = getIndex(t);
 		
 		if (groupedIndices.size()>index) {
-			return groupedIndices.elementAt(getIndex(t));
+			return groupedIndices.elementAt(index);
 		}
 		return(0);
 	}
