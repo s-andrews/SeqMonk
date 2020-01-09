@@ -1218,7 +1218,6 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 			
 			pointsToSampleField = new JTextField(""+probesPerSet,5);
 			pointsToSampleField.addKeyListener(new NumberKeyListener(false, false,startingList.getAllProbes().length/2));
-			pointsToSampleField.addKeyListener(this);
 			choicePanel.add(pointsToSampleField,gbc);
 			
 			gbc.gridx = 1;
@@ -1393,7 +1392,8 @@ public class GeneSetIntensityDifferenceFilter extends ProbeFilter implements Win
 				else{
 					maxGenesInSet = d.intValue();
 				}
-			}											
+			}
+
 			else {
 				throw new IllegalStateException("Unexpected text field "+f+" sending data to keylistener in differences filter");
 			}
