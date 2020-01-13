@@ -36,6 +36,9 @@ The main changes are:
     
 11. Fix the warning of replacing probes in the RNA-Seq quantitation pipeline
     so it only warns if it's actually going to replace them.
+    
+12. In DESeq2 pairwise comparisons we now report both the raw log2FoldChange
+    and the shrunken log2FoldChange.
 
 
 
