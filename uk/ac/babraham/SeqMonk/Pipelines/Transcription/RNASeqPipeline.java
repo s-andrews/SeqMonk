@@ -831,22 +831,23 @@ public class RNASeqPipeline extends Pipeline {
 
 			// Check to see if we need to issue a warning...
 			DataSet [] allSets = collection().getAllDataSets();
-			boolean warnAboutLength = false;
+			String warnAboutLength = "";
 			for (int s=0;s<allSets.length;s++) {
 				// If we have data which jumps over splice sites then this
 				// isn't an appropriate thing to do and we need to warn the
 				// user
 				if (allSets[s].getMaxReadLength()>5000) {
 					// We're probably safe for a bit with a 5kb real length limit
-					warnAboutLength = true;
+					warnAboutLength = allSets[s].name();
+					break;
 				}
 			}
 
-			if (warnAboutLength) {
+			if (warnAboutLength.length() > 0) {
 				gbc.gridx=1;
 				gbc.gridwidth = 2;
 				gbc.gridy=0;
-				JLabel warningLabel = new JLabel("<html><center>This quantitation requires data to have been imported with <br>the 'Treat as RNA-Seq data' option turned on<br>and your data doesn't look like it had that.</center></html>",JLabel.CENTER);
+				JLabel warningLabel = new JLabel("<html><center>This quantitation requires data to have been imported with <br>the 'Treat as RNA-Seq data' option turned on<br>and your data doesn't look like it had that.<br>I saw this from "+warnAboutLength+"</center></html>",JLabel.CENTER);
 				warningLabel.setForeground(Color.RED);
 				add(warningLabel,gbc);
 				gbc.gridwidth = 1;
