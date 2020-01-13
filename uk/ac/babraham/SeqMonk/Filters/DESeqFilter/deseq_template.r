@@ -25,6 +25,11 @@ if(length(levels(column.data$source))>2) {
 # Retrieve the full set of results.
 binomial.result <- results(count.data.set,independentFiltering=%%INDEPENDENT%%)
 
+if(length(levels(column.data$source))==2) {
+	shrunk.result <- lfcShrink(count.data.set,coef="source_group1_vs_group0",independentFiltering=%%INDEPENDENT%%,type="normal")
+	binomial.result$shrunkLog2FoldChange <- shrunk.result$log2FoldChange
+}
+
 # Remove unmeasured results
 na.omit(binomial.result) -> binomial.result
 

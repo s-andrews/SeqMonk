@@ -352,7 +352,12 @@ public class DESeqFilter extends ProbeFilter {
 
 			ProbeList newList;
 
-			newList = new ProbeList(startingList,"","",new String[] {"P-value","FDR","Log2 Fold Change"});
+			if (storeGroups.length == 2) {
+				newList = new ProbeList(startingList,"","",new String[] {"P-value","FDR","Log2 Fold Change","Shrunk Log2 Fold Change"});
+			}
+			else {
+				newList = new ProbeList(startingList,"","",new String[] {"P-value","FDR","Log2 Fold Change"});
+			}
 
 			File hitsFile = new File(tempDir.getAbsolutePath()+"/hits.txt");
 
@@ -367,7 +372,14 @@ public class DESeqFilter extends ProbeFilter {
 				float pValue = Float.parseFloat(sections[5]);
 				float qValue = Float.parseFloat(sections[6]);
 				float foldChange = Float.parseFloat(sections[2]);
-				newList.addProbe(probes[probeIndex],new float[]{pValue,qValue,foldChange});
+				
+				if (storeGroups.length == 2) {
+					float shrunkChange = Float.parseFloat(sections[7]);
+					newList.addProbe(probes[probeIndex],new float[]{pValue,qValue,foldChange,shrunkChange});
+				}
+				else {
+					newList.addProbe(probes[probeIndex],new float[]{pValue,qValue,foldChange});
+				}
 			}
 
 			br.close();
