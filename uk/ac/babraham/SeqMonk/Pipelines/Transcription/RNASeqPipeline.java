@@ -987,7 +987,7 @@ public class RNASeqPipeline extends Pipeline {
 			gbc.gridy++;
 			gbc.gridx=1;
 
-			add(new JLabel("Correct for DNA Duplication"),gbc);
+			add(new JLabel("Correct for Duplication"),gbc);
 
 			gbc.gridx=2;
 
