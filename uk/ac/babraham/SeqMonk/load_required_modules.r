@@ -13,10 +13,12 @@ package.type = "source"
 
 if (Sys.info()["sysname"] == "Windows") {
   package.type <- "win.binary"
+  options(install.packages.check.source = "no")
 }
 
 if (Sys.info()["sysname"] == "Darwin") {
-  package.type <- "mac.binary"
+  package.type <- "binary"
+  options(install.packages.check.source = "no")
 }
 
 install.cran <- function (package) {
