@@ -16,7 +16,7 @@ if (Sys.info()["sysname"] == "Windows") {
 }
 
 if (Sys.info()["sysname"] == "Darwin") {
-  package.type <- "osx.binary"
+  package.type <- "mac.binary"
 }
 
 install.cran <- function (package) {
