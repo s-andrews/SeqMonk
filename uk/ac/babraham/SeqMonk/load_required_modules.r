@@ -9,15 +9,11 @@ repository = getOption("CRAN","http://cloud.r-project.org")
 # to do this we need to set the type value for install.packages. We 
 # need to look at the OS to figure out what this should be
 
-package.type = "source"
-
 if (Sys.info()["sysname"] == "Windows") {
-  package.type <- "win.binary"
   options(install.packages.check.source = "no")
 }
 
 if (Sys.info()["sysname"] == "Darwin") {
-  package.type <- "binary"
   options(install.packages.check.source = "no")
 }
 
@@ -25,7 +21,7 @@ install.cran <- function (package) {
   
   # First test if it's here already
   if (!package %in% rownames(installed.packages())) {
-    install.packages(package, repos=repository, type=package.type)
+    install.packages(package, repos=repository)
   }else {
     print(paste0(package," is already installed"))
   }
@@ -36,7 +32,7 @@ install.bioconductor <- function (package) {
   
   # First test if it's here already
   if (!package %in% rownames(installed.packages())) {
-    BiocManager::install(package, type=package.type, update=FALSE)
+    BiocManager::install(package, update=FALSE)
   }else {
     print(paste0(package," is already installed"))
   }
@@ -59,7 +55,7 @@ install.cran("Rtsne")
 
 # Bioconductor is in a state of flux.  They currently have two 
 # different installer systems, the older biocLite system which 
-# still works everywhere for the momenet but is likely to be 
+# still works everywhere for the moment but is likely to be 
 # deprecated eventually, and the newer BiocManager which looks
 # like it might be better, but only works for R>3.5.0
 # 
