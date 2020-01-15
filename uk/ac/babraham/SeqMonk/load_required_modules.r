@@ -5,15 +5,53 @@
 repository = getOption("CRAN","http://cloud.r-project.org")
 
 
+# We want to force windows and mac users to use binary distributions
+# to do this we need to set the type value for install.packages. We 
+# need to look at the OS to figure out what this should be
+
+package.type = "source"
+
+if (Sys.info()["sysname"] == "Windows") {
+  package.type <- "win.binary"
+}
+
+if (Sys.info()["sysname"] == "Darwin") {
+  package.type <- "osx.binary"
+}
+
+install.cran <- function (package) {
+  
+  # First test if it's here already
+  if (!package %in% rownames(installed.packages())) {
+    install.packages(package, repos=repository, type=package.type)
+  }else {
+    print(paste0(package," is already installed"))
+  }
+  
+}
+
+install.bioconductor <- function (package) {
+  
+  # First test if it's here already
+  if (!package %in% rownames(installed.packages())) {
+    BiocManager::install(package, type=package.type, update=FALSE)
+  }else {
+    print(paste0(package," is already installed"))
+  }
+  
+}
+
+
+
 # We need to work around a bug in the latest bioconductor/R combination
-install.packages("data.table", repos=repository)
+install.cran("data.table")
 
 # EdgeR also has a buggy manifest which doesn't say it needs the 
 # statmod package, so we get that too.
-install.packages("statmod", repos=repository)
+install.cran("statmod")
 
 
-install.packages("Rtsne", repos=repository)
+install.cran("Rtsne")
 
 
 
@@ -28,18 +66,18 @@ install.packages("Rtsne", repos=repository)
 
 
 if (version$major >3 | (version$major == 3 & as.numeric(version$minor) >= 5.0)) {
-
-	install.packages("BiocManager", repos=repository)
-	BiocManager::install("DESeq2")
-	BiocManager::install("edgeR")
-	BiocManager::install("fastseg")
-	
+  
+  install.cran("BiocManager")
+  install.bioconductor("DESeq2")
+  install.bioconductor("edgeR")
+  install.bioconductor("fastseg")
+  
 }else{
-	source("http://bioconductor.org/biocLite.R")
-	biocLite()
-	biocLite("DESeq2")
-	biocLite("edgeR")
-	biocLite("fastseg")
+  source("http://bioconductor.org/biocLite.R")
+  biocLite()
+  biocLite("DESeq2")
+  biocLite("edgeR")
+  biocLite("fastseg")
 }
 
 # NB we don't need to explicitly install limma as it's a dependency
