@@ -23,7 +23,8 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
@@ -118,9 +119,9 @@ public class UpdateChecker {
 	
 		try {
 			
-			URL updateURL = new URL("http","www.bioinformatics.babraham.ac.uk","/projects/seqmonk/current_version.txt");
+			URL updateURL = new URL("https","www.bioinformatics.babraham.ac.uk","/projects/seqmonk/current_version.txt");
 			
-			URLConnection connection = updateURL.openConnection();
+			HttpsURLConnection connection = (HttpsURLConnection)updateURL.openConnection();
 			connection.setUseCaches(false);
 			
 			DataInputStream d = new DataInputStream(new BufferedInputStream(connection.getInputStream()));

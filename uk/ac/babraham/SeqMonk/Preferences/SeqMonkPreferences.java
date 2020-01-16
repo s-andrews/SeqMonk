@@ -71,7 +71,7 @@ public class SeqMonkPreferences {
 	private File tempDirectory = null;
 			
 	/** The network address from where we can download new genomes */
-	private String genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
+	private String genomeDownloadLocation = "https://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
 	
 	/** Whether we're using a network proxy */
 	private boolean useProxy = false;
@@ -184,7 +184,10 @@ public class SeqMonkPreferences {
 				}
 				else if (sections[0].equals("GenomeDownloadLocation")) {
 					if (sections[1].equals("http://www.bioinformatics.bbsrc.ac.uk/chipmonk/genomes/")) {
-						genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
+						genomeDownloadLocation = "https://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
+					}
+					else if (sections[1].equals("http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/")) {
+						genomeDownloadLocation = "https://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
 					}
 					else {
 						genomeDownloadLocation = sections[1];
