@@ -204,7 +204,7 @@ public class HierarchicalClusterDialog extends JDialog implements ProgressListen
 		JPanel colourPanel = new JPanel();
 		
 		gradients = new JComboBox(GradientFactory.getGradients());
-		gradients.setSelectedIndex(2);
+		gradients.setSelectedIndex(3);
 		gradients.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
