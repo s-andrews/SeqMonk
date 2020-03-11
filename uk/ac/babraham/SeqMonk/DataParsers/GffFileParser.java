@@ -183,12 +183,18 @@ public class GffFileParser extends DataParser {
 							strand = Location.UNKNOWN;
 						}
 						
-						if (extendBy > 0) {
+						if (extendBy != 0) {
 							if (strand == Location.FORWARD) {
 								end += extendBy;
+								if (end < start) {
+									end = start;
+								}
 							}
 							else if (strand == Location.REVERSE) {
 								start -= extendBy;
+								if (start > end) {
+									start = end;
+								}
 							}
 						}
 					}

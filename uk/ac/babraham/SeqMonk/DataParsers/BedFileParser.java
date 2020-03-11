@@ -167,12 +167,18 @@ public class BedFileParser extends DataParser {
 								strand = Location.UNKNOWN;
 							}
 							
-							if (extendBy > 0) {
-								if (strand==Location.REVERSE) {
-									start -=extendBy;
+							if (extendBy != 0) {
+								if (strand == Location.FORWARD) {
+									end += extendBy;
+									if (end < start) {
+										end = start;
+									}
 								}
-								else if (strand==Location.FORWARD) {
-									end+=extendBy;
+								else if (strand == Location.REVERSE) {
+									start -= extendBy;
+									if (start > end) {
+										start = end;
+									}
 								}
 							}
 						}

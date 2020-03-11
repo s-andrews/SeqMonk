@@ -388,7 +388,7 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	}
 	
 	public int extendReads () {
-		if (extendReads == null || extendReads.getText().length()==0) {
+		if (extendReads == null || extendReads.getText().length()==0 || extendReads.getText().equals("-")) {
 			return 0;
 		}
 		return Integer.parseInt(extendReads.getText());
@@ -428,9 +428,16 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	public void keyReleased(KeyEvent e) {
 		
 		JTextField source = (JTextField)e.getSource();
+		
+		// We need a free pass for the extend reads if
+		// the contents are just "-" since it could be 
+		// the start of a negative value.
+		
+		if (source == extendReads & source.getText().equals("-")) return;
+		
 		try {
 			int i = Integer.parseInt(source.getText());
-			if (i < 0) {
+			if (i < 0 & source != extendReads) {
 				throw new Exception("Negative value");
 			}
 		}
