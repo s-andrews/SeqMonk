@@ -59,7 +59,7 @@ public class SeqMonkAnnotationReimportParser extends AnnotationParser {
 	 * version of the SeqMonk file format this parser can understand.
 	 * If the file to be loaded has a version higher than this then
 	 * the parser won't attempt to load it. */
-	public static final int MAX_DATA_VERSION = 20;
+	public static final int MAX_DATA_VERSION = 21;
 
 	private BufferedReader br;
 	private int thisDataVersion = -1;
