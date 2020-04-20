@@ -627,10 +627,10 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 				return data[r].probe.chromosome();
 
 			case 2:
-				return new Integer(data[r].probe.start());
+				return Integer.valueOf(data[r].probe.start());
 
 			case 3:
-				return new Integer(data[r].probe.end());
+				return Integer.valueOf(data[r].probe.end());
 
 			case 4:
 				if (data[r].probe.strand()== Probe.FORWARD) return "+";
@@ -669,7 +669,7 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 				return data[r].orientation;
 
 			case 11:
-				return new Integer(data[r].distance);
+				return Integer.valueOf(data[r].distance);
 
 			default:
 				if (c < 12 + annotations.length) {
@@ -677,12 +677,12 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 						return Double.NaN;
 					}
 					else {
-						return annotations[c-12].list().getValuesForProbe(data[r].probe)[annotations[c-12].index()];
+						return Double.valueOf(annotations[c-12].list().getValuesForProbe(data[r].probe)[annotations[c-12].index()]);
 					}
 				}
 				
 				try {
-					return new Float(stores[c-(12+annotations.length)].getValueForProbe(data[r].probe));
+					return Double.valueOf(stores[c-(12+annotations.length)].getValueForProbe(data[r].probe));
 				} 
 				catch (SeqMonkException e) {
 					return null;
