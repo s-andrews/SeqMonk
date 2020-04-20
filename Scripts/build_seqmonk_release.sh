@@ -68,6 +68,10 @@ echo "Removing unwanted bits"
 # We get a warning from trying to delete . and .. but that's OK
 rm -rf ./SeqMonk.app/Contents/MacOS/.* ./SeqMonk.app/Contents/MacOS/Windows ./SeqMonk.app/Contents/MacOS/build.xml
 
+echo "Fixing Plist file"
+# Put the new version in the Plist file
+sed "s/%%VERSION%%/${VERSION}/" ./SeqMonk.app/Contents/Info.plist.template > ./SeqMonk.app/Contents/Info.plist
+
 echo "Compressing into dmg file"
 hdiutil create -volname SeqMonk -srcfolder SeqMonk.app/ -ov -format UDZO seqmonk_v${VERSION}_osx64.dmg
 
