@@ -42,13 +42,16 @@ public class BoxWhiskerPanel extends JPanel {
 	/** The max value. */
 	private double maxValue;
 	
+	/** The fill colour */
+	private Color fillColour;
+	
 	/**
 	 * Instantiates a new box whisker panel.
 	 * 
 	 * @param bw The pre-calculated BoxWhisker result to display
 	 */
-	public BoxWhiskerPanel (BoxWhisker bw) {
-		this(bw,bw.minValue(),bw.maxValue());
+	public BoxWhiskerPanel (BoxWhisker bw, Color fillColour) {
+		this(bw,bw.minValue(),bw.maxValue(),fillColour);
 		
 	}
 	
@@ -61,7 +64,8 @@ public class BoxWhiskerPanel extends JPanel {
 	 * @param minValue the min value
 	 * @param maxValue the max value
 	 */
-	public BoxWhiskerPanel (BoxWhisker bw, double minValue, double maxValue) {
+	public BoxWhiskerPanel (BoxWhisker bw, double minValue, double maxValue, Color fillColor) {
+		this.fillColour = fillColor;
 		this.bw = bw;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
@@ -86,7 +90,7 @@ public class BoxWhiskerPanel extends JPanel {
 		int median = getY (bw.median());
 		
 		// Draw the main quartile box
-		g.setColor(ColourScheme.BOXWHISKER_FILL);
+		g.setColor(fillColour);
 		g.fillRoundRect(4, upperQuartile, getWidth()-8, lowerQuartile-upperQuartile,5,5);
 		g.setColor(Color.BLACK);
 		g.drawRoundRect(4, upperQuartile, getWidth()-8, lowerQuartile-upperQuartile,5,5);

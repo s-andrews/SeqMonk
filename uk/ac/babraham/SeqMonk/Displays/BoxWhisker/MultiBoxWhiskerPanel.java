@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.SeqMonk.Displays.BoxWhisker;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,7 +33,7 @@ import uk.ac.babraham.SeqMonk.Displays.BeanPlot.BeanPlotScaleBar;
 
 public class MultiBoxWhiskerPanel extends JPanel {
 		
-	public MultiBoxWhiskerPanel (BoxWhisker [] whiskers, String [] names, String panelName, float min, float max) {
+	public MultiBoxWhiskerPanel (BoxWhisker [] whiskers, String [] names, String panelName, float min, float max, Color [] colours) {
 				
 		setLayout(new GridBagLayout());
 
@@ -66,7 +67,7 @@ public class MultiBoxWhiskerPanel extends JPanel {
 			gbc.fill=GridBagConstraints.BOTH;
 			gbc.weighty=0.999;
 			gbc.gridy=2;
-			add(new BoxWhiskerPanel(whiskers[i], min, max),gbc);
+			add(new BoxWhiskerPanel(whiskers[i], min, max,colours[i]),gbc);
 		}
 	}
 	

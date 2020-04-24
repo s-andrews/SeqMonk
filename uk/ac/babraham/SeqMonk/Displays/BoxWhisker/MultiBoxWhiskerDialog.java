@@ -42,7 +42,11 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.BoxWhisker;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
+import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
+import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
@@ -54,6 +58,8 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 	private DataStore[] stores;
 	private ProbeList [] probes;
 	private BoxWhisker [][] whiskers;
+		
+	private ReplicateSet [] repSets = null;
 
 	private float min;
 	private float max;
@@ -73,6 +79,20 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 		closeButton.addActionListener(this);
 		buttonPanel.add(closeButton);
 
+		if (stores.length > 1) {
+			JButton highlightButton = new JButton("Highlight Rep Sets");
+			highlightButton.addActionListener(new ActionListener() {
+				
+				public void actionPerformed(ActionEvent e) {
+					repSets = ReplicateSetSelector.selectReplicateSets();
+					updateGraphs();
+				}
+			});
+		
+			buttonPanel.add(highlightButton);
+		}
+
+		
 		JButton saveDataButton = new JButton("Save Data");
 		saveDataButton.setActionCommand("save_data");
 		saveDataButton.addActionListener(this);
@@ -120,6 +140,27 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 
+	private Color getStoreColor (DataStore s) {
+		Color colourToReturn = ColourScheme.BOXWHISKER_FILL;
+		
+		int repSetIndex = -1;
+		if (repSets != null) {			
+			for (int r=0;r<repSets.length;r++) {
+				if (repSets[r].containsDataStore(s)) {
+					repSetIndex = r;
+				}
+			}
+		}
+
+		if (repSetIndex >= 0) {
+			colourToReturn = ColourIndexSet.getColour(repSetIndex);
+		}
+		
+		return(colourToReturn);
+
+	}
+
+	
 	private void updateGraphs () {
 
 		boolean useProbesOnXAxis = true;
@@ -155,9 +196,18 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 			for (int p=0;p<probes.length;p++) {
 				panelNames[p] = probes[p].name();
 			}
-
+			
 			for (int g=0;g<stores.length;g++) {
 
+				Color [] colours = new Color[probes.length];
+				Color thisColour = getStoreColor(stores[g]);
+				for (int i=0;i<colours.length;i++) {
+					colours[i] = thisColour;
+				}
+
+				colours[g] = getStoreColor(stores[g]);
+
+				
 				String groupName = stores[g].name();
 
 				BoxWhisker [] theseWhiskers = new BoxWhisker [probes.length];
@@ -166,7 +216,7 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 					theseWhiskers[p] = whiskers[p][g];
 				}
 
-				MultiBoxWhiskerPanel graph = new MultiBoxWhiskerPanel(theseWhiskers, panelNames, groupName, min, max);
+				MultiBoxWhiskerPanel graph = new MultiBoxWhiskerPanel(theseWhiskers, panelNames, groupName, min, max,colours);
 				graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				graphPanel.add(graph);
 			}			
@@ -177,6 +227,13 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 			for (int s=0;s<stores.length;s++) {
 				panelNames[s] = stores[s].name();
 			}
+			
+			Color [] colours = new Color[stores.length];
+			
+			for (int s=0;s<stores.length;s++) {
+				colours[s] = getStoreColor(stores[s]);
+			}
+
 
 			for (int p=0;p<probes.length;p++) {
 
@@ -188,7 +245,7 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 					theseWhiskers[s] = whiskers[p][s];
 				}
 
-				MultiBoxWhiskerPanel graph = new MultiBoxWhiskerPanel(theseWhiskers, panelNames, groupName, min, max);
+				MultiBoxWhiskerPanel graph = new MultiBoxWhiskerPanel(theseWhiskers, panelNames, groupName, min, max, colours);
 
 				graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				graphPanel.add(graph);
