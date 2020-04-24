@@ -53,30 +53,16 @@ install.cran("Rtsne")
 
 
 
-# Bioconductor is in a state of flux.  They currently have two 
-# different installer systems, the older biocLite system which 
-# still works everywhere for the moment but is likely to be 
-# deprecated eventually, and the newer BiocManager which looks
-# like it might be better, but only works for R>3.5.0
-# 
-# We need to accommodate both for now.
+# We used to support both the old and new versions of bioconductor
+# but since the R package repository for versions < 3.6 has been 
+# broken for months we're now going to insist on R 3.6 and therefore
+# the newer version of Bioconductor using BiocManager.
 
-
-
-if (version$major >3 | (version$major == 3 & as.numeric(version$minor) >= 5.0)) {
   
-  install.cran("BiocManager")
-  install.bioconductor("DESeq2")
-  install.bioconductor("edgeR")
-  install.bioconductor("fastseg")
-  
-}else{
-  source("http://bioconductor.org/biocLite.R")
-  biocLite()
-  biocLite("DESeq2")
-  biocLite("edgeR")
-  biocLite("fastseg")
-}
+install.cran("BiocManager")
+install.bioconductor("DESeq2")
+install.bioconductor("edgeR")
+install.bioconductor("fastseg")
 
 # NB we don't need to explicitly install limma as it's a dependency
 # of EdgeR.  If this changes then we'd need to add it.
