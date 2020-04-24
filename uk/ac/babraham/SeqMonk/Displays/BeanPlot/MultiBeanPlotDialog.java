@@ -35,18 +35,25 @@ import javax.swing.JPanel;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
+import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
+import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runnable {
 
 	private JPanel graphPanel;
+	private MultiBeanPlotPanel beanPanel;
 	private JComboBox xAxisChoice;
 	private String currentChoice = "";
 	private DataStore[] stores;
 	private ProbeList [] probes;
 	private float [][][] dataValues;
+	
+	private ReplicateSet [] repSets = null;
 
 	private float min = Float.NaN;
 	private float max = Float.NaN;
@@ -66,10 +73,18 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 		closeButton.addActionListener(this);
 		buttonPanel.add(closeButton);
 
-//		JButton saveDataButton = new JButton("Save Data");
-//		saveDataButton.setActionCommand("save_data");
-//		saveDataButton.addActionListener(this);
-//		buttonPanel.add(saveDataButton);
+		if (stores.length > 1) {
+			JButton highlightButton = new JButton("Highlight Rep Sets");
+			highlightButton.addActionListener(new ActionListener() {
+				
+				public void actionPerformed(ActionEvent e) {
+					repSets = ReplicateSetSelector.selectReplicateSets();
+					updateGraphs();
+				}
+			});
+		
+			buttonPanel.add(highlightButton);
+		}
 		
 		JButton saveButton = new JButton("Save");
 		saveButton.setActionCommand("save");
@@ -112,6 +127,26 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
+	
+	private Color getStoreColor (DataStore s) {
+		Color colourToReturn = ColourScheme.BOXWHISKER_FILL;
+		
+		int repSetIndex = -1;
+		if (repSets != null) {			
+			for (int r=0;r<repSets.length;r++) {
+				if (repSets[r].containsDataStore(s)) {
+					repSetIndex = r;
+				}
+			}
+		}
+
+		if (repSetIndex >= 0) {
+			colourToReturn = ColourIndexSet.getColour(repSetIndex);
+		}
+		
+		return(colourToReturn);
+
+	}
 
 	private void updateGraphs () {
 
@@ -150,7 +185,14 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 			}
 
 			for (int g=0;g<stores.length;g++) {
+				Color [] colours = new Color[probes.length];
+				Color thisColour = getStoreColor(stores[g]);
+				for (int i=0;i<colours.length;i++) {
+					colours[i] = thisColour;
+				}
 
+				colours[g] = getStoreColor(stores[g]);
+				
 				String groupName = stores[g].name();
 
 				float [][] theseData = new float [probes.length][];
@@ -159,9 +201,9 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 					theseData[p] = dataValues[p][g];
 				}
 
-				MultiBeanPlotPanel graph = new MultiBeanPlotPanel(theseData, panelNames, groupName, min, max);
-				graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-				graphPanel.add(graph);
+				beanPanel = new MultiBeanPlotPanel(theseData, panelNames, groupName, min, max, colours);
+				beanPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				graphPanel.add(beanPanel);
 			}			
 		}
 		else {
@@ -171,6 +213,13 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 				panelNames[s] = stores[s].name();
 			}
 
+			Color [] colours = new Color[stores.length];
+			
+			for (int s=0;s<stores.length;s++) {
+				colours[s] = getStoreColor(stores[s]);
+			}
+
+			
 			for (int p=0;p<probes.length;p++) {
 
 				String groupName = probes[p].name();
@@ -181,10 +230,10 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 					theseWhiskers[s] = dataValues[p][s];
 				}
 
-				MultiBeanPlotPanel graph = new MultiBeanPlotPanel(theseWhiskers, panelNames, groupName, min, max);
+				beanPanel = new MultiBeanPlotPanel(theseWhiskers, panelNames, groupName, min, max,colours);
 
-				graph.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-				graphPanel.add(graph);
+				beanPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				graphPanel.add(beanPanel);
 			}
 		}
 

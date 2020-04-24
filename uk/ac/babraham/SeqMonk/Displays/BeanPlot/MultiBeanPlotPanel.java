@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.SeqMonk.Displays.BeanPlot;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -29,7 +30,7 @@ import javax.swing.JPanel;
 
 public class MultiBeanPlotPanel extends JPanel {
 		
-	public MultiBeanPlotPanel (float [][] data, String [] names, String panelName, float min, float max) {
+	public MultiBeanPlotPanel (float [][] data, String [] names, String panelName, float min, float max, Color [] colours) {
 				
 		setLayout(new GridBagLayout());
 
@@ -63,7 +64,7 @@ public class MultiBeanPlotPanel extends JPanel {
 			gbc.fill=GridBagConstraints.BOTH;
 			gbc.weighty=0.999;
 			gbc.gridy=2;
-			add(new BeanPlotPanel(data[i], min, max),gbc);
+			add(new BeanPlotPanel(data[i], min, max, colours[i]),gbc);
 		}
 	}
 	

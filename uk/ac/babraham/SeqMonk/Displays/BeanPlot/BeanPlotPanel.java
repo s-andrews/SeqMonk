@@ -43,13 +43,16 @@ public class BeanPlotPanel extends JPanel {
 	/** The max value. */
 	private double maxValue;
 	
+	/** The colour to fill the bean with **/
+	private Color fillColour;
+	
 	/**
 	 * Instantiates a new box whisker panel.
 	 * 
 	 * @param bw The pre-calculated BoxWhisker result to display
 	 */
-	public BeanPlotPanel (float [] data) {
-		this(data,minArray(data),maxArray(data));
+	public BeanPlotPanel (float [] data, Color fillColor) {
+		this(data,minArray(data),maxArray(data), fillColor);
 	}
 	
 	private static float minArray (float [] data) {
@@ -81,7 +84,9 @@ public class BeanPlotPanel extends JPanel {
 	 * @param minValue the min value
 	 * @param maxValue the max value
 	 */
-	public BeanPlotPanel (float [] data, float minValue, float maxValue) {
+	public BeanPlotPanel (float [] data, float minValue, float maxValue, Color fillColour) {
+		
+		this.fillColour = fillColour;
 		
 		// We'll have to figure out a better way of optimising the bandwidth we're
 		// going to use, but for now we'll take 1/20th of the range
@@ -179,7 +184,7 @@ public class BeanPlotPanel extends JPanel {
 			xPoints[yPoints.length-(i+1)] = getUpperX(counts[i], maxCount);
 		}
 		
-		g.setColor(ColourScheme.BOXWHISKER_FILL);
+		g.setColor(fillColour);
 		g.fillPolygon(xPoints, yPoints, xPoints.length);		
 
 		g.setColor(Color.BLACK);
