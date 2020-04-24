@@ -96,6 +96,17 @@ public class DataStoreClusterPanel extends JPanel {
 		// Put the list name in the top left
 		g.drawString(listName, 10, g.getFontMetrics().getHeight());
 		
+		// If we're highlighting replicate sets write their names underneath
+		if (repSets != null) {
+			for (int r=0;r<repSets.length;r++) {
+				g.setColor(ColourIndexSet.getColour(r));
+				g.drawString(repSets[r].name(), 10, g.getFontMetrics().getHeight()*(r+2));
+			}
+			
+			g.setColor(Color.BLACK);
+		}
+
+		
 		// First get the set of indices which are going to dictate the final order
 		Integer [] indices = clusterSet.getAllIndices();
 		
