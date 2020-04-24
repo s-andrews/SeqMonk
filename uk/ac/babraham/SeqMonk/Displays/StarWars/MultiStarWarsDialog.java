@@ -121,9 +121,9 @@ public class MultiStarWarsDialog extends JDialog implements ActionListener, Runn
 	private void updateGraphs () {
 
 		boolean useProbesOnXAxis = true;
-		if (xAxisChoice.getSelectedItem().equals("Data Stores")) {
+		if (xAxisChoice.getSelectedItem().equals("Data Stores") && stores.length > 1) {
 			useProbesOnXAxis = false;
-		}
+		}		
 
 		int rows;
 		int cols;
