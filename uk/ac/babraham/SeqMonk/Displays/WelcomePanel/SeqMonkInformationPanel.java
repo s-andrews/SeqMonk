@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -452,10 +453,21 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 	 */
 	public void run () {
 
-		//		try {
-		//			Thread.sleep(500);
-		//		} 
-		//		catch (InterruptedException e1) {}
+		// If we're on a mac check for full disk access
+		if (System.getProperty("os.name").contains("Mac OS X")) {
+			
+			try {
+				FileReader fr = new FileReader("/Library/Preferences/com.apple.TimeMachine.plist");
+				fr.close();
+			}
+			catch (Exception e) {
+				System.out.println(e.getLocalizedMessage());
+			}
+			
+			
+			
+		}
+		
 		// Check for an available update to the SeqMonk Program
 		try {
 
