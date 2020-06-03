@@ -33,6 +33,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 
@@ -134,10 +135,10 @@ public class HelpDialog extends JDialog implements TreeSelectionListener {
 	}
 	
 	public void DisplayPage (String pageName) {
-		Enumeration<DefaultMutableTreeNode> en = ((DefaultMutableTreeNode)tree.getModel().getRoot()).depthFirstEnumeration();
+		Enumeration<TreeNode> en = ((DefaultMutableTreeNode)tree.getModel().getRoot()).depthFirstEnumeration();
 		
 		while (en.hasMoreElements()) {
-			DefaultMutableTreeNode node = en.nextElement();
+			TreeNode node = en.nextElement();
 			
 			if (node instanceof HelpPage) {
 				if (((HelpPage)node).name.equals(pageName)) {
