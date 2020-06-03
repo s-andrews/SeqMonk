@@ -149,8 +149,6 @@ public class HelpDialog extends JDialog implements TreeSelectionListener {
 		}
 		
 		throw new IllegalStateException("Couldn't find help page called '"+pageName+"'");
-		
-		
 	}
 	
 	/**
