@@ -456,15 +456,17 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 		// If we're on a mac check for full disk access
 		if (System.getProperty("os.name").contains("Mac OS X")) {
 			
+			String message = "We can read everything!!!";
 			try {
 				FileReader fr = new FileReader("/Library/Preferences/com.apple.TimeMachine.plist");
 				fr.close();
 			}
 			catch (Exception e) {
 				System.out.println(e.getLocalizedMessage());
+				message = "We can't read stuff :-(";
 			}
 			
-			
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(),message, "OSX Access", JOptionPane.INFORMATION_MESSAGE);
 			
 		}
 		
