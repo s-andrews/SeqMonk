@@ -104,6 +104,25 @@ public class SequenceRead {
 			return Location.UNKNOWN;
 		}
 	}
+	
+	/**
+	 * This gives the strand as a symbol (+ / - / .) it's
+	 * originally used for BED export but may have value
+	 * elsewhere.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static String strandSymbol (long value) {
+		int strand = strand(value);
+		if (strand == 1) {
+			return "+";
+		}
+		if (strand == -1) {
+			return "-";
+		}
+		return ".";
+	}
 
 	/**
 	 * Provides the mid-point of this position range.

@@ -27,8 +27,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -40,6 +42,7 @@ import javax.swing.JTree;
 //import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeModel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
@@ -56,16 +59,23 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.CoreAnnotationSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeSet;
+import uk.ac.babraham.SeqMonk.DataWriters.BedDataWriter;
 import uk.ac.babraham.SeqMonk.Dialogs.AnnotationSetPropertiesDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.DataStorePropertiesDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProbeListCommentEditDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProbeListViewer;
 import uk.ac.babraham.SeqMonk.Dialogs.SimilarProbeListsDialog;
+import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.HiCLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeValueHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ReadLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
+import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
+import uk.ac.babraham.SeqMonk.Utilities.ValidFileNameGenerator;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.BEDFileFilter;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.GFFFileFilter;
+import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 
@@ -307,6 +317,12 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 		return name;
 	}
 	
+	private void exportBed(DataStore d) {
+		BedDataWriter writer = new BedDataWriter(d);
+		writer.addProgressListener(new ProgressDialog("Writing BED File", writer));
+		writer.startProcessing();
+	}
+	
 	/**
 	 * The popup menu which appears when the user right-clicks on a DataSet
 	 */
@@ -332,6 +348,11 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 				displayTrack.setState(false);
 			}
 			add(displayTrack);
+
+			JMenuItem bedExport = new JMenuItem("Export Reads as BED File");
+			bedExport.setActionCommand("export_bed");
+			bedExport.addActionListener(this);
+			add(bedExport);
 			
 			JMenuItem readLenHistogram = new JMenuItem("Show Read Length Histogram");
 			readLenHistogram.setActionCommand("readlen_histogram");
@@ -415,6 +436,10 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 			else if (ae.getActionCommand().equals("properties")) {
 				new DataStorePropertiesDialog(d);
 			}
+			else if (ae.getActionCommand().equals("export_bed")) {
+				exportBed(d);
+			}
+
 			else {
 				System.err.println("Unknown menu option '"+ae.getActionCommand()+"'");
 			}
@@ -445,6 +470,12 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 				displayTrack.setState(false);
 			}
 			add(displayTrack);
+			
+			JMenuItem bedExport = new JMenuItem("Export Reads as BED File");
+			bedExport.setActionCommand("export_bed");
+			bedExport.addActionListener(this);
+			add(bedExport);
+
 			
 			JMenuItem readLenHistogram = new JMenuItem("Show Read Length Histogram");
 			readLenHistogram.setActionCommand("readlen_histogram");
@@ -524,6 +555,9 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 			else if (ae.getActionCommand().equals("properties")) {
 				new DataStorePropertiesDialog(d);
 			}
+			else if (ae.getActionCommand().equals("export_bed")) {
+				exportBed(d);
+			}
 			else {
 				System.err.println("Unknown menu option '"+ae.getActionCommand()+"'");
 			}
@@ -554,6 +588,12 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 				displayTrack.setState(false);
 			}
 			add(displayTrack);
+			
+			JMenuItem bedExport = new JMenuItem("Export Reads as BED File");
+			bedExport.setActionCommand("export_bed");
+			bedExport.addActionListener(this);
+			add(bedExport);
+
 			
 			JMenuItem readLenHistogram = new JMenuItem("Show Read Length Histogram");
 			readLenHistogram.setActionCommand("readlen_histogram");
@@ -618,6 +658,9 @@ public class DataViewer extends JPanel  implements MouseListener, TreeSelectionL
 			}
 			else if (ae.getActionCommand().equals("properties")) {
 				new DataStorePropertiesDialog(d);
+			}
+			else if (ae.getActionCommand().equals("export_bed")) {
+				exportBed(d);
 			}
 			else {
 				System.err.println("Unknown menu option '"+ae.getActionCommand()+"'");
