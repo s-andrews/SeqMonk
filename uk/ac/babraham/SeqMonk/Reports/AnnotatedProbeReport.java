@@ -212,7 +212,7 @@ public class AnnotatedProbeReport extends Report implements KeyListener, ItemLis
 	 * @see uk.ac.babraham.SeqMonk.Reports.Report#name()
 	 */
 	public String name () {
-		return "Annotated Probe Report";
+		return "Annotated Probe Report for "+listToAnnotate.name();
 	}
 
 	/* (non-Javadoc)

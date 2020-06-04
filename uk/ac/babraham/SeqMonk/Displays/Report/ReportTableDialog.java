@@ -46,6 +46,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Preferences.DisplayPreferences;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Reports.Report;
+import uk.ac.babraham.SeqMonk.Utilities.ValidFileNameGenerator;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.GFFFileFilter;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
@@ -201,6 +202,7 @@ public class ReportTableDialog extends JDialog implements MouseListener, ActionL
 			
 			
 			JFileChooser chooser = new JFileChooser(SeqMonkPreferences.getInstance().getSaveLocation());
+			chooser.setSelectedFile(new File(ValidFileNameGenerator.makeValidFileName(getTitle())));
 			chooser.setMultiSelectionEnabled(false);
 			
 			if (report.canExportGFF()) {

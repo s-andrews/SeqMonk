@@ -58,7 +58,7 @@ public class ReportOptions extends JDialog implements ActionListener, ProgressLi
 	 * @param report the report
 	 */
 	public ReportOptions (SeqMonkApplication parent, Report report) {
-		super(parent,report.name()+" Options");
+		super(parent,"Options for "+report.name());
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
