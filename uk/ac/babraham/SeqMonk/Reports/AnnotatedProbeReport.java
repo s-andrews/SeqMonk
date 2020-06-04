@@ -53,16 +53,23 @@ import uk.ac.babraham.SeqMonk.Displays.ProbeListAnnotationSelector.ProbeListAnno
  * The AnnotatedListReport adds feature annotation to a probe list.  It
  * doesn't combine the probes but keeps the report at one line per probe
  */
-public class AnnotatedListReport extends Report implements KeyListener, ItemListener {
+public class AnnotatedProbeReport extends Report implements KeyListener, ItemListener {
 
+	private ProbeList listToAnnotate;
+	private boolean probesHaveNames = false;
+	
+	
 	/**
 	 * Instantiates a new annotated list report.
 	 * 
 	 * @param collection The dataCollection to use
 	 * @param storesToAnnotate The set of dataStores whose data can be added to the report
 	 */
-	public AnnotatedListReport(DataCollection collection,DataStore[] storesToAnnotate) {
+	public AnnotatedProbeReport(DataCollection collection,DataStore[] storesToAnnotate) {
 		super(collection, storesToAnnotate);
+		listToAnnotate = collection.probeSet().getActiveList();
+		
+		probesHaveNames = listToAnnotate.getAllProbes()[0].hasDefinedName();
 	}
 
 	/** The options panel. */
@@ -107,13 +114,13 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 
 		choicePanel1.add(new JLabel("Annotate with "));
 		annotationPosition = new JComboBox(new String [] {"[Don't annotate]","closest", "overlapping", "exactly overlapping", "upstream", "downstream", "surrounding or upstream", "surrounding or downstream","name matched"});
-		annotationPosition.addItemListener(this);
+		annotationPosition.addItemListener(this);		
 		choicePanel1.add(annotationPosition);
-		annotationType = new JComboBox(collection.genome().annotationCollection().listAvailableFeatureTypes());
+		String [] featureTypes = collection.genome().annotationCollection().listAvailableFeatureTypes();
+		annotationType = new JComboBox(featureTypes);
 		annotationType.setPrototypeDisplayValue("No longer than this please");
 		choicePanel1.add(annotationType);
 		choicePanel.add(choicePanel1);
-
 
 		JPanel choicePanel2 = new JPanel();
 		choicePanel2.add(new JLabel("Annotation distance cutoff "));
@@ -166,6 +173,27 @@ public class AnnotatedListReport extends Report implements KeyListener, ItemList
 		choicePanel.add(choicePanel5);
 
 		optionsPanel.add(choicePanel,BorderLayout.CENTER);
+		
+		
+		// If we have named probes then we'll default to using 
+		// name matched genes to annotate to since that's usually
+		// the right thing.
+		if (probesHaveNames) {
+			int geneIndex = -1;
+			for (int f=0;f<featureTypes.length;f++) {
+				if (featureTypes[f].toLowerCase().equals("gene")) {
+					geneIndex = f;
+					break;
+				}
+			}
+			
+			// We only do this if we can find a gene track
+			if (geneIndex >= 0) {
+				annotationPosition.setSelectedIndex(annotationPosition.getModel().getSize()-1);
+				annotationType.setSelectedIndex(geneIndex);
+			}
+		}
+
 
 		return optionsPanel;
 	}

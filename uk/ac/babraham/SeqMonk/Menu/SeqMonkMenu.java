@@ -170,7 +170,7 @@ import uk.ac.babraham.SeqMonk.Preferences.Editor.DisplayPreferencesEditorDialog;
 import uk.ac.babraham.SeqMonk.ProbeGenerators.DefineProbeOptions;
 import uk.ac.babraham.SeqMonk.Quantitation.Options.DefineQuantitationOptions;
 import uk.ac.babraham.SeqMonk.R.RVersionTest;
-import uk.ac.babraham.SeqMonk.Reports.AnnotatedListReport;
+import uk.ac.babraham.SeqMonk.Reports.AnnotatedProbeReport;
 import uk.ac.babraham.SeqMonk.Reports.ChromosomeViewReport;
 import uk.ac.babraham.SeqMonk.Reports.DataStoreSummaryReport;
 import uk.ac.babraham.SeqMonk.Reports.FeatureReport;
@@ -2596,7 +2596,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				return;
 			}
 			if (action.equals("report_annotated")) {
-				new ReportOptions(application,new AnnotatedListReport(application.dataCollection(),application.drawnDataSets()));
+				new ReportOptions(application,new AnnotatedProbeReport(application.dataCollection(),application.drawnDataSets()));
 			}
 			else if (action.equals("report_description")) {
 				new ProbeListReportCreator(application.dataCollection().probeSet().getActiveList());
