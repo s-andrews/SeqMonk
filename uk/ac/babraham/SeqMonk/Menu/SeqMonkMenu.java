@@ -1763,27 +1763,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			}
 		}
 		else if (action.equals("help_contents")) {
-			try {
-
-				// Java has a bug in it which affects the creation of valid URIs from
-				// URLs relating to an windows UNC path.  We therefore have to mung
-				// URLs starting file file:// to add 5 forward slashes so that we
-				// end up with a valid URI.
-
-				URL url = ClassLoader.getSystemResource("Help");
-				if (url.toString().startsWith("file://")) {
-					try {
-						url = new URL(url.toString().replace("file://", "file://///"));
-					} catch (MalformedURLException e) {
-						throw new IllegalStateException(e);
-					}
-				}
-				new HelpDialog(new File(url.toURI()));
-			}
-			catch (URISyntaxException ux) {
-				System.err.println("Couldn't parse URL falling back to path");
-				new HelpDialog(new File(ClassLoader.getSystemResource("Help").getPath()));				
-			}
+			new HelpDialog();
 		}
 		else if (action.equals("zoom_in")) {
 			application.chromosomeViewer().zoomIn();

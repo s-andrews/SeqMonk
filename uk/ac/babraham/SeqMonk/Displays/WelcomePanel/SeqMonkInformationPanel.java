@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -45,6 +46,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressRecordDialog;
 import uk.ac.babraham.SeqMonk.Dialogs.ProgressDialog.ProgressDialog;
+import uk.ac.babraham.SeqMonk.Displays.Help.HelpDialog;
 import uk.ac.babraham.SeqMonk.Network.GenomeUpgrader;
 import uk.ac.babraham.SeqMonk.Network.UpdateChecker;
 import uk.ac.babraham.SeqMonk.Network.DownloadableGenomes.DownloadableGenomeSet;
@@ -92,6 +94,9 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 	private JLabel genomeUpdateLabel;
 	private JLabel genomeUpdateLabelText;
 	private JButton updateGenomesButton;
+	private JLabel osxDiskAccessLabel;
+	private JLabel osxDiskAccessLabelText;
+	private JButton osxDiskAccessButton;
 	private JLabel rLabel;
 	private JLabel rLabelText;
 	private JButton setRLocationButton;
@@ -199,6 +204,61 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 		gbc.gridy++;
 		gbc.weightx = 0.001;
 
+		// On OSX, whether we have full disk access
+		
+		// If we're on a mac check for full disk access
+		if (System.getProperty("os.name").contains("Mac OS X")) {
+
+			boolean limitedAccess = false;
+
+			// We try to read this file which will fail if we don't have full
+			// access.  We might in future expand this to include more fine
+			// grained checks for external drives, the desktop etc. but this is
+			// infinitely better than before for now.
+			try {
+				FileReader fr = new FileReader("/Library/Preferences/com.apple.TimeMachine.plist");
+				fr.close();
+			}
+			catch (Exception e) {
+				limitedAccess = true;
+			}
+			
+			if (limitedAccess) {
+				osxDiskAccessLabel = new JLabel(warningIcon);
+				add(osxDiskAccessLabel,gbc);
+				gbc.gridx=1;
+				gbc.weightx=0.999;
+				osxDiskAccessLabelText = new JLabel("Limited disk access. Can't read from some folders / drives",JLabel.LEFT);
+				add(osxDiskAccessLabelText,gbc);
+	
+				osxDiskAccessButton = new JButton("Learn more");
+				osxDiskAccessButton.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						HelpDialog help = new HelpDialog();
+						help.DisplayPage("OSX Full Disk Access");
+					}
+				});
+				gbc.gridx=2;
+				gbc.weightx=0.001;
+				add(osxDiskAccessButton,gbc);
+			}
+			else {
+				osxDiskAccessLabel = new JLabel(tickIcon);
+				add(osxDiskAccessLabel,gbc);
+				gbc.gridx=1;
+				gbc.weightx=0.999;
+				osxDiskAccessLabelText = new JLabel("Full disk access enabled",JLabel.LEFT);
+				add(osxDiskAccessLabelText,gbc);				
+			}
+	
+			gbc.gridx=0;
+			gbc.gridy++;
+			gbc.weightx = 0.001;
+		}
+
+		
 		//Whether we've set a temp directory
 
 		// This will record whether our temp dir is invalid
@@ -451,11 +511,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run () {
-
-		//		try {
-		//			Thread.sleep(500);
-		//		} 
-		//		catch (InterruptedException e1) {}
+		
 		// Check for an available update to the SeqMonk Program
 		try {
 
