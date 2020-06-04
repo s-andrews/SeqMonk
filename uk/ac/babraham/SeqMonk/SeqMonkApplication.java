@@ -1328,7 +1328,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void annotationSetsAdded(AnnotationSet [] annotationSets) {		
 
-		// If these annotation sets contains 3 or fewer feature types then add them immediately
+		// If these annotation sets contains 10 or fewer feature types then add them immediately
 		// to the annotation tracks
 		
 		HashSet<String> newFeatureList = new HashSet<String>();
@@ -1341,7 +1341,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			
 		}
 		
-		if (newFeatureList.size() <=3) {
+		if (newFeatureList.size() <=10) {
 			Vector<String>newDrawnFeatures = new Vector<String>();
 			Enumeration<String> e = drawnFeatureTypes.elements();
 			while (e.hasMoreElements()) {
