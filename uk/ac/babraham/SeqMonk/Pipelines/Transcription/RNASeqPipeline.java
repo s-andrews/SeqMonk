@@ -121,51 +121,65 @@ public class RNASeqPipeline extends Pipeline {
 			}
 			
 			if (goodNames || geneNames || geneIDs) {
-				Hashtable<String, FeatureGroup> groupedNames = new Hashtable<String, FeatureGroup>();
+				Hashtable<String, FeatureGroup> groupedFeatures = new Hashtable<String, FeatureGroup>();
 
 				for (int i=0;i<features.length;i++) {
+					// This is the value we extract from the feature
 					String name;
+					// This is the name we'll actually use
+					String visibleName;
 					
-					if (goodNames) {
+					// We'll use the gene ID mappings if we can because these are 
+					// unambiguous, but the names are horrible so we'll use a name
+					// mapping too.
+					if (geneIDs) {
+						name = features[i].getValueForTag("gene_id");
+						if (geneNames) {
+							visibleName = features[i].getValueForTag("gene_name");
+						}
+						else {
+							visibleName = name;
+						}
+					}
+					else if (goodNames) {
 						name = features[i].name().replaceFirst("-\\d{3}$", "");
+						visibleName = name;
 					}
 					else if (geneNames) {
 						name = features[i].getValueForTag("gene_name");
-					}
-					else if (geneIDs) {
-						name = features[i].getValueForTag("gene_id");
+						visibleName = name;
 					}
 					else {
 						throw new IllegalStateException("One of the previous name mappings should have worked.");
 					}
 					
 					
-					
-					if (!groupedNames.containsKey(name)) {
-						groupedNames.put(name,new FeatureGroup(name));
+					if (!groupedFeatures.containsKey(name)) {
+						groupedFeatures.put(name,new FeatureGroup(visibleName));
 					}
 
-					groupedNames.get(name).addFeature(features[i]);
+					groupedFeatures.get(name).addFeature(features[i]);
 				}
 
 
-				FeatureGroup [] mergedTranscripts = new FeatureGroup [groupedNames.size()];
+				FeatureGroup [] mergedTranscripts = new FeatureGroup [groupedFeatures.size()];
 
 				int i=0;
-				Enumeration<String> en = groupedNames.keys();
+				Enumeration<String> en = groupedFeatures.keys();
 				while (en.hasMoreElements()) {
-					mergedTranscripts[i] = groupedNames.get(en.nextElement());
+					mergedTranscripts[i] = groupedFeatures.get(en.nextElement());
 					i++;
 				}
-
-				//			System.err.println("Before splitting we had "+mergedTranscripts.length+" groups");
 
 				// Add an extra constraint that the features within the group must overlap
 				// to avoid problems where the same gene name is used multiple times on different
 				// parts of the chromosome.
-				mergedTranscripts = splitNonOverlappingTranscripts(mergedTranscripts);
+				
+				// If we've merged based on annotated gene ids then we'll skip this step.
+				if (!geneIDs) {
+					mergedTranscripts = splitNonOverlappingTranscripts(mergedTranscripts);
+				}
 
-				//			System.err.println("After splitting we had "+mergedTranscripts.length+" groups");
 
 				// We now need to sort these
 				Arrays.sort(mergedTranscripts);
