@@ -37,7 +37,7 @@ public class HelpPage extends DefaultMutableTreeNode {
 	private File file;
 	
 	/** The name. */
-	private String name;
+	public String name;
 	
 	/**
 	 * Instantiates a new help page.

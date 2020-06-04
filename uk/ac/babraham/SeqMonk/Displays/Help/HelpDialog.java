@@ -20,6 +20,10 @@
 package uk.ac.babraham.SeqMonk.Displays.Help;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Enumeration;
 
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
@@ -29,6 +33,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 
@@ -49,6 +54,36 @@ public class HelpDialog extends JDialog implements TreeSelectionListener {
 	
 	
 	/**
+	 * Create a help dialog with the default starting location
+	 */
+	public HelpDialog() {
+		super(SeqMonkApplication.getInstance(),"Help Contents");
+
+		try {
+
+			// Java has a bug in it which affects the creation of valid URIs from
+			// URLs relating to an windows UNC path.  We therefore have to mung
+			// URLs starting file file:// to add 5 forward slashes so that we
+			// end up with a valid URI.
+
+			URL url = ClassLoader.getSystemResource("Help");
+			if (url.toString().startsWith("file://")) {
+				try {
+					url = new URL(url.toString().replace("file://", "file://///"));
+				} catch (MalformedURLException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+			buildTree(new File(url.toURI()));
+		}
+		catch (URISyntaxException ux) {
+			System.err.println("Couldn't parse URL falling back to path");
+			buildTree(new File(ClassLoader.getSystemResource("Help").getPath()));
+		}
+
+	}
+	
+	/**
 	 * Instantiates a new help dialog.
 	 * 
 	 * @param parent the parent
@@ -56,9 +91,15 @@ public class HelpDialog extends JDialog implements TreeSelectionListener {
 	 */
 	public HelpDialog (File startingLocation) {
 		super(SeqMonkApplication.getInstance(),"Help Contents");
+
+		buildTree(startingLocation);
+	}
 		
+		
+	private void buildTree(File startingLocation) {	
+
 		HelpIndexRoot root = new HelpIndexRoot(startingLocation);
-		
+
 		mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		setContentPane(mainSplit);
 		
@@ -91,6 +132,23 @@ public class HelpDialog extends JDialog implements TreeSelectionListener {
 		DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode)tree.getModel().getRoot();
 
 		DisplayPage((HelpPage)currentNode.getFirstLeaf());
+	}
+	
+	public void DisplayPage (String pageName) {
+		Enumeration<TreeNode> en = ((DefaultMutableTreeNode)tree.getModel().getRoot()).depthFirstEnumeration();
+		
+		while (en.hasMoreElements()) {
+			TreeNode node = en.nextElement();
+			
+			if (node instanceof HelpPage) {
+				if (((HelpPage)node).name.equals(pageName)) {
+					DisplayPage((HelpPage)node);
+					return;
+				}
+			}
+		}
+		
+		throw new IllegalStateException("Couldn't find help page called '"+pageName+"'");
 	}
 	
 	/**
