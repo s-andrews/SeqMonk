@@ -38,18 +38,22 @@ import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
  */
 public class ProbeListAnnotationParser extends AnnotationParser {
 
-	private ProbeList probeList;
-	private String featureType;
+	private ProbeList [] probeLists;
+	private String listName;
 	
 	/**
 	 * Instantiates a new ProbeList annotation parser.
 	 * 
 	 * @param genome The genome into which data will be put
 	 */
-	public ProbeListAnnotationParser (Genome genome, ProbeList probes, String featureType) {
+	public ProbeListAnnotationParser (Genome genome, ProbeList [] probeLists, String listName) {
 		super(genome);
-		this.probeList = probes;
-		this.featureType = featureType;
+		this.probeLists = probeLists;
+		this.listName = listName;
+	}
+	
+	public ProbeListAnnotationParser(Genome genome, ProbeList list, String listName) {
+		this(genome, new ProbeList[] {list}, listName);
 	}
 
 	/* (non-Javadoc)
@@ -81,32 +85,48 @@ public class ProbeListAnnotationParser extends AnnotationParser {
 		
 		Vector<AnnotationSet> annotationSets = new Vector<AnnotationSet>();
 
-		AnnotationSet currentAnnotation = new AnnotationSet(genome, featureType);
+		AnnotationSet currentAnnotation = new AnnotationSet(genome, listName);
 		annotationSets.add(currentAnnotation);
 
-		Probe [] probes = probeList.getAllProbes();
-
 		
-		for (int p=0;p<probes.length;p++) {
-		
-			if (p % 1+(probes.length/100) == 0) {
-				progressUpdated("Converted "+p+" probes", p, probes.length);
-			}
+		for (int l=0;l<probeLists.length;l++) {
 
-			if (p>1000000 && p%1000000 == 0) {
-				progressUpdated("Caching...",0,1);
-				currentAnnotation.finalise();
-				currentAnnotation = new AnnotationSet(genome, probeList.name()+"["+annotationSets.size()+"]");
-				annotationSets.add(currentAnnotation);
+			ProbeList probeList = probeLists[l];
+			
+			Probe [] probes = probeList.getAllProbes();
+
+			// If we're only importing a single feature type
+			// then we the same name as for the whole collection.
+			// If we're importing multiple lists then we use the
+			// name of the individual lists and let them sort it
+			// out later if they don't like that.
+			String featureTypeName = listName;
+			
+			if (probeLists.length > 1) {
+				featureTypeName = probeList.name();
 			}
+			
+			for (int p=0;p<probes.length;p++) {
+		
+				if (p % 1+(probes.length/100) == 0) {
+					progressUpdated("Converted "+p+" probes", p, probes.length);
+				}
+
+				if (p>1000000 && p%1000000 == 0) {
+					progressUpdated("Caching...",0,1);
+					currentAnnotation.finalise();
+					currentAnnotation = new AnnotationSet(genome, probeList.name()+"["+annotationSets.size()+"]");
+					annotationSets.add(currentAnnotation);
+				}
 
 			
-			Feature feature = new Feature(featureType,probes[p].chromosome().name());
-			if (probes[p].hasDefinedName()) {
-				feature.addAttribute("name", probes[p].name());
+				Feature feature = new Feature(featureTypeName,probes[p].chromosome().name());
+				if (probes[p].hasDefinedName()) {
+					feature.addAttribute("name", probes[p].name());
+				}
+				feature.setLocation(new Location(probes[p].start(),probes[p].end(),probes[p].strand()));
+				currentAnnotation.addFeature(feature);
 			}
-			feature.setLocation(new Location(probes[p].start(),probes[p].end(),probes[p].strand()));
-			currentAnnotation.addFeature(feature);
 		}
 		
 		return annotationSets.toArray(new AnnotationSet[0]);

@@ -1476,6 +1476,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			fileImportProbeList.setActionCommand("annot_probe");
 			fileImportProbeList.addActionListener(this);
 			fileImportAnnotation.add(fileImportProbeList);
+			
+			JMenuItem fileImportMultiProbeList = new JMenuItem("Multiple Probe Lists");
+			fileImportMultiProbeList.setMnemonic(KeyEvent.VK_M);
+			fileImportMultiProbeList.setActionCommand("annot_probe_multi");
+			fileImportMultiProbeList.addActionListener(this);
+			fileImportAnnotation.add(fileImportMultiProbeList);
 
 		}
 
@@ -1736,7 +1742,7 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 				JOptionPane.showMessageDialog(application, "You haven't made a probeset yet (Do Data > Quantitation > Define Probes)", "Can't make new annotation", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-
+			
 			String featureType=null;
 			while (true) {
 				featureType = (String)JOptionPane.showInputDialog(application,"Enter new feature type","Set feature type",JOptionPane.QUESTION_MESSAGE,null,null,application.dataCollection().probeSet().getActiveList().name());
@@ -1752,6 +1758,37 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			AnnotationParserRunner.RunAnnotationParser(application, new ProbeListAnnotationParser(application.dataCollection().genome(),application.dataCollection().probeSet().getActiveList(),featureType));
 		}
 
+		else if (action.equals("annot_probe_multi")) {
+
+			if (application.dataCollection().probeSet() == null) {
+				JOptionPane.showMessageDialog(application, "You haven't made a probeset yet (Do Data > Quantitation > Define Probes)", "Can't make new annotation", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			ProbeList [] probeLists = ProbeListSelectorDialog.selectProbeLists();
+
+			// Check they actually selected something
+			if (probeLists.length == 0) {
+				return;
+			}
+			
+			
+			String featureType=null;
+			while (true) {
+				featureType = (String)JOptionPane.showInputDialog(application,"Enter a feature collection name","Set feature type",JOptionPane.QUESTION_MESSAGE,null,null,""+probeLists.length+" imported probe lists");
+				if (featureType == null)
+					return;  // They cancelled
+
+				if (featureType.length() == 0)
+					continue; // Try again
+
+				break;
+			}			
+
+			AnnotationParserRunner.RunAnnotationParser(application, new ProbeListAnnotationParser(application.dataCollection().genome(),probeLists,featureType));
+		}
+
+		
 		else if (action.equals("about")) {
 			new AboutDialog();
 		}
