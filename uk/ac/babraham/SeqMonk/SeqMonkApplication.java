@@ -1328,6 +1328,35 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	 */
 	public void annotationSetsAdded(AnnotationSet [] annotationSets) {		
 
+		StringBuffer sb = new StringBuffer();
+		// Add an event to the vistory
+		if (annotationSets.length == 1) {
+			sb.append("Added "+annotationSets.length+" annotation set\n");
+		}
+		else {
+			sb.append("Added "+annotationSets.length+" annotation sets\n");
+		}
+		
+		for (int i=0;i<annotationSets.length;i++) {
+			if (annotationSets[i].getAvailableFeatureTypes().length == 1) {
+				sb.append(annotationSets[i].name()+" - "+annotationSets[i].getAllFeaturesCount()+" features\n");
+			}
+			else {
+				sb.append(annotationSets[i].name()+" - "+annotationSets[i].getAllFeaturesCount()+" total features\n");
+				
+				String [] featureTypes = annotationSets[i].getAvailableFeatureTypes();
+				
+				for (int f=0;f<featureTypes.length;f++) {
+					sb.append("  "+featureTypes[f]+" - "+annotationSets[i].getCountForFeatureType(featureTypes[f])+" features\n");
+				}
+			}
+			sb.append("\n");
+		}
+				
+
+		Vistory.getInstance().addBlock(new VistoryEvent("Annotation Sets Added", sb.toString()));
+
+		
 		// If these annotation sets contains 10 or fewer feature types then add them immediately
 		// to the annotation tracks
 		

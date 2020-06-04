@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -48,6 +49,8 @@ public class AnnotationSet {
 	protected Genome genome;
 	private String name;
 	private AnnotationCollection collection = null;
+	
+	private HashMap<String, Integer> featureCounts = new HashMap<String, Integer>();
 	
 	private boolean finalised = false;
 	
@@ -240,6 +243,13 @@ public class AnnotationSet {
 	 * 
 	 */
 	public void addFeature (Feature f) {
+		
+		if (!featureCounts.containsKey(f.type())) {
+			featureCounts.put(f.type(), 0);
+		}
+		
+		featureCounts.put(f.type(), featureCounts.get(f.type())+1);
+		
 		features.addFeature(f);
 		if (!featureTypes.contains(f.type())) {
 			featureTypes.add(f.type());
@@ -271,6 +281,13 @@ public class AnnotationSet {
 		return features.getFeatures(type);
 	}
 	
+	public int getCountForFeatureType (String type) {
+		if (featureCounts.containsKey(type)) {
+			return featureCounts.get(type);
+		}
+		
+		throw new IllegalStateException("No features of "+type+" in set "+name);
+	}
 	
 	/**
 	 * Gets a list of feature types for which this annotation set holds data
@@ -315,6 +332,17 @@ public class AnnotationSet {
 		}
 		
 		return allFeatures.toArray(new Feature[0]);
+	}
+	
+	public int getAllFeaturesCount () {
+		int allCount = 0;
+		
+		Iterator<Integer> it = featureCounts.values().iterator();
+		while (it.hasNext()) {
+			allCount += it.next();
+		}
+		
+		return allCount;
 	}
 	
 	/**
