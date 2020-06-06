@@ -27,10 +27,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -42,7 +40,6 @@ import javax.swing.JTree;
 //import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeModel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
@@ -71,11 +68,6 @@ import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ProbeValueHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.HistogramPlot.ReadLengthHistogramPlot;
 import uk.ac.babraham.SeqMonk.Displays.ProbeListReport.ProbeListReportCreator;
-import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
-import uk.ac.babraham.SeqMonk.Utilities.ValidFileNameGenerator;
-import uk.ac.babraham.SeqMonk.Utilities.FileFilters.BEDFileFilter;
-import uk.ac.babraham.SeqMonk.Utilities.FileFilters.GFFFileFilter;
-import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 import uk.ac.babraham.SeqMonk.Vistory.Vistory;
 import uk.ac.babraham.SeqMonk.Vistory.VistoryEvent;
 

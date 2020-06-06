@@ -42,10 +42,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
-import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar;
-import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.QuantitationTrendData;
 import uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot.HeatmapPanel.QuantitationHeatmapPanelGroup;
 import uk.ac.babraham.SeqMonk.Gradients.ColourGradient;
 import uk.ac.babraham.SeqMonk.Gradients.GradientFactory;
@@ -275,7 +272,7 @@ public class QuantitationTrendHeatmapDialog extends JDialog implements ChangeLis
 			ImageSaver.saveImage(exportPanel);
 		}
 		else if (ae.getActionCommand().equals("highlight")) {
-			ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
+//			ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
 			// TODO: Fix this
 //			clusterPanel.setRepSets(repSets);
 		}

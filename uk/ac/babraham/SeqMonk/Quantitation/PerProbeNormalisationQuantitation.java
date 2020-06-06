@@ -31,8 +31,6 @@ import javax.swing.JLabel;
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.Analysis.Statistics.SimpleStats;
-import uk.ac.babraham.SeqMonk.DataTypes.DataGroup;
-import uk.ac.babraham.SeqMonk.DataTypes.DataSet;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 

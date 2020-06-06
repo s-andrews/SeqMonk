@@ -22,9 +22,6 @@
 package uk.ac.babraham.SeqMonk.DataTypes.Sequence;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import uk.ac.babraham.SeqMonk.Utilities.IntVector;
 import uk.ac.babraham.SeqMonk.Utilities.LongVector;

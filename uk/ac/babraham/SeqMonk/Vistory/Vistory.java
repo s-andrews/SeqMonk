@@ -330,6 +330,8 @@ public class Vistory {
 
 		}
 		
+		br.close();
+		
 		saveFile = file;
 	}
 

@@ -696,9 +696,6 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 	 */
 	private class ProbePairValue implements Comparable<ProbePairValue> {
 
-		/** The x value. */
-		public double xValue;
-
 		/** The y value */
 		public double yValue;
 
@@ -723,7 +720,6 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 		 * @param y the Y position for this spot
 		 */
 		public ProbePairValue (double xValue, double yValue, int x, int y) {
-			this.xValue = xValue;
 			this.yValue = yValue;
 			this.x = x;
 			this.y = y;
@@ -736,10 +732,6 @@ public class ZScoreScatterPlotPanel extends JPanel implements Runnable, MouseMot
 
 		public Probe probe () {
 			return probe;
-		}
-
-		public double difference () {
-			return xValue-yValue;
 		}
 
 		public double getDistance (int x, int y) {

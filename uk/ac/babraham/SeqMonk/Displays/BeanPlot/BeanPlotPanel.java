@@ -25,8 +25,6 @@ import java.util.Arrays;
 
 import javax.swing.JPanel;
 
-import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
-
 /**
  * A display panel which shows a single boxwhisker plot.  Can be combined 
  * into a MultiBoxWhiskerPlot to allow multiple boxwhisker plots to be put

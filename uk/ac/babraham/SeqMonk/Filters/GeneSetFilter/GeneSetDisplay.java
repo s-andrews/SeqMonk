@@ -66,7 +66,6 @@ import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Displays.ScatterPlot.ScatterPlotPanel;
-import uk.ac.babraham.SeqMonk.Filters.GeneSetFilter.GeneSetScatterPlotPanel;
 
 
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;

@@ -50,16 +50,12 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.FileFilters.BEDFileFilter;
-import uk.ac.babraham.SeqMonk.Utilities.FileFilters.TxtFileFilter;
 
 /**
  * The Class DataSetEditor allows the editing and deleting data sets
  */
 public class AnnotationSetEditor extends JDialog implements ActionListener, ListSelectionListener {
-	
-	/** The data collection. */
-	private DataCollection collection;
-	
+		
 	/** The data set model. */
 	private DefaultListModel annotationSetModel = new DefaultListModel();
 	
@@ -88,9 +84,7 @@ public class AnnotationSetEditor extends JDialog implements ActionListener, List
 		super(SeqMonkApplication.getInstance(),"Edit Annotation Sets...");
 		setSize(300,400);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
-		
-		this.collection = collection;
-		
+				
 		getContentPane().setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx=0;

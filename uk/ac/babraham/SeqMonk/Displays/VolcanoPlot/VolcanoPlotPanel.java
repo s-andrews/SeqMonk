@@ -782,9 +782,6 @@ public class VolcanoPlotPanel extends JPanel implements Runnable, MouseMotionLis
 	 */
 	private class ProbePairValue implements Comparable<ProbePairValue> {
 
-		/** The x value. */
-		public double xValue;
-
 		/** The y value */
 		public double yValue;
 
@@ -809,7 +806,6 @@ public class VolcanoPlotPanel extends JPanel implements Runnable, MouseMotionLis
 		 * @param y the Y position for this spot
 		 */
 		public ProbePairValue (double xValue, double yValue, int x, int y) {
-			this.xValue = xValue;
 			this.yValue = yValue;
 			this.x = x;
 			this.y = y;

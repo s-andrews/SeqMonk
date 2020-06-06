@@ -118,6 +118,7 @@ public class GenomeDownloader implements Runnable {
 				o = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(f)));
 			}
 			catch (FileNotFoundException fnfe) {
+				d.close();
 				throw new SeqMonkException("Could't write into your genomes directory.  Please check your file preferences.");
 			}
 			byte [] b = new byte [1024];

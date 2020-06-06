@@ -24,11 +24,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -36,12 +34,9 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
-import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Chromosome;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.ReadsWithCounts;
 import uk.ac.babraham.SeqMonk.DataTypes.Sequence.SequenceRead;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;

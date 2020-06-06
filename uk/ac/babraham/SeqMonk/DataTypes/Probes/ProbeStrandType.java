@@ -20,7 +20,7 @@
 package uk.ac.babraham.SeqMonk.DataTypes.Probes;
 
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
-import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
+
 
 /**
  * The Class QuantitationType provides a quick and centralised place

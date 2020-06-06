@@ -562,7 +562,6 @@ public class AnnotatedProbeReport extends Report implements KeyListener, ItemLis
 	private class AnnotationTableModel extends AbstractTableModel  {
 
 		private ProbeAnnotation [] data;
-		private ProbeList list;
 
 		/** The dataStores whose data will be added to the report */
 		private DataStore [] stores;
@@ -576,7 +575,6 @@ public class AnnotatedProbeReport extends Report implements KeyListener, ItemLis
 		 */
 		public AnnotationTableModel (ProbeAnnotation [] data, ProbeList list, DataStore [] stores) {
 			this.data = data;
-			this.list = list;
 			this.stores = stores;
 		}
 

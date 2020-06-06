@@ -76,7 +76,7 @@ public class CodonBiasPipeline extends Pipeline {
 	}
 
 	// TODO: this isn't used properly at the moment
-	private boolean reverse = false;
+//	private boolean reverse = false;
 	
 	// storing probes here as there was an issue with the ordering not matching the features order.
 	private Probe [] allProbes;
@@ -386,13 +386,7 @@ public class CodonBiasPipeline extends Pipeline {
 		//System.err.println("Working with "+feature.name());
 		
 		//System.err.println("There are "+subLocations.length+" sublocations");
-		
-		// First work out the total transcript length so we can make an appropriate data structure
-		int totalLength = 0;
-		for (int e=0;e<subLocations.length;e++) {
-			totalLength += subLocations[e].length();
-		}
-		
+				
 		//System.err.println("Total exon length is "+totalLength);		
 
 		// Now work out a mapping between relative genomic position and feature position.
