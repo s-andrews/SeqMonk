@@ -1,3 +1,62 @@
+RELEASE NOTES FOR SeqMonk v1.47.0
+---------------------------------
+This version introduces some major changes for users of Mac OSX
+and improves a lot of existing functionality.
+
+There are two major changes of note:
+
+1. 	The way the OSX package is built has been changed so that we can
+	deal with the new security model in OSX v10.15 (Catalina).  People
+	working on that version will have found that they were unable to 
+	load or save data to anywhere other than their home directory.
+	This new version now tests for limited disk access on OSX and if
+	it finds it it will point to instructions for how SeqMonk can be
+	given more generous permissions to read data from places like USB
+	drives, network shares and the Desktop.
+	
+2.	We've made a relatively minor change to the way that RNA-Seq
+	quantitation works.  When we merge transcript isoforms we used to
+	prefer matching transcripts based on them having compatible names 
+	(eg ABC-201 would merge with ABC-202), *and* based on them actually
+	overlapping in the genome.  We found though that some gene models
+	from Ensembl broke these assumptions (ie there are cases with 
+	two different genes with identical names which overlap, and cases
+	of genes with multiple transcripts which don't overlap).  These 
+	cases are all nuts but they exist so we need to deal with them. We've
+	now changed to prefer using the "gene_id" annotation on transcripts
+	to decide which ones to merge, which deals better with these edge 
+	cases.  What this means though is that if you have an existing 
+	RNA-Seq analysis in a project and you re-quantitate it having moved
+	to the new SeqMonk version that your probe set will be replaced as
+	it won't match the exsting set because of these changes.  You will
+	therefore need to either re-create your filtered lists using the 
+	new probe set - or stick to an older version of SeqMonk to finish 
+	off those existing projects.
+	
+Other more minor changes are:
+
+3.	Improve the default matching options and save name for annotated
+	probe reports.
+	
+4.	Added a vistory event for adding annotation
+
+5.	Added replicate set colouring to boxplots and beanplots
+
+6.	Made the default heatmap colours more friendly to colourblind people
+
+7.	Changed the min R version to 3.6 as Bioconductor is broken for 
+	versions older than that.
+	
+8.	Fixed a StarWars layout bug for multiple lists and one store.
+
+9.	Use https to communicate with web services
+
+10.	Try to improve R package installs on OSX
+
+
+
+
+
 RELEASE NOTES FOR SeqMonk v1.46.0
 ---------------------------------
 The v1.46.0 release introduces a couple of new features and fixes 
