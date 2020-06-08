@@ -1,3 +1,4 @@
 /bin/
 OSX/Cargo.lock
 OSX/target/
+.DS_Store
