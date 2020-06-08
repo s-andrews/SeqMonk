@@ -4,6 +4,12 @@
 # build system.  It takes the current version of seqmonk and
 # builds the release files for it ready for upload to the web 
 # site.
+#
+# For the OSX release we need a couple of additional packages
+# from brew, specifically 
+#
+# brew install gnu-tar
+# brew install create-dmg
 
 VERSION=$1
 
@@ -72,8 +78,28 @@ echo "Fixing Plist file"
 # Put the new version in the Plist file
 sed "s/%%VERSION%%/${VERSION}/" ./SeqMonk.app/Contents/Info.plist.template > ./SeqMonk.app/Contents/Info.plist
 
+
+# Put the app into a directory called SeqMonk
+echo "Copying app"
+mkdir SeqMonk
+cp -r SeqMonk.app SeqMonk/
+
+# Make the pretty dmg
 echo "Compressing into dmg file"
-hdiutil create -volname SeqMonk -srcfolder SeqMonk.app/ -ov -format UDZO seqmonk_v${VERSION}_osx64.dmg
+create-dmg \
+--volname "SeqMonk" \
+--volicon "/Users/andrewss/git/SeqMonk/uk/ac/babraham/SeqMonk/Resources/seqmonk.icns" \
+--background "/Users/andrewss/git/SeqMonk/uk/ac/babraham/SeqMonk/Resources/monk_dmg_background.png" \
+--window-pos 200 120 \
+--window-size 800 400 \
+--icon-size 100 \
+--icon "SeqMonk.app" 200 160 \
+--app-drop-link 600 155 \
+seqmonk_v${VERSION}_osx64.dmg \
+SeqMonk
+
+# Clean up the folder
+rm -rf SeqMonk
 
 
 
