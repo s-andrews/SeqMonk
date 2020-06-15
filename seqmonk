@@ -225,6 +225,9 @@ sub determine_optimal_memory {
 	my $physical;
 	if ($os =~ /Win/) {
 		$physical = get_windows_memory($max_memory);
+		# Set this to get the OS to do upscaling on high DPI displays
+		push @java_args, "-Dsun.java2d.dpiaware=false";
+		
 	}
 	elsif ($os =~/darwin/) {
 		$physical = get_osx_memory($max_memory);
