@@ -15,6 +15,7 @@ if (Sys.info()["sysname"] == "Windows") {
 
 if (Sys.info()["sysname"] == "Darwin") {
   options(install.packages.check.source = "no")
+  options(install.packages.compile.from.source = "never")
 }
 
 install.cran <- function (package) {
