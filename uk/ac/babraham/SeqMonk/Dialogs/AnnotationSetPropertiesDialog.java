@@ -42,7 +42,7 @@ import uk.ac.babraham.SeqMonk.DataTypes.Genome.Feature;
  * lots of number crunching needs to be done to get the annotation back
  * off disk.
  */
-public class AnnotationSetPropertiesDialog extends JDialog implements Runnable {
+public class AnnotationSetPropertiesDialog extends JDialog {
 
 	private AnnotationSet set;
 	private String [] types;
@@ -60,6 +60,11 @@ public class AnnotationSetPropertiesDialog extends JDialog implements Runnable {
 		this.set = set;
 		types = set.getAvailableFeatureTypes();
 		counts = new Integer[types.length];
+		
+		for (int i=0;i<types.length;i++) {
+			counts[i] = set.getCountForFeatureType(types[i]);
+		}
+		
 		model = new AnnotationSetTableModel();
 		JTable table = new JTable(model);
 		getContentPane().setLayout(new BorderLayout());
@@ -81,30 +86,9 @@ public class AnnotationSetPropertiesDialog extends JDialog implements Runnable {
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		setVisible(true);
 		
-		Thread t = new Thread(this);
-		t.start();
 		
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-
-		for (int i=0;i<types.length;i++) {
-			int count = 0;
-			Enumeration<String> chrs = set.chromosomes();
-			while (chrs.hasMoreElements()) {
-				Feature [] f = set.getFeaturesForType(chrs.nextElement(), types[i]);
-				count += f.length;
-			}
-			counts[i] = count;
-			model.fireTableCellUpdated(i, 1);
-		}
-		
-		
-	}
-
 	/**
 	 * Provides a tableModel for the results table
 	 */

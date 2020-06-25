@@ -302,7 +302,7 @@ public class AnnotationSet {
 	 * Gets the all features.  WARNING: This method can have serious performance
 	 * effects since it loads all features into memory at the same time.  It is
 	 * nearly always better to iterate through the chromosomes one at a time to
-	 * load just a subset of features.  This method is retained for compatability
+	 * load just a subset of features.  This method is retained for compatibility
 	 * but may be removed in future to improve memory usage.
 	 * 
 	 * Features returned by this method are not guaranteed to be sorted.
@@ -516,13 +516,21 @@ public class AnnotationSet {
 		 * lightly as this will break if you try to load features by the
 		 * conventional route after calling it this way.
 		 * 
+		 * When loading data this way we need to update the cached counts
+		 * stored by the model as a whole.
+		 * 
 		 * @param type
 		 * @param col
 		 */
 		protected void addPreCachedFeatureTypeCollection (String type, FeatureTypeCollection col) {
 			if (!featureTypes.contains(type)) {
 				featureTypes.add(type);
+				featureCounts.put(type,0);
 			}
+			
+			// Update the counts cache
+			featureCounts.put(type, featureCounts.get(type)+col.getFeatures().length);
+			
 			typeFeatures.put(type,col);
 		}
 		
