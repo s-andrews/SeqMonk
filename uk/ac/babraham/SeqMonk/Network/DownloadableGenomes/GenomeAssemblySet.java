@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.SeqMonk.Network.DownloadableGenomes;
 
+import java.util.Arrays;
 import java.util.Vector;
 
 public class GenomeAssemblySet {
@@ -50,7 +51,9 @@ public class GenomeAssemblySet {
 	}
 	
 	public GenomeAssembly [] assemblies () {
-		return assemblies.toArray(new GenomeAssembly[0]);
+		GenomeAssembly [] assembliesToReturn = assemblies.toArray(new GenomeAssembly[0]);
+		Arrays.sort(assembliesToReturn);
+		return (assembliesToReturn);
 	}
 	
 }

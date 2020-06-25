@@ -21,7 +21,7 @@ package uk.ac.babraham.SeqMonk.Network.DownloadableGenomes;
 
 import java.util.Date;
 
-public class GenomeAssembly {
+public class GenomeAssembly implements Comparable<GenomeAssembly> {
 
 	private GenomeAssemblySet set;
 	private String assembly;
@@ -54,6 +54,11 @@ public class GenomeAssembly {
 	
 	public Date date () {
 		return date;
+	}
+
+	@Override
+	public int compareTo(GenomeAssembly o) {
+		return date.compareTo(o.date);
 	}
 	
 }
