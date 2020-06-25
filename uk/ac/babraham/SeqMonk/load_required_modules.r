@@ -11,10 +11,12 @@ repository = getOption("CRAN","http://cloud.r-project.org")
 
 if (Sys.info()["sysname"] == "Windows") {
   options(install.packages.check.source = "no")
+  options(install.packages.compile.from.source = "never")
 }
 
 if (Sys.info()["sysname"] == "Darwin") {
   options(install.packages.check.source = "no")
+  options(install.packages.compile.from.source = "never")
 }
 
 install.cran <- function (package) {
