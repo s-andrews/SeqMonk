@@ -115,32 +115,42 @@ public class GenomeSelector extends JDialog {
 				// native way to explicitly check for junctions.
 
 				if (assemblies == null) continue;
-				
-				Hashtable<String, Vector<File>> assemblySets = new Hashtable<String, Vector<File>>();
+								
+				Hashtable<String, Vector<VersionedAssembly>> assemblySets = new Hashtable<String, Vector<VersionedAssembly>>();
 				
 				for (int j=0;j<assemblies.length;j++) {
 					if (assemblies[j].isDirectory()) {
 						String name = assemblies[j].getName();
-						name = name.replaceAll("_v\\d+$", "");
-					
-						if (!assemblySets.containsKey(name)) {
-							assemblySets.put(name,new Vector<File>());
+						String assmeblyName = name.replaceAll("_v\\d+$", "");
+						
+						int assemblyVersion = 0;
+						
+						if (!assmeblyName.equals(name)) {
+							// We need to get the version
+							assemblyVersion = Integer.parseInt(name.replaceAll("^.*v", ""));
 						}
 					
-						assemblySets.get(name).add(assemblies[j]);
+						if (!assemblySets.containsKey(assmeblyName)) {
+							assemblySets.put(assmeblyName,new Vector<VersionedAssembly>());
+						}
+					
+						assemblySets.get(assmeblyName).add(new VersionedAssembly(assmeblyName, assemblyVersion, assemblies[j]));
 					}
+					
 				}
-				
+								
 				String [] assemblySetNames = assemblySets.keySet().toArray(new String [0]);
 				
 				Arrays.sort(assemblySetNames);
 
 				for (int j=0;j<assemblySetNames.length;j++) {
 
-					File [] localAssemblies = assemblySets.get(assemblySetNames[j]).toArray(new File[0]);
-
+					VersionedAssembly [] localAssemblies = assemblySets.get(assemblySetNames[j]).toArray(new VersionedAssembly[0]);
+					
+					Arrays.sort(localAssemblies);
+					
 					if (localAssemblies.length == 1) {
-						genomeNode.add(new AssemblyNode(localAssemblies[0]));
+						genomeNode.add(new AssemblyNode(localAssemblies[0].file));
 					}
 					else {
 						AssemblySetNode setNode = new AssemblySetNode(assemblySetNames[j]);
@@ -148,7 +158,7 @@ public class GenomeSelector extends JDialog {
 					
 					
 						for (int k=0;k<localAssemblies.length;k++) {
-							setNode.add(new AssemblyNode(localAssemblies[k]));
+							setNode.add(new AssemblyNode(localAssemblies[k].file));
 						}
 					}
 				}
@@ -388,5 +398,31 @@ public class GenomeSelector extends JDialog {
 		}
 
 	}
+	
+	private class VersionedAssembly implements Comparable<VersionedAssembly> {
+		public String assembly;
+		public int version;
+		public File file;
+		
+		
+		public VersionedAssembly(String assembly, int version, File file) {
+			this.assembly = assembly;
+			this.version = version;
+			this.file = file;
+		}
+		
+		@Override
+		public int compareTo(VersionedAssembly va) {
+			
+			if (assembly.equals(va.assembly)) {
+				return version - va.version;
+			}
+
+			return assembly.compareTo(va.assembly);
+			
+		}
+		
+	}
+	
 
 }
