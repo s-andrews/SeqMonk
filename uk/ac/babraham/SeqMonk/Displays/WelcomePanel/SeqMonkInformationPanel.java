@@ -577,13 +577,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 			
 			if (
 					rVersion.startsWith("2") || 
-					rVersion.startsWith("3.0.") ||
-					rVersion.startsWith("3.1.") ||
-					rVersion.startsWith("3.2.") ||
-					rVersion.startsWith("3.3.") ||
-					rVersion.startsWith("3.4.") ||
-					rVersion.startsWith("3.5.") ||
-					rVersion.startsWith("3.6.")
+					rVersion.startsWith("3") 
 				
 				) {
 				// They're going to have a problem, so let's not encourage this
