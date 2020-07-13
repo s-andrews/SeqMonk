@@ -572,7 +572,7 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 			String rVersion = RVersionTest.testRVersion(SeqMonkPreferences.getInstance().RLocation());
 			
 			// Do a check to see if the version of R is too old to support a recent
-			// bioconductor installation.  All versions before 3.6 have been broken
+			// bioconductor installation.  All versions before 4 have been broken
 			// for some time so let's not allow those to be used.
 			
 			if (
@@ -582,7 +582,8 @@ public class SeqMonkInformationPanel extends JPanel implements Runnable, ActionL
 					rVersion.startsWith("3.2.") ||
 					rVersion.startsWith("3.3.") ||
 					rVersion.startsWith("3.4.") ||
-					rVersion.startsWith("3.5.") 
+					rVersion.startsWith("3.5.") ||
+					rVersion.startsWith("3.6.")
 				
 				) {
 				// They're going to have a problem, so let's not encourage this
