@@ -2049,8 +2049,8 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			}
 			else if (action.equals("multiprobe_list_giraph_plot")) {
 				
-				if(probeLists.length > 50){
-					JOptionPane.showMessageDialog(application, "Please select fewer than 50 probe lists to display","Too many probe lists...",JOptionPane.INFORMATION_MESSAGE);
+				if(probeLists.length > 500){
+					JOptionPane.showMessageDialog(application, "Please select fewer than 500 probe lists to display","Too many probe lists...",JOptionPane.INFORMATION_MESSAGE);
 				}
 				
 				else{
