@@ -24,6 +24,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -59,6 +61,7 @@ import uk.ac.babraham.SeqMonk.Filters.ProbeFilter;
 import uk.ac.babraham.SeqMonk.R.RProgressListener;
 import uk.ac.babraham.SeqMonk.R.RScriptRunner;
 import uk.ac.babraham.SeqMonk.Utilities.ListDefaultSelector;
+import uk.ac.babraham.SeqMonk.Utilities.NumberKeyListener;
 import uk.ac.babraham.SeqMonk.Utilities.TempDirectory;
 import uk.ac.babraham.SeqMonk.Utilities.Templates.Template;
 
@@ -70,6 +73,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 	private ReplicateSet [] replicateSets = new ReplicateSet[0];
 	private static Double pValueCutoff = 0.05;
 	private static Integer minObservations = 10;
+	private static Integer minValid = 10;
+	private static boolean allValid = true;
 
 	private static boolean multiTest = true;
 	private static boolean resample = false;
@@ -109,10 +114,13 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		DataStore [] fromStores = replicateSets[0].dataStores();
 		DataStore [] toStores = replicateSets[1].dataStores();
 		
-		// Check the value for the min observations.  We won't use a value lower than 3.
-		
-		if (minObservations < 3) minObservations = 3;
+		// Check the value for the min observations.  We won't use a value lower than 3.		
+		if (minObservations < 1) minObservations = 1;
 
+		// Check the value for the min valid.  We won't use a value lower than 3.		
+		if (minValid < 1) minValid = 3;
+
+		
 		File tempDir;
 		try {
 
@@ -153,8 +161,6 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			progressUpdated("Creating temp directory",0,1);
 
 			tempDir = TempDirectory.createTempDirectory();
-
-			System.err.println("Temp dir is "+tempDir.getAbsolutePath());
 
 			progressUpdated("Writing R script",0,1);
 			// Get the template script
@@ -256,7 +262,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 
 				// Check to see we meet the requirements for the min amount of information
-				// and the min diff.
+				
 
 				int validFrom = 0;
 				for (int i=0;i<fromStores.length;i++) {
@@ -272,11 +278,20 @@ public class LogisticRegressionFilter extends ProbeFilter {
 					}
 				}
 
-				// We're going to be quite strict in saying that we need to
-				// have enough data in all stores to go ahead and do the test.
-				if (validFrom < fromStores.length || validTo < toStores.length) {
-					// We don't have enough data to measure this one
-					continue;
+				// Check we have enough valid observations to continue with this probe
+				if (allValid) {
+					// We're going to be quite strict in saying that we need to
+					// have enough data in all stores to go ahead and do the test.
+					if (validFrom < fromStores.length || validTo < toStores.length) {
+						continue;
+					}
+				}
+				else {
+					// We use the cutoff for minValid which they set
+					if (validFrom < minValid || validTo < minValid) {
+						// We don't have enough data to measure this one
+						continue;
+					}
 				}
 
 				// At this point we have to count this probe as valid for the 
@@ -291,13 +306,13 @@ public class LogisticRegressionFilter extends ProbeFilter {
 				int lastToIndex = 0;
 
 				for (int i=0;i<fromMethCounts.length;i++) {
-					if (fromMethCounts[i]+fromUnmethCounts[i] == 0) continue;
+					if (fromMethCounts[i]+fromUnmethCounts[i] < minObservations) continue;
 					fromPercentages[lastFromIndex] = fromMethCounts[i]*100f/(fromMethCounts[i]+fromUnmethCounts[i]);
 					++lastFromIndex;
 				}
 
 				for (int i=0;i<toMethCounts.length;i++) {
-					if (toMethCounts[i]+toUnmethCounts[i] == 0) continue;
+					if (toMethCounts[i]+toUnmethCounts[i] < minObservations) continue;
 					toPercentages[lastToIndex] = toMethCounts[i]*100f/(toMethCounts[i]+toUnmethCounts[i]);
 					++lastToIndex;
 				}
@@ -384,6 +399,12 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 			while ((line = br.readLine()) != null) {
 				String [] sections = line.split("\t");
+				
+				// We can get NA coming in the difference field
+				// and we'll just discard this if it happens
+				if (sections[2].equals("NA")) {
+					continue;
+				}
 
 				int probeIndex = Integer.parseInt(sections[0]);
 				float pValue = Float.parseFloat(sections[1]);
@@ -479,6 +500,15 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 		b.append(" with a minimum number of observations of ");
 		b.append(minObservations);
+		
+		if (allValid) {
+			b.append(" in all samples");
+		}
+		else {
+			b.append(" in at least ");
+			b.append(minValid);
+			b.append(" samples");
+		}
 
 		return b.toString();
 	}
@@ -514,6 +544,8 @@ public class LogisticRegressionFilter extends ProbeFilter {
 		private JTextField minObsField;
 		private JCheckBox multiTestBox;
 		private JCheckBox resampleBox;
+		private JCheckBox allValidSamples;
+		private JTextField minValidSamplesField;
 
 		/**
 		 * Instantiates a new windowed replicate options panel.
@@ -582,8 +614,40 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.weightx=0.6;
 
 			minObsField = new JTextField(minObservations.toString(),5);
+			minObsField.addKeyListener(new NumberKeyListener(false, false));
 			minObsField.addKeyListener(this);
 			choicePanel.add(minObsField,gbc);
+
+			
+			gbc.gridx=0;
+			gbc.gridwidth=1;
+			gbc.gridy++;
+
+			choicePanel.add(new JLabel("Min Valid Replicates",JLabel.RIGHT),gbc);
+
+			gbc.gridx++;
+			gbc.weightx=0.6;
+
+			minValidSamplesField = new JTextField(minObservations.toString(),5);
+			minValidSamplesField.addKeyListener(new NumberKeyListener(false, false));
+			minValidSamplesField.addKeyListener(this);
+			minValidSamplesField.setEnabled(!allValid);
+
+			allValidSamples = new JCheckBox("All",allValid);
+			allValidSamples.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					minValidSamplesField.setEnabled(!allValidSamples.isSelected());
+					allValid = allValidSamples.isSelected();
+				}
+			});
+
+			JPanel validPanel = new JPanel();
+			validPanel.add(allValidSamples);
+			validPanel.add(minValidSamplesField);
+			
+			choicePanel.add(validPanel,gbc);
 
 			gbc.gridx=0;
 			gbc.gridy++;
@@ -648,27 +712,25 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			if (f.equals(pValueCutoffField)) {
 				if (f.getText().length() == 0) pValueCutoff = 0.05d;
 				else {
-					try {
-						pValueCutoff = Double.parseDouble(pValueCutoffField.getText());
-					}
-					catch (NumberFormatException e) {
-						pValueCutoffField.setText(pValueCutoffField.getText().substring(0,pValueCutoffField.getText().length()-1));
-					}
+					pValueCutoff = Double.parseDouble(pValueCutoffField.getText());
 				}
 			}
 
 			else if (f.equals(minObsField)) {
 				if (f.getText().length() == 0) minObservations = 0;
 				else {
-					try {
-						minObservations = Integer.parseInt(minObsField.getText());
-					}
-					catch (NumberFormatException e) {
-						minObsField.setText(minObsField.getText().substring(0,minObsField.getText().length()-1));
-					}
+					minObservations = Integer.parseInt(minObsField.getText());
 				}
 			}
 
+			else if (f.equals(minValidSamplesField)) {
+				if (f.getText().length() == 0) minValid = 3;
+				else {
+					minValid = Integer.parseInt(minValidSamplesField.getText());
+				}
+			}
+
+			
 			else {
 				throw new IllegalStateException("Unknown text field "+f);
 			}	
