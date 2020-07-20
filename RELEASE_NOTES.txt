@@ -1,3 +1,24 @@
+RELEASE NOTES FOR SeqMonk v1.47.1
+---------------------------------
+This version contains some minor fixes.
+
+Changes include:
+
+1. 	Increased the minimum R version to 4.x.x. since R3.6 no longer 
+   	works for installing BioConductor packages.
+   	
+2.	Hopefully finally stop OSX from trying to compile R packages 
+	from source when it doesn't need to.
+	
+3.	Improve the efficiency of displaying annotation counts
+
+4.	Make genomes with annotation versions >99 sort correctly
+
+5.	Increase the number of allowed nodes in the probe list overlap
+	plot to 500
+	
+6.	Add more options to the logistic regression filter
+
 RELEASE NOTES FOR SeqMonk v1.47.0
 ---------------------------------
 This version introduces some major changes for users of Mac OSX
