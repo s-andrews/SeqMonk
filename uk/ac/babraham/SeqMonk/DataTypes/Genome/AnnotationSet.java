@@ -664,7 +664,12 @@ public class AnnotationSet {
 				finalise();
 			}
 			if (cacheFile != null) {
-				SeqMonkApplication.getInstance().cacheUsed();
+				// This call might be coming from seqmonk_import so we will only
+				// update the cache setting if we're running the application
+				if (SeqMonkApplication.getInstance() != null) {
+					SeqMonkApplication.getInstance().cacheUsed();
+				}
+				
 				try {
 					ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(cacheFile)));
 					Feature [] returnedFeatures = (Feature [])ois.readObject();
