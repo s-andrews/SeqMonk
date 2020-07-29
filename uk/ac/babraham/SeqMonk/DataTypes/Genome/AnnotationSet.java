@@ -180,7 +180,7 @@ public class AnnotationSet {
 	 * @param newName
 	 */
 	public void renameFeatures (String oldName, String newName) {
-
+		
 		String [] chrNames = features.chrFeatures.keySet().toArray(new String [0]);
 
 		for (int c=0;c<chrNames.length;c++) {
@@ -206,8 +206,20 @@ public class AnnotationSet {
 
 			ftc.finalise();
 
-
 		}				
+
+		// Update the feature count caches.
+		int originalCount = featureCounts.get(oldName);
+		featureCounts.remove(oldName);
+		
+		// Check if they're merging features together
+		if (featureCounts.containsKey(newName)) {
+			featureCounts.put(newName, featureCounts.get(newName)+originalCount);
+		}
+		else {
+			// If not, make a new entry
+			featureCounts.put(newName, originalCount);
+		}
 
 		featureTypes.remove(oldName);
 		featureTypes.add(newName);
