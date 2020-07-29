@@ -1,0 +1,16 @@
+This folder contains the source for the OSX Rust launcher
+which is required so that SeqMonk can take disk permissions
+on OSX.
+
+It's a Cargo project so you can use that to build it, however 
+by default the resulting binary will depend on the version of
+OSX which you used to compile it, which is too restrictive.
+To get around this you first need to do:
+
+export MACOSX_DEPLOYMENT_TARGET=10.8
+
+..then..
+
+cargo build --release
+
+..to compile it.
