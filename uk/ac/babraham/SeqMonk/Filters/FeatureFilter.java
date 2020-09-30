@@ -253,7 +253,7 @@ public class FeatureFilter extends ProbeFilter {
 					else if (relationship == OVERLAPPING ) {
 						// Quickest check is whether a probe overlaps a feature
 					
-						if (probes[p].start() < features[f].end() && probes[p].end() > features[f].start()) {
+						if (probes[p].start() <= features[f].end() && probes[p].end() >= features[f].start()) {
 							passedProbes.add(probes[p]);
 							break;
 						}
