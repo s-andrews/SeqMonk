@@ -105,8 +105,21 @@ public class DESeqFilter extends ProbeFilter {
 
 		Probe [] probes = startingList.getAllProbes();
 
+		boolean foundMultiStoreRepSet = false;
+		
 		for (int r=0;r<repSets.length;r++) {
-			if (repSets[r].isQuantitated() && repSets[r].dataStores().length>=2) {
+			
+			// It is possible to analyse a replicate set with only one replicate in
+			// it, but it can only be compared to a set with multiple replicates.
+			// Annoyingly we therefore need to allow in repsets with only one store
+			// in it and then do a check at runtime to make sure that at least one
+			// of our stores has multiple values in it.
+
+			if (repSets[r].isQuantitated() && repSets[r].dataStores().length>=1) {
+				foundMultiStoreRepSet = true;
+			}
+			
+			if (repSets[r].isQuantitated() && repSets[r].dataStores().length>=1) {
 				++validRepSetCount;
 			}
 			else {
@@ -133,6 +146,11 @@ public class DESeqFilter extends ProbeFilter {
 			return;
 		}
 
+
+		if (!foundMultiStoreRepSet) {
+			JOptionPane.showMessageDialog(SeqMonkApplication.getInstance(), "<html>We didn't find enough data to run this filter.<br>You need at least one of your replicate sets to have 2 or more data stores in it run this.</html>", "Not enough data", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
 
 	}
 
@@ -426,6 +444,20 @@ public class DESeqFilter extends ProbeFilter {
 	@Override
 	public boolean isReady() {
 		if (replicateSets.length < 2) return false;
+		
+		// Check that at least one selected set has multiple stores in it
+		boolean foundMultiSet = false;
+		
+		for (int r=0;r<replicateSets.length;r++) {
+			if (replicateSets[r].dataStores().length > 1) {
+				foundMultiSet = true;
+				break;
+			}
+		}
+		
+		if (!foundMultiSet) {
+			return false;
+		}
 
 		if (cutoff == null || cutoff > 1 || cutoff < 0) return false;
 
@@ -528,7 +560,7 @@ public class DESeqFilter extends ProbeFilter {
 
 			ReplicateSet [] sets = collection.getAllReplicateSets();
 			for (int i=0;i<sets.length;i++) {
-				if (sets[i].isQuantitated() && sets[i].dataStores().length >=2) {
+				if (sets[i].isQuantitated() && sets[i].dataStores().length >=1) {
 					dataModel.addElement(sets[i]);
 				}
 			}
