@@ -575,6 +575,9 @@ public class DESeqFilter extends ProbeFilter {
 			gbc.gridx++;
 			gbc.weightx=0.6;
 
+			// Check that we haven't inherited a null preference
+			if (cutoff == null) cutoff = 0.05;
+			
 			cutoffField = new JTextField(cutoff.toString(),5);
 			cutoffField.addKeyListener(this);
 			choicePanel.add(cutoffField,gbc);

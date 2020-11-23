@@ -587,6 +587,9 @@ public class EdgeRForRevFilter extends ProbeFilter {
 			gbc.gridx++;
 			gbc.weightx=0.6;
 
+			// Check that we haven't inherited a null preference
+			if (pValueCutoff == null) pValueCutoff = 0.05;
+
 			pValueCutoffField = new JTextField(pValueCutoff.toString(),5);
 			pValueCutoffField.addKeyListener(this);
 			choicePanel.add(pValueCutoffField,gbc);
@@ -599,6 +602,9 @@ public class EdgeRForRevFilter extends ProbeFilter {
 
 			gbc.gridx++;
 			gbc.weightx=0.6;
+
+			// Check that we haven't inherited a null preference
+			if (absDiffCutoff == null) absDiffCutoff = 0d;
 
 			absDiffCutoffField = new JTextField(absDiffCutoff.toString(),5);
 			absDiffCutoffField.addKeyListener(this);
