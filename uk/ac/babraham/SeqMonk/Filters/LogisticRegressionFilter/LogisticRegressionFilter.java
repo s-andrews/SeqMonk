@@ -600,6 +600,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.gridx++;
 			gbc.weightx=0.6;
 
+			if (pValueCutoff == null) pValueCutoff=0.05;
 			pValueCutoffField = new JTextField(pValueCutoff.toString(),5);
 			pValueCutoffField.addKeyListener(this);
 			choicePanel.add(pValueCutoffField,gbc);
@@ -613,6 +614,7 @@ public class LogisticRegressionFilter extends ProbeFilter {
 			gbc.gridx++;
 			gbc.weightx=0.6;
 
+			if (minObservations == null) minObservations = 10;
 			minObsField = new JTextField(minObservations.toString(),5);
 			minObsField.addKeyListener(new NumberKeyListener(false, false));
 			minObsField.addKeyListener(this);
@@ -627,8 +629,9 @@ public class LogisticRegressionFilter extends ProbeFilter {
 
 			gbc.gridx++;
 			gbc.weightx=0.6;
-
-			minValidSamplesField = new JTextField(minObservations.toString(),5);
+			
+			if (minValid == null) minValid = 10; 
+			minValidSamplesField = new JTextField(minValid.toString(),5);
 			minValidSamplesField.addKeyListener(new NumberKeyListener(false, false));
 			minValidSamplesField.addKeyListener(this);
 			minValidSamplesField.setEnabled(!allValid);
