@@ -41,6 +41,32 @@ if (exists $ENV{LANG}) {
 
 $ENV{LANG}='C';
 
+# We need to find the java interpreter.  We'll start from the assumption that this
+# is included in the path.
+
+my $java_exe = "java";
+
+# We might have bundled a jre with the installation.  If that's the case then we'll
+# use the interpreter which is bundled in preference to the system one.
+
+# Windows first
+if (-e "$RealBin/jre/bin/java.exe") {
+	$java_exe = "$RealBin/jre/bin/java.exe";
+}
+# Linux
+elsif (-e "$RealBin/jre/bin/java") {
+	$java_exe = "$RealBin/jre/bin/java";
+}
+# OSX
+elsif (-e "$RealBin/jre/Contents/Home/bin/java") {
+	$java_exe = "$RealBin/jre/Contents/Home/bin/java";
+}
+
+warn "Java interpreter is '$java_exe'\n";
+
+warn `\"$java_exe\" -version`."\n";
+
+
 my @java_args= ("-Djava.awt.headless=true");
 
 # We now need to scan the command line for switches which we're going
@@ -158,7 +184,7 @@ else {
 	delete $ENV{LANG};
 }
 
-exec "java",@java_args, "uk.ac.babraham.SeqMonk.Importer.SeqMonkImporter", $genome, $outfile, $spliced_value,$mapq, @files;
+exec $java_exe ,@java_args, "uk.ac.babraham.SeqMonk.Importer.SeqMonkImporter", $genome, $outfile, $spliced_value,$mapq, @files;
 
 sub print_error {
 	
@@ -178,7 +204,7 @@ sub correct_memory {
 	
 	my ($requested_memory) = @_;
 	
-	my $actual_memory = `java -Xmx${requested_memory}m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage`;
+	my $actual_memory = `$java_exe -Xmx${requested_memory}m uk.ac.babraham.SeqMonk.Utilities.ReportMemoryUsage`;
 	
 	if ($actual_memory =~ /^(\d+)/) {
 		$actual_memory = $1;
@@ -206,7 +232,7 @@ sub determine_optimal_memory {
 	my $is_java_7 = 0;
 	
 	my ($in,$out);
-	open3(\*IN,\*OUT,\*OUT,"java -version") or print_error("Can't find java");
+	open3(\*IN,\*OUT,\*OUT,"$java_exe -version") or print_error("Can't find java");
 	close IN;
 	while (<OUT>) {
 		if (/64-Bit/) {
