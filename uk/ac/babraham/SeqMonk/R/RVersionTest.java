@@ -144,7 +144,7 @@ public class RVersionTest {
 		}
 		catch (IOException e) {}
 		
-		// Try the usual suspects
+		// Try the usual suspects		
 		try {
 			testRVersion("/usr/local/bin/R");
 			return ("/usr/local/bin/R");
@@ -160,6 +160,15 @@ public class RVersionTest {
 			return ("/bin/R");
 		}
 		catch (IOException e) {}
+		
+		
+		// OSX uses a framework location for R
+		try {
+			testRVersion("/Library/Frameworks/R.Framework/Resources/bin/R");
+			return ("/Library/Frameworks/R.Framework/Resources/bin/R");
+		}
+		catch (IOException e) {}
+		
 		
 		// Go exploring if we're on windows
 		File progFiles = new File("C:/Program Files/R/");
