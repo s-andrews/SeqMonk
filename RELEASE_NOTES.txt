@@ -1,3 +1,30 @@
+RELEASE NOTES FOR SeqMonk v1.47.2
+---------------------------------
+Many bugfixes...
+
+1. Fix cache crash in seqmonk_import
+
+2. Add java executable detection to seqmonk_import
+
+3. Increase min R version to 4.0.3 because of bioconductor changes
+
+4. Fix OSX launcher to work on older version of OSX
+
+5. Allow 1-to-many comparisons in the DESeq filter
+
+6. Fix stored filter preferences crash
+
+7. Fix edge case mistake in feature filter overlaps
+
+8. Automatically detect new OSX R Framework location
+
+9. Update name cache when renaming features
+
+
+
+
+
+
 RELEASE NOTES FOR SeqMonk v1.47.1
 ---------------------------------
 This version contains some minor fixes.
