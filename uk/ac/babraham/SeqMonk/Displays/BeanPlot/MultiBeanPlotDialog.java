@@ -185,13 +185,11 @@ public class MultiBeanPlotDialog extends JDialog implements ActionListener, Runn
 			}
 
 			for (int g=0;g<stores.length;g++) {
-				Color [] colours = new Color[probes.length];
+				Color [] colours = new Color[stores.length];
 				Color thisColour = getStoreColor(stores[g]);
 				for (int i=0;i<colours.length;i++) {
 					colours[i] = thisColour;
 				}
-
-				colours[g] = getStoreColor(stores[g]);
 				
 				String groupName = stores[g].name();
 
