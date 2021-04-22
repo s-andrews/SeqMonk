@@ -254,7 +254,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				stashedBottomPanel = mainPane.getBottomComponent();
+				int dl = mainPane.getDividerLocation();
 				mainPane.setBottomComponent(new JPanel());
+				mainPane.setDividerLocation(dl);
 			}
 			
 			@Override
