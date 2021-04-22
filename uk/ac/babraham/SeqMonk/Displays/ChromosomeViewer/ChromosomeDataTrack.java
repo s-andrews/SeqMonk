@@ -733,7 +733,6 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			readSpace = 1;
 		}
 
-
 		if (drawReads) {
 			assignSlots();
 		}

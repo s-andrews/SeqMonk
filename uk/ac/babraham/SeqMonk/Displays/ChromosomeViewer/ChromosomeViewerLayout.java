@@ -119,6 +119,8 @@ public class ChromosomeViewerLayout implements LayoutManager2 {
 			setLayout(MIN_ANNOT_HEIGHT,width,height);
 		}
 		
+//		System.err.println("Layout finished");
+		
 	}
 	
 	private void setLayout (int annotationHeight, int width, int height) {

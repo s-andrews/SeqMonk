@@ -21,6 +21,9 @@
 package uk.ac.babraham.SeqMonk;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import uk.ac.babraham.SeqMonk.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.SeqMonk.DataParsers.DataParser;
@@ -131,6 +135,9 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 
 	/** Flag used when saving before loading a new file **/
 	private File fileToLoad = null;
+	
+	/** Stashed bottom panel when dragging the main divider **/
+	private Component stashedBottomPanel = null;
 	
 	/** The cache listeners */
 	private Vector<CacheListener> cacheListeners = new Vector<CacheListener>();
@@ -231,6 +238,36 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		topPane.setDividerLocation((double)0.25);
 		
 
+		// We get horrible performance issues when dragging the main pane divider if
+		// there are large numbers of components in the bottom pane.  To try to fix this
+		// we can remove the bottom component whilst dragging, and add it back when
+		// the mouse is released.
+		
+		((BasicSplitPaneUI)mainPane.getUI()).getDivider().addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				mainPane.setBottomComponent(stashedBottomPanel);
+				stashedBottomPanel = null;
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				stashedBottomPanel = mainPane.getBottomComponent();
+				mainPane.setBottomComponent(new JPanel());
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {}
+		});
+		
+		
 		
 	}
 		

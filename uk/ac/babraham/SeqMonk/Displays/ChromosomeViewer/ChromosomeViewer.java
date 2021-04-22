@@ -117,7 +117,7 @@ public class ChromosomeViewer extends JPanel implements DataChangeListener, Disp
 	}
 
 	/**
-	 * This allows you to change the chromsome the viewer is looking at without
+	 * This allows you to change the chromosome the viewer is looking at without
 	 * altering the list of tracks which are displayed.
 	 * 
 	 * @param chromosome The new chromosome to display.
