@@ -27,6 +27,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -76,6 +79,9 @@ public class DataSet extends DataStore implements Runnable {
 
 	/** A flag to say if we've optimised this dataset */
 	private boolean isFinalised = false;
+	
+	/** The location of the cache folder for this dataset */
+	private Path cacheFolder;
 
 	/** A flag which is set as soon as any unsorted data is added to the data set */
 	private boolean needsSorting = false;
@@ -186,10 +192,25 @@ public class DataSet extends DataStore implements Runnable {
 
 		if (isFinalised) return;
 
-		// To make querying the data more efficient we're going to convert
-		// all of the vectors in our data structure into SequenceRead arrays
-		// which are sorted by start position.  This means that subsequent
-		// access will be a lot more efficient.
+		// After loading all of the data we can finalise it.  This involves
+		// doing deduplication if we've been asked to, calculating and caching
+		// some overall statistics so we don't have to re-calculate them later
+		// on, and then creating object file dumps of the per-chromosome data
+		// so we don't have to hold it all in memory.
+		
+		// Because we're getting projects with large numbers of samples in
+		// them we're ending up with thousands of files in our cache direcrtory
+		// which isn't very efficient.  We're therefore going to create a 
+		// temp folder for the cache files for this sample to cut down on the
+		// files per directory.
+		
+		
+		try {
+			cacheFolder = Files.createTempDirectory(SeqMonkPreferences.getInstance().tempDirectory().toPath(), "seqmonk_tempds_");
+		}
+		catch (IOException ioe) {
+			
+		}
 
 		Enumeration<Chromosome> e = readData.keys();
 
@@ -531,9 +552,10 @@ public class DataSet extends DataStore implements Runnable {
 			if (f != null) {
 				if (!f.delete()) System.err.println("Failed to delete cache file "+f.getAbsolutePath());
 			}
-
-
 		}
+		
+		// We also need to delete the cache folder we were using
+		if (!cacheFolder.toFile().delete()) System.err.println("Failed to delete cache folder "+cacheFolder.toString());
 	}
 
 	/* (non-Javadoc)
@@ -865,7 +887,7 @@ public class DataSet extends DataStore implements Runnable {
 			totalReadLength.incrementBy(readLengths);
 
 			try {
-				readsWithCountsTempFile = File.createTempFile("seqmonk_read_set", ".temp", SeqMonkPreferences.getInstance().tempDirectory());
+				readsWithCountsTempFile = File.createTempFile("seqmonk_read_set", ".temp", cacheFolder.toFile());
 				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(readsWithCountsTempFile)));
 				oos.writeObject(new ReadsWithCounts(reads,counts));
 				oos.close();
