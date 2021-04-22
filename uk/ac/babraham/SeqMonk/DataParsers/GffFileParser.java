@@ -47,7 +47,7 @@ import uk.ac.babraham.SeqMonk.Utilities.ChromosomeWithOffset;
  */
 public class GffFileParser extends DataParser {
 	
-	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(false, false, false,false);
+	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(false, false, false,false,false);
 	
 	/**
 	 * Instantiates a new gff file parser.

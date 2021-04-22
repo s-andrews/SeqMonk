@@ -43,7 +43,7 @@ import uk.ac.babraham.SeqMonk.Utilities.ChromosomeWithOffset;
  */
 public class BismarkCovFileParser extends DataParser {
 		
-	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(false, false, false,false);
+	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(false, false, false,false,false);
 	
 	/**
 	 * Instantiates a new bismark cov file parser.

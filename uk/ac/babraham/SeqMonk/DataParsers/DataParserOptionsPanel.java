@@ -61,11 +61,12 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	private JTextField distanceLimit;
 	private JPanel singleEndOptions;
 	private JPanel pairedEndOptions;
+	private JCheckBox embeddedSampleNames;
 	
 	private boolean forcePairedEnd = false;
 	
 	
-	public DataParserOptionsPanel (boolean allowsPairedEnd, boolean allowsSplicing, boolean allowsReversal, boolean supportsQuality) {
+	public DataParserOptionsPanel (boolean allowsPairedEnd, boolean allowsSplicing, boolean allowsReversal, boolean supportsQuality, boolean supportsSampleNames) {
 		setLayout(new BorderLayout());
 		
 		JPanel commonOptions = new JPanel();
@@ -131,6 +132,22 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 			gbc.gridx=2;
 			commonOptions.add(primaryAlignmentsOnly,gbc);
 		}
+		
+		embeddedSampleNames = new JCheckBox();
+		if (supportsSampleNames) {
+			gbc.gridx=1;
+			gbc.gridy++;
+			commonOptions.add(new JLabel("Embedded sample names"),gbc);
+			gbc.gridx=2;
+			commonOptions.add(embeddedSampleNames,gbc);
+		}
+
+		gbc.gridx=1;
+		gbc.gridy++;
+		commonOptions.add(new JLabel("Primary alignments only"),gbc);
+		gbc.gridx=2;
+		commonOptions.add(primaryAlignmentsOnly,gbc);
+		
 		
 		if (allowsReversal) {
 			gbc.gridx=1;
@@ -255,6 +272,10 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 	
 	public boolean isHiC () {
 		return isHiC.isSelected();
+	}
+	
+	public boolean embeddedSampleNames () {
+		return embeddedSampleNames.isSelected();
 	}
 	
 	public int hiCDistance () {

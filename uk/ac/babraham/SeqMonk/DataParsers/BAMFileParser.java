@@ -21,6 +21,9 @@ package uk.ac.babraham.SeqMonk.DataParsers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -53,7 +56,7 @@ public class BAMFileParser extends DataParser {
 	private boolean separateSplicedReads = false;
 	private boolean importIntrons = false;
 	private int extendBy = 0;
-	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(true, true, false,true);
+	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(true, true, false,true, true);
 	private int minMappingQuality = 0;
 	private boolean primaryAlignmentsOnly = true;
 	
@@ -130,18 +133,32 @@ public class BAMFileParser extends DataParser {
 		primaryAlignmentsOnly = prefs.primaryAlignmentsOnly();
 
 		File [] samFiles = getFiles();
+		
+		// If we're just doing standard imports then we'll make one data set per file
 		DataSet [] newData = new DataSet[samFiles.length];
+		
+		// If we're dealing with a single BAM file with embedded sample names in the
+		// read IDs then we don't know initially how many datasets we're going to have
+		// so we're going to make up new datasets as we discover them.
+		ArrayList<DataSet> finalisedDynamicDataSets = new ArrayList<DataSet>();
 
 		try {
 			for (int f=0;f<samFiles.length;f++) {
 
 				SamReader inputSam = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT).open(samFiles[f]); 
 
-				if (prefs.isHiC()) {
-					newData[f] = new PairedDataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
+				// Make sample level datastore unless we have embedded sample names
+				HashMap<String, DataSet> dynamicDataSets = null;
+				if (prefs.embeddedSampleNames()) {
+					dynamicDataSets = new HashMap<String, DataSet>();
 				}
 				else {
-					newData[f] = new DataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription());
+					if (prefs.isHiC()) {
+						newData[f] = new PairedDataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
+					}
+					else {
+						newData[f] = new DataSet(samFiles[f].getName(),samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription());
+					}
 				}
 
 				int lineCount = 0;
@@ -170,6 +187,34 @@ public class BAMFileParser extends DataParser {
 						progressUpdated("Read "+lineCount+" lines from "+samFiles[f].getName(),f,samFiles.length);
 					}
 
+					// We need to get the dataset we're working with.  This will either be the one for
+					// the file, or it will be one based on the embedded read id
+					DataSet setToUse;
+					
+					if (prefs.embeddedSampleNames()) {
+						// Get the sample name from the read ID and pull (or create) the data set from the
+						// dynamicDataSets hash
+						String [] sections = samRecord.getReadName().split(":");
+						String sampleName = samFiles[f].getName()+":"+sections[sections.length-1];
+						
+						if (!dynamicDataSets.containsKey(sampleName)) {
+							DataSet d;
+							System.out.println("Creating new dataset "+sampleName);
+							if (prefs.isHiC()) {
+								d = new PairedDataSet(sampleName,samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription(),prefs.hiCDistance(),prefs.hiCIgnoreTrans());
+							}
+							else {
+								d = new DataSet(sampleName,samFiles[f].getCanonicalPath(),prefs.removeDuplicates(),prefs.getImportOptionsDescription());
+							}
+							dynamicDataSets.put(sampleName, d);
+
+						}
+						setToUse = dynamicDataSets.get(sampleName);
+					}
+					else {
+						setToUse = newData[f];
+					}
+					
 
 					if (pairedEndImport && ! samRecord.getReadPairedFlag()) {
 						progressWarningReceived(new SeqMonkException("Data was single ended during paired end import"));
@@ -197,7 +242,7 @@ public class BAMFileParser extends DataParser {
 						// we have in the cache
 
 						if (prefs.isHiC()) {
-							if (((PairedDataSet)newData[f]).importSequenceSkipped()) {
+							if (((PairedDataSet)setToUse).importSequenceSkipped()) {
 								// Skip the next line
 								skipNext = true;
 							}
@@ -233,24 +278,24 @@ public class BAMFileParser extends DataParser {
 					try {
 						if (pairedEndImport && ! separateSplicedReads) {
 							SequenceReadWithChromosome read = getPairedEndRead(samRecord);
-							newData[f].addData(read.chromosome,read.read);
+							setToUse.addData(read.chromosome,read.read);
 						}
 						else if (separateSplicedReads) {
 							SequenceReadWithChromosome [] reads = getSplitSingleEndRead(samRecord);
 							for (int r=0;r<reads.length;r++) {
-								newData[f].addData(reads[r].chromosome,reads[r].read);
+								setToUse.addData(reads[r].chromosome,reads[r].read);
 							}
 						}
 						else {
 							SequenceReadWithChromosome read = getSingleEndRead(samRecord);
-							newData[f].addData(read.chromosome,read.read);
+							setToUse.addData(read.chromosome,read.read);
 						}
 					}
 					catch (SeqMonkException ex) {
 						progressWarningReceived(ex);
 
 						if (prefs.isHiC()) {
-							if (((PairedDataSet)newData[f]).importSequenceSkipped()) {
+							if (((PairedDataSet)setToUse).importSequenceSkipped()) {
 								// Skip the next line
 								skipNext = true;
 							}
@@ -262,9 +307,17 @@ public class BAMFileParser extends DataParser {
 				// We're finished with the file.
 				inputSam.close();
 
-				// Cache the data in the new dataset
-				progressUpdated("Caching data from "+samFiles[f].getName(), f, samFiles.length);
-				newData[f].finalise();
+				// Cache the data in the new dataset(s)
+				if (prefs.embeddedSampleNames()) {
+					for (DataSet ds : dynamicDataSets.values()) {
+						progressUpdated("Caching data from "+ds.name(), f, samFiles.length);
+						finalisedDynamicDataSets.add(ds);
+					}
+				}
+				else {
+					progressUpdated("Caching data from "+samFiles[f].getName(), f, samFiles.length);
+					newData[f].finalise();
+				}
 
 			}
 		}	
@@ -274,6 +327,11 @@ public class BAMFileParser extends DataParser {
 			return;
 		}
 
+		// Extract out the dynamically created samples if we're using embedded sample names
+		if (prefs.embeddedSampleNames()) {
+			newData = finalisedDynamicDataSets.toArray(new DataSet[0]);
+		}
+		
 		processingFinished(newData);
 	}
 

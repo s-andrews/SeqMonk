@@ -52,7 +52,7 @@ public class BowtieFileParser extends DataParser {
 	
 	private int extendBy = 0;
 	
-	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(true, false, false,false);
+	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(true, false, false,false,false);
 	
 	
 	/**

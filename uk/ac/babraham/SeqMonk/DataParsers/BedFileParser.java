@@ -44,7 +44,7 @@ import uk.ac.babraham.SeqMonk.Utilities.ChromosomeWithOffset;
  */
 public class BedFileParser extends DataParser {
 		
-	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(false, false, false,false);
+	private DataParserOptionsPanel prefs = new DataParserOptionsPanel(false, false, false,false,false);
 	
 	/**
 	 * Instantiates a new bed file parser.
