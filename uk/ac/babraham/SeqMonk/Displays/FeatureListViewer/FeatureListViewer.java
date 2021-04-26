@@ -54,8 +54,8 @@ public class FeatureListViewer extends JTable implements MouseListener {
 		this.application = SeqMonkApplication.getInstance();
 
 
-		String [] headers = new String [] {"Feature","ID","Type","Description","Chr","Start","End"};
-		Class [] classes = new Class [] {String.class,String.class,String.class,String.class,String.class,Integer.class,Integer.class};
+		String [] headers = new String [] {"Feature","ID","Type","Description","Chr","Start","End","Strand"};
+		Class [] classes = new Class [] {String.class,String.class,String.class,String.class,String.class,Integer.class,Integer.class,String.class};
 		
 		Object [][] rowData = new Object [features.length][headers.length];
 		
@@ -72,6 +72,7 @@ public class FeatureListViewer extends JTable implements MouseListener {
 			}
 			rowData[i][5] = new Integer(features[i].location().start());
 			rowData[i][6] = new Integer(features[i].location().end());
+			rowData[i][7] = features[i].location().strand();
 		}
 
 		TableSorter sorter = new TableSorter(new FeatureTableModel(rowData,headers,classes));
