@@ -388,7 +388,7 @@ public class RNASeqPipeline extends Pipeline {
 				// Warn the user that the new probe set is not the same as the existing
 				// one and that we're going to wipe their probes out.
 				
-				int answer = JOptionPane.showConfirmDialog(SeqMonkApplication.getInstance(), "Since you're using different option to your last probe generation your previous probes and lists will be replaced.  Are you sure you want to continue?","Are you sure?",JOptionPane.YES_NO_OPTION);
+				int answer = JOptionPane.showConfirmDialog(SeqMonkApplication.getInstance(), "Since you're using different option to your last probe generation your previous probes and lists will be replaced.\n\nAre you sure you want to continue?","Are you sure?",JOptionPane.YES_NO_OPTION);
 				if (answer != JOptionPane.YES_OPTION) {
 					progressCancelled();
 					return;
