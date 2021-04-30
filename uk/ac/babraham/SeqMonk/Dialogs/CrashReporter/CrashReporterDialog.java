@@ -61,7 +61,7 @@ import uk.ac.babraham.SeqMonk.R.RException;
 public class CrashReporterDialog extends JDialog implements ActionListener {
 
 	/** The Constant reportURLString. */
-	public static final String reportURLString = "http://www.bioinformatics.babraham.ac.uk/cgi-bin/public/crashreporter.cgi";
+	public static final String reportURLString = "https://www.bioinformatics.babraham.ac.uk/cgi-bin/public/crashreporter.cgi";
 //	public static final String reportURLString = "http://bilin1/cgi-bin/public/crashreporter.cgi";
 	
 	/** The e. */
