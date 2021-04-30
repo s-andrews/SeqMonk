@@ -199,7 +199,7 @@ public class MultiBoxWhiskerDialog extends JDialog implements ActionListener, Ru
 			
 			for (int g=0;g<stores.length;g++) {
 
-				Color [] colours = new Color[stores.length];
+				Color [] colours = new Color[probes.length];
 				Color thisColour = getStoreColor(stores[g]);
 				for (int i=0;i<colours.length;i++) {
 					colours[i] = thisColour;
