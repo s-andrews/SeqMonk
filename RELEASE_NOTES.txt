@@ -1,3 +1,22 @@
+RELEASE NOTES FOR SeqMonk v1.48.0
+---------------------------------
+A mix of bugfixes and some internal restructuring
+
+1. Fixed the crash reporter which couldn't cope with https URLs
+
+2. Changed the cache folder code to reduce the number of files 
+   created in a single directory.
+   
+3. Added an option to the BAM file import to bring in data
+   which has barcodes or sample names embedded in the read IDs
+
+4. Show the strand in the feature search results.
+
+5. Vastly improve the speed of switching chromosomes or resizing
+   the chromosome view when lots of tracks are being displayed.
+
+
+
 RELEASE NOTES FOR SeqMonk v1.47.2
 ---------------------------------
 Many bugfixes...
