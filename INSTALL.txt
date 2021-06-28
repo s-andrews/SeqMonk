@@ -88,13 +88,17 @@ without it, but the R based filters and some of the graphical plots will not be 
 To configure SeqMonk and R you first need to install R on your system.  R can be downloaded
 from http://www.r-project.org/ and you should follow the instructions there to load it.
 
-For OSX and Linux users the installation of some R packages will require that you have 
-suitable development tools installed.  For OSX the easiest way to get these is to install the
-OSX R Tools Package which can be found at:
+For M1 Mac users - BioConductor doesn't (at the time of writing) natively support binary 
+packages on the M1 based macs.  This means that although there is a native M1 build of R,
+if you use that then you won't be able to install all of the packages without doing a full
+recompilation.  The current advice from BioConductor is to install the normal Intel build
+of R, even if you're on an M1 system, so it runs in emulation mode.  This will allow you 
+to install Intel OSX binary packages, which will be easier than recompiling.  At some point
+there will probably be native support for M1/ARM from BioConductor and this advice will 
+change, but that's how it is right now.
 
-https://github.com/rmacoslib/r-macos-rtools
-
-For Linux users you should install the normal build environment on your system.  Many systems
+For Linux users the installation of some R packages will require that you have 
+suitable development tools installed. On Linux you should install the normal build environment on your system.  Many systems
 will have this already, but you can explicitly install them with:
 
 Ubuntu: sudo apt install build-essential
