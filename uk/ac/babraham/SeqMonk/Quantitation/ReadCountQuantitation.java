@@ -40,38 +40,28 @@ import uk.ac.babraham.SeqMonk.DataTypes.Sequence.QuantitationStrandType;
 public class ReadCountQuantitation extends Quantitation {
 
 	private JPanel optionPanel = null;
-	private JComboBox strandLimit;
+	private JComboBox<QuantitationStrandType> strandLimitBox;
+	private static QuantitationStrandType quantitationType = null;
 		
 	/** Do we do a total read count correction */
 	private JCheckBox correctTotalBox;
-	
-	/** Which kinds of reads are we going to use */
-	private QuantitationStrandType quantitationType;
-	
-	/** Do we correct for total read count */
 	private static boolean correctTotal = true;
-	
+		
 	/** Do we get our total read count only from within the probes defined */
 	private JCheckBox correctOnlyInProbesBox;
-	
-	/** Do we correct to the largest dataset, or per million probes */
-	private JComboBox correctToWhatBox;
-	private boolean correctPerMillion = false;
-
-	
-	/** Do we get our total read count for correction just from within the probes we're quantitating. */
 	private static boolean correctOnlyInProbes = false;
 	
+	/** Do we correct to the largest dataset, or per million probes */
+	private JComboBox<String> correctToWhatBox;
+	private static boolean correctPerMillion = false;
+
+		
 	/** Do we correct for the length of each probe */
 	private JCheckBox correctLengthBox;
-	
-	/** Do we correct for the length of each probe */
 	private static boolean correctLength = false;
 	
 	/** Do we log transform all counts */
 	private JCheckBox logTransformBox;
-	
-	/** Do we log transform all counts */
 	private static boolean logTransform = true;
 
 	/** Do we want to ignore duplicated reads */
@@ -96,7 +86,7 @@ public class ReadCountQuantitation extends Quantitation {
 	public void quantitate(DataStore [] data) {
 		this.data = data;
 		
-		this.quantitationType = (QuantitationStrandType)strandLimit.getSelectedItem();
+		this.quantitationType = (QuantitationStrandType)strandLimitBox.getSelectedItem();
 		
 		correctTotal = correctTotalBox.isSelected();
 		if (correctToWhatBox.getSelectedItem().equals("Per Million Reads")) {
@@ -139,8 +129,17 @@ public class ReadCountQuantitation extends Quantitation {
 		optionPanel.add(new JLabel("Count reads on strand"),gbc);
 		
 		gbc.gridx = 2;
-		strandLimit = new JComboBox(QuantitationStrandType.getTypeOptions());
-		optionPanel.add(strandLimit,gbc);
+		QuantitationStrandType [] quantitationTypes = QuantitationStrandType.getTypeOptions();
+		strandLimitBox = new JComboBox<QuantitationStrandType>(quantitationTypes);
+		if (quantitationType != null) {
+			for (int i=0;i<quantitationTypes.length;i++) {
+				if (quantitationTypes[i].equals(quantitationType)) {
+					strandLimitBox.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+		optionPanel.add(strandLimitBox,gbc);
 		
 		gbc.gridx = 1;
 		gbc.gridy++;
@@ -172,10 +171,12 @@ public class ReadCountQuantitation extends Quantitation {
 		optionPanel.add(new JLabel("Correct to what?"),gbc);
 		
 		gbc.gridx = 2;
-		correctToWhatBox = new JComboBox(new String [] {"Largest DataStore","Per Million Reads"});
+		correctToWhatBox = new JComboBox<String>(new String [] {"Largest DataStore","Per Million Reads"});
 		correctToWhatBox.setEnabled(correctTotal);
+		if (correctPerMillion) {
+			correctToWhatBox.setSelectedIndex(1);
+		}
 		optionPanel.add(correctToWhatBox,gbc);
-
 		
 		gbc.gridx = 1;
 		gbc.gridy++;
@@ -183,8 +184,7 @@ public class ReadCountQuantitation extends Quantitation {
 		optionPanel.add(new JLabel("Count total only within probes"),gbc);
 		
 		gbc.gridx = 2;
-		correctOnlyInProbesBox = new JCheckBox();
-		correctOnlyInProbesBox.setSelected(correctOnlyInProbes);
+		correctOnlyInProbesBox = new JCheckBox("",correctOnlyInProbes);
 		correctOnlyInProbesBox.setEnabled(correctTotal);
 		optionPanel.add(correctOnlyInProbesBox,gbc);
 
@@ -195,8 +195,7 @@ public class ReadCountQuantitation extends Quantitation {
 		optionPanel.add(new JLabel("Correct for probe length"),gbc);
 		
 		gbc.gridx = 2;
-		correctLengthBox = new JCheckBox();
-		correctLengthBox.setSelected(correctLength);
+		correctLengthBox = new JCheckBox("",correctLength);
 		optionPanel.add(correctLengthBox,gbc);
 
 		gbc.gridx = 1;
@@ -205,8 +204,7 @@ public class ReadCountQuantitation extends Quantitation {
 		optionPanel.add(new JLabel("Log Transform Count"),gbc);
 		
 		gbc.gridx = 2;
-		logTransformBox = new JCheckBox();
-		logTransformBox.setSelected(logTransform);
+		logTransformBox = new JCheckBox("",logTransform);
 		optionPanel.add(logTransformBox,gbc);
 		
 		gbc.gridx = 1;
@@ -215,8 +213,7 @@ public class ReadCountQuantitation extends Quantitation {
 		optionPanel.add(new JLabel("Count duplicated reads only once"),gbc);
 		
 		gbc.gridx = 2;
-		ignoreDuplicatesBox = new JCheckBox();
-		ignoreDuplicatesBox.setSelected(ignoreDuplicates);
+		ignoreDuplicatesBox = new JCheckBox("",ignoreDuplicates);
 		optionPanel.add(ignoreDuplicatesBox,gbc);
 		
 		return optionPanel;
