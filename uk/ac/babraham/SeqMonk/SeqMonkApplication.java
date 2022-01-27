@@ -701,13 +701,32 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		
 		parser.addProgressListener(this);
 		
+		
+		// We only want to update the main program bar and the list of recent 
+		// files if the file load succeeded so we'll add a custom listener for that
+		parser.addProgressListener(new ProgressListener() {
+			
+			@Override
+			public void progressWarningReceived(Exception e) {}
+			@Override
+			public void progressUpdated(String message, int current, int max) {}
+			@Override
+			public void progressExceptionReceived(Exception e) {}
+			@Override
+			public void progressCancelled() {}
+			
+			@Override
+			public void progressComplete(String command, Object result) {
+				setTitle("SeqMonk ["+file.getName()+"]");				
+				SeqMonkPreferences.getInstance().addRecentlyOpenedFile(file.getAbsolutePath());
+			}
+			
+		});
+		
 		ProgressDialog dppd = new ProgressDialog(this,"Loading data...");
 		parser.addProgressListener(dppd);
 		parser.parseFile(file,forceAssembly);
 		dppd.requestFocus();
-		setTitle("SeqMonk ["+file.getName()+"]");
-		
-		SeqMonkPreferences.getInstance().addRecentlyOpenedFile(file.getAbsolutePath());
 
 	}
 
