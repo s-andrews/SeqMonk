@@ -131,6 +131,7 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 			commonOptions.add(new JLabel("Primary alignments only"),gbc);
 			gbc.gridx=2;
 			commonOptions.add(primaryAlignmentsOnly,gbc);
+
 		}
 		
 		embeddedSampleNames = new JCheckBox();
@@ -142,11 +143,6 @@ public class DataParserOptionsPanel extends JPanel implements ItemListener, KeyL
 			commonOptions.add(embeddedSampleNames,gbc);
 		}
 
-		gbc.gridx=1;
-		gbc.gridy++;
-		commonOptions.add(new JLabel("Primary alignments only"),gbc);
-		gbc.gridx=2;
-		commonOptions.add(primaryAlignmentsOnly,gbc);
 		
 		
 		if (allowsReversal) {
