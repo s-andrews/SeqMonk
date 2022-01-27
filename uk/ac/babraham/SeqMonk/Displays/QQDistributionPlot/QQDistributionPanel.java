@@ -65,14 +65,12 @@ public class QQDistributionPanel extends CumulativeDistributionPanel {
 			if (Float.isNaN(distribution[i]) || Float.isInfinite(distribution[i])) ++nanCount ;
 		}
 
-		double totalCount = 0;
 		float [] validDistribution = new float[distribution.length-nanCount];
 			
 		int index1 = 0;
 			
 		for (int i=0;i<distribution.length;i++) {
 			if (Float.isNaN(distribution[i]) || Float.isInfinite(distribution[i])) continue;
-			totalCount += Math.abs(distribution[i]);
 			validDistribution[index1] = distribution[i];
 			index1++;
 		}
@@ -81,12 +79,36 @@ public class QQDistributionPanel extends CumulativeDistributionPanel {
 		
 		Arrays.sort(distribution);
 		
+		// Since we're summing the quantitations this gets messed up if we have negative 
+		// values.  We'll therefore add an offset of the lowest value if there are negative
+		// values in the set.
+
+		// We're also going to need the total count
+		double totalCount = 0;
+		
+		if (distribution.length > 0 && distribution[0] < 0) {
+			float [] positiveDistribution = new float[distribution.length];
+			
+			for (int i=0;i<distribution.length;i++) {
+				positiveDistribution[i] = distribution[i] - distribution[0];
+				totalCount += positiveDistribution[i];
+			}
+			
+			distribution = positiveDistribution;
+		}
+		else {
+			// We just need the total
+			for (int i=0;i<distribution.length;i++) {
+				totalCount += distribution[i];
+			}
+		}
+		
 		// Now we need to replace the values with percentiles
 		float [] absDistribution = new float[distribution.length];
 		
 		double runningTotal = 0;
 		for (int i=0;i<distribution.length;i++) {
-			runningTotal += Math.abs(distribution[i]);
+			runningTotal += distribution[i];
 			absDistribution[i] = (float)(runningTotal/totalCount)*100;
 		}
 		
