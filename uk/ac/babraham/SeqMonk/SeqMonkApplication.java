@@ -663,7 +663,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 		loadProject(file,false);
 	}
 	
-	public void loadProject (File file, boolean forceAssembly) {
+	public void loadProject (final File file, boolean forceAssembly) {
 
 		if (file == null) return;
 		
