@@ -1070,7 +1070,9 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		int yBoxEnd = yBoxStart+readHeight;
 
 		//		System.err.println("Drawing read from "+wholeXStart+","+yBoxStart+","+wholeXEnd+","+yBoxEnd);
-		drawnReads.add(new DrawnRead(wholeXStart, wholeXEnd, yBoxStart, yBoxEnd, index, r));
+		
+		// TODO: Add custom label if this is a HiC read
+		drawnReads.add(new DrawnRead(wholeXStart, wholeXEnd, yBoxStart, yBoxEnd, index, r, null));
 
 		//		System.out.println("Drawing probe from x="+wholeXStart+" y="+yBoxStart+" width="+(wholeXEnd-wholeXStart)+" height="+(yBoxEnd-yBoxStart));
 		g.fillRect(wholeXStart,yBoxStart,(wholeXEnd-wholeXStart),yBoxEnd-yBoxStart);
@@ -1476,12 +1478,7 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 			DrawnRead r = e.nextElement();
 			if (r.isInFeature(x,y)) {
 				if (activeRead != r.read || r.index != activeReadIndex) {
-					viewer.application().setStatusText(
-							" "+
-									data.name()+
-									" "+
-									SequenceRead.toString(r.read)
-							);
+					viewer.application().setStatusText(r.toString());
 					activeRead = r.read;
 					activeReadIndex = r.index;
 					activeProbe = null;
@@ -1675,6 +1672,9 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 
 		/** The read. */
 		public long read;
+		
+		/** The text associated with the read - can be null then we fall back to the position **/
+		public String label;
 
 		/**
 		 * Instantiates a new drawn read.
@@ -1685,13 +1685,14 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 		 * @param top the top
 		 * @param read the read
 		 */
-		public DrawnRead (int left, int right, int bottom, int top, int index, long read) {
+		public DrawnRead (int left, int right, int bottom, int top, int index, long read, String label) {
 			this.left = left;
 			this.right = right;
 			this.top = top;
 			this.bottom = bottom;
 			this.read = read;
 			this.index = index;
+			this.label = label;
 		}
 
 		/**
@@ -1709,6 +1710,18 @@ public class ChromosomeDataTrack extends JPanel implements MouseListener, MouseM
 				return false;
 			}
 		}
+		
+		public String toString() {
+			// TODO: return default position if no custom string is set otherwise return the custom string
+			
+			if (label != null) {
+				return(" "+data.name()+" "+label);
+			}
+			else {
+				return(" "+data.name()+" "+SequenceRead.toString(read));
+			}
+		}
+		
 	}
 
 	/**
