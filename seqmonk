@@ -199,7 +199,7 @@ sub determine_optimal_memory {
 	
 	
 	my ($in,$out);
-	open3(\*IN,\*OUT,\*OUT,"java -version") or print_error("Can't find java");
+	open3(\*IN,\*OUT,\*OUT,"$java_exe -version") or print_error("Can't find $java_exe");
 	close IN;
 	while (<OUT>) {
 		if (/64-Bit/) {
