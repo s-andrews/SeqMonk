@@ -95,6 +95,7 @@ create-dmg \
 --icon-size 100 \
 --icon "SeqMonk.app" 200 160 \
 --app-drop-link 600 155 \
+--no-internet-enable \
 seqmonk_v${VERSION}_osx64.dmg \
 SeqMonk
 
