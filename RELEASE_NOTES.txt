@@ -1,3 +1,22 @@
+RELEASE NOTES FOR SeqMonk v1.48.1
+---------------------------------
+
+1. Fixed a bug in the launch script which meant that memory
+   settings weren't detected correctly unless java was 
+   installed on the system.
+   
+2. Made all preferences for the read count quantitation be
+   remembered between runs.
+  
+3. Removed spurious additional label in the BAM file import
+   options dialog.
+   
+4. Don't add projects which fail to load to the recently used
+   file list.
+   
+5. Update install instructions for M1 mac users.
+
+
 RELEASE NOTES FOR SeqMonk v1.48.0
 ---------------------------------
 A mix of bugfixes and some internal restructuring
