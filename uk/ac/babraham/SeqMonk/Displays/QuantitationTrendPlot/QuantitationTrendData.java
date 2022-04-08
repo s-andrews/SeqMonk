@@ -535,7 +535,6 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 				sb = new StringBuffer();
 				sb.append("upstream\t");
 				sb.append(bin);
-				sb.append("\t");
 				for (int p=0;p<lists.length;p++) {
 					for (int s=0;s<stores.length;s++) {
 						sb.append("\t");
@@ -551,7 +550,6 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 				sb = new StringBuffer();
 				sb.append("central\t");
 				sb.append(bin);
-				sb.append("\t");
 				for (int p=0;p<lists.length;p++) {
 					for (int s=0;s<stores.length;s++) {
 						sb.append("\t");
@@ -567,7 +565,6 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 				sb = new StringBuffer();
 				sb.append("downstream\t");
 				sb.append(bin);
-				sb.append("\t");
 				for (int p=0;p<lists.length;p++) {
 					for (int s=0;s<stores.length;s++) {
 						sb.append("\t");
