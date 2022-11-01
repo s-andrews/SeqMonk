@@ -246,6 +246,8 @@ sub determine_optimal_memory {
 	else {
 		push @java_args, "-Dawt.useSystemAAFontSettings=on";
 		push @java_args, "-Dswing.aatext=true";
+		# This xrender option works around a bug in XQuartz on OSX macs
+        push @java_args, "-Dsun.java2d.xrender=false";
 
 		$physical = get_linux_memory($max_memory);
 	}
