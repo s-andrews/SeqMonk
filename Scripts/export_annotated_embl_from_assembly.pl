@@ -44,6 +44,17 @@ my $GO_adapter =   $registry->get_adaptor( 'Multi', 'Ontology', 'OntologyTerm' )
 
 die "Couldn't get GO adaptor from $version" unless ($GO_adapter);
 
+my $species = $ARGV[0];
+
+if ($species) {
+    my $db_adapter = $registry->get_DBAdaptor($species,'Core');
+    process_genome($db_adapter);
+}
+else {
+    select_db_adapter($registry);
+}
+
+
 my $slice_adapter = select_slice_adapter($registry);
 
 sub load_registry {
