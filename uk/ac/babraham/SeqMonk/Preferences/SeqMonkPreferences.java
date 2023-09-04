@@ -743,9 +743,14 @@ public class SeqMonkPreferences {
 		if (useProxy) {
 			System.getProperties().put("proxyHost",proxyHost);
 			System.getProperties().put("proxyPort",""+proxyPort);
+			System.getProperties().put("https.proxyHost",proxyHost);
+			System.getProperties().put("https.proxyPort",""+proxyPort);
 		}
 		else {
-			System.getProperties().put("proxySet","false");
+			System.clearProperty("proxyHost");
+			System.clearProperty("proxyPort");
+			System.clearProperty("https.proxyHost");
+			System.clearProperty("https.proxyPort");
 		}
 	}
 }
