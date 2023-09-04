@@ -741,7 +741,6 @@ public class SeqMonkPreferences {
 	 */
 	private void updateProxyInfo () {
 		if (useProxy) {
-			System.getProperties().put("proxySet","true");
 			System.getProperties().put("proxyHost",proxyHost);
 			System.getProperties().put("proxyPort",""+proxyPort);
 		}
