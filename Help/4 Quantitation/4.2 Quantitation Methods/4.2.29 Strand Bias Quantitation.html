@@ -1,7 +1,7 @@
 <html>
 
 <head>
-<title>Duplication Quantitation</title>
+<title>Strand Bias Quantitation</title>
 <style type="text/css">
 	body {
 		font-family: sans-serif;
@@ -12,12 +12,21 @@
  </style>
 </head>
 <body>
-<h1>Duplication Quantitation</h1>
+<h1>Strand Bias Quantitation</h1>
 
 <p>
-The duplication quantitation calculates the percentage of reads over a probe which
-are exact duplicates of a read which has already been seen.  In this instance a 
-duplicate is defined as having the same start, end and strand as another read.
+This method quantitates based on the directionality of your reads.
+</p>
+<p>
+The equation used is (reverse-forward)/(reverse+forward) so you end up
+with a value between -1 and +1 depending on the bias in directionality.
+</p>
+
+<h2>Options</h2>
+<p>
+You can set a minimum count so that you don't add a lot of noise based 
+on probes containing very few reads.  Minimum count is based on the total
+of reverse + forward so reads with no associated strand are ignored.
 </p>
 </body>
 </html>
