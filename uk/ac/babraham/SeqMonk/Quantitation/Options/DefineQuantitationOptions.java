@@ -78,6 +78,7 @@ import uk.ac.babraham.SeqMonk.Quantitation.RelativeQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.SizeFactorNormalisationQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.SmoothingQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.SmoothingSubtractionQuantitation;
+import uk.ac.babraham.SeqMonk.Quantitation.StrandBiasQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.SubsetNormalisationQuantitation;
 import uk.ac.babraham.SeqMonk.Quantitation.ZScoreQuantitation;
 
@@ -124,6 +125,7 @@ public class DefineQuantitationOptions extends JDialog implements ActionListener
 				new BasePairQuantitation(application),
 				new ExactOverlapQuantitation(application),
 				new DifferenceQuantitation(application),
+				new StrandBiasQuantitation(application),
 				new CoverageQuantitation(application),
 				new CoverageDepthQuantitation(application),
 				new DuplicationQuantitation(application),
