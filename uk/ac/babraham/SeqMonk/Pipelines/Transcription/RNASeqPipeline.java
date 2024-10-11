@@ -711,12 +711,11 @@ public class RNASeqPipeline extends Pipeline {
 						
 						
 						// Finally we work out millions of reads (single end) or fragments (paired end)
-						if (pairedEnd) {
-							totalReadCount /= 2000000f;
-						}
-						else {
-							totalReadCount /= 1000000f;
-						}
+						// We previously had this incorrectly set to be different for single and paired
+						// end, but because we've calculated the read number based on a read length, and
+						// we corrected the read length for paired end then we don't need to do anything 
+						// clever here.
+						totalReadCount /= 1000000f;
 						
 						
 						// Lastly we divide the value by the total millions of reads to get the globally corrected count.
