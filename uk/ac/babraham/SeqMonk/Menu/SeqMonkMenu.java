@@ -55,6 +55,7 @@ import uk.ac.babraham.SeqMonk.DataParsers.QuasRFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.VisibleStoresParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BAMFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BedFileParser;
+import uk.ac.babraham.SeqMonk.DataParsers.BedMethylFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BedPEFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.BowtieFileParser;
 import uk.ac.babraham.SeqMonk.DataParsers.GenericSeqReadParser;
@@ -1390,6 +1391,12 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 			fileImportQuasR.addActionListener(this);
 			fileImportData.add(fileImportQuasR);
 
+			JMenuItem fileImportBedMethyl = new JMenuItem("BedMethyl...");
+			fileImportBedMethyl.setMnemonic(KeyEvent.VK_Y);
+			fileImportBedMethyl.setActionCommand("import_bedmethyl");
+			fileImportBedMethyl.addActionListener(this);
+			fileImportData.add(fileImportBedMethyl);
+			
 			JMenuItem fileImportMethylKit = new JMenuItem("MethylKit...");
 			fileImportMethylKit.setMnemonic(KeyEvent.VK_M);
 			fileImportMethylKit.setActionCommand("import_methylkit");
@@ -1681,6 +1688,9 @@ public class SeqMonkMenu extends JMenuBar implements ActionListener {
 		}
 		else if (action.equals("import_quasr")) {
 			application.importData(new QuasRFileParser(application.dataCollection()));
+		}
+		else if (action.equals("import_bedmethyl")) {
+			application.importData(new BedMethylFileParser(application.dataCollection()));
 		}
 		else if (action.equals("import_methylkit")) {
 			application.importData(new MethylKitFileParser(application.dataCollection()));
