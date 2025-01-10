@@ -69,6 +69,9 @@ cp -r ~/git/SeqMonk/bin/* ./SeqMonk.app/Contents/MacOS/
 echo "Copying osx jre"
 cp -r jre-osx ./SeqMonk.app/Contents/MacOS/jre
 
+# We need to force the execute permisions on the launch program
+chmod 755 SeqMonk.app/Contents/MacOS/osxseqmonk SeqMonk.app/Contents/MacOS/seqmonk
+
 echo "Removing unwanted bits"
 # We get a warning from trying to delete . and .. but that's OK
 rm -rf ./SeqMonk.app/Contents/MacOS/.* ./SeqMonk.app/Contents/MacOS/Windows ./SeqMonk.app/Contents/MacOS/build.xml
