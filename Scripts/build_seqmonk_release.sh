@@ -11,6 +11,8 @@
 # brew install gnu-tar
 # brew install create-dmg
 
+echo "THIS SCRIPT MUST BE RUN AS ROOT OR IT WON'T WORK"
+
 VERSION=$1
 
 if test -z $VERSION

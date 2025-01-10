@@ -1,3 +1,25 @@
+## This script only works if you have access to a graphical environment
+## on OSX so before running the commands below you need to set this up
+##
+## Create and launch an EC2 OSX instance
+## Log in conventionally
+## ssh -i BioTrain.pem ec2-user@XXX.XXX.XXX.XXX
+##
+## Run:
+##
+## sudo launchctl enable system/com.apple.screensharing
+## sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.screensharing.plist
+##
+## Set a password:
+## passwd ec2-user
+##
+## Log out then log in again with
+## ssh -L 5900:localhost:5900 -i BioTrain.pem ec2-user@XXX.XXX.XXX.XXX
+##
+## Now you can run the commands below before running the "build_seqmonk_release.sh" script *AS ROOT*
+
+
+
 mkdir git
 cd git
 git clone https://github.com/s-andrews/SeqMonk.git
