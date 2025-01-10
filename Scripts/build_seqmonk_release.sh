@@ -88,8 +88,8 @@ cp -r SeqMonk.app SeqMonk/
 echo "Compressing into dmg file"
 create-dmg \
 --volname "SeqMonk" \
---volicon "/Users/andrewss/git/SeqMonk/uk/ac/babraham/SeqMonk/Resources/seqmonk.icns" \
---background "/Users/andrewss/git/SeqMonk/uk/ac/babraham/SeqMonk/Resources/monk_dmg_background.png" \
+--volicon "/Users/ec2-user/git/SeqMonk/uk/ac/babraham/SeqMonk/Resources/seqmonk.icns" \
+--background "/Users/ec2-user/git/SeqMonk/uk/ac/babraham/SeqMonk/Resources/monk_dmg_background.png" \
 --window-pos 200 120 \
 --window-size 800 400 \
 --icon-size 100 \
