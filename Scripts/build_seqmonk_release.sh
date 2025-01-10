@@ -19,7 +19,6 @@ then
 	exit 1
 fi
 
-cd ~/Data
 
 # Do windows first
 echo "Copying windows version"
