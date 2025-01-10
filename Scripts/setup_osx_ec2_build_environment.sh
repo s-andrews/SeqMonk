@@ -16,6 +16,9 @@
 ## Log out then log in again with
 ## ssh -L 5900:localhost:5900 -i BioTrain.pem ec2-user@XXX.XXX.XXX.XXX
 ##
+## Now open a graphical connection using Apple Remote Desktop (OSX) or Remote Desktop Manager
+## connecting to localhost:5900 and open a shell
+##
 ## Now you can run the commands below before running the "build_seqmonk_release.sh" script *AS ROOT*
 
 
