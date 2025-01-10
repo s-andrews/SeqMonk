@@ -6,12 +6,25 @@
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="SeqMonk">
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.5"/>
-    <property name="source" value="1.5"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.6"/>
     <path id="SeqMonk.classpath">
         <pathelement location="bin"/>
-        <pathelement location="sam-1.32.jar"/>
         <pathelement location="Jama-1.0.2.jar"/>
+        <pathelement location="commons-math3-3.5.jar"/>
+        <pathelement location="htsjdk.jar"/>
+    </path>
+    <path id="run.SeqMonkApplication.classpath">
+        <path refid="SeqMonk.classpath"/>
+        <pathelement location="Jama-1.0.2.jar"/>
+        <pathelement location="commons-math3-3.5.jar"/>
+        <pathelement location="htsjdk.jar"/>
+    </path>
+    <path id="run.Vistory.classpath">
+        <path refid="SeqMonk.classpath"/>
+        <pathelement location="Jama-1.0.2.jar"/>
+        <pathelement location="commons-math3-3.5.jar"/>
+        <pathelement location="htsjdk.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -48,40 +61,14 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="ChiSquareDistribution">
-        <java classname="uk.ac.babraham.SeqMonk.Analysis.Statistics.ChiSquareDistribution" failonerror="true" fork="yes">
-            <classpath refid="SeqMonk.classpath"/>
-        </java>
-    </target>
-    <target name="DownloadableGenomeSet">
-        <java classname="uk.ac.babraham.SeqMonk.Network.DownloadableGenomes.DownloadableGenomeSet" failonerror="true" fork="yes">
-            <classpath refid="SeqMonk.classpath"/>
-        </java>
-    </target>
-    <target name="GradientScaleBar">
-        <java classname="uk.ac.babraham.SeqMonk.Displays.GradientScaleBar.GradientScaleBar" failonerror="true" fork="yes">
-            <classpath refid="SeqMonk.classpath"/>
-        </java>
-    </target>
-    <target name="PicardCigarBug">
-        <java classname="PicardCigarBug" failonerror="true" fork="yes">
-            <classpath refid="SeqMonk.classpath"/>
-        </java>
-    </target>
-    <target name="RVersionTest">
-        <java classname="uk.ac.babraham.SeqMonk.R.RVersionTest" failonerror="true" fork="yes">
-            <classpath refid="SeqMonk.classpath"/>
-        </java>
-    </target>
     <target name="SeqMonkApplication">
         <java classname="uk.ac.babraham.SeqMonk.SeqMonkApplication" failonerror="true" fork="yes">
-            <jvmarg line="-Xmx12519m"/>
-            <classpath refid="SeqMonk.classpath"/>
+            <classpath refid="run.SeqMonkApplication.classpath"/>
         </java>
     </target>
-    <target name="VennDiagramPanel">
-        <java classname="uk.ac.babraham.SeqMonk.Displays.VennDiagram.VennDiagramPanel" failonerror="true" fork="yes">
-            <classpath refid="SeqMonk.classpath"/>
+    <target name="Vistory">
+        <java classname="uk.ac.babraham.SeqMonk.Vistory.Vistory" failonerror="true" fork="yes">
+            <classpath refid="run.Vistory.classpath"/>
         </java>
     </target>
 </project>
