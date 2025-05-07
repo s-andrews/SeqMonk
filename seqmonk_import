@@ -177,6 +177,12 @@ if ($spliced) {
 	}
 }
 
+my $force_single = 0;
+
+if ($single) {
+	$force_single = 1;
+}
+
 
 # Put the environment back to how we found it
 if (defined $original_lang) {
@@ -186,7 +192,9 @@ else {
 	delete $ENV{LANG};
 }
 
-exec $java_exe ,@java_args, "uk.ac.babraham.SeqMonk.Importer.SeqMonkImporter", $genome, $outfile, $spliced_value,$mapq, @files;
+
+
+exec $java_exe ,@java_args, "uk.ac.babraham.SeqMonk.Importer.SeqMonkImporter", $genome, $outfile, $spliced_value, $force_single, $mapq, @files;
 
 sub print_error {
 	
@@ -446,7 +454,7 @@ DESCRIPTION
     --single        Overrides the detection of paired end data to force the use 
                     of single end import.
 
-    --introns     	When importing with --spliced import introns rather than exons
+    --introns       When importing with --spliced import introns rather than exons
 	                
     --mapq          Value to use as a MAPQ cutoff for imported reads.  Defaults
                     to 20 if any of the first 100,000 reads has a value above 20.
