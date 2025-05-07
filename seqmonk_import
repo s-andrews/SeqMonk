@@ -78,6 +78,7 @@ my $mapq;
 my $genome;
 my $outfile;
 my $spliced;
+my $single;
 my $introns;
 my $unspliced;
 
@@ -86,6 +87,7 @@ my $result = GetOptions('help' => \$help,
 						'genome=s' => \$genome,
 						'outfile=s' => \$outfile,
 						'spliced' => \$spliced,
+						'single' => \$single,
 						'introns' => \$introns,
 						'unspliced' => \$unspliced,
 						'mapq=i' => \$mapq,
@@ -440,6 +442,9 @@ DESCRIPTION
 	                
     --unspliced     No not split spliced reads even if they are present.  This
                     flag overrides the default auto-detection.
+                    
+    --single        Overrides the detection of paired end data to force the use 
+                    of single end import.
 
     --introns     	When importing with --spliced import introns rather than exons
 	                

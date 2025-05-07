@@ -51,8 +51,9 @@ public class SeqMonkImporter implements ProgressListener {
 	 * 1 ) The genome to use (Species/Assembly)
 	 * 2 ) The output file name
 	 * 3 ) Whether to split for RNA-Seq (0 = auto, 1 = no, 2 = yes, 3 = yes+introns)
-	 * 4 ) MapQ cutoff filter
-	 * 5+) List of BAM files to import 
+	 * 4 ) Whether to force the use of single end import (0 = auto, 1 = force single)
+	 * 5 ) MapQ cutoff filter
+	 * 6+) List of BAM files to import 
 	 * 	
 	 * @param args
 	 */
@@ -72,12 +73,13 @@ public class SeqMonkImporter implements ProgressListener {
 		// have this problem.
 		File outFile = new File(args[1]).getAbsoluteFile();
 		int splitReads = Integer.parseInt(args[2]);
-		int mapqCutoff = Integer.parseInt(args[3]);
+		boolean forceSingle = args[3].equals("1");
+		int mapqCutoff = Integer.parseInt(args[4]);
 		
-		File [] files = new File[args.length-4];
+		File [] files = new File[args.length-5];
 		
 		for (int i=0; i<files.length;i++) {
-			files[i] = new File(args[i+4]);
+			files[i] = new File(args[i+5]);
 		}
 		
 //		System.err.println("Genome = "+genomeString);
@@ -181,6 +183,10 @@ public class SeqMonkImporter implements ProgressListener {
 				else if (splitReads == 3) {
 					options.setSpliced(true);
 					options.setIntrons(true);
+				}
+				
+				if (forceSingle) {
+					options.setPairedEnd(false);
 				}
 				
 				
