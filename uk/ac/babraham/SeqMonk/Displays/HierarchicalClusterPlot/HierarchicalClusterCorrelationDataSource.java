@@ -62,7 +62,7 @@ public class HierarchicalClusterCorrelationDataSource implements ClusterDataSour
 				for (int d=0;d<stores.length;d++) {
 					localValues[d] = stores[d].getValueForProbe(probes[indices1[i]]);
 				}
-				float median = SimpleStats.mean(localValues);
+				float median = SimpleStats.median(localValues);
 				for (int v=0;v<localValues.length;v++) {
 					if (normalise) {
 						average1[v] += (localValues[v] - median);
@@ -76,7 +76,7 @@ public class HierarchicalClusterCorrelationDataSource implements ClusterDataSour
 				for (int d=0;d<stores.length;d++) {
 					localValues[d] = stores[d].getValueForProbe(probes[indices2[i]]);
 				}
-				float median = SimpleStats.mean(localValues);
+				float median = SimpleStats.median(localValues);
 				for (int v=0;v<localValues.length;v++) {
 					if (normalise) {
 						average2[v] += (localValues[v] - median);
