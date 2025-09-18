@@ -86,7 +86,7 @@ public class SeqMonkTitlePanel extends JPanel {
 		c.add(website,constraints);
 		constraints.gridy++;
 
-		JLabel copyright = new JLabel("\u00a9 Simon Andrews,Laura Biggins Babraham Bioinformatics, 2006-21", JLabel.CENTER);
+		JLabel copyright = new JLabel("\u00a9 Simon Andrews,Laura Biggins Babraham Bioinformatics, 2006-25", JLabel.CENTER);
 		copyright.setFont(new Font("Dialog",Font.PLAIN,12));
 		c.add(copyright,constraints);
 		constraints.gridy++;
