@@ -111,9 +111,9 @@ public class BedMethylFileParser extends DataParser {
 					 *    
 					 */
 					
-					for (int i=0;i<sections.length;i++) {
-						System.out.println(""+i+" "+sections[i]);
-					}
+//					for (int i=0;i<sections.length;i++) {
+//						System.out.println(""+i+" "+sections[i]);
+//					}
 					
 					// Check to see if we've got enough data to work with
 					if (sections.length < 11) {
