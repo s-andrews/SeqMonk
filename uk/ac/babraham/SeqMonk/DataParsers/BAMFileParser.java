@@ -350,6 +350,7 @@ public class BAMFileParser extends DataParser {
 		int start;
 		int lastEnd = -1;
 
+		//	This gives us a 1-based position, even though the BAM file uses 0-based.	
 		start = samRecord.getAlignmentStart();
 
 		// For paired end data we want to flip the strand of the second read
@@ -418,15 +419,17 @@ public class BAMFileParser extends DataParser {
 
 		int currentPosition = start;
 		for (int pos=0;pos<cigarNumbers.length;pos++) {
-
+			
+			// We will modify the position to where the start of the *next* segment will be
 			if (cigarOperations[pos+1].equals("M")) {
-				currentPosition += Integer.parseInt(cigarNumbers[pos])-1;
+				currentPosition += Integer.parseInt(cigarNumbers[pos]);
 			}
 			else if (cigarOperations[pos+1].equals("I")) {
-				currentPosition += Integer.parseInt(cigarNumbers[pos])-1;
+				// An insertion doesn't change the position of the alignment on the reference
+				// so this is a no-op
 			}
 			else if (cigarOperations[pos+1].equals("D")) {
-				currentPosition -= Integer.parseInt(cigarNumbers[pos])-1;
+				currentPosition += Integer.parseInt(cigarNumbers[pos]);
 			}
 			else if (cigarOperations[pos+1].equals("N")) {
 				// Make a new sequence as far as this point
@@ -442,7 +445,7 @@ public class BAMFileParser extends DataParser {
 
 					// Update the lastEnd whether we added a read or not since this
 					// will be the start of the next intron
-					lastEnd = currentPosition;
+					lastEnd = currentPosition-1;
 				}
 
 				else {
@@ -452,15 +455,15 @@ public class BAMFileParser extends DataParser {
 						throw new SeqMonkException("Reading position "+currentPosition+" was "+overrun+"bp beyond the end of chr"+c.chromosome().name()+" ("+c.chromosome().length()+")");
 					}
 
-					newReads.add(new SequenceReadWithChromosome(c.chromosome(),SequenceRead.packPosition(start,currentPosition,strand)));
+					newReads.add(new SequenceReadWithChromosome(c.chromosome(),SequenceRead.packPosition(start,currentPosition-1,strand)));
 				}
 
-				currentPosition += Integer.parseInt(cigarNumbers[pos])+1;
+				currentPosition += Integer.parseInt(cigarNumbers[pos]);
 				start=currentPosition;
 			}
 
 		}
-
+		
 		if (importIntrons) {
 			if (lastEnd > 0) {
 				if (start > c.chromosome().length()) {
@@ -479,7 +482,7 @@ public class BAMFileParser extends DataParser {
 				throw new SeqMonkException("Reading position "+currentPosition+" was "+overrun+"bp beyond the end of chr"+c.chromosome().name()+" ("+c.chromosome().length()+")");
 			}
 
-			newReads.add(new SequenceReadWithChromosome(c.chromosome(),SequenceRead.packPosition(start,currentPosition,strand)));
+			newReads.add(new SequenceReadWithChromosome(c.chromosome(),SequenceRead.packPosition(start,currentPosition-1,strand)));
 		}
 
 		return newReads.toArray(new SequenceReadWithChromosome[0]);
