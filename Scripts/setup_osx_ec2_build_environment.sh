@@ -44,9 +44,12 @@ mv jdk-21.0.5+11-jre jre-linux64
 export PATH=/usr/local/opt/openjdk@21/bin:$PATH
 cd git/SeqMonk
 ant
+chmod 755 bin/seqmonk
+chmod 755 bin/seqmonk_import
 cd
 wget --no-check-certificate "https://www.bioinformatics.babraham.ac.uk/projects/seqmonk/seqmonk_v1.48.1_osx64.dmg"
 hdiutil attach seqmonk_v1.48.1_osx64.dmg
 cp -R /Volumes/SeqMonk/SeqMonk.app .
 umount /Volumes/SeqMonk
 ln -s git/SeqMonk/scripts/build_seqmonk_release.sh .
+
