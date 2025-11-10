@@ -91,7 +91,7 @@ public class SeqMonkApplication extends JFrame implements ProgressListener, Data
 	private static SeqMonkApplication application;
 	
 	/** The version of SeqMonk */
-	public static final String VERSION = "1.49.1.devel";
+	public static final String VERSION = "1.49.1";
 	
 	private SeqMonkMenu menu;
 	
