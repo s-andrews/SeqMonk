@@ -34,6 +34,7 @@ import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
 public class CumulativeDistributionDialog extends JDialog implements ActionListener, ChangeListener {
@@ -63,6 +64,19 @@ public class CumulativeDistributionDialog extends JDialog implements ActionListe
 		closeButton.setActionCommand("close");
 		closeButton.addActionListener(this);
 		buttonPanel.add(closeButton);
+		
+		if (graphPanel.getStores() != null && graphPanel.getStores().length > 1) {
+			JButton highlightButton = new JButton("Highlight Rep Sets");
+			highlightButton.addActionListener(new ActionListener() {
+				
+				public void actionPerformed(ActionEvent e) {
+					graphPanel.setReplicateSets(ReplicateSetSelector.selectReplicateSets());
+				}
+			});
+		
+			buttonPanel.add(highlightButton);
+		}
+
 		
 		JButton saveButton = new JButton("Save");
 		saveButton.setActionCommand("save");

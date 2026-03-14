@@ -28,9 +28,11 @@ import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
+import uk.ac.babraham.SeqMonk.Preferences.ColourScheme;
 import uk.ac.babraham.SeqMonk.Utilities.AxisScale;
 
 public class CumulativeDistributionPanel extends JPanel {
@@ -38,6 +40,12 @@ public class CumulativeDistributionPanel extends JPanel {
 	private String title;
 	private String [] names;
 	private float [][] distributions;
+	
+	// They have the option to highlight replicate sets. For this 
+	// we need to retain the data stores they're plotting and we
+	// need to store an array of the replicate sets they're using
+	private DataStore[] stores = null;
+	private ReplicateSet[] repSets = null;
 		
 	// These set the limits, either globally, or if we're zoomed in
 	// along with a flag to say when they've been calculated
@@ -113,6 +121,9 @@ public class CumulativeDistributionPanel extends JPanel {
 		
 		DataStore [] quantiatedStores = validStores.toArray(new DataStore[0]);
 		
+		// Save these so we can refer back to them later
+		this.stores = quantiatedStores;
+		
 		names = new String [quantiatedStores.length];
 		Probe [] probes = list.getAllProbes();
 		distributions = new float[names.length][];
@@ -153,6 +164,31 @@ public class CumulativeDistributionPanel extends JPanel {
 	
 	}
 	
+	public DataStore[] getStores() {
+		return(stores);
+	}
+	
+	public void setReplicateSets(ReplicateSet[] repSets) {
+		this.repSets = repSets;
+		
+		if (repSets == null) {
+			// We want the names to be the data store names
+			names = new String[stores.length];
+			for (int i=0;i<stores.length;i++) {
+				names[i] = stores[i].name();
+			}
+		}
+		else {
+			// We want the names to be the replicate set names
+			names = new String[repSets.length];
+			for (int i=0;i<repSets.length;i++) {
+				names[i] = repSets[i].name();
+			}
+		}
+		
+		repaint();
+	}
+	
 	public void setScale (int percentage) {
 		
 		double range = absoluteMax - absoluteMin;
@@ -163,6 +199,27 @@ public class CumulativeDistributionPanel extends JPanel {
 		usedMax = usedMin + range;
 		repaint();
 	}
+	
+	private Color getStoreColor (DataStore s) {
+		Color colourToReturn = Color.GRAY;
+		
+		int repSetIndex = -1;
+		if (repSets != null) {			
+			for (int r=0;r<repSets.length;r++) {
+				if (repSets[r].containsDataStore(s)) {
+					repSetIndex = r;
+				}
+			}
+		}
+
+		if (repSetIndex >= 0) {
+			colourToReturn = ColourIndexSet.getColour(repSetIndex);
+		}
+		
+		return(colourToReturn);
+
+	}
+
 	
 
 	
@@ -280,7 +337,12 @@ public class CumulativeDistributionPanel extends JPanel {
 		// Now draw the lines
 		for (int d=0;d<distributions.length;d++) {
 		
-			g.setColor(ColourIndexSet.getColour(d));
+			if (repSets == null) {
+				g.setColor(ColourIndexSet.getColour(d));
+			}
+			else {
+				g.setColor(getStoreColor(stores[d]));
+			}
 			int lastY = 0;
 			int lastX = 0;
 		
