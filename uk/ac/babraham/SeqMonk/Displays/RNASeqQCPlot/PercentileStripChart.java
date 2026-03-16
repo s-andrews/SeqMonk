@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 
 public class PercentileStripChart extends JPanel implements MouseListener, MouseMotionListener {
@@ -36,6 +37,7 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 	private String title;
 	private double [] values;
 	private DataStore [] stores;
+	private ReplicateSet [] repSets = null;
 	private static final int TOP_GAP = 20;
 	private static final int BOTTOM_GAP = 10;
 	private static final int RIGHT_GAP = 10;
@@ -50,6 +52,11 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 		this.title = title;
 		this.values = values;
 		this.stores = stores;
+	}
+	
+	public void setReplicateSets(ReplicateSet [] repSets) {
+		this.repSets = repSets;
+		repaint();
 	}
 	
 	public void setSelectedStores (DataStore [] stores) {
@@ -112,7 +119,13 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 
 		
 		for (int i=0;i<values.length;i++) {
-			g.setColor(ColourIndexSet.getColour(i));
+			
+			if (repSets == null || repSets.length == 0) {
+				g.setColor(ColourIndexSet.getColour(i));
+			}
+			else {
+				g.setColor(getStoreColor(stores[i]));
+			}
 			
 			int valueXPosition = xGap + 5 + (int)(((getWidth()-(xGap+RIGHT_GAP+10))/(double)values.length)*i);
 					
@@ -133,6 +146,27 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 		addMouseMotionListener(this);
 		
 	}
+	
+	private Color getStoreColor (DataStore s) {
+		Color colourToReturn = Color.GRAY;
+		
+		int repSetIndex = -1;
+		if (repSets != null) {			
+			for (int r=0;r<repSets.length;r++) {
+				if (repSets[r].containsDataStore(s)) {
+					repSetIndex = r;
+				}
+			}
+		}
+
+		if (repSetIndex >= 0) {
+			colourToReturn = ColourIndexSet.getColour(repSetIndex);
+		}
+		
+		return(colourToReturn);
+
+	}
+
 	
 	private int getY (double percent) {
 		

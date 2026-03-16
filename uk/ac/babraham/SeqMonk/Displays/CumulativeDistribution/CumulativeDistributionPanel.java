@@ -337,7 +337,7 @@ public class CumulativeDistributionPanel extends JPanel {
 		// Now draw the lines
 		for (int d=0;d<distributions.length;d++) {
 		
-			if (repSets == null) {
+			if (repSets == null || repSets.length == 0) {
 				g.setColor(ColourIndexSet.getColour(d));
 			}
 			else {

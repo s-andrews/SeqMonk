@@ -30,6 +30,11 @@ import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 public class DataStoreNamePanel extends JPanel {
 		
 	public DataStoreNamePanel (String [] names) {
+		updateNames(names);
+	}
+	
+	public void updateNames(String [] names) {
+		removeAll();
 		setBackground(Color.WHITE);
 		setOpaque(true);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -38,7 +43,7 @@ public class DataStoreNamePanel extends JPanel {
 			l.setForeground(ColourIndexSet.getColour(i));
 			add(l);
 		}
-
+		
 	}
 	
 	

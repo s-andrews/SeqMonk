@@ -38,6 +38,8 @@ import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
@@ -46,6 +48,7 @@ public class RNAQCResultsDialog extends JDialog implements SampleSelectionListen
 	private JPanel resultPanel;
 	private RNAQCResult result;
 	private PercentileStripChart [] charts;
+	private DataStoreNamePanel namePanel;
 	private DataStore [] selectedStores = new DataStore[0];
 
 	public RNAQCResultsDialog (RNAQCResult result) {
@@ -76,7 +79,8 @@ public class RNAQCResultsDialog extends JDialog implements SampleSelectionListen
 		}
 
 		gbc.weightx=0.01;
-		resultPanel.add(new DataStoreNamePanel(result.getStoreNames()),gbc);
+		namePanel = new DataStoreNamePanel(result.getStoreNames());
+		resultPanel.add(namePanel,gbc);
 
 		getContentPane().setLayout(new BorderLayout());
 
@@ -95,6 +99,36 @@ public class RNAQCResultsDialog extends JDialog implements SampleSelectionListen
 
 		buttonPanel.add(closeButton);
 
+		
+		if (result.stores().length > 1) {
+			JButton highlightButton = new JButton("Highlight Rep Sets");
+			highlightButton.addActionListener(new ActionListener() {
+				
+				public void actionPerformed(ActionEvent e) {
+					
+					ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
+					
+					if (repSets == null) {
+						namePanel.updateNames(result.getStoreNames());
+					}
+					else {
+						String [] repSetNames = new String[repSets.length];
+						for (int i=0;i<repSets.length;i++) {
+							repSetNames[i] = repSets[i].name();
+						}
+						namePanel.updateNames(repSetNames);
+					}
+					
+					for (int i=0;i<charts.length;i++) {
+						charts[i].setReplicateSets(repSets);
+					}
+				}
+			});
+		
+			buttonPanel.add(highlightButton);
+		}
+
+		
 		JButton saveButton = new JButton("Save Image");
 		saveButton.addActionListener(new ActionListener() {
 
