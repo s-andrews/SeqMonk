@@ -108,7 +108,7 @@ public class RNAQCResultsDialog extends JDialog implements SampleSelectionListen
 					
 					ReplicateSet [] repSets = ReplicateSetSelector.selectReplicateSets();
 					
-					if (repSets == null) {
+					if (repSets == null || repSets.length == 0) {
 						namePanel.updateNames(result.getStoreNames());
 					}
 					else {

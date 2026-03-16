@@ -44,6 +44,8 @@ public class DataStoreNamePanel extends JPanel {
 			add(l);
 		}
 		
+		repaint();
+		
 	}
 	
 	

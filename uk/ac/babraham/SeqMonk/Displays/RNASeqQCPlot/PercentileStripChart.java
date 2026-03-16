@@ -20,6 +20,7 @@
 package uk.ac.babraham.SeqMonk.Displays.RNASeqQCPlot;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -27,6 +28,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
@@ -41,6 +43,8 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 	private static final int TOP_GAP = 20;
 	private static final int BOTTOM_GAP = 10;
 	private static final int RIGHT_GAP = 10;
+	
+	private int tooltipDelay = 0; // We store this so we can make tooltips appear immediate, but we reset it after
 	
 	private ArrayList<SampleSelectionListener> listeners = new ArrayList<SampleSelectionListener>();
 		
@@ -127,7 +131,7 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 				g.setColor(getStoreColor(stores[i]));
 			}
 			
-			int valueXPosition = xGap + 5 + (int)(((getWidth()-(xGap+RIGHT_GAP+10))/(double)values.length)*i);
+			int valueXPosition = getX(i);
 					
 			g.fillOval(valueXPosition, getY(values[i])-5, 10, 10);
 			
@@ -167,6 +171,16 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 
 	}
 
+	
+	private int getX(int index) {
+		
+	    FontMetrics fm = getFontMetrics(getFont());
+		int xGap = fm.stringWidth("100%")+10;
+
+		int xPosition = xGap + 5 + (int)(((getWidth()-(xGap+RIGHT_GAP+10))/(double)values.length)*index);
+		
+		return(xPosition);
+	}
 	
 	private int getY (double percent) {
 		
@@ -221,14 +235,53 @@ public class PercentileStripChart extends JPanel implements MouseListener, Mouse
 		}
 	}
 
-	public void mouseMoved(MouseEvent e) {}
+	public void mouseMoved(MouseEvent e) {
+				
+		// We'll see if we're over a point and we'll set a label if we are
+		
+		int x = e.getX();
+		int y = e.getY();
+		
+
+		
+		for (int v=0; v<values.length; v++) {
+			int px = getX(v);
+			int py = getY(values[v]);
+			
+
+			double dist = Math.sqrt(Math.pow((double)(px-x),2) + Math.pow((double)(py-y),2));
+
+			
+			
+			if (dist <= 10) {	
+				// This is the point we're over
+				setToolTipText(stores[v].name());
+				return;
+			}
+		}
+		
+		
+		setToolTipText(null);
+	}
 
 	public void mouseClicked(MouseEvent me) {}
 
-	public void mouseEntered(MouseEvent arg0) {}
+	public void mouseEntered(MouseEvent arg0) {
+		
+		if (tooltipDelay == 0) {
+			tooltipDelay = ToolTipManager.sharedInstance().getInitialDelay();
+		}
+		
+		ToolTipManager.sharedInstance().setInitialDelay(0);
+		
+	}
 
 	public void mouseExited(MouseEvent arg0) {
 		mouseYStartDrag = -1;
+		setToolTipText(null);
+		if (tooltipDelay > 0) {
+			ToolTipManager.sharedInstance().setInitialDelay(tooltipDelay);
+		}
 	}
 
 	public void mousePressed(MouseEvent arg0) {}
