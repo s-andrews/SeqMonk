@@ -159,7 +159,7 @@ public class DefineProbeOptions extends JDialog implements ActionListener, Probe
 		optionPanel.add(new JLabel("Select an option"));
 		getContentPane().add(optionPanel,BorderLayout.CENTER);
 		
-		setSize(800,480);
+		setSize(965,480);
 		setLocationRelativeTo(application);
 		setVisible(true);
 		
