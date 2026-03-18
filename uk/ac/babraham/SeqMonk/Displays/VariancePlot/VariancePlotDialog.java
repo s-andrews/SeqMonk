@@ -121,7 +121,7 @@ public class VariancePlotDialog extends JDialog implements ActionListener, Chang
 		stores.addActionListener(this);
 		stores.setActionCommand("plot");
 
-		varianceMeasures = new JComboBox(new String [] {"Coef Var","StDev","SEM","QuartDisp","Unmeasured"});
+		varianceMeasures = new JComboBox(new String [] {"StDev","Coef Var","SEM","QuartDisp","Unmeasured"});
 //		varianceMeasures.setPrototypeDisplayValue("No longer than this");
 //		varianceMeasures.setRenderer(new TypeColourRenderer());
 		varianceMeasures.addActionListener(this);
