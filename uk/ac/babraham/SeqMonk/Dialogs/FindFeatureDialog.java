@@ -108,7 +108,7 @@ public class FindFeatureDialog extends JDialog implements ActionListener, Runnab
 	 */
 	public FindFeatureDialog (DataCollection dataCollection) {
 		super(SeqMonkApplication.getInstance(),"Find Feature...");
-		setSize(700,350);
+		setSize(800,350);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		
 		this.dataCollection = dataCollection;
