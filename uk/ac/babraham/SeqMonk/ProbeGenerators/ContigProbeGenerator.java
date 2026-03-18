@@ -235,7 +235,7 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 			double baseFoldCoverage = ((double)totalReadLength/collection.genome().getTotalGenomeLength());
 
 			double requiredFoldCoverage = baseFoldCoverage * enrichment;
-
+			
 			depthCutoff = (int)requiredFoldCoverage;
 
 			if (depthCutoff < 1) depthCutoff = 1;
@@ -468,13 +468,17 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 	 */
 	private String getDescription () {
 		StringBuffer b = new StringBuffer();
-		b.append("Contig generation using ");
-
+		b.append("Contig generation using ");		
+		
 		for (int i=0;i<selectedStores.length;i++) {
 			b.append(selectedStores[i].name());
 			b.append(" ");
 		}
 
+		b.append(readStrandType.toString());
+		b.append(" ");
+
+		
 		b.append(" Depth=");
 		b.append(depthCutoff);
 		b.append("reads (");
@@ -497,17 +501,7 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 	 * @param reads the reads
 	 * @return the non redundant reads
 	 */
-	private ReadsWithCounts getNonRedundantReads (ReadsWithCounts reads, int limitToStrand) {
-		
-		boolean limitStrand = false;
-		if (limitToStrand == Location.FORWARD || limitToStrand == Location.REVERSE || limitToStrand == Location.UNKNOWN) {
-			limitStrand = true;
-		}
-		
-		if (!limitStrand) {
-			return reads; // It's already done.
-		}
-
+	private ReadsWithCounts getNonRedundantReads (ReadsWithCounts reads, int limitToStrand) {		
 		
 		LongVector keptReads = new LongVector();
 		IntVector keptCounts = new IntVector();
@@ -518,7 +512,7 @@ public class ContigProbeGenerator extends ProbeGenerator implements Runnable, Ke
 				continue;
 			}
 
-			if (limitStrand && (SequenceRead.strand(reads.reads[r]) != limitToStrand)) continue;
+			if (limitToStrand != 100 && SequenceRead.strand(reads.reads[r]) != limitToStrand) continue;
 
 			keptReads.add(reads.reads[r]);
 			keptCounts.add(reads.counts[r]);
