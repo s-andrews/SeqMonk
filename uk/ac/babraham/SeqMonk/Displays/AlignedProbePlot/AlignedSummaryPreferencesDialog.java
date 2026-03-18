@@ -180,7 +180,7 @@ public class AlignedSummaryPreferencesDialog extends JDialog implements ActionLi
 		
 		getContentPane().add(buttonPanel,BorderLayout.SOUTH);
 		
-		setSize(400,300);
+		setSize(500,300);
 		setLocationRelativeTo(SeqMonkApplication.getInstance());
 		setVisible(true);
 			
