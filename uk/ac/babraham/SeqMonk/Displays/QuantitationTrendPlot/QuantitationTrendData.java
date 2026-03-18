@@ -19,16 +19,19 @@
  */
 package uk.ac.babraham.SeqMonk.Displays.QuantitationTrendPlot;
 
+import java.awt.Color;
 import java.io.PrintWriter;
 import java.util.Vector;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
 import uk.ac.babraham.SeqMonk.DataTypes.ProgressListener;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Genome.Location;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.Probe;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Dialogs.Cancellable;
+import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 
 public class QuantitationTrendData implements Runnable, Cancellable {
 
@@ -39,6 +42,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 	 */
 
 	private DataStore [] stores;
+	private ReplicateSet [] repSets = new ReplicateSet[0];
 	private ProbeList [] lists;
 	private QuantitationTrendPlotPreferencesPanel prefs;
 	private Vector<ProgressListener> listeners = new Vector<ProgressListener>();
@@ -75,6 +79,46 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 
 	public DataStore [] stores () {
 		return stores;
+	}
+
+	public ReplicateSet [] replicateSets () {
+		return repSets;
+	}
+
+	public void  setReplicateSets (ReplicateSet[] repSets) {
+		this.repSets = repSets;
+	}
+
+	
+	public Color getColourForStore(DataStore s, ProbeList l) {
+		Color colourToReturn = Color.GRAY;
+	
+		// We need the index of the probe list
+		int probeListIndex = 0;
+		
+		for (int i=0;i<lists.length;i++) {
+			if(lists[i].equals(l)) {
+				probeListIndex = i;
+				break;
+			}
+		}
+		
+		
+		int repSetIndex = -1;
+		if (repSets != null) {			
+			for (int r=0;r<repSets.length;r++) {
+				if (repSets[r].containsDataStore(s)) {
+					repSetIndex = r;
+				}
+			}
+		}
+
+		if (repSetIndex >= 0) {
+			colourToReturn = ColourIndexSet.getColour((lists.length*repSetIndex)+probeListIndex);
+		}
+		
+		return(colourToReturn);
+
 	}
 	
 	public ProbeList [] lists () {
@@ -489,7 +533,7 @@ public class QuantitationTrendData implements Runnable, Cancellable {
 				values[i] /= counts[i];
 			}
 			else {
-				System.err.println("No counts for "+i);
+//				System.err.println("No counts for "+i);
 				values[i] = Double.NaN;
 			}
 		}

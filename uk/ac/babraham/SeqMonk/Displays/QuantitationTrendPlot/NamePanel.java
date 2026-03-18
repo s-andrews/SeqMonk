@@ -27,6 +27,7 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.SeqMonk.DataTypes.DataStore;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
 import uk.ac.babraham.SeqMonk.DataTypes.Probes.ProbeList;
 import uk.ac.babraham.SeqMonk.Gradients.ColourIndexSet;
 
@@ -34,6 +35,7 @@ public class NamePanel extends JPanel {
 
 	DataStore [] stores;
 	ProbeList [] lists;
+	ReplicateSet [] repSets = new ReplicateSet[0];
 	private int maxWidth = 0;
 
 	
@@ -41,20 +43,44 @@ public class NamePanel extends JPanel {
 		
 		this.stores = stores;
 		this.lists = lists;
+		calculateMaxWidth();
+		
+	}
+	
+	private void calculateMaxWidth() {		
 		
 		FontMetrics fm = this.getFontMetrics(this.getFont());
 		
-		for (int d=0;d<stores.length;d++) {
-			for (int l=0;l<lists.length;l++) {
-				String text = stores[d].name()+" - "+lists[l].name();
-				int yWidth = fm.stringWidth(text)+6;
-				if (yWidth > maxWidth) {
-					maxWidth = yWidth;
+		if (repSets.length == 0) {
+		
+			for (int d=0;d<stores.length;d++) {
+				for (int l=0;l<lists.length;l++) {
+					String text = stores[d].name()+" - "+lists[l].name();
+					int yWidth = fm.stringWidth(text)+6;
+					if (yWidth > maxWidth) {
+						maxWidth = yWidth;
+					}
 				}
-			}
+			}	
+		}
+		else {
+			for (int d=0;d<repSets.length;d++) {
+				for (int l=0;l<lists.length;l++) {
+					String text = repSets[d].name()+" - "+lists[l].name();
+					int yWidth = fm.stringWidth(text)+6;
+					if (yWidth > maxWidth) {
+						maxWidth = yWidth;
+					}
+				}
+			}	
 		}
 	}
 	
+	public void setReplicateSets(ReplicateSet[] repSets) {
+		this.repSets = repSets;
+		calculateMaxWidth();
+		repaint();
+	}
 	
 	public void paint (Graphics g) {
 		super.paint(g);
@@ -62,18 +88,32 @@ public class NamePanel extends JPanel {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-		for (int d=0;d<stores.length;d++) {
-			for (int l=0;l<lists.length;l++) {
-				g.setColor(ColourIndexSet.getColour((lists.length*d)+l));
-
-				String text = stores[d].name()+" - "+lists[l].name();
-				
-				g.drawString(text, 3, ((lists.length*d)+l+1)*g.getFontMetrics().getHeight());
-
+		if (repSets.length == 0) {
+			for (int d=0;d<stores.length;d++) {
+				for (int l=0;l<lists.length;l++) {
+					g.setColor(ColourIndexSet.getColour((lists.length*d)+l));
+	
+					String text = stores[d].name()+" - "+lists[l].name();
+					
+					g.drawString(text, 3, ((lists.length*d)+l+1)*g.getFontMetrics().getHeight());
+	
+				}
 			}
 		}
-
+		else {
+			for (int d=0;d<repSets.length;d++) {
+				for (int l=0;l<lists.length;l++) {
+					g.setColor(ColourIndexSet.getColour((lists.length*d)+l));
+	
+					String text = repSets[d].name()+" - "+lists[l].name();
+					
+					g.drawString(text, 3, ((lists.length*d)+l+1)*g.getFontMetrics().getHeight());
+	
+				}
+			}
 			
+			
+		}
 		
 	}
 	
@@ -85,7 +125,6 @@ public class NamePanel extends JPanel {
 	
 	public Dimension getMinimumSize() {
 		return new Dimension(maxWidth+3, 1);
-		
 	}	
 	
 	

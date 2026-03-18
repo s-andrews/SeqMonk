@@ -39,6 +39,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.SeqMonk.SeqMonkApplication;
+import uk.ac.babraham.SeqMonk.DataTypes.ReplicateSet;
+import uk.ac.babraham.SeqMonk.Dialogs.ReplicateSetSelector;
 import uk.ac.babraham.SeqMonk.Preferences.SeqMonkPreferences;
 import uk.ac.babraham.SeqMonk.Utilities.ImageSaver.ImageSaver;
 
@@ -51,6 +53,7 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 
 	/** The trend panel. */
 	private JPanel trendPanel;
+	private NamePanel namePanel = null;
 	private QuantitationTrendPlotPanel upstreamTrendPanel = null;
 	private QuantitationTrendPlotPanel centralTrendPanel = null;
 	private QuantitationTrendPlotPanel downstreamTrendPanel = null;	
@@ -126,7 +129,9 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		gbc.weightx=0.00001;
 		gbc.fill = GridBagConstraints.VERTICAL;
 
-		trendPanel.add(new NamePanel(data.stores(), data.lists()),gbc);
+		namePanel = new NamePanel(data.stores(), data.lists());
+		
+		trendPanel.add(namePanel,gbc);
 				
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(trendPanel,BorderLayout.CENTER);
@@ -145,6 +150,22 @@ public class QuantitationTrendPlotDialog extends JDialog implements ActionListen
 		closeButton.setActionCommand("close");
 		closeButton.addActionListener(this);
 		buttonPanel.add(closeButton);
+		
+		if (data.stores().length > 1) {
+			JButton highlightButton = new JButton("Highlight Rep Sets");
+			highlightButton.addActionListener(new ActionListener() {
+				
+				public void actionPerformed(ActionEvent e) {
+					ReplicateSet [] newSets = ReplicateSetSelector.selectReplicateSets(); 
+					data.setReplicateSets(newSets);
+					namePanel.setReplicateSets(newSets);
+					repaint();
+				}
+			});
+		
+			buttonPanel.add(highlightButton);
+		}
+
 		
 		JButton saveImageButton = new JButton("Save Image");
 		saveImageButton.setActionCommand("save_image");
