@@ -122,6 +122,9 @@ public class RNAQCResultsDialog extends JDialog implements SampleSelectionListen
 					for (int i=0;i<charts.length;i++) {
 						charts[i].setReplicateSets(repSets);
 					}
+					
+					validate();
+					repaint();
 				}
 			});
 		

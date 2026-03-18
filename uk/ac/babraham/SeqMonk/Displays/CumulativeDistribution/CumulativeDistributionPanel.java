@@ -171,7 +171,7 @@ public class CumulativeDistributionPanel extends JPanel {
 	public void setReplicateSets(ReplicateSet[] repSets) {
 		this.repSets = repSets;
 		
-		if (repSets == null) {
+		if (repSets == null || repSets.length == 0) {
 			// We want the names to be the data store names
 			names = new String[stores.length];
 			for (int i=0;i<stores.length;i++) {
