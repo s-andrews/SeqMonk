@@ -28,10 +28,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import uk.ac.babraham.SeqMonk.SeqMonkException;
 import uk.ac.babraham.SeqMonk.DataTypes.DataCollection;
@@ -48,6 +51,7 @@ public class PositionFilter extends ProbeFilter {
 	private Chromosome chromosome = null;
 	private Integer start = null;
 	private Integer end = null;
+	private boolean invert = false;
 	private ProbeStrandType strandType = null;
 
 	private PositionFilterOptionsPanel optionsPanel;
@@ -101,7 +105,9 @@ public class PositionFilter extends ProbeFilter {
 		Probe [] probes = startingList.getAllProbes();
 		
 		// We only take probes which are completely enclosed in the selected region
+		
 		for (int p=0;p<probes.length;p++) {
+			boolean rejected = false;
 			if (p % 10000 == 0) 
 				progressUpdated(p, probes.length);
 			
@@ -112,14 +118,36 @@ public class PositionFilter extends ProbeFilter {
 			}
 
 			if (chromosome != null) {
-				if (probes[p].chromosome() != chromosome) continue;
+				if (probes[p].chromosome() != chromosome) {
+					if (invert) {
+						newList.addProbe(probes[p], null);
+					}
+					continue;
+				}
 			}
 			
-			if (! strandType.useProbe(probes[p])) continue;
-			if (start != null && probes[p].start() < start) continue;
-			if (end != null && probes[p].end() > end) continue;
+			if (! strandType.useProbe(probes[p])) {
+				if (invert) {
+					newList.addProbe(probes[p], null);
+				}
+				continue;
+			}
+			if (start != null && probes[p].start() < start) {
+				if (invert) {
+					newList.addProbe(probes[p], null);
+				}
+				continue;
+			}
+			if (end != null && probes[p].end() > end) {
+				if (invert) {
+					newList.addProbe(probes[p], null);
+				}
+				continue;
+			}
 			
-			newList.addProbe(probes[p],null);
+			if (!invert) {
+				newList.addProbe(probes[p],null);
+			}
 
 		}
 		
@@ -172,6 +200,10 @@ public class PositionFilter extends ProbeFilter {
 	@Override
 	protected String listDescription() {
 		StringBuffer b = new StringBuffer();
+		
+		if (invert) {
+			b.append("Inverse of ");
+		}
 		b.append("Probes from ");
 		b.append(startingList.name());
 		if (chromosome == null) {
@@ -219,17 +251,29 @@ public class PositionFilter extends ProbeFilter {
 		
 		if (chromosome != null) {
 			if (startString.equals("start") && endString.equals("end")) {
+				if (invert) {
+					return "NOT Chr "+chromosome.name();
+				}
 				return "Chr "+chromosome.name();				
 			}
 			else {
+				if (invert) {
+					return "NOT Chr "+chromosome.name()+" "+startString+"-"+endString;
+				}
 				return "Chr "+chromosome.name()+" "+startString+"-"+endString;
 			}
 		}
 		else {
 			if (startString.equals("start") && endString.equals("end")) {
+				if (invert) {
+					return "NOT Any chromosome";
+				}
 				return "Any chromosome";
 			}
 			else {
+				if (invert) {
+					return "NOT Any chromosome "+startString+"-"+endString;
+				}
 				return "Any chromosome "+startString+"-"+endString;
 			}
 		}
@@ -238,12 +282,13 @@ public class PositionFilter extends ProbeFilter {
 	/**
 	 * The PositionFilterOptionsPanel.
 	 */
-	private class PositionFilterOptionsPanel extends JPanel implements KeyListener, ItemListener {
+	private class PositionFilterOptionsPanel extends JPanel implements KeyListener, ItemListener, ChangeListener {
 	
 			private JComboBox chromosomeBox;
 			private JComboBox strandBox;
 			private JTextField startField;
 			private JTextField endField;
+			private JCheckBox invertBox;
 			
 			/**
 			 * Instantiates a new position filter options panel.
@@ -320,7 +365,21 @@ public class PositionFilter extends ProbeFilter {
 			
 				endField = new JTextField(""+end,5);
 				endField.addKeyListener(this);
-				add(endField,gbc);		
+				add(endField,gbc);
+				
+				gbc.gridx=0;
+				gbc.gridy++;
+				gbc.weightx=0.2;
+			
+				add(new JLabel("Invert ",JLabel.RIGHT),gbc);
+			
+				gbc.gridx++;
+				gbc.weightx=0.6;
+			
+				invertBox = new JCheckBox();
+				invertBox.addChangeListener(this);
+				add(invertBox,gbc);		
+
 	
 		}
 		
@@ -389,5 +448,10 @@ public class PositionFilter extends ProbeFilter {
 			}
 			optionsChanged();
 		}
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			invert = invertBox.isSelected();
 		}
+	}
 }
