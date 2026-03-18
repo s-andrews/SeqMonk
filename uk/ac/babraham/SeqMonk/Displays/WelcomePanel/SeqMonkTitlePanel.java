@@ -20,6 +20,8 @@
 package uk.ac.babraham.SeqMonk.Displays.WelcomePanel;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -27,6 +29,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.net.URI;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -49,10 +54,62 @@ public class SeqMonkTitlePanel extends JPanel {
 		setLayout(new BorderLayout(5,1));
 
 		ImageIcon logo = new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/bi_logo.png"));
-		ImageIcon monk = new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/monk100.png"));
+		ImageIcon biotrain = new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/SeqMonk/Resources/biotrain100.png"));
 
-		add(new JLabel("",logo,JLabel.CENTER),BorderLayout.WEST);
-		add(new JLabel("",monk,JLabel.CENTER),BorderLayout.EAST);
+		
+		JLabel babraham_logo = new JLabel("",logo,JLabel.CENTER);
+		babraham_logo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		babraham_logo.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+		            String url = "https://www.bioinformatics.babraham.ac.uk";
+		            Desktop.getDesktop().browse(new URI(url));
+		        } catch (Exception ex) {}				
+			}
+		});
+		add(babraham_logo,BorderLayout.WEST);
+		
+		JLabel biotrain_logo = new JLabel("",biotrain,JLabel.CENTER);
+		biotrain_logo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		biotrain_logo.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+		            String url = "https://biotrain.tv";
+		            Desktop.getDesktop().browse(new URI(url));
+		        } catch (Exception ex) {}				
+			}
+		});
+		
+		
+		add(biotrain_logo,BorderLayout.EAST);
 		JPanel c = new JPanel();
 		c.setLayout(new GridBagLayout());
 
@@ -86,7 +143,7 @@ public class SeqMonkTitlePanel extends JPanel {
 		c.add(website,constraints);
 		constraints.gridy++;
 
-		JLabel copyright = new JLabel("\u00a9 Simon Andrews,Laura Biggins Babraham Bioinformatics, 2006-25", JLabel.CENTER);
+		JLabel copyright = new JLabel("\u00a9 Simon Andrews,Laura Biggins Babraham Bioinformatics, 2006-26", JLabel.CENTER);
 		copyright.setFont(new Font("Dialog",Font.PLAIN,12));
 		c.add(copyright,constraints);
 		constraints.gridy++;
