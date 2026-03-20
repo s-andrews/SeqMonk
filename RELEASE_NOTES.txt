@@ -20,9 +20,6 @@ This release has a number of improvements and fixes.
 - The Variance Plot now defaults to STDEV
 
 
-This release fixes some minor issues and introduces new data parsing and quantitation options.
-
-
 RELEASE NOTES FOR SeqMonk v1.49.1
 ---------------------------------
 
