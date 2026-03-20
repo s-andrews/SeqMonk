@@ -39,36 +39,37 @@ public class DownloadableGenomeSet {
 
 		URL genomeIndexURL = new URL(SeqMonkPreferences.getInstance().getGenomeDownloadLocation()+"genome_index.txt");
 
-		BufferedReader genomeIndexReader = new BufferedReader(new InputStreamReader(genomeIndexURL.openStream()));
-		seenSpecies = new Hashtable<String, GenomeSpecies>();
+		try (BufferedReader genomeIndexReader = new BufferedReader(new InputStreamReader(genomeIndexURL.openStream()))) {
+					seenSpecies = new Hashtable<String, GenomeSpecies>();
 		
-		String indexLine = null;
-		while ((indexLine = genomeIndexReader.readLine())!= null) {
-			String [] sections = indexLine.split("\\t");
-			if (sections.length < 4) {
-				throw new IOException("Genome list file is corrupt.  Expected 4 sections on line '"+indexLine+"' but got "+sections.length);
-			}
-			if (!seenSpecies.containsKey(new String(sections[0]))) {
-				GenomeSpecies newSpecies = new GenomeSpecies(sections[0]);
-				species.add(newSpecies);
-				seenSpecies.put(sections[0],newSpecies);
-			}
+					String indexLine = null;
+					while ((indexLine = genomeIndexReader.readLine())!= null) {
+						String [] sections = indexLine.split("\\t");
+						if (sections.length < 4) {
+							throw new IOException("Genome list file is corrupt.  Expected 4 sections on line '"+indexLine+"' but got "+sections.length);
+						}
+						if (!seenSpecies.containsKey(new String(sections[0]))) {
+							GenomeSpecies newSpecies = new GenomeSpecies(sections[0]);
+							species.add(newSpecies);
+							seenSpecies.put(sections[0],newSpecies);
+						}
 			
-			long epoch = Long.parseLong(sections[3]);
-			Date date = new Date(epoch*1000); // Network date is in seconds.  Local date is in milliseconds.
+						long epoch = Long.parseLong(sections[3]);
+						Date date = new Date(epoch*1000); // Network date is in seconds.  Local date is in milliseconds.
 			
-//			System.out.println("For assembly "+sections[1]+" epoch was "+epoch+" and date was "+date);
+			//			System.out.println("For assembly "+sections[1]+" epoch was "+epoch+" and date was "+date);
 			
-			GenomeSpecies species = seenSpecies.get(sections[0]);
-			String assemblyName = sections[1];
-			String assemblySetName = sections[1];
-			assemblySetName = assemblySetName.replaceAll("_v\\d+$", "");
+						GenomeSpecies species = seenSpecies.get(sections[0]);
+						String assemblyName = sections[1];
+						String assemblySetName = sections[1];
+						assemblySetName = assemblySetName.replaceAll("_v\\d+$", "");
 			
-			GenomeAssemblySet set = species.getAssemblySet(assemblySetName);
+						GenomeAssemblySet set = species.getAssemblySet(assemblySetName);
 						
-			new GenomeAssembly(set,assemblyName,Integer.parseInt(sections[2]),date);
+						new GenomeAssembly(set,assemblyName,Integer.parseInt(sections[2]),date);
 
-//			System.out.println("Found organism "+sections[0]+" and assembly "+sections[1]);
+			//			System.out.println("Found organism "+sections[0]+" and assembly "+sections[1]);
+					}
 		}
 	}
 	
