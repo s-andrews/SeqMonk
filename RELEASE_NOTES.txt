@@ -1,3 +1,63 @@
+RELEASE NOTES FOR FastQC v1.49.2
+--------------------------------
+
+This release has a number of improvements and fixes.
+
+- Replicate set highlighting now works in Cumulative Dist Plots
+  QQ plots, RNASeq QC reports and Quantitative Trend Plots
+  
+- RNASeq QC report now tells you which sample is which when you
+  mouse over them.
+  
+- The position filter now has an option to invert the results
+
+- The Contig Probe generator fixed a bug where making probes for
+  separate strands was being ignored.
+  
+- Various dialogs have been resized so they work better with the
+  linux look and feel
+  
+- The Variance Plot now defaults to STDEV
+
+
+This release fixes some minor issues and introduces new data parsing and quantitation options.
+
+
+RELEASE NOTES FOR SeqMonk v1.49.1
+---------------------------------
+
+This is a bug fix release which addresses issue #287 which caused imported read positions to be 
+incorrect when imported spliced RNA-Seq data.
+
+The nature of the bug was such that it would be unlikely to have had a significant impact on 
+short read data, but became much more obvious when importing long read data. It would only 
+have affected reads with insertions, or reads which spanned more than one splice junction. 
+Some small changes will be evident if you re-import old Illumina data again using this fixed 
+version but the changes will be minor. Re-importing nanopore data will have a much more 
+significant effect and any projects where nanopore data was imported with versions prior to 
+1.49.1 should be rebuild and the data reimported.
+
+
+
+RELEASE NOTES FOR SeqMonk v1.49.0
+---------------------------------
+
+Main changes are:
+
+- Added a new directionality quantitation method for use with TrAEL-Seq data
+    
+- Added a new import filter for BedMethyl format data
+    
+- Added a --single option to seqmonk_import to force import of data in single end mode
+
+- Fixed a minor issue with RNA-Seq quantitation in paired end mode
+
+- Fixed the documentation for the Hierarchical Cluster Plot
+
+- Added much improved build scripts to make new releases
+
+
+
 RELEASE NOTES FOR SeqMonk v1.48.1
 ---------------------------------
 
