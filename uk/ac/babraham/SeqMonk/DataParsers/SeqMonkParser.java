@@ -625,7 +625,7 @@ public class SeqMonkParser implements Runnable, ProgressListener {
 			line = br.readLine();
 			sections = line.split("\t");
 			if (sections.length != 2) {
-				throw new SeqMonkException("Read line "+i+" didn't contain 2 sections");
+				throw new SeqMonkException("Read line "+i+" didn't contain 2 sections: "+line);
 			}
 			
 			// We updated the read count to be a long since we get datasets with more than 2^31 reads in them.

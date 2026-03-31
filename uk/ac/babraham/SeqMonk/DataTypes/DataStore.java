@@ -53,7 +53,7 @@ public abstract class DataStore implements Comparable<DataStore>{
 	 * @param name the name
 	 */
 	public DataStore (String name) {
-		this.name = name;
+		this.name = name.replaceAll("[\\n\\r\\t]", "");
 	}
 	
 	/**
@@ -159,7 +159,11 @@ public abstract class DataStore implements Comparable<DataStore>{
 	 * @param name the new name
 	 */
 	public void setName (String name) {
-		this.name = name;
+		// This is a bit of a kludge but we've had cases where we've
+		// ended up with carriage returns or tab in sample names. This
+		// breaks our save format so we're just going to remove them 
+		// at this point.
+		this.name = name.replaceAll("[\\n\\r\\t]", "");
 	}
 		
 	/**

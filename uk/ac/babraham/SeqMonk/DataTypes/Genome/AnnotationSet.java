@@ -71,7 +71,7 @@ public class AnnotationSet {
 	 */
 	public AnnotationSet (Genome genome, String name) {
 		this.genome = genome;
-		this.name = name;		
+		this.name = name.replaceAll("[\\n\\r\\t]", "");		
 	}
 	
 	/**
@@ -166,7 +166,7 @@ public class AnnotationSet {
 	 * @param name The new name for this set.
 	 */
 	public void setName (String name) {
-		this.name = name;
+		this.name = name.replaceAll("[\\n\\r\\t]", "");
 		// Inform the collection so we can tell any listeners
 		if (collection != null) {
 			collection.annotationSetRenamed(this);
